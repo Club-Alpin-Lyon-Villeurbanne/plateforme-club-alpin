@@ -124,9 +124,9 @@ class EvtRepository extends ServiceEntityRepository
     }
 
     /** @return Evt[] */
-    public function getUserEvents(User $user, int $first, int $perPage)
+    public function getUserEvents(User $user, int $first, int $perPage, array $status = [])
     {
-        $qb = $this->getUserEventsDql($user)
+        $qb = $this->getUserEventsDql($user, $status)
             ->orderBy('e.startDate', 'desc');
 
         return $this->getPaginatedResults($qb, $first, $perPage);
@@ -158,18 +158,18 @@ class EvtRepository extends ServiceEntityRepository
         ;
     }
 
-    public function getUserEventsCount(User $user): int
+    public function getUserEventsCount(User $user, array $status = []): int
     {
         return $this
-            ->getUserEventsDql($user)
+            ->getUserEventsDql($user, $status)
             ->select('count(e)')
             ->getQuery()
             ->getSingleScalarResult();
     }
 
-    private function getUserEventsDql(User $user): QueryBuilder
+    private function getUserEventsDql(User $user, array $status = []): QueryBuilder
     {
-        return $this->getEventsByUserDql($user);
+        return $this->getEventsByUserDql($user, $status);
     }
 
     /** @return Evt[] */
@@ -193,7 +193,7 @@ class EvtRepository extends ServiceEntityRepository
     {
         $date = new \DateTime();
 
-        return $this->getEventsByUserDql($user, [Evt::STATUS_LEGAL_VALIDE])
+        return $this->getEventsByUserDql($user, [Evt::STATUS_PUBLISHED_VALIDE])
             ->addSelect('er.status as exp_status')
             ->leftJoin(ExpenseReport::class, 'er', 'WITH', 'er.event = e.id AND er.user = :user')
             ->andWhere('e.startDate IS NOT NULL')
@@ -338,7 +338,7 @@ class EvtRepository extends ServiceEntityRepository
     {
         $date = new \DateTime('today');
 
-        return $this->getEventsByUserDql($user, [Evt::STATUS_LEGAL_VALIDE])
+        return $this->getEventsByUserDql($user, [Evt::STATUS_PUBLISHED_VALIDE])
             ->andWhere('e.endDate >= :date')
             ->setParameter('date', $date)
             ->orderBy('e.startDate', 'asc')
@@ -351,8 +351,8 @@ class EvtRepository extends ServiceEntityRepository
             ->select('e, p')
             // required since there might be multiple participation for a user (weird schema)
             ->distinct(true)
-            ->leftJoin('e.commission', 'c')
-            ->leftJoin('e.participations', 'p')
+            ->innerJoin('e.commission', 'c')
+            ->innerJoin('e.participations', 'p')
             ->where('p.user = :user')
             ->andWhere('e.startDate IS NOT NULL')
             ->setParameter('user', $user)

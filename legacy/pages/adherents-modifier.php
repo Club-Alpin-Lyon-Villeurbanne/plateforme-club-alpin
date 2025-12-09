@@ -75,7 +75,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
 							<?php
 
                             echo ucfirst($firstnameUser) . ' ' . strtoupper($lastnameUser) . '<br/>
-                            (<a href="/user-full/' . $idUser . '.html" title="Fiche profil" target="_top">' . $nicknameUser . '</a>)'; ?>
+                            (<a href="' . LegacyContainer::get('legacy_router')->generate('user_full', ['id' => $idUser]) . '" title="Fiche profil" target="_top">' . $nicknameUser . '</a>)'; ?>
 						</h1>
 					</td>
 				</tr>
