@@ -77,7 +77,7 @@
                 <th>n° licence FFCAM / Infos</th>
                 <th>Nom</th>
                 <th>Prénom</th>
-                <th>Adhésion</th>
+                <th>Date {% if show is same as ('nomade') %}de fin de validité{% else %}d'adhésion{% endif %}</th>
                 <th>Pseudo</th>
                 <th>Âge</th>
                 <th>Tél{% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %} / Tél secours{% endif %}</th>

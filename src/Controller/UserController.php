@@ -23,12 +23,10 @@ use App\Repository\UserAttrRepository;
 use App\Repository\UserRepository;
 use App\Security\SecurityConstants;
 use App\UserRights;
-use App\Utils\NicknameGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -461,7 +459,6 @@ class UserController extends AbstractController
         ]);
 
         $form->handleRequest($request);
-        $errors = 0;
 
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $request->request->all();
@@ -469,66 +466,34 @@ class UserController extends AbstractController
             $formData = $data['form'] ?? [];
             $formData = array_merge($userData, $formData);
 
-            /* @var User $nomad */
-            if (!empty($formData['id_user'])) {
-                $nomad = $userRepository->find($formData['id_user']);
-                $nomad->setEmail($formData['email'] ?? null);
-                $nomad->setTel($formData['tel'] ?? null);
-                $nomad->setTel2($formData['tel2'] ?? null);
-            } else {
-                $nomad = $form->getData();
+            $nomad = $userRepository->find($formData['id_user']);
 
-                $existingUserWithSameEmail = null;
-                if (!empty($nomad->getEmail())) {
-                    $existingUserWithSameEmail = $userRepository->findOneBy(['email' => $nomad->getEmail()]);
-                }
-                if ($existingUserWithSameEmail instanceof User) {
-                    ++$errors;
-                    $form->get('email')->addError(new FormError('Un utilisateur existe déjà avec cette adresse e-mail.'));
-                }
-                $existingUserWithSameCafnum = $userRepository->findOneBy(['cafnum' => $nomad->getCafnum()]);
-                if ($existingUserWithSameCafnum instanceof User) {
-                    ++$errors;
-                    $form->get('cafnum')->addError(new FormError('Un utilisateur existe déjà avec ce numéro de licence.'));
-                }
+            if (!$nomad instanceof User) {
+                $this->addFlash('error', 'Le non-adhérent n\'existe pas.');
 
-                $nomad
-                    ->setNickname(NicknameGenerator::generateNickname($nomad->getFirstname(), $nomad->getLastname(), $nomad->getCafnum()))
-                    ->setNomade(true)
-                    ->setManuel(false)
-                    ->setNomadeParent($this->getUser()->getId())
-                    ->setDoitRenouveler(false)
-                    ->setAlerteRenouveler(false)
-                    ->setCreatedAt(new \DateTime())
-                    ->setUpdatedAt(new \DateTime())
-                    ->setCookietoken('')
-                    ->setAlertSortiePrefix('')
-                    ->setAlertArticlePrefix('')
-                ;
+                return new Response(
+                    '<script>
+                    window.parent.location.reload();
+                </script>'
+                );
             }
-            $birthdate = \DateTimeImmutable::createFromFormat('d/m/Y', $formData['birthdate']);
-            if ($birthdate instanceof \DateTimeImmutable) {
-                $nomad->setBirthdate($birthdate);
-            }
+
             // forcer null pour éviter de pêter la contrainte d'unicité
             if (empty($nomad->getEmail())) {
                 $nomad->setEmail(null);
             }
+            $entityManager->persist($nomad);
 
-            if (empty($errors)) {
-                $entityManager->persist($nomad);
+            $event->addParticipation($nomad, EventParticipation::ROLE_MANUEL);
+            $entityManager->flush();
 
-                $event->addParticipation($nomad, EventParticipation::ROLE_MANUEL);
-                $entityManager->flush();
+            $this->addFlash('success', 'Le non-adhérent a bien été inscrit à la sortie.');
 
-                $this->addFlash('success', 'Le non-adhérent a bien été inscrit à la sortie.');
-
-                return new Response(
-                    '<script>
-                        window.parent.location.reload();
-                    </script>'
-                );
-            }
+            return new Response(
+                '<script>
+                    window.parent.location.reload();
+                </script>'
+            );
         }
 
         return [
@@ -642,12 +607,16 @@ class UserController extends AbstractController
                 $cafnum .= '<img src="/img/base/user_manuel.png" alt="MANUEL" title="Utilisateur créé manuellement" />';
             }
 
-            // adhésion
+            // date licence
             $joinDate = $user->getJoinDate();
+            $formattedDate = (!empty($joinDate) ? $joinDate->format('d/m/Y') : '');
+            if ($user->getNomade() && $user->getDiscoveryEndDatetime()) {
+                $formattedDate = $user->getDiscoveryEndDatetime()->format('d/m/Y H:i:s');
+            }
             if ($user->getDoitRenouveler()) {
-                $renew = '<span  style="color:red" title="' . ($userRights->allowed('user_read_private') ? (!empty($joinDate) ? $joinDate->format('d/m/Y') : '') : '') . '">Licence expirée</span>';
+                $renew = '<span  style="color:red" title="' . ($userRights->allowed('user_read_private') ? $formattedDate : '') . '">Licence expirée</span>';
             } else {
-                $renew = ($userRights->allowed('user_read_private') ? (!empty($joinDate) ? $joinDate->format('d/m/Y') : '-') : $img_lock);
+                $renew = ($userRights->allowed('user_read_private') ? $formattedDate : $img_lock);
             }
 
             // e-mail

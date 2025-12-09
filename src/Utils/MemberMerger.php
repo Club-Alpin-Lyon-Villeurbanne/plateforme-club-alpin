@@ -85,7 +85,7 @@ class MemberMerger
         }
     }
 
-    private function mergeUser(User $oldCafUser, User $newCafUser)
+    private function mergeUser(User $oldCafUser, User $newCafUser): void
     {
         $oldCafUser->setFirstname($newCafUser->getFirstname())
         ->setLastname($newCafUser->getLastname())
@@ -101,6 +101,9 @@ class MemberMerger
         ->setRadiationDate($newCafUser->getRadiationDate())
         ->setRadiationReason($newCafUser->getRadiationReason())
             ->setEmail($newCafUser->getEmail())
+            ->setValidityDuration($newCafUser->getValidityDuration())
+            ->setDiscoveryEndDatetime($newCafUser->getDiscoveryEndDatetime())
+            ->setNomade($newCafUser->getNomade())
         ;
 
         // Mettre à jour la date d'adhésion uniquement si elle est valide

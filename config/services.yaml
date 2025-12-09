@@ -248,6 +248,10 @@ services:
     arguments:
       $ffcamFilePath: "%env(FFCAM_FILE_PATH)%"
 
+  App\Command\FfcamDiscoveryFileSync:
+    arguments:
+      $ffcamFilePath: "%env(FFCAM_DISCOVERY_FILE_PATH)%"
+
   App\Service\FfcamSyncReportMailer:
     arguments:
       $adminEmails: "%env(SYNC_REPORT_RECIPIENTS)%"
