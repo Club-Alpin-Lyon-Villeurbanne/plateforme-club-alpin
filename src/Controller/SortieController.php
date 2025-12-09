@@ -19,6 +19,7 @@ use App\Repository\EventUnrecognizedPayerRepository;
 use App\Repository\UserAttrRepository;
 use App\Repository\UserRepository;
 use App\Service\HelloAssoService;
+use App\Service\UserLicenseHelper;
 use App\Twig\JavascriptGlobalsExtension;
 use App\UserRights;
 use App\Utils\ExcelExport;
@@ -304,6 +305,12 @@ class SortieController extends AbstractController
             $currentUserHasPaid = true;
         }
 
+        // Date cutoff: September 30 of current year if after Dec 1, otherwise September 30 of previous year
+        $currentMonth = date('m');
+        $currentYear = date('Y');
+        $cutoffYear = $currentMonth >= 12 ? $currentYear : $currentYear - 1;
+        $cutoffDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $cutoffYear . '-' . UserLicenseHelper::LICENSE_TOLERANCY_PERIOD_END);
+
         return [
             'event' => $event,
             'participations' => $participationRepository->getSortedParticipations($event, null, null),
@@ -316,6 +323,7 @@ class SortieController extends AbstractController
             'current_user_has_paid' => $currentUserHasPaid,
             'current_user_accepted' => $currentUserAccepted,
             'accepted_participations' => $participationRepository->getSortedParticipations($event),
+            'is_event_after_cutoff' => $event->getEndDate() >= $cutoffDate,
         ];
     }
 
