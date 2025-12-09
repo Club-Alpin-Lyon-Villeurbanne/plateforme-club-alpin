@@ -8,7 +8,7 @@
 <div style="padding:20px">
     {% if app.user %}
         <!-- AVATAR-->
-        <img src="{{ media_thumbnail(user.profilePicture, 'pic_profile_thumbnail') }}" alt="" title="" style="float:left; width:35%; box-shadow: 0 0 12px -5px gray; border: 1px solid white;" />
+        <img src="{{ media_thumbnail(user.profilePicture, 'pic_profile_thumbnail') }}" alt="Photo de profil" title="{{ user.nickname }}" style="float:left; width:35%; box-shadow: 0 0 12px -5px gray; border: 1px solid white;" />
         <div style="float:right; width:62%">
 
             <!-- contacter -->
