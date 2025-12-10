@@ -1,4 +1,5 @@
 [
+  "35 6 * * * $ROOT/clevercloud/crons/sync-nomads.sh",
   "3 7 * * * $ROOT/clevercloud/crons/sync-members.sh",
   "57 * * * * $ROOT/clevercloud/crons/save-images.sh",
   "54 5 * * * $ROOT/clevercloud/crons/send-reminders.sh",
