@@ -20,7 +20,7 @@
                         </td>
                     {% endif %}
                     <td>
-                        {% if commission.hasBrevets or commission.hasFormations or commission.hasNiveaux %}
+                        {% if commission.code in skilled_commissions %}
                             <a href="{{ path('commission_brevet', {'id': commission.id}) }}" title="Voir les brevets & formations du staff de {{ commission.title }}">
                                 🎓 Brevets
                             </a>
