@@ -117,56 +117,50 @@
         <div class="wide-table-container integrated-table-container profile-block">
             <table class="wide-table table-striped">
                 <thead>
-                <tr>
-                    <th>Commission</th>
-                    {% for groupe in groupes_competences %}
-                        <th class="groupe-comp">
-                            {{ groupe.intitule }}
-                        </th>
-                    {% endfor %}
-                    {% for niveau in niveaux %}
-                        <th class="niveau-pratique">
-                            {{ niveau.libelle }}
-                        </th>
-                    {% endfor %}
-                    <th class="formation-generale">UFCA</th>
-                    <th class="formation-generale">PSC1</th>
-                </tr>
-                <tr class="subhead">
-                    <td>Code niveau / formation</td>
-                    {% for groupe in groupes_competences %}
-                        <td>
-                        </td>
-                    {% endfor %}
-                    {% for niveau in niveaux %}
-                        <td>
-                        </td>
-                    {% endfor %}
-                    <td>STG-UFFG10</td>
-                    <td>STG-PSC1</td>
-                </tr>
+                    <tr>
+                        <th>Commission</th>
+                        {% for commission in commissions %}
+                            <th>{{ commission.title }}</th>
+                        {% endfor %}
+                    </tr>
                 </thead>
                 <tbody>
-                {% for commission in commissions %}
+                    {% for groupe in groupes_competences %}
+                        <tr>
+                            <td class="groupe-comp">
+                                {{ groupe.intitule }}
+                            </td>
+                            {% for commission in commissions %}
+                                <td>{{ date_competence_user(user, groupe, commission) }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    {% for niveau in niveaux %}
+                        <tr>
+                            <td class="niveau-pratique">
+                                {{ niveau.libelle }}
+                            </td>
+                            {% for commission in commissions %}
+                                <td>{{ date_niveau_user(user, niveau, commission) }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
                     <tr>
-                        <td>{{ commission.title }}</td>
-                        {% for groupe in groupes_competences %}
-                            <td>
-                                {{ date_competence_user(user, groupe, commission) }}
-                            </td>
+                        <td class="formation-generale">UFCA (STG-UFFG10)</td>
+                        {% for commission in commissions %}
+                            <td>{{ date_formation_user(user, 'STG-UFFG10') }}</td>
                         {% endfor %}
-                        {% for niveau in niveaux %}
-                            <td>
-                                {{ date_niveau_user(user, niveau, commission) }}
-                            </td>
-                        {% endfor %}
-                        <td>{{ date_formation_user(user, 'STG-UFFG10') }}</td>
-                        <td>{{ date_formation_user(user, 'STG-PSC1') }}</td>
                     </tr>
-                {% endfor %}
+                    <tr>
+                        <td class="formation-generale">PSC1 (STG-PSC1)</td>
+                        {% for commission in commissions %}
+                            <td>{{ date_formation_user(user, 'STG-PSC1') }}</td>
+                        {% endfor %}
+                    </tr>
                 </tbody>
             </table>
         </div>
+
         <br style="clear:both" />
         <hr  />
 

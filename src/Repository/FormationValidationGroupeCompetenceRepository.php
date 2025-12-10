@@ -23,7 +23,8 @@ class FormationValidationGroupeCompetenceRepository extends ServiceEntityReposit
             ->innerJoin('g.competence', 'r')
             ->where('g.user = :user')
             ->setParameter('user', $user)
-            ->orderBy('r.intitule', 'asc')
+            ->orderBy('r.codeActivite', 'asc')
+            ->addOrderBy('r.intitule', 'asc')
             ->getQuery()
             ->getResult()
         ;
