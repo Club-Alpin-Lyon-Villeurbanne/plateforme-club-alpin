@@ -232,6 +232,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[Groups('media:read')]
     private ?MediaUpload $profilePicture = null;
 
+    #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['comment' => 'Durée de validité (en h) de la licence découverte'])]
+    private ?int $validityDuration = null;
+
+    #[ORM\Column(name: 'discovery_end_datetime', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'Date de fin de validité licence découverte'])]
+    private ?\DateTimeInterface $discoveryEndDatetime = null;
+
     public function __construct(?int $id = null)
     {
         $this->attrs = new ArrayCollection();
@@ -847,5 +853,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         }
 
         return $address;
+    }
+
+    public function getValidityDuration(): ?int
+    {
+        return $this->validityDuration;
+    }
+
+    public function setValidityDuration(?int $validityDuration): self
+    {
+        $this->validityDuration = $validityDuration;
+
+        return $this;
+    }
+
+    public function getDiscoveryEndDatetime(): ?\DateTimeInterface
+    {
+        return $this->discoveryEndDatetime;
+    }
+
+    public function setDiscoveryEndDatetime(?\DateTimeInterface $discoveryEndDatetime): self
+    {
+        $this->discoveryEndDatetime = $discoveryEndDatetime;
+
+        return $this;
+    }
+
+    public function hasDiscoveryLicenseExpired(): bool
+    {
+        return null === $this->discoveryEndDatetime || $this->discoveryEndDatetime < new \DateTimeImmutable();
     }
 }

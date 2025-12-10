@@ -474,7 +474,15 @@
                                         {% if participation.user.doitRenouveler %}
                                             <p style="color:red">&#9888;&#65039; Licence expirée</p>
                                         {% elseif is_license_valid_for_event(participation.user, event) is same as (false) %}
-                                            <p style="color:orange" title="A la date de la sortie, la licence de cet adhérent sera expirée s'il ne renouvelle pas d'ici là">Licence à renouveler (exp. 30/09)</p>
+                                            <p style="color:orange"
+                                            {% if participation.user.nomade %}
+                                               title="A la date de la sortie, la licence découverte de ce non-adhérent sera expirée">🧐 Licence découverte expirée
+                                            {% else %}
+                                                title="A la date de la sortie, la licence de cet adhérent sera expirée s'il ne renouvelle pas d'ici là">Licence à renouveler (exp. 30/09)
+                                            {% endif %}
+                                            </p>
+                                        {% elseif participation.user.nomade %}
+                                            <p style="color:green" title="A la date de la sortie, la licence découverte de ce non-adhérent sera valide">🧐 Licence découverte valide</p>
                                         {% endif %}
                                     </td>
 

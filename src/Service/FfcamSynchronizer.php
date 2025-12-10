@@ -60,6 +60,30 @@ class FfcamSynchronizer
         }
     }
 
+    /**
+     * @throws \Exception
+     */
+    public function discoverySynchronize(?string $ffcamFilePath = null): void
+    {
+        $startTime = new \DateTime();
+
+        if (!$this->isFileValid($ffcamFilePath)) {
+            $this->logger->warning("File {$ffcamFilePath} not found. Can't import new discovery-type members");
+
+            return;
+        }
+
+        $stats = $this->processMembers($this->fileParser->parse($ffcamFilePath, 'discovery'));
+
+        $this->archiveFile($ffcamFilePath, $stats);
+        $this->logResults($ffcamFilePath, $stats);
+
+        $endTime = new \DateTime();
+
+        // Envoyer le mail de récapitulatif si le service est disponible
+        $this->syncReportMailer?->sendSyncReport($stats, $startTime, $endTime);
+    }
+
     private function isFileValid(string $filePath): bool
     {
         return file_exists($filePath) && is_file($filePath);
@@ -211,9 +235,11 @@ class FfcamSynchronizer
             ->setAlerteRenouveler($parsedUser->getAlerteRenouveler() && !$this->hasTolerancyPeriodPassed)
             ->setUpdatedAt(new \DateTime())
             ->setManuel(false)
-            ->setNomade(false)
+            ->setNomade($parsedUser->getNomade())
             ->setRadiationDate($parsedUser->getRadiationDate())
             ->setRadiationReason($parsedUser->getRadiationReason())
+            ->setValidityDuration($parsedUser->getValidityDuration())
+            ->setDiscoveryEndDatetime($parsedUser->getDiscoveryEndDatetime())
         ;
 
         // Si l'utilisateur est radié
