@@ -71,7 +71,7 @@ class FfcamSkillsService
             'ski-de-fond' => ['STG-FSF10'],
             'trail' => ['FOR-CITR10'],
             'via-ferrata' => ['STG-UFVF10', 'STG-UFVF60'],
-            'vtt' => ['STG-FVM10', 'STG-FVM20', 'FOR-CIVM10', 'FOR-CIVM10'],
+            'vtt' => ['STG-FVM10', 'STG-FVM20', 'FOR-CIVM10'],
             'environnement' => ['FOR-CIFC10', 'FOR-CIFC20', 'FOR-CIFC30', 'FOR-CIFC40'],
             default => [],
         };
