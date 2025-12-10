@@ -882,7 +882,7 @@
             <ul class="nice-list">
                 <li class="wide"><b>DESCRIPTION COMPLÈTE :</b></li>
             </ul>
-            <div class="description_evt">{{ event.description | raw }}</div>
+            <div class="description_evt">{{ event.description|sanitize_html('app.content_sanitizer') }}</div>
             <hr style="clear:both" />
 
             {% if (event.tarif > 0 or event.tarifDetail) %}
