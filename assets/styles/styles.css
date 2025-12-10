@@ -713,18 +713,24 @@ span.request {font-size: 1.1rem;}
     width:635px; max-height: 410px; overflow-y: auto;
 }
 
-th.brevet {
+.brevet {
     background-color: #35C1DF !important;
 }
-th.formation {
+.formation {
     background-color: #FAAF17 !important;
 }
-th.niveau {
+.niveau-pratique {
     background-color: #8CC53E !important;
 }
-th.formation-generale {
+.formation-generale {
     background-color: #BBBDBF !important;
 }
-th.groupe-comp {
+.groupe-comp {
     background-color: #EAC809 !important;
+}
+
+div.brevet, div.formation, div.niveau-pratique, div.formation-generale, div.groupe-comp {
+    max-width: 200px;
+    padding: 5px;
+    display: inline-block;
 }

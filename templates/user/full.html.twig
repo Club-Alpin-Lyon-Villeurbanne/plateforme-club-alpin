@@ -109,6 +109,11 @@
         <hr  />
 
         <h2 id="user-skills">Ses compétences :</h2>
+        <p class="bold underline">Légende :</p>
+        <div class="groupe-comp">Groupes de compétences</div>
+        <div class="niveau-pratique">Niveaux de pratique</div>
+        <div class="formation-generale">Formations générales</div>
+
         <div class="wide-table-container integrated-table-container profile-block">
             <table class="wide-table table-striped">
                 <thead>
@@ -120,7 +125,7 @@
                         </th>
                     {% endfor %}
                     {% for niveau in niveaux %}
-                        <th class="niveau">
+                        <th class="niveau-pratique">
                             {{ niveau.libelle }}
                         </th>
                     {% endfor %}
