@@ -56,7 +56,7 @@ class RssController extends AbstractController
                 $rssData['title'] = 'Articles du ' . $this->sitename;
             }
 
-            foreach ($articleRepository->getArticles($commission, ['limit' => $rssLimit]) as $article) {
+            foreach ($articleRepository->getArticles($commission, 0, $rssLimit) as $article) {
                 $entry['title'] = $article->getTitre();
                 $entry['link'] = $urlGenerator->generate('article_view', [
                     'code' => $article->getCode(),
