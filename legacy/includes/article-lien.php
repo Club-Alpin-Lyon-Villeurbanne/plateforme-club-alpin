@@ -2,8 +2,9 @@
 // URL
 
 use App\Legacy\LegacyContainer;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-$url = 'article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html';
+$url = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL);
 if ($article['code_commission'] ?? null) {
     $url .= '?commission=' . $article['code_commission'];
 } // commission de la sortie associée
@@ -59,7 +60,7 @@ elseif (0 == $article['commission_article']) {
 }
 // -1 = compte rendu de sortie (code_commission compris dans evt)
 elseif (-1 == $article['commission_article']) {
-    $urlEvt = 'sortie/' . $article['evt']['code_evt'] . '-' . $article['evt']['id_evt'] . '.html?commission=' . html_utf8($article['evt']['code_commission']); ?>
+    $urlEvt = LegacyContainer::get('legacy_router')->generate('sortie', ['code' => html_utf8($article['evt']['code_evt']), 'id' => (int) $article['evt']['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL) . '?commission=' . html_utf8($article['evt']['code_commission']); ?>
 			<a href="<?php echo $urlEvt; ?>" title="Voir la sortie liée à cet article : &laquo; <?php echo html_utf8($article['evt']['titre_evt']); ?> &raquo;">
 				compte rendu de sortie
 			</a>

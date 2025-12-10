@@ -218,7 +218,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
             }
             ++$rowValueHeader[$evt['role_evt_join']];
 
-            $row = '<a target="_blank" href="/sortie/' . html_utf8($evt['code_evt']);
+            $row = '<a target="_blank" href="' . LegacyContainer::get('legacy_router')->generate('sortie', ['code' => html_utf8($evt['code_evt']), 'id' => (int) $evt['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL);
             if (allowed('evt_validate') && 1 != $evt['status_evt']) {
                 $row .= '&forceshow=true';
             }

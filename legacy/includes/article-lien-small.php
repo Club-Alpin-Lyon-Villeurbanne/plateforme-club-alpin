@@ -2,8 +2,9 @@
 // URL
 
 use App\Legacy\LegacyContainer;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-$url = 'article/' . html_utf8($article['code_article']) . '-' . (int) $article['id_article'] . '.html';
+$url = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL);
 if (isset($current_commission) && $current_commission) {
     $url .= '?commission=' . $current_commission;
 }

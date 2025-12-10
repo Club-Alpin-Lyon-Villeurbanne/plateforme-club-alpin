@@ -150,10 +150,10 @@
                         <b style="margin-left: 20px">Attention au timing :</b>
                         {% for empietement in empietements %}
                             {% if empietement.status == constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME') %}
-                                <br />- Vous êtes aussi pré-inscrit sur la sortie <a href="/sortie/{{ empietement.event.code }}-{{ empietement.event.id }}.html" title="">{{ empietement.event.titre }}</a>
+                                <br />- Vous êtes aussi pré-inscrit sur la sortie <a href="{{ path('sortie', {'code': empietement.event.code, 'id': empietement.event.id}) }}" title="">{{ empietement.event.titre }}</a>
                             {% endif %}
                             {% if empietement.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') %}
-                                <br />- Vous êtes aussi <span style="color:red">confirmé</span> sur la sortie <a href="/sortie/{{ empietement.event.code }}-{{ empietement.event.id }}.html" title="">{{ empietement.event.titre }}</a>
+                                <br />- Vous êtes aussi <span style="color:red">confirmé</span> sur la sortie <a href="{{ path('sortie', {'code': empietement.event.code, 'id': empietement.event.id}) }}" title="">{{ empietement.event.titre }}</a>
                             {% endif %}
                         {% endfor %}
                     </div>

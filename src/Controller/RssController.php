@@ -29,7 +29,8 @@ class RssController extends AbstractController
         CommissionRepository $commissionRepository,
         ArticleRepository $articleRepository,
         EvtRepository $evtRepository,
-        CacheManager $cacheManager
+        CacheManager $cacheManager,
+        UrlGeneratorInterface $urlGenerator,
     ) {
         $comTab = [];
 
@@ -57,7 +58,10 @@ class RssController extends AbstractController
 
             foreach ($articleRepository->getArticles($commission, ['limit' => $rssLimit]) as $article) {
                 $entry['title'] = $article->getTitre();
-                $entry['link'] = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'article/' . $article->getCode() . '-' . $article->getId() . '.html';
+                $entry['link'] = $urlGenerator->generate('article_view', [
+                    'code' => $article->getCode(),
+                    'id' => $article->getId(),
+                ], UrlGeneratorInterface::ABSOLUTE_URL);
                 $entry['description'] = $article->getCont();
                 $entry['timestamp'] = $article->getCreatedAt()->getTimestamp();
 
@@ -85,7 +89,10 @@ class RssController extends AbstractController
 
             foreach ($evtRepository->getUpcomingEvents($commission, ['limit' => $rssLimit]) as $event) {
                 $entry['title'] = $event->getTitre();
-                $entry['link'] = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $event->getCode() . '-' . $event->getId() . '.html';
+                $entry['link'] = $urlGenerator->generate('sortie', [
+                    'code' => $event->getCode(),
+                    'id' => $event->getId(),
+                ], UrlGeneratorInterface::ABSOLUTE_URL);
                 $entry['description'] = '';
                 if ($event->getCommission()) {
                     $entry['description'] .= 'Commission ' . $event->getCommission()->getTitle();
