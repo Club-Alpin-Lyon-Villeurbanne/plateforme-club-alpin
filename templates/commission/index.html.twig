@@ -21,8 +21,8 @@
                     {% endif %}
                     <td>
                         {% if commission.code in skilled_commissions %}
-                            <a href="{{ path('commission_brevet', {'id': commission.id}) }}" title="Voir les brevets & formations du staff de {{ commission.title }}">
-                                🎓 Brevets
+                            <a href="{{ path('commission_brevet', {'id': commission.id}) }}" title="Voir les brevets, niveaux de pratique & formations du staff de {{ commission.title }}">
+                                🎓 Brevets & co
                             </a>
                         {% endif %}
                     </td>
