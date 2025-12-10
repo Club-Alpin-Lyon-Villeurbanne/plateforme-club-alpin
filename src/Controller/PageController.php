@@ -62,7 +62,10 @@ class PageController extends AbstractController
             'per_page' => $limit,
             'pages' => $pages,
             'page' => $page,
-            'current_url' => $this->generateUrl($request->attributes->get('_route'), ['code' => $commission?->getCode()]),
+            'current_url' => $this->generateUrl(
+                $request->attributes->get('_route'),
+                $commission ? ['code' => $commission->getCode()] : [],
+            ),
         ];
     }
 }
