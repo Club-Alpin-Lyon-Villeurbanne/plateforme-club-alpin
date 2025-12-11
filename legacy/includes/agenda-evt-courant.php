@@ -1,9 +1,11 @@
 <?php
 
 use App\Entity\EventParticipation;
+use App\Legacy\LegacyContainer;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 ?>
-<a class="agenda-evt-courant" href="/sortie/<?php echo html_utf8($evt['code_evt']) . '-' . (int) $evt['id_evt']; ?>.html?commission=<?php echo $evt['code_commission']; ?>" title="">
+<a class="agenda-evt-courant" href="<?php echo LegacyContainer::get('legacy_router')->generate('sortie', ['code' => html_utf8($evt['code_evt']), 'id' => (int) $evt['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL); ?>?commission=<?php echo $evt['code_commission']; ?>" title="">
 
 	<!-- picto (retiré) -->
 	<div class="picto">
