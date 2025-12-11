@@ -48,6 +48,9 @@ class BrevetExtension extends AbstractExtension
         if (!empty($userBrevet->getDateRecyclage())) {
             $date = $userBrevet->getDateRecyclage();
         }
+        if (!empty($userBrevet->getDateFormationContinue())) {
+            $date = $userBrevet->getDateFormationContinue();
+        }
 
         return $date->format('d/m/Y');
     }
