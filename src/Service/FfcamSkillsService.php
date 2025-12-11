@@ -24,6 +24,7 @@ class FfcamSkillsService
             'via-ferrata',
             'vtt',
             'environnement',
+            'ski-randonnee-nordique',
         ];
     }
 
@@ -48,6 +49,7 @@ class FfcamSkillsService
             'trail' => ['BF3-RA-TR', 'BF1-RA-TR'],
             'via-ferrata' => ['BF2-ES-VF'],
             'vtt' => ['BF3-VM-VM', 'BF1-VM-VM'],
+            'ski-randonnee-nordique' => ['BF3-SN-NA', 'BRV-BFRN10'],
             default => [],
         };
     }
@@ -73,17 +75,6 @@ class FfcamSkillsService
             'via-ferrata' => ['STG-UFVF10', 'STG-UFVF60'],
             'vtt' => ['STG-FVM10', 'STG-FVM20', 'FOR-CIVM10'],
             'environnement' => ['FOR-CIFC10', 'FOR-CIFC20', 'FOR-CIFC30', 'FOR-CIFC40'],
-            default => [],
-        };
-    }
-
-    public function getNiveaux(?Commission $commission): array
-    {
-        if (!$commission instanceof Commission) {
-            return [];
-        }
-
-        return match ($commission->getCode()) {
             default => [],
         };
     }
