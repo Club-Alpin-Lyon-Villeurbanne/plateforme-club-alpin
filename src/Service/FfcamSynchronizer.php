@@ -81,7 +81,7 @@ class FfcamSynchronizer
         $endTime = new \DateTime();
 
         // Envoyer le mail de récapitulatif si le service est disponible
-        $this->syncReportMailer?->sendSyncReport($stats, $startTime, $endTime);
+        $this->syncReportMailer?->sendSyncReport($stats, $startTime, $endTime, 'discovery');
     }
 
     private function isFileValid(string $filePath): bool
@@ -136,7 +136,7 @@ class FfcamSynchronizer
                             $parsedUser->getCafnum()
                         );
                         if ($duplicateEmailUser instanceof User) {
-                            $errorMessage = sprintf('Email %s is already used by another member (Cafnum: %s)', $parsedUser->getEmail(), $duplicateEmailUser->getCafnum());
+                            $errorMessage = sprintf('Email %s is already used by Cafnum %s (so it has been deduplicated)', $parsedUser->getEmail(), $duplicateEmailUser->getCafnum());
                             $this->logger->warning($errorMessage);
                             ++$stats['errors'];
                             $stats['error_details'][] = [
@@ -148,7 +148,7 @@ class FfcamSynchronizer
                             $parsedUser->setEmail('doublon.' . $parsedUser->getCafnum() . '-' . $parsedUser->getEmail());
                         }
                     } else {
-                        $warningMessage = sprintf('FFCAM email is empty for member Cafnum %s', $parsedUser->getCafnum());
+                        $warningMessage = sprintf('%s: FFCAM email is empty (so it does not replace database email)', $parsedUser->getCafnum());
                         $this->logger->warning($warningMessage);
                         ++$stats['warnings'];
                         $stats['warning_details'][] = $warningMessage;
@@ -160,7 +160,7 @@ class FfcamSynchronizer
                             $parsedUser->getEmail() !== $existingUser->getEmail()
                             && empty($existingUser->getRadiationDate())
                         ) {
-                            $warningMessage = sprintf('FFCAM email (%s) is different from database (%s) for member Cafnum %s', $parsedUser->getEmail(), $existingUser->getEmail(), $existingUser->getCafnum());
+                            $warningMessage = sprintf('%s: FFCAM email (%s) replaces database email (%s) (which was different)', $existingUser->getCafnum(), $parsedUser->getEmail(), $existingUser->getEmail());
                             $this->logger->warning($warningMessage);
                             ++$stats['warnings'];
                             $stats['warning_details'][] = $warningMessage;
