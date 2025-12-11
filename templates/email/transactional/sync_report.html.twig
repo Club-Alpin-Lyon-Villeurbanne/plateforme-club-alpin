@@ -1,9 +1,9 @@
 {% extends 'email/transactional/layout.html.twig' %}
 
-{% block subject %}Rapport de synchronisation FFCAM du {{ date }}{% endblock %}
+{% block subject %}Rapport synchro (licences {% if type is same as ('annual') %}annuelles{% elseif type is same as('discovery') %}découvertes{% endif %}) FFCAM du {{ date }}{% endblock %}
 
 {% block inner_html %}
-    <h2>Synchronisation des adhérents terminée</h2>
+    <h2>Synchronisation des adhérents {% if type is same as ('annual') %}annuels{% elseif type is same as('discovery') %}découvertes{% endif %} terminée</h2>
 
     <p>La synchronisation automatique des adhérents FFCAM s'est exécutée avec succès.</p>
 

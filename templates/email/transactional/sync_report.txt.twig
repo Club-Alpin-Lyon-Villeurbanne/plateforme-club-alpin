@@ -1,6 +1,6 @@
-Rapport de synchronisation FFCAM du {{ date }}
+Rapport synchro (licences {% if type is same as ('annual') %}annuelles{% elseif type is same as('discovery') %}découvertes{% endif %}) FFCAM du {{ date }}
 
-La synchronisation automatique des adhérents FFCAM s'est exécutée avec succès.
+La synchronisation automatique des adhérents {% if type is same as ('annual') %}annuels{% elseif type is same as('discovery') %}découvertes{% endif %} FFCAM s'est exécutée avec succès.
 
 RÉSUMÉ DE LA SYNCHRONISATION
 =============================

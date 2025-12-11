@@ -81,7 +81,7 @@ class FfcamSynchronizer
         $endTime = new \DateTime();
 
         // Envoyer le mail de récapitulatif si le service est disponible
-        $this->syncReportMailer?->sendSyncReport($stats, $startTime, $endTime);
+        $this->syncReportMailer?->sendSyncReport($stats, $startTime, $endTime, 'discovery');
     }
 
     private function isFileValid(string $filePath): bool
