@@ -1,12 +1,12 @@
-Rapport synchro (licences {% if type is same as ('annual') %}annuelles{% elseif type is same as('discovery') %}découvertes{% endif %}) FFCAM du {{ date }}
+Rapport synchro (licences {% if type is same as ('discovery') %}découvertes{% else %}annuelles{% endif %}) FFCAM du {{ date }}
 
-La synchronisation automatique des adhérents {% if type is same as ('annual') %}annuels{% elseif type is same as('discovery') %}découvertes{% endif %} FFCAM s'est exécutée avec succès.
+La synchronisation automatique des adhérents {% if type is same as ('discovery') %}découvertes{% else %}annuels{% endif %} FFCAM s'est exécutée avec succès.
 
 RÉSUMÉ DE LA SYNCHRONISATION
 =============================
 Date d'exécution : {{ startTime|date('d/m/Y à H:i:s') }}
 Durée totale : {{ duration }}
-Total traité : {{ total }} adhérents {% if type is same as ('annual') %}annuels{% elseif type is same as('discovery') %}découvertes{% endif %}
+Total traité : {{ total }} adhérents {% if type is same as ('discovery') %}découvertes{% else %}annuels{% endif %}
 
 DÉTAIL DES OPÉRATIONS
 ======================
