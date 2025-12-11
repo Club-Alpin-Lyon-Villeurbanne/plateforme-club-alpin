@@ -541,6 +541,8 @@ table.table-striped tr:hover, table.table-striped tbody tr:hover {
 .wide-table-container {
     overflow: auto;
     width: 100%;
+}
+.high-table-container {
     height: 90vh;
 }
 .integrated-table-container {
