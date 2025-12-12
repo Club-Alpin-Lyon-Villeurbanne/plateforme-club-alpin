@@ -5,4 +5,6 @@
 # https://developers.clever-cloud.com/doc/administrate/cron/#access-environment-variables
 
 cd ${APP_HOME}
-bin/console google-groups-sync --execute
+if [ "$DEPLOY_ENV" = "production" ]; then
+    bin/console google-groups-sync --execute
+fi
