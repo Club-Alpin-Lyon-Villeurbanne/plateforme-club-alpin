@@ -40,6 +40,51 @@
             margin: 0;
             z-index: 30;
         }
+        .toggle-round {
+            position: relative;
+            display: inline-block;
+            vertical-align: middle;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-round input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider-round {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 30px;
+        }
+
+        .slider-round:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider-round {
+            background-color: #35C1DF;
+        }
+
+        input:checked + .slider-round:before {
+            transform: translateX(30px);
+        }
     </style>
 {% endblock %}
 
@@ -441,8 +486,14 @@
                     </select>
 
                     <p>
-                        <a href="#" class="event-manage-user" id="skill-view">Vue compétences</a>
-                        <a href="#" class="event-user-skill" id="manage-view">Vue gestion</a>
+                        <label>
+                            <span class="bold">Vue gestion</span>
+                            <label class="toggle-round">
+                                <input type="checkbox" name="skill_view" id="skill_view_toggle" role="switch" aria-label="Basculer entre vue gestion et vue compétences" />
+                                <span class="slider-round"></span>
+                            </label>
+                            <span class="bold">Vue compétences</span>
+                        </label>
                     </p>
 
                     <div class="event-user-skill">
@@ -1299,34 +1350,25 @@
                 }
             });
 
-            // vue compétences & brevets
-            document.getElementById('skill-view').addEventListener('click', (event) => {
-                const elementsToHide = document.querySelectorAll('.event-manage-user');
+            // vue compétences & brevets OU gestion
+            const toggle = document.getElementById('skill_view_toggle');
+            toggle.addEventListener('change', (event) => {
+                let elementsToHide = document.querySelectorAll('.event-user-skill');
+                let elementsToShow = document.querySelectorAll('.event-manage-user');
+                if (toggle.checked) {
+                    elementsToHide = document.querySelectorAll('.event-manage-user');
+                    elementsToShow = document.querySelectorAll('.event-user-skill');
+                }
+
                 elementsToHide.forEach(el => {
                     el.style.display = 'none';
                 });
-                const elementsToShow = document.querySelectorAll('.event-user-skill');
                 elementsToShow.forEach(el => {
-                    el.style.display = 'table-cell';
-                });
-
-                event.preventDefault();
-
-                return false;
-            });
-            // vue gestion
-            document.getElementById('manage-view').addEventListener('click', (event) => {
-                const elementsToHide = document.querySelectorAll('.event-manage-user');
-                elementsToHide.forEach(el => {
                     if (el.tagName === 'TD' || el.tagName === 'TH') {
                         el.style.display = 'table-cell';
                     } else {
                         el.style.display = '';
                     }
-                });
-                const elementsToShow = document.querySelectorAll('.event-user-skill');
-                elementsToShow.forEach(el => {
-                    el.style.display = 'none';
                 });
 
                 event.preventDefault();
