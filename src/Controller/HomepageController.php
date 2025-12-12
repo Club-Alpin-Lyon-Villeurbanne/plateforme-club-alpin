@@ -36,7 +36,7 @@ class HomepageController extends AbstractController
         $total = $articleRepository->getArticlesByCommissionCount($commission);
         $paginationParams = $this->getPaginationParams($request, $total, $limit);
 
-        $articles = $articleRepository->getArticles($commission, $paginationParams['first'], $limit);
+        $articles = $articleRepository->getArticles($commission, $paginationParams['first'], $paginationParams['per_page']);
         $sliderArticles = $articleRepository->findBy(['une' => true, 'status' => Article::STATUS_PUBLISHED], ['updatedAt' => 'DESC'], 5);
 
         return array_merge([

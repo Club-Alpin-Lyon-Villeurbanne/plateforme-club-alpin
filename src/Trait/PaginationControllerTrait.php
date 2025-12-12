@@ -10,8 +10,8 @@ trait PaginationControllerTrait
     {
         $page = max(1, $request->query->getInt('page', 1));
         $pages = (int) ceil($total / $perPage);
-        $first = $perPage * ($page - 1);
         $page = min($page, max(1, $pages));
+        $first = $perPage * ($page - 1);
 
         return [
             'total' => $total,
