@@ -440,8 +440,14 @@
                         {% endif %}
                     </select>
 
-                    <a href="#" class="event-manage-user" id="skill-view">Vue compétences</a>
-                    <a href="#" class="event-user-skill" id="manage-view">Vue gestion</a>
+                    <p>
+                        <a href="#" class="event-manage-user" id="skill-view">Vue compétences</a>
+                        <a href="#" class="event-user-skill" id="manage-view">Vue gestion</a>
+                    </p>
+
+                    <div class="event-user-skill">
+                        {{ easy_include('event-skills', '') }}
+                    </div>
                 </div>
 
                 <form id="contact_update_participants" method="post" class="loading">
@@ -468,7 +474,7 @@
                                     </th>
                                 {% endfor %}
                                 {% for niveau in niveaux %}
-                                    <th class="event-user-skill niveau">
+                                    <th class="event-user-skill niveau-pratique">
                                         {{ niveau.libelle }}
                                     </th>
                                 {% endfor %}
@@ -1312,7 +1318,11 @@
             document.getElementById('manage-view').addEventListener('click', (event) => {
                 const elementsToHide = document.querySelectorAll('.event-manage-user');
                 elementsToHide.forEach(el => {
-                    el.style.display = 'table-cell';
+                    if (el.tagName === 'TD' || el.tagName === 'TH') {
+                        el.style.display = 'table-cell';
+                    } else {
+                        el.style.display = '';
+                    }
                 });
                 const elementsToShow = document.querySelectorAll('.event-user-skill');
                 elementsToShow.forEach(el => {
