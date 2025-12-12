@@ -1318,7 +1318,11 @@
             document.getElementById('manage-view').addEventListener('click', (event) => {
                 const elementsToHide = document.querySelectorAll('.event-manage-user');
                 elementsToHide.forEach(el => {
-                    el.style.display = 'table-cell';
+                    if (el.tagName === 'TD' || el.tagName === 'TH') {
+                        el.style.display = 'table-cell';
+                    } else {
+                        el.style.display = '';
+                    }
                 });
                 const elementsToShow = document.querySelectorAll('.event-user-skill');
                 elementsToShow.forEach(el => {
