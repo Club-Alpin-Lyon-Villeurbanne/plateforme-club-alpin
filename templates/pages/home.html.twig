@@ -53,7 +53,13 @@
         {% endif %}
 
         {% if articles|length <= 0 %}
-            <p><br />Aucune actualité pour cette commission...</p>
+            <p><br />
+                {% if current_commission %}
+                    Aucune actualité pour cette commission...
+                {% else %}
+                    Aucune actualité...
+                {% endif %}
+            </p>
         {% else %}
             {% for article in articles %}
                 {{ article_macro.article_link(article, 'home', 'encart_article') }}
