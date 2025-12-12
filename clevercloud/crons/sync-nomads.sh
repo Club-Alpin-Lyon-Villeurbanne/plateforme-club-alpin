@@ -5,4 +5,6 @@
 # https://developers.clever-cloud.com/doc/administrate/cron/#access-environment-variables
 
 cd ${APP_HOME}
-bin/console ffcam-discovery-file-sync
+if [ "$DEPLOY_ENV" = "production" ]; then
+    bin/console ffcam-discovery-file-sync
+fi
