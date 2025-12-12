@@ -5,4 +5,6 @@
 # https://developers.clever-cloud.com/doc/administrate/cron/#access-environment-variables
 
 cd ${APP_HOME}
-bin/console save-images
+if [ "$DEPLOY_ENV" = "production" ]; then
+    bin/console save-images
+fi
