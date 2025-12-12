@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Accueil{% endblock %}
+
+{% block body %}
+    {% import 'macros/article-link.html.twig' as article_macro %}
+    <!-- Slider -->
+    <div id="home-slider">
+        <!-- nav-spots -->
+        <div id="home-slider-nav">
+            <div id="home-slider-nav-wrapper">
+                <div style="width:0px">
+                    <img src="/img/home-slider-nav-1.png" alt="" title="" />
+                    {% for i in 0..(slider_articles|length - 1) %}
+                        <a href="javascript:void(0)" title="" class="{% if i is same as(0) %}up{% endif %}"><span>{{ i + 1 }}</span></a>
+                    {% endfor %}
+                    <img src="/img/home-slider-nav-2.png" alt="" title="" />
+                </div>
+            </div>
+        </div>
+        <!-- nav-fleches -->
+        <div id="home-slider-nav2">
+            <a href="javascript:void(0)" title="" class="arrow-left"><img src="/img/arrow-left.png" alt="&lt;" title="" /></a>
+            <a href="javascript:void(0)" title="" class="arrow-right"><img src="/img/arrow-right.png" alt="&gt;" title="" /></a>
+        </div>
+        <!-- slides -->
+        <div id="home-slider-wrapper">
+
+            {% for article in slider_articles %}
+                {% set img = '' %}
+                {% if article.mediaUpload is defined %}
+                    {% set img = media_thumbnail(article.mediaUpload, 'wide_thumbnail') %}
+                {% endif %}
+
+                <a href="{{ path('article_view', {'code': article.code, 'id': article.id}) }}" class="slide" style="background-image:url({{ img }})" title="CLIQUEZ POUR VOIR L'ARTICLE">
+                    <div class="bandeau-slider">
+                        <p class="alaune">ARTICLE A LA UNE</p>
+                        <h2>{{ article.titre }}</h2>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div style="padding:10px 0 20px 30px" id="home-actus">
+        {% if current_commission %}
+            <h1 class="actus-h1 shortened" id="home-articles">Les actus <b>{{ current_commission.title }}</b></h1>
+            {% if articles|length > 0 %}
+                <a href="{{ path('homepage') }}" title="Afficher tous les articles sans distinction" class="lien-big" style="float:right; margin:6px 20px 0 0"><span style="color:#3C91BF">&gt;</span> Voir toutes les actus</a>
+            {% endif %}
+        {% else %}
+            <h1 class="actus-h1" id="home-articles">Les actus du <b>{{ sitename }}</b></h1>
+        {% endif %}
+
+        {% if articles|length <= 0 %}
+            <p><br />
+                {% if current_commission %}
+                    Aucune actualité pour cette commission...
+                {% else %}
+                    Aucune actualité...
+                {% endif %}
+            </p>
+        {% else %}
+            {% for article in articles %}
+                {{ article_macro.article_link(article, 'home', 'encart_article') }}
+            {% endfor %}
+        {% endif %}
+
+        <!-- pagination -->
+        {% if pages > 1 %}
+            <nav class="pageSelect"><br />
+            <div class="navleftright"><a href="javascript:void(0)" title="" class="arrow left">&lt;&lt;</a><a href="javascript:void(0)" title="" class="arrow right">&gt;&gt;</a></div>
+
+                <div class="pageSelectIn">
+                    <div class="pageSelectInWrapper">
+                        {% for i in 1..pages %}
+                            <a href="{{ current_url }}?page={{ i }}" title="" class="{% if i is same as (page) %}up{% endif %}">P{{ i }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </nav>
+        {% endif %}
+        <br style="clear:both" />
+
+        {% if current_commission %}
+            <a href="{{ path('homepage') }}" title="Afficher tous les articles sans distinction" class="lien-big" style="float:right; margin:6px 20px 0 0"><span style="color:#3C91BF">&gt;</span> Voir toutes les actus</a>
+        {% endif %}
+
+        <!-- liens vers les flux RSS -->
+        <a href="/rss.xml?mode=articles" title="Flux RSS de toutes les actualités du club" class="nice2">
+            <img src="/img/base/rss.png" alt="RSS" title="" /> &nbsp;
+            actualités du club
+        </a>
+        {% if current_commission %}
+        <a href="/rss.xml?mode=articles-{{ current_commission.code }}" title="Flux RSS des actualités «{{ current_commission.title }}» uniquement" class="nice2">
+            <img src="/img/base/rss.png" alt="RSS" title="" /> &nbsp;
+            actualités «{{ current_commission.title }}»
+        </a>
+        {% endif %}
+        <br style="clear:both" />
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="/js/accueil.js"></script>
+{% endblock %}
