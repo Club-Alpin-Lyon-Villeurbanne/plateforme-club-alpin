@@ -440,8 +440,14 @@
                         {% endif %}
                     </select>
 
-                    <a href="#" class="event-manage-user" id="skill-view">Vue compétences</a>
-                    <a href="#" class="event-user-skill" id="manage-view">Vue gestion</a>
+                    <p>
+                        <a href="#" class="event-manage-user" id="skill-view">Vue compétences</a>
+                        <a href="#" class="event-user-skill" id="manage-view">Vue gestion</a>
+                    </p>
+
+                    <div class="event-user-skill">
+                        {{ easy_include('event-skills', '') }}
+                    </div>
                 </div>
 
                 <form id="contact_update_participants" method="post" class="loading">
@@ -468,7 +474,7 @@
                                     </th>
                                 {% endfor %}
                                 {% for niveau in niveaux %}
-                                    <th class="event-user-skill niveau">
+                                    <th class="event-user-skill niveau-pratique">
                                         {{ niveau.libelle }}
                                     </th>
                                 {% endfor %}
