@@ -110,6 +110,8 @@ SQL;
         $qb = $this->createQueryBuilder('u')
             ->where('u.nomade = true')
             ->andWhere('u.isDeleted = false')
+            ->andWhere('u.discoveryEndDatetime >= :endDatetime')
+            ->setParameter('endDatetime', new \DateTimeImmutable())
         ;
         if ($user) {
             $qb
@@ -285,6 +287,7 @@ SQL;
             case 'all':
                 $qb
                     ->andWhere('u.isDeleted = false')
+                    ->andWhere('u.nomade = false')
                 ;
                 break;
             case 'deleted':
@@ -373,8 +376,7 @@ SQL;
             ->leftJoin(Comment::class, 'c', Join::WITH, 'u.id = c.user')
             ->leftJoin(Evt::class, 'e', Join::WITH, 'u.id = e.user')
             ->leftJoin(EventParticipation::class, 'p', Join::WITH, 'u.id = p.user')
-            ->where('u.isDeleted = false')
-            ->andWhere('u.id != 1')     // super admin
+            ->where('u.id != 1')     // super admin
             ->andWhere('a.id is null')
             ->andWhere('c.id is null')
             ->andWhere('e.id is null')
@@ -399,8 +401,7 @@ SQL;
             ->leftJoin(Comment::class, 'c', Join::WITH, 'u.id = c.user')
             ->leftJoin(Evt::class, 'e', Join::WITH, 'u.id = e.user')
             ->leftJoin(EventParticipation::class, 'p', Join::WITH, 'u.id = p.user')
-            ->where('u.isDeleted = false')
-            ->andWhere('u.id != 1')     // super admin
+            ->where('u.id != 1')     // super admin
             ->andWhere('(a.id is not null or c.id is not null or e.id is not null or p.id is not null)')
         ;
         if (null !== $end) {
@@ -421,6 +422,7 @@ SQL;
             ->set('u.isDeleted', true)
             ->set('u.email', ':nullValue')
             ->set('u.mdp', ':nullValue')
+            ->set('u.cafnumParent', ':nullValue')
             ->set('u.firstname', ':firstname')
             ->set('u.lastname', ':lastname')
             ->set('u.nickname', ':nickname')

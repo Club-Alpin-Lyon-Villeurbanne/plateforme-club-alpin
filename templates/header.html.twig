@@ -393,7 +393,7 @@
                             <p class="status">
                                 Vous êtes <span style="font-family:DINBold">{{ app.user.getAttributes()[0].getTitle() }}</span>
                                 {% if app.user.getAttributes() | length > 1 %}
-                                    <a href="/profil.html" title="Entre autres choses..." style="font-weight:100; font-family:Arial">[+]</a>
+                                    <a href="{{ path('my_profile') }}" title="Entre autres choses..." style="font-weight:100; font-family:Arial">[+]</a>
                                 {% endif %}
                             </p>
                         {% else %}

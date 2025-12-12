@@ -8,11 +8,11 @@ use App\Entity\UserAttr;
 use App\Entity\Usertype;
 use App\Helper\EventFormHelper;
 use App\Helper\MonthHelper;
-use App\Legacy\LegacyContainer;
 use App\Mailer\Mailer;
 use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
 use App\Repository\UserAttrRepository;
+use App\Service\FfcamSkillsService;
 use App\UserRights;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -114,8 +114,11 @@ class CommissionController extends AbstractController
 
     #[Route('/commissions', name: 'commission_index')]
     #[Template('commission/index.html.twig')]
-    public function index(UserRights $userRights, CommissionRepository $commissionRepository): array
-    {
+    public function index(
+        UserRights $userRights,
+        CommissionRepository $commissionRepository,
+        FfcamSkillsService $skillsService,
+    ): array {
         if (!$userRights->allowed('commission_list')) {
             throw new AccessDeniedHttpException('Not allowed');
         }
@@ -124,6 +127,7 @@ class CommissionController extends AbstractController
 
         return [
             'commissions' => $commissionRepository->findBy(['code' => $myCommissionsCodes, 'vis' => true], ['title' => 'ASC']),
+            'skilled_commissions' => $skillsService->getSkilledCommissions(),
         ];
     }
 
@@ -175,7 +179,7 @@ class CommissionController extends AbstractController
                         [
                             'commission' => $commission->getTitle(),
                             'user' => $this->getUser()->getFullName(),
-                            'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $this->getUser()->getId() . '.html',
+                            'profile_url' => $this->generateUrl('user_full', ['id' => $this->getUser()->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                         ]
                     );
                 }
@@ -191,33 +195,22 @@ class CommissionController extends AbstractController
         ];
     }
 
-    #[Route('/commissions/{id}/brevets', name: 'commission_brevet', requirements: ['id' => '\d+'], methods: ['GET', 'POST'])]
+    #[Route('/commissions/{id}/brevets', name: 'commission_brevet', requirements: ['id' => '\d+'])]
     #[Template('commission/brevets.html.twig')]
     public function brevets(
         Commission $commission,
         EntityManagerInterface $manager,
         UserAttrRepository $userAttrRepository,
+        UserRights $userRights,
+        FfcamSkillsService $skillsService,
     ): array {
+        if (!$userRights->allowed('commission_list')) {
+            throw new AccessDeniedHttpException('Not allowed');
+        }
         $users = [];
-        $brevets = [];
+        $brevets = $skillsService->getBrevets($commission);
         $niveaux = $commission->getNiveaux();
-        $formations = [];
-
-        $allBrevets = $commission->getBrevets();
-        $brevetCodePattern = '/^BF.*-.*$/';
-        foreach ($allBrevets as $brevet) {
-            if (1 === preg_match($brevetCodePattern, $brevet->getCodeBrevet())) {
-                $brevets[] = $brevet;
-            }
-        }
-
-        $allFormations = $commission->getFormations();
-        $formationCodePattern = '/^STG-F.*$/';
-        foreach ($allFormations as $formation) {
-            if (1 === preg_match($formationCodePattern, $formation->getCodeFormation())) {
-                $formations[] = $formation;
-            }
-        }
+        $formations = $skillsService->getFormations($commission);
 
         $roles = $manager->getRepository(Usertype::class)->findBy(['code' => UserAttr::SKILLS_LISTING], ['hierarchie' => 'DESC']);
         foreach ($roles as $role) {

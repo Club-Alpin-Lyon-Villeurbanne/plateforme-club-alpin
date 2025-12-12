@@ -8,6 +8,7 @@ use App\Entity\UserAttr;
 use App\Entity\Usertype;
 use App\Repository\UserAttrRepository;
 use App\Repository\UsertypeRepository;
+use App\Security\SecurityConstants;
 use App\Service\UserRightService;
 use App\UserRights;
 use Doctrine\ORM\EntityManagerInterface;
@@ -38,7 +39,7 @@ class UserRightController extends AbstractController
         UsertypeRepository $usertypeRepository,
     ): array {
         if (
-            !$this->isGranted('SecurityConstants::ROLE_ADMIN')
+            !$this->isGranted(SecurityConstants::ROLE_ADMIN)
             && !$this->userRights->allowed('user_giveright_1')
             && !$this->userRights->allowed('user_giveright_2')
             && !$this->userRights->allowed('user_giveright_3')
@@ -50,7 +51,7 @@ class UserRightController extends AbstractController
         }
 
         $commissions = $this->manager->getRepository(Commission::class)->findBy(['vis' => true], ['ordre' => 'asc']);
-        if ($this->isGranted('SecurityConstants::ROLE_ADMIN')) {
+        if ($this->isGranted(SecurityConstants::ROLE_ADMIN)) {
             $commissions = $this->manager->getRepository(Commission::class)->findAll();
         }
 
@@ -155,7 +156,7 @@ class UserRightController extends AbstractController
             $this->manager->remove($userRight);
             $this->manager->flush();
             try {
-                $this->userRightService->notify($userRight, 'suppression', $user);
+                $this->userRightService->notify($userRight, 'suppression', $this->getUser());
             } catch (\Exception $exception) {
                 $this->logger->error('Impossible de notifier le retrait d\'une responsabilité');
                 $this->logger->error($exception->getMessage());
@@ -171,7 +172,7 @@ class UserRightController extends AbstractController
     {
         $allowed = false;
 
-        if ($this->isGranted('SecurityConstants::ROLE_ADMIN')) {
+        if ($this->isGranted(SecurityConstants::ROLE_ADMIN)) {
             return true;
         }
 

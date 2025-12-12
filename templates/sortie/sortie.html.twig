@@ -30,6 +30,64 @@
     {% endif %}
 {% endmacro %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .event-user-skill {display: none;}
+        .inscription-gestion-content .datatable {
+            width: 595px;
+            overflow: auto;
+            margin: 0;
+            z-index: 30;
+        }
+        .toggle-round {
+            position: relative;
+            display: inline-block;
+            vertical-align: middle;
+            width: 60px;
+            height: 30px;
+        }
+
+        .toggle-round input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider-round {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .3s;
+            border-radius: 30px;
+        }
+
+        .slider-round:before {
+            position: absolute;
+            content: "";
+            height: 22px;
+            width: 22px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider-round {
+            background-color: #35C1DF;
+        }
+
+        input:checked + .slider-round:before {
+            transform: translateX(30px);
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
     {% import 'macros/cancel_block.html.twig' as block_macros %}
         <div id="fiche-sortie">
@@ -314,7 +372,16 @@
 
                 {% if display_notes_de_frais %}
                     {% if event.finished and not event.cancelled and (my_status.role == 'encadrant' or my_status.role == 'coencadrant' or my_status.role == 'stagiaire') %}
-                        {% if event.statusLegal %}
+                        {% if not is_event_after_cutoff %}
+                            <div class="alerte info-container" style="margin-bottom:2rem !important">
+                                <img src="/img/base/cross.png" alt="" title=""/>
+                                <div class="text-container">
+                                    <b>Note de frais non disponible :</b><br />
+                                    Il n'est plus possible de déposer une note de frais pour cette sortie car les comptes du Club pour l'année {{ cutoff_year }} ont été clôturés.<br />
+                                    En cas de question, contactez la comptabilité.<br />&nbsp;
+                                </div>
+                            </div>
+                        {% elseif event.statusLegal %}
                             {% include 'vuejs/expense-report-form.twig' %}
                         {% else %}
                             <div class="alerte info-container" style="margin-bottom:2rem !important">
@@ -395,45 +462,75 @@
             </script>
 
             <div id="inscription-gestion">
-                {% if not event.finished %}
-                    {{ easy_include('formalites-gestion-des-inscrits', 'vide') }}
-                {% else %}
-                    {{ easy_include('formalites-gestion-des-inscrits-evt-passe', 'vide') }}
-                {% endif %}
-
-                <br />
-                <select id="contact_participants_type" class="type1" style="display:none; min-width: 250px;">
-                    <option value="">Sélectionner des destinataires</option>
-                    <option value="all">Tout le monde</option>
-                    {% if event.finished %}
-                        <option value="accepted">Les présents</option>
+                <div class="inscription-gestion-content">
+                    {% if not event.finished %}
+                        {{ easy_include('formalites-gestion-des-inscrits', 'vide') }}
                     {% else %}
-                        <option value="accepted">Les participants acceptés</option>
+                        {{ easy_include('formalites-gestion-des-inscrits-evt-passe', 'vide') }}
                     {% endif %}
-                    <option value="refused">Les participants refusés</option>
-                    <option value="waiting">Les participants en attente</option>
-                    {% if event.finished %}
-                        <option value="absent">Les absents</option>
-                    {% endif %}
-                </select>
-                <br /><br />
+
+                    <br />
+                    <select id="contact_participants_type" class="type1" style="display:none; min-width: 250px;">
+                        <option value="">Sélectionner des destinataires</option>
+                        <option value="all">Tout le monde</option>
+                        {% if event.finished %}
+                            <option value="accepted">Les présents</option>
+                        {% else %}
+                            <option value="accepted">Les participants acceptés</option>
+                        {% endif %}
+                        <option value="refused">Les participants refusés</option>
+                        <option value="waiting">Les participants en attente</option>
+                        {% if event.finished %}
+                            <option value="absent">Les absents</option>
+                        {% endif %}
+                    </select>
+
+                    <p>
+                        <label>
+                            <span class="bold">Vue gestion</span>
+                            <label class="toggle-round">
+                                <input type="checkbox" name="skill_view" id="skill_view_toggle" role="switch" aria-label="Basculer entre vue gestion et vue compétences" />
+                                <span class="slider-round"></span>
+                            </label>
+                            <span class="bold">Vue compétences</span>
+                        </label>
+                    </p>
+
+                    <div class="event-user-skill">
+                        {{ easy_include('event-skills', '') }}
+                    </div>
+                </div>
 
                 <form id="contact_update_participants" method="post" class="loading">
                     <input type="hidden" name="csrf_token_inscriptions" value="{{ csrf_token('sortie_update_inscriptions') }}" />
                     <input type="hidden" name="csrf_token_contact" value="{{ csrf_token('contact_participants') }}" />
 
+                    <div class="wide-table-container">
                     <table class="datatable">
                         <thead>
                             <tr>
                                 <th class="select-contact"></th>
-                                <th width='30%'>Nom / Pseudo</th>
-                                <th width='15%'>Statut</th>
-                                <th width='15%'>Rôle</th>
-                                <th width='10%'>Date</th>
+                                <th>Nom / Pseudo</th>
+                                <th class="event-manage-user">Statut</th>
+                                <th class="event-manage-user">Rôle</th>
+                                <th class="event-manage-user">Date</th>
                                 {% if event.hasPaymentForm %}
-                                    <th>Paiement</th>
+                                    <th class="event-manage-user">Paiement</th>
                                 {% endif %}
-                                <th>Contact</th>
+                                <th class="event-manage-user">Contact</th>
+
+                                {% for groupe in groupes_competences %}
+                                    <th class="event-user-skill groupe-comp">
+                                        {{ groupe.intitule }}
+                                    </th>
+                                {% endfor %}
+                                {% for niveau in niveaux %}
+                                    <th class="event-user-skill niveau-pratique">
+                                        {{ niveau.libelle }}
+                                    </th>
+                                {% endfor %}
+                                <th class="event-user-skill formation-generale">STG-UFFG10</th>
+                                <th class="event-user-skill formation-generale">STG-PSC1</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -465,11 +562,19 @@
                                         {% if participation.user.doitRenouveler %}
                                             <p style="color:red">&#9888;&#65039; Licence expirée</p>
                                         {% elseif is_license_valid_for_event(participation.user, event) is same as (false) %}
-                                            <p style="color:orange" title="A la date de la sortie, la licence de cet adhérent sera expirée s'il ne renouvelle pas d'ici là">Licence à renouveler (exp. 30/09)</p>
+                                            <p style="color:orange"
+                                            {% if participation.user.nomade %}
+                                               title="A la date de la sortie, la licence découverte de ce non-adhérent sera expirée">🧐 Licence découverte expirée
+                                            {% else %}
+                                                title="A la date de la sortie, la licence de cet adhérent sera expirée s'il ne renouvelle pas d'ici là">Licence à renouveler (exp. 30/09)
+                                            {% endif %}
+                                            </p>
+                                        {% elseif participation.user.nomade %}
+                                            <p style="color:green" title="A la date de la sortie, la licence découverte de ce non-adhérent sera valide">🧐 Licence découverte valide</p>
                                         {% endif %}
                                     </td>
 
-                                    <td class="mini joinlabels status{{ participation.status }}">
+                                    <td class="mini joinlabels status{{ participation.status }} event-manage-user">
 
                                     {% set disable_waiting = true %}
                                     {% set disable_accepted = true %}
@@ -593,7 +698,8 @@
                                     {% endif %}
 
                                     </td>
-                                    <td class="mini" >
+
+                                    <td class="mini event-manage-user">
                                         {% if participation.user.nomade %}
                                             {{ participation | participation_role_name }}<br />
                                             {% if not participation.user.email %}
@@ -647,14 +753,15 @@
                                         {% endif %}
 
                                     </td>
-                                    <td style="white-space:nowrap">
+
+                                    <td class="event-manage-user" style="white-space:nowrap">
                                         <span style="display:none">{{ participation.createdAt.timestamp }}</span>
                                         {{ participation.createdAt | date('d/m') }}<br />
                                         {{ participation.createdAt | date('à H:i') }}
                                     </td>
 
                                     {% if event.hasPaymentForm %}
-                                        <td>
+                                        <td class="event-manage-user">
                                             {% if participation.hasPaid or participation.user.email in unrecognized_payers %}
                                                 <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
                                                     <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -675,7 +782,7 @@
                                         </td>
                                     {% endif %}
 
-                                    <td>
+                                    <td class="event-manage-user">
                                         {% if participation.user.isDeleted %}
                                             <span style="color: red; font-weight: bold">
                                                 <img
@@ -694,12 +801,27 @@
                                             {{ participation.user.tel }}
                                         {% endif %}
                                     </td>
+
+                                    {% for groupe in groupes_competences %}
+                                        <td class="event-user-skill">
+                                            {{ date_competence_user(participation.user, groupe, current_commission) }}
+                                        </td>
+                                    {% endfor %}
+                                    {% for niveau in niveaux %}
+                                        <td class="event-user-skill">
+                                            {{ date_niveau_user(participation.user, niveau, current_commission) }}
+                                        </td>
+                                    {% endfor %}
+                                    <td class="event-user-skill">{{ date_formation_user(participation.user, 'STG-UFFG10') }}</td>
+                                    <td class="event-user-skill">{{ date_formation_user(participation.user, 'STG-PSC1') }}</td>
                                 </tr>
                             {% endfor %}
                         </tbody>
                     </table>
+                    </div>
                     <br>
 
+                <div class="inscription-gestion-content">
                     <!-- stats affichées -->
                     <p>Stats :</p>
                     {% set nbDemandesAcceptees = (event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_VALIDE')) | length) + (event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_ABSENT')) | length) %}
@@ -804,9 +926,11 @@
                         {% endif %}
                     {% endif %}
                 {% endif %}
-            </form>
             <br style="clear:both"  />
         </div>
+            </form>
+        </div>
+
         <br />
         <hr />
         {% endif %}
@@ -865,7 +989,7 @@
             <ul class="nice-list">
                 <li class="wide"><b>DESCRIPTION COMPLÈTE :</b></li>
             </ul>
-            <div class="description_evt">{{ event.description | raw }}</div>
+            <div class="description_evt">{{ event.description|sanitize_html('app.content_sanitizer') }}</div>
             <hr style="clear:both" />
 
             {% if (event.tarif > 0 or event.tarifDetail) %}
@@ -1224,6 +1348,32 @@
 
                     return false;
                 }
+            });
+
+            // vue compétences & brevets OU gestion
+            const toggle = document.getElementById('skill_view_toggle');
+            toggle.addEventListener('change', (event) => {
+                let elementsToHide = document.querySelectorAll('.event-user-skill');
+                let elementsToShow = document.querySelectorAll('.event-manage-user');
+                if (toggle.checked) {
+                    elementsToHide = document.querySelectorAll('.event-manage-user');
+                    elementsToShow = document.querySelectorAll('.event-user-skill');
+                }
+
+                elementsToHide.forEach(el => {
+                    el.style.display = 'none';
+                });
+                elementsToShow.forEach(el => {
+                    if (el.tagName === 'TD' || el.tagName === 'TH') {
+                        el.style.display = 'table-cell';
+                    } else {
+                        el.style.display = '';
+                    }
+                });
+
+                event.preventDefault();
+
+                return false;
             });
 
             // sélection automatique de certains participants

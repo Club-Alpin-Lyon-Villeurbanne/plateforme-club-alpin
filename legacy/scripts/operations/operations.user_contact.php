@@ -18,7 +18,7 @@ if (strlen($objet) < 4) {
     $errTab[] = 'Veuillez entrer un objet de plus de 4 caractères';
 }
 if (strlen($message) < 10) {
-    $errTab[] = 'Veuillez entrer un message valide';
+    $errTab[] = 'Veuillez entrer un message plus long';
 }
 
 // vérifications si contact non-user
@@ -103,15 +103,15 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $eventLink = $articleLink = null;
 
     if ($event) {
-        $eventLink = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'sortie/' . $event['code_evt'] . '-' . $event['id_evt'] . '.html';
+        $eventLink = LegacyContainer::get('legacy_router')->generate('sortie', ['code' => html_utf8($event['code_evt']), 'id' => (int) $event['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL);
     } elseif ($article) {
-        $articleLink = LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'article/' . $article['code_article'] . '-' . $article['id_article'] . '.html';
+        $articleLink = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL);
     }
     LegacyContainer::get('legacy_mailer')->send($destinataire['email_user'], 'transactional/contact-form', [
         'contact_name' => $nom,
         'contact_shortname' => $shortName,
         'contact_email' => $email,
-        'contact_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $expediteur['id_user'] . '.html',
+        'contact_url' => LegacyContainer::get('legacy_router')->generate('user_full', ['id' => $expediteur['id_user']]),
         'contact_objet' => $objet,
         'message' => $message,
         'eventName' => $event ? $event['titre_evt'] : '',

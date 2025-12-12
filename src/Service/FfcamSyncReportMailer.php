@@ -14,7 +14,7 @@ class FfcamSyncReportMailer
     ) {
     }
 
-    public function sendSyncReport(array $stats, \DateTime $startTime, \DateTime $endTime): void
+    public function sendSyncReport(array $stats, \DateTime $startTime, \DateTime $endTime, string $type = 'annual'): void
     {
         try {
             $recipients = $this->getAdminRecipients();
@@ -45,6 +45,7 @@ class FfcamSyncReportMailer
                 'duration' => $duration->format('%H:%I:%S'),
                 'date' => $startTime->format('d/m/Y'),
                 'total' => $stats['inserted'] + $stats['updated'] + $stats['merged'],
+                'type' => $type,
             ];
 
             $this->mailer->send(

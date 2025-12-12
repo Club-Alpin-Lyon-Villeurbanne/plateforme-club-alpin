@@ -1,8 +1,10 @@
 <?php
 
 use App\Entity\EventParticipation;
+use App\Legacy\LegacyContainer;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-echo '<a class="agenda-evt-debut" target="_top" href="/sortie/' . html_utf8($evt['code_evt']) . '-' . (int) $evt['id_evt'] . '.html?commission=' . $evt['code_commission'];
+echo '<a class="agenda-evt-debut" target="_top" href="' . LegacyContainer::get('legacy_router')->generate('sortie', ['code' => html_utf8($evt['code_evt']), 'id' => (int) $evt['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL) . '?commission=' . $evt['code_commission'];
 if (allowed('evt_validate') && isset($evt['status_evt']) && 1 != $evt['status_evt']) {
     echo '&forceshow=true';
 }

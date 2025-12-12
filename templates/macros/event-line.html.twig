@@ -1,0 +1,165 @@
+{% macro event_line(event, user = null, include_name = '', display_additionnal = true) %}
+    {% if user is same as(null) %}
+        {% set user = app.user %}
+    {% endif %}
+    <tr>
+    <td class="agenda-gauche">
+        {% set start = event.startDate | date('d/m/Y') | capitalize %}
+        {% set end = event.endDate | date('d/m/Y') | capitalize %}
+
+        {% if start == end %}
+            Le {{ start }}<br />
+            à {{ event.startDate | intldate('HH:mm') }}
+        {% else %}
+            Du {{ start }}<br/>
+            au {{ end }}
+        {% endif %}
+
+        {% if app.user == event.user and display_additionnal %}
+            {% if event.isDraft %}
+                <p class="draft">Brouillon (non publiée)</p>
+            {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_UNSEEN') %}
+                <p class="alerte">En attente d'approbation</p>
+            {% elseif event.statusLegal == constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
+                <p class="info">Publiée et validée par le président</p>
+            {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE') %}
+                <p class="alerte">Publiée non validée par le président</p>
+            {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_REFUSE') %}
+                <p class="erreur">Sortie refusée (non publiée)</p>
+            {% endif %}
+        {% endif %}
+    </td>
+    <td>
+        <div>
+            <a class="agenda-evt-debut" target="_top" href="{{ path('sortie', { code: event.code, id: event.id }) }}?commission={{ event.commission.code }}" title="">
+
+                <!-- picto -->
+                <div class="picto">
+                    <img src="{{ commission_picto(event.commission.code) }}" alt="" title="" class="picto-light" />
+                    <img src="{{ commission_picto(event.commission.code, 'dark') }}" alt="" title="" class="picto-dark" />
+                </div>
+
+                <div class="droite">
+                                    <span title="{{ event | temoin_event_title }}" style="padding: 10px 10px 5px 5px;float:left;">
+                                        <span class="temoin-places-dispos"> {{ event | temoin_event_picto }}</span>
+                                    </span>
+
+                    <h2 class="tw-flex tw-items-center tw-gap-2">
+                        {% if event.cancelled %}<span style="padding:1px 3px; color:red; font-family:Arial">ANNULÉE - </span>{% endif %}
+                        {{ event.titre }}
+
+                        {% set participation = event.participation(user) %}
+                        <div class="tw-flex tw-flex-col tw-items-end tw-ml-auto">
+                            {% if participation %}
+                                {% set is_orga = false %}
+                                {% if app.user == event.user %}
+                                    {% set is_orga = true %}
+                                {% endif %}
+
+                                {% if participation.status == constant('App\\Entity\\EventParticipation::STATUS_REFUSE') %}
+                                    <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
+                                                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                                        </svg>
+                                                        Refusé
+                                                    </span>
+                                {% elseif participation.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') %}
+                                    {% if participation.role and participation.role in constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT') %}
+                                        <span class="tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
+                                                            {% if is_orga %}
+                                                                ✍️
+                                                            {% endif %}
+                                            {{ participation.role|trans }}
+                                                        </span>
+                                    {% else %}
+                                        <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
+                                                            <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                                            </svg>
+                                                            Accepté
+                                                        </span>
+                                    {% endif %}
+                                {% elseif participation.status == constant('App\\Entity\\EventParticipation::STATUS_ABSENT') %}
+                                    <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
+                                                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                        </svg>
+                                                        Absent
+                                                    </span>
+                                {% else %}
+                                    <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-orange-600 tw-whitespace-nowrap">
+                                                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                                        </svg>
+                                                        En attente
+                                                    </span>
+                                {% endif %}
+                            {% endif %}
+                        </div>
+                    </h2>
+
+                    <p class="tw-flex tw-justify-between tw-items-center">
+                                        <span>
+                                            <b>{{ event.commission.title }}</b>
+                                        </span>
+                        {% if participation and display_notes_de_frais and include_name is same as ('profil-sorties-prev')
+                            and event.finished and not event.cancelled and event.statusLegal
+                            and (participation.role in constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT')) %}
+                            {% if exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_DRAFT') %}
+                                <span class="text-din tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-text-xs tw-font-medium tw-text-orange-600 tw-whitespace-nowrap">
+                                                    🧾 ✍
+                                                    NdF brouillon
+                                                </span>
+                            {% elseif exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_SUBMITTED') %}
+                                <span class="text-din tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-text-xs tw-font-medium tw-text-orange-600 tw-whitespace-nowrap">
+                                                    🧾⏳
+                                                    NdF en vérif.
+                                                </span>
+                            {% elseif exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_APPROUVED') %}
+                                <span class="text-din tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
+                                                    🧾 🆗
+                                                    NdF acceptée
+                                                </span>
+                            {% elseif exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_ACCOUNTED') %}
+                                <span class="text-din tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
+                                                    🧾 ✅
+                                                    NdF comptabilisée
+                                                </span>
+                            {% elseif exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_REJECTED') %}
+                                <span class="text-din tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
+                                                    🧾 ❌
+                                                    NdF refusée
+                                                </span>
+                            {% else %}
+                                <span class="text-din tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
+                                                    🧾❓
+                                                    NdF possible
+                                                </span>
+                            {% endif %}
+                        {% endif %}
+                    </p>
+                </div>
+                <br style="clear:both" />
+
+            </a>
+
+            {% if participation and participation.status != constant('App\\Entity\\EventParticipation::STATUS_REFUSE') %}
+                {% set empietements = empietements(event, app.user) %}
+                {% if empietements | length > 0 and display_additionnal %}
+                    <div class="empietements">
+                        <b style="margin-left: 20px">Attention au timing :</b>
+                        {% for empietement in empietements %}
+                            {% if empietement.status == constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME') %}
+                                <br />- Vous êtes aussi pré-inscrit sur la sortie <a href="{{ path('sortie', {'code': empietement.event.code, 'id': empietement.event.id}) }}" title="">{{ empietement.event.titre }}</a>
+                            {% endif %}
+                            {% if empietement.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') %}
+                                <br />- Vous êtes aussi <span style="color:red">confirmé</span> sur la sortie <a href="{{ path('sortie', {'code': empietement.event.code, 'id': empietement.event.id}) }}" title="">{{ empietement.event.titre }}</a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </td>
+</tr>
+{% endmacro %}

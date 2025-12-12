@@ -18,6 +18,7 @@ import {
 	FontColor,
 	FontFamily,
 	FontSize,
+	GeneralHtmlSupport,
 	Heading,
 	Highlight,
 	HorizontalLine,
@@ -123,6 +124,7 @@ const editorConfig = {
 		FontColor,
 		FontFamily,
 		FontSize,
+		GeneralHtmlSupport,
 		Heading,
 		Highlight,
 		HorizontalLine,
@@ -232,7 +234,7 @@ const editorConfig = {
 	language: 'fr',
 	licenseKey: LICENSE_KEY,
 	link: {
-		addTargetToExternalLinks: true,
+		addTargetToExternalLinks: false,
 		defaultProtocol: 'https://',
 		decorators: {
 			toggleDownloadable: {
@@ -244,6 +246,7 @@ const editorConfig = {
 			}
 		}
 	},
+	removeEmptyElements: false,
 	list: {
 		properties: {
 			styles: true,
@@ -274,6 +277,16 @@ const editorConfig = {
 						'style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></iframe>' +
 						'</div>'
 					);
+				}
+			}
+		]
+	},
+	htmlSupport: {
+		allow: [
+			{
+				name: /.*/,
+				attributes: {
+					id: true
 				}
 			}
 		]

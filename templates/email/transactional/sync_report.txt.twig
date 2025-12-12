@@ -1,12 +1,12 @@
-Rapport de synchronisation FFCAM du {{ date }}
+Rapport synchro (licences {% if type is same as ('discovery') %}découvertes{% else %}annuelles{% endif %}) FFCAM du {{ date }}
 
-La synchronisation automatique des adhérents FFCAM s'est exécutée avec succès.
+La synchronisation automatique des adhérents {% if type is same as ('discovery') %}découvertes{% else %}annuels{% endif %} FFCAM s'est exécutée avec succès.
 
 RÉSUMÉ DE LA SYNCHRONISATION
 =============================
 Date d'exécution : {{ startTime|date('d/m/Y à H:i:s') }}
 Durée totale : {{ duration }}
-Total traité : {{ total }} adhérent(s)
+Total traité : {{ total }} adhérents {% if type is same as ('discovery') %}découvertes{% else %}annuels{% endif %}
 
 DÉTAIL DES OPÉRATIONS
 ======================
@@ -24,7 +24,7 @@ avec un nouveau numéro de licence. Les comptes ont été fusionnés automatique
 {% if stats.merged_details|default([]) %}
 Détail des fusions{% if stats.merged > 20 %} (20 premières affichées){% endif %} :
 {% for merge in stats.merged_details %}
-- {{ merge.name }} : {{ merge.old_cafnum }} → {{ merge.new_cafnum }}
+- {{ merge.name }} : {{ merge.old_cafnum }} est remplacé par {{ merge.new_cafnum }}
 {% endfor %}
 {% if stats.merged > 20 %}
 - ... et {{ stats.merged - 20 }} autre(s) fusion(s)
@@ -49,7 +49,7 @@ Certains adhérents n'ont pas pu être traités correctement.
 {% if stats.error_details|default([]) %}
 Détails des erreurs{% if stats.errors > 10 %} (10 premières affichées){% endif %} :
 {% for error in stats.error_details %}
-- Licence {{ error.cafnum }} : {{ error.message }}
+- {{ error.cafnum }} : {{ error.message }}
 {% endfor %}
 {% if stats.errors > 10 %}
 - ... et {{ stats.errors - 10 }} autre(s) erreur(s)
