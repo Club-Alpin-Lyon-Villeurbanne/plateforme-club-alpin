@@ -4,7 +4,7 @@ namespace App\Trait;
 
 use Doctrine\ORM\QueryBuilder;
 
-trait PaginationTrait
+trait PaginationRepositoryTrait
 {
     protected function getPaginatedResults(QueryBuilder $qb, int $first, int $perPage): array
     {

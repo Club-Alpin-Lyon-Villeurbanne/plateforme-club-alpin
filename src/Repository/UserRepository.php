@@ -8,7 +8,7 @@ use App\Entity\Comment;
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\User;
-use App\Trait\PaginationTrait;
+use App\Trait\PaginationRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
@@ -26,7 +26,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
-    use PaginationTrait;
+    use PaginationRepositoryTrait;
 
     public function __construct(ManagerRegistry $registry)
     {

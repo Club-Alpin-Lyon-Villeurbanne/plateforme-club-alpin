@@ -6,7 +6,7 @@ use App\Entity\Commission;
 use App\Entity\Evt;
 use App\Entity\ExpenseReport;
 use App\Entity\User;
-use App\Trait\PaginationTrait;
+use App\Trait\PaginationRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -21,7 +21,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class EvtRepository extends ServiceEntityRepository
 {
-    use PaginationTrait;
+    use PaginationRepositoryTrait;
 
     private int $defaultLimit = 30;
 

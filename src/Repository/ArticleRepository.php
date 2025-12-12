@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Article;
 use App\Entity\Commission;
-use App\Trait\PaginationTrait;
+use App\Trait\PaginationRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -18,7 +18,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ArticleRepository extends ServiceEntityRepository
 {
-    use PaginationTrait;
+    use PaginationRepositoryTrait;
 
     public function __construct(ManagerRegistry $registry)
     {
