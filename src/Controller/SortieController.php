@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\Commission;
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
+use App\Entity\FormationValidationGroupeCompetence;
+use App\Entity\FormationValidationNiveauPratique;
 use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Form\EventType;
@@ -16,9 +18,12 @@ use App\Messenger\Message\SortiePubliee;
 use App\Repository\CommissionRepository;
 use App\Repository\EventParticipationRepository;
 use App\Repository\EventUnrecognizedPayerRepository;
+use App\Repository\FormationValidationGroupeCompetenceRepository;
+use App\Repository\FormationValidationNiveauPratiqueRepository;
 use App\Repository\UserAttrRepository;
 use App\Repository\UserRepository;
 use App\Service\HelloAssoService;
+use App\Service\UserLicenseHelper;
 use App\Twig\JavascriptGlobalsExtension;
 use App\UserRights;
 use App\Utils\ExcelExport;
@@ -271,6 +276,8 @@ class SortieController extends AbstractController
         UserRepository $repository,
         EventParticipationRepository $participationRepository,
         EventUnrecognizedPayerRepository $unrecognizedPayerRepository,
+        FormationValidationNiveauPratiqueRepository $formationNiveauRepository,
+        FormationValidationGroupeCompetenceRepository $formationCompetenceValidationRepository,
         Environment $twig,
         $baseUrl = '/',
     ) {
@@ -304,18 +311,48 @@ class SortieController extends AbstractController
             $currentUserHasPaid = true;
         }
 
+        // affichage des compétences des participants
+        $participations = $event->getParticipations(null, null);
+        $nivRefs = [];
+        $groupesCompRefs = [];
+
+        foreach ($participations as $participation) {
+            // niveaux de pratique
+            $niveaux = $formationNiveauRepository->getAllNiveauxByUser($participation->getUser(), $event->getCommission());
+            /** @var FormationValidationNiveauPratique $niveau */
+            foreach ($niveaux as $niveau) {
+                $nivRefs[$niveau->getNiveauReferentiel()->getId()] = $niveau->getNiveauReferentiel();
+            }
+
+            // groupes de compétences
+            $groupesComps = $formationCompetenceValidationRepository->getAllGroupesCompetencesByUser($participation->getUser(), $event->getCommission());
+            /** @var FormationValidationGroupeCompetence $groupesComp */
+            foreach ($groupesComps as $groupesComp) {
+                $groupesCompRefs[$groupesComp->getCompetence()->getId()] = $groupesComp->getCompetence();
+            }
+        }
+
+        // Date cutoff: September 30 of current year if after Dec 1, otherwise September 30 of previous year
+        $currentMonth = date('m');
+        $currentYear = date('Y');
+        $cutoffYear = $currentMonth >= 12 ? $currentYear : $currentYear - 1;
+        $cutoffDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $cutoffYear . '-' . UserLicenseHelper::LICENSE_TOLERANCY_PERIOD_END);
+
         return [
             'event' => $event,
             'participations' => $participationRepository->getSortedParticipations($event, null, null),
             'unrecognized_payers' => $unrecognizedPayerRepository->findBy(['event' => $event, 'hasPaid' => true], ['lastname' => 'asc']),
             'filiations' => $user ? $repository->getFiliations($user) : null,
             'empietements' => $participationRepository->getEmpietements($event),
-            'current_commission' => $event->getCommission()->getCode(),
+            'current_commission' => $event->getCommission(),
             'encoded_coord' => urlencode($event->getLat() . ',' . $event->getLong()),
             'geovelo_encoded_coord' => urlencode($event->getLong() . ',' . $event->getLat()),
             'current_user_has_paid' => $currentUserHasPaid,
             'current_user_accepted' => $currentUserAccepted,
             'accepted_participations' => $participationRepository->getSortedParticipations($event),
+            'is_event_after_cutoff' => $event->getEndDate() >= $cutoffDate,
+            'groupes_competences' => $groupesCompRefs,
+            'niveaux' => $nivRefs,
         ];
     }
 
@@ -677,7 +714,7 @@ class SortieController extends AbstractController
                     'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                     'event_date' => $event->getStartDate()->format('d/m/Y'),
                     'cancel_user_name' => $this->getUser()->getNickname(),
-                    'cancel_user_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $this->getUser()->getId() . '.html',
+                    'cancel_user_url' => $this->generateUrl('user_full', ['id' => $this->getUser()->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                     'message' => $message,
                 ]);
             }
@@ -750,7 +787,7 @@ class SortieController extends AbstractController
             'commission' => $event->getCommission()->getTitle(),
             'date_sortie' => $event->getStartDate()?->format('d/m/Y'),
             'message' => $request->request->get('message'),
-            'message_author_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $this->getUser()->getId() . '.html',
+            'message_author_url' => $this->generateUrl('user_full', ['id' => $this->getUser()->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
         ], [], $this->getUser(), $replyToAddresses);
 
         $this->addFlash('info', 'Votre message a bien été envoyé.');
@@ -789,7 +826,7 @@ class SortieController extends AbstractController
                     'event_date' => $event->getStartDate()->format('d/m/Y'),
                     'reason_explanation' => $reason,
                     'user' => $user,
-                    'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $user->getId() . '.html',
+                    'profile_url' => $this->generateUrl('user_full', ['id' => $user->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                 ], [], null, $user->getEmail());
             }
         }
@@ -1076,7 +1113,7 @@ class SortieController extends AbstractController
                             'lastname' => strtoupper($cetinscrit->getLastname()),
                             'nickname' => $cetinscrit->getNickname(),
                             'email' => $cetinscrit->getEmail(),
-                            'profile_url' => LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $cetinscrit->getId() . '.html',
+                            'profile_url' => $this->generateUrl('user_full', ['id' => $cetinscrit->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                         ];
                     }, $inscrits),
                     'firstname' => ucfirst($user->getFirstname()),
@@ -1157,7 +1194,7 @@ class SortieController extends AbstractController
 
             if ($isNewEvent) {
                 $mailer->send($participation->getUser(), 'transactional/sortie-publiee-inscrit', [
-                    'author_url' => $this->generateUrl('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL) . 'user-full/' . $event->getUser()->getId() . '.html',
+                    'author_url' => $this->generateUrl('user_full', ['id' => $this->getUser()->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                     'author_nickname' => $event->getUser()->getNickname(),
                     'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                     'event_name' => $event->getTitre(),

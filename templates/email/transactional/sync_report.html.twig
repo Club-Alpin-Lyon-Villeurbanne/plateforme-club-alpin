@@ -1,11 +1,11 @@
 {% extends 'email/transactional/layout.html.twig' %}
 
-{% block subject %}Rapport de synchronisation FFCAM du {{ date }}{% endblock %}
+{% block subject %}Rapport synchro (licences {% if type is same as ('discovery') %}découvertes{% else %}annuelles{% endif %}) FFCAM du {{ date }}{% endblock %}
 
 {% block inner_html %}
-    <h2>Synchronisation des adhérents terminée</h2>
+    <h2>Synchronisation des adhérents {% if type is same as ('discovery') %}découvertes{% else %}annuels{% endif %} terminée</h2>
 
-    <p>La synchronisation automatique des adhérents FFCAM s'est exécutée avec succès.</p>
+    <p>La synchronisation automatique des adhérents {% if type is same as ('discovery') %}découvertes{% else %}annuels{% endif %} FFCAM s'est exécutée avec succès.</p>
 
     <h3>📊 Résumé de la synchronisation</h3>
 
@@ -31,7 +31,7 @@
                 <strong>Total traité</strong>
             </td>
             <td style="padding: 10px; border: 1px solid #ddd;">
-                <strong style="font-size: 1.2em; color: #2da1bf;">{{ total }}</strong> adhérent(s)
+                <strong style="font-size: 1.2em; color: #2da1bf;">{{ total }}</strong> adhérents {% if type is same as ('annual') %}annuels{% elseif type is same as('discovery') %}découvertes{% endif %}
             </td>
         </tr>
     </table>
@@ -105,7 +105,7 @@
         <ul style="margin: 5px 0; padding-left: 20px;">
             {% for merge in stats.merged_details %}
             <li style="margin: 3px 0;">
-                <strong>{{ merge.name }}</strong> : {{ merge.old_cafnum }} → {{ merge.new_cafnum }}
+                <strong>{{ merge.name }}</strong> : {{ merge.old_cafnum }} est remplacé par {{ merge.new_cafnum }}
             </li>
             {% endfor %}
             {% if stats.merged > 20 %}
@@ -149,7 +149,7 @@
         <ul style="margin: 5px 0; padding-left: 20px; color: #333;">
             {% for error in stats.error_details %}
             <li style="margin: 3px 0;">
-                <strong>Licence {{ error.cafnum }}</strong> : {{ error.message }}
+                <strong>{{ error.cafnum }}</strong> : {{ error.message }}
             </li>
             {% endfor %}
             {% if stats.errors > 10 %}

@@ -102,7 +102,7 @@ class Commission
     #[ORM\JoinTable(name: 'formation_commission_niveau_pratique')]
     #[ORM\JoinColumn(name: 'commission_id', referencedColumnName: 'id_commission', onDelete: 'CASCADE')]
     #[ORM\InverseJoinColumn(name: 'niveau_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
-    #[ORM\OrderBy(['libelle' => 'ASC'])]
+    #[ORM\OrderBy(['libelle' => 'DESC'])]
     private Collection $niveaux;
 
     public function __construct(string $title, string $code, int $ordre)

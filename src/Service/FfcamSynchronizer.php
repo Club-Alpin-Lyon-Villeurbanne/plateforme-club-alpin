@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Utils\MemberMerger;
+use App\Utils\NicknameGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 
@@ -59,6 +60,30 @@ class FfcamSynchronizer
         }
     }
 
+    /**
+     * @throws \Exception
+     */
+    public function discoverySynchronize(?string $ffcamFilePath = null): void
+    {
+        $startTime = new \DateTime();
+
+        if (!$this->isFileValid($ffcamFilePath)) {
+            $this->logger->warning("File {$ffcamFilePath} not found. Can't import new discovery-type members");
+
+            return;
+        }
+
+        $stats = $this->processMembers($this->fileParser->parse($ffcamFilePath, 'discovery'));
+
+        $this->archiveFile($ffcamFilePath, $stats);
+        $this->logResults($ffcamFilePath, $stats);
+
+        $endTime = new \DateTime();
+
+        // Envoyer le mail de récapitulatif si le service est disponible
+        $this->syncReportMailer?->sendSyncReport($stats, $startTime, $endTime, 'discovery');
+    }
+
     private function isFileValid(string $filePath): bool
     {
         return file_exists($filePath) && is_file($filePath);
@@ -111,7 +136,7 @@ class FfcamSynchronizer
                             $parsedUser->getCafnum()
                         );
                         if ($duplicateEmailUser instanceof User) {
-                            $errorMessage = sprintf('Email %s is already used by another member (Cafnum: %s)', $parsedUser->getEmail(), $duplicateEmailUser->getCafnum());
+                            $errorMessage = sprintf('Email %s is already used by Cafnum %s (so it has been deduplicated)', $parsedUser->getEmail(), $duplicateEmailUser->getCafnum());
                             $this->logger->warning($errorMessage);
                             ++$stats['errors'];
                             $stats['error_details'][] = [
@@ -123,7 +148,7 @@ class FfcamSynchronizer
                             $parsedUser->setEmail('doublon.' . $parsedUser->getCafnum() . '-' . $parsedUser->getEmail());
                         }
                     } else {
-                        $warningMessage = sprintf('FFCAM email is empty for member Cafnum %s', $parsedUser->getCafnum());
+                        $warningMessage = sprintf('%s: FFCAM email is empty (so it does not replace database email)', $parsedUser->getCafnum());
                         $this->logger->warning($warningMessage);
                         ++$stats['warnings'];
                         $stats['warning_details'][] = $warningMessage;
@@ -135,7 +160,7 @@ class FfcamSynchronizer
                             $parsedUser->getEmail() !== $existingUser->getEmail()
                             && empty($existingUser->getRadiationDate())
                         ) {
-                            $warningMessage = sprintf('FFCAM email (%s) is different from database (%s) for member Cafnum %s', $parsedUser->getEmail(), $existingUser->getEmail(), $existingUser->getCafnum());
+                            $warningMessage = sprintf('%s: FFCAM email (%s) replaces database email (%s) (which was different)', $existingUser->getCafnum(), $parsedUser->getEmail(), $existingUser->getEmail());
                             $this->logger->warning($warningMessage);
                             ++$stats['warnings'];
                             $stats['warning_details'][] = $warningMessage;
@@ -146,7 +171,11 @@ class FfcamSynchronizer
                         ++$stats['updated'];
                     } else {
                         // new user
-                        $parsedUser->setCreatedAt(new \DateTime());
+                        $nickName = NicknameGenerator::generateNickname($parsedUser->getFirstname(), $parsedUser->getLastname(), $parsedUser->getCafnum());
+                        $parsedUser
+                            ->setNickname($nickName)
+                            ->setCreatedAt(new \DateTime())
+                        ;
                         $this->entityManager->persist($parsedUser);
                         ++$stats['inserted'];
                     }
@@ -202,14 +231,15 @@ class FfcamSynchronizer
             ->setAdresse($parsedUser->getAdresse())
             ->setCp($parsedUser->getCp())
             ->setVille($parsedUser->getVille())
-            ->setNickname($parsedUser->getNickname())
             ->setDoitRenouveler($parsedUser->getDoitRenouveler() && $this->hasTolerancyPeriodPassed)
             ->setAlerteRenouveler($parsedUser->getAlerteRenouveler() && !$this->hasTolerancyPeriodPassed)
             ->setUpdatedAt(new \DateTime())
             ->setManuel(false)
-            ->setNomade(false)
+            ->setNomade($parsedUser->getNomade())
             ->setRadiationDate($parsedUser->getRadiationDate())
             ->setRadiationReason($parsedUser->getRadiationReason())
+            ->setValidityDuration($parsedUser->getValidityDuration())
+            ->setDiscoveryEndDatetime($parsedUser->getDiscoveryEndDatetime())
         ;
 
         // Si l'utilisateur est radié

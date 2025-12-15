@@ -3,11 +3,16 @@
 {% block title %}Brevets & formations du staff de {{ commission.title }}{% endblock %}
 
 {% block body %}
-    <h2>Brevets & formations du staff de {{ commission.title }}</h2>
-    <p>
-        Les dates correspondent à la dernière date connue soit obtention, soit recyclage.
-    </p>
-    <div class="wide-table-container">
+    <h2>Brevets, niveaux de pratique & formations du staff de {{ commission.title }}</h2>
+    {{ easy_include('commission-staff-skills', '')}}
+
+    <p class="bold">Légende :</p>
+    <div class="brevet">Brevets</div>
+    <div class="niveau-pratique">Niveaux de pratique</div>
+    <div class="formation">Formations</div>
+    <div class="formation-generale">Formations générales</div>
+
+    <div class="wide-table-container high-table-container">
         <table class="wide-table table-striped">
             <thead>
                 <tr>
@@ -15,17 +20,17 @@
                     <th>Responsabilité</th>
                     {% for brevet in brevets %}
                         <th class="brevet">
-                            {{ brevet.intitule }}
+                            {{ intitule_brevet(brevet) }}
+                        </th>
+                    {% endfor %}
+                    {% for niveau in niveaux %}
+                        <th class="niveau-pratique">
+                            {{ niveau.libelle }}
                         </th>
                     {% endfor %}
                     {% for formation in formations %}
                         <th class="formation">
-                            {{ formation.intitule }}
-                        </th>
-                    {% endfor %}
-                    {% for niveau in niveaux %}
-                        <th class="niveau">
-                            {{ niveau.libelle }}
+                            {{ intitule_formation(formation) }}
                         </th>
                     {% endfor %}
                     <th class="formation-generale">UFCA</th>
@@ -36,17 +41,16 @@
                     <td></td>
                     {% for brevet in brevets %}
                         <td>
-                            {{ brevet.codeBrevet }}
+                            {{ brevet }}
                         </td>
                     {% endfor %}
                     {% for niveau in niveaux %}
                         <td>
-                            {{ niveau.codeActivite }} - {{ niveau.niveauCourt }}
                         </td>
                     {% endfor %}
                     {% for formation in formations %}
                         <td>
-                            {{ formation.codeFormation }}
+                            {{ formation }}
                         </td>
                     {% endfor %}
                     <td>STG-UFFG10</td>
@@ -74,7 +78,7 @@
                     {% endfor %}
                     {% for formation in formations %}
                         <td>
-                            {{ date_formation_user(user.user, formation.codeFormation) }}
+                            {{ date_formation_user(user.user, formation) }}
                         </td>
                     {% endfor %}
                     <td>{{ date_formation_user(user.user, 'STG-UFFG10') }}</td>

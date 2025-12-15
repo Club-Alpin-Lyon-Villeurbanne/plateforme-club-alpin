@@ -246,7 +246,7 @@ class GoogleGroupsSync extends Command
 
     private function normalizeEmail(string $email): string
     {
-        $email = strtolower(trim($email));
+        $email = mb_strtolower(trim($email));
 
         if (!str_ends_with($email, '@gmail.com') && !str_ends_with($email, '@googlemail.com')) {
             return $email;
@@ -265,7 +265,6 @@ class GoogleGroupsSync extends Command
 
     private function upsertMemberToGoogleGroup(array $existingMembers, string $groupKey, string $email, string $type = 'MEMBER'): void
     {
-        $email = $this->normalizeEmail($email);
         if (!isset($existingMembers[$email])) {
             $member = new Member();
             $member->setEmail($email);
@@ -543,6 +542,6 @@ class GoogleGroupsSync extends Command
             $email = $user->getGdriveEmail();
         }
 
-        return mb_strtolower($email);
+        return $this->normalizeEmail($email);
     }
 }

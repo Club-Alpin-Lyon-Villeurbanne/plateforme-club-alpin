@@ -5,8 +5,8 @@ use App\Utils\NicknameGenerator;
 
 $firstname_user = ucfirst(trim(stripslashes($_POST['firstname_user'])));
 $lastname_user = strtoupper(trim(stripslashes($_POST['lastname_user'])));
-$nickname_user = NicknameGenerator::generateNickname($firstname_user, $lastname_user);
 $cafnum_user = trim(stripslashes($_POST['cafnum_user']));
+$nickname_user = NicknameGenerator::generateNickname($firstname_user, $lastname_user, $cafnum_user);
 $email_user = trim(stripslashes($_POST['email_user']));
 $mdp_user = trim(stripslashes($_POST['mdp_user']));
 $birthday_user = trim(stripslashes($_POST['birthday_user']));
