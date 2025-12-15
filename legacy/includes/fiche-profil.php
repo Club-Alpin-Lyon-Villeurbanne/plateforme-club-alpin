@@ -115,7 +115,13 @@ else {
 		        if (allowed('user_read_private') && $tmpUser['doit_renouveler_user']) {
 		            echo '<li class="red">LICENCE EXPIRÉE</li>';
                 } elseif (allowed('user_read_private') && 1 == $tmpUser['nomade_user']) {
-                    echo '<li>LICENCE DÉCOUVERTE : valide du ' . (new \DateTimeImmutable($tmpUser['join_date']))?->format('d/m/Y H:i') . ' au ' . (new \DateTimeImmutable($tmpUser['discovery_end_datetime']))?->format('d/m/Y H:i') . '</li>';
+                    try {
+                        $joinDate = (new \DateTimeImmutable($tmpUser['join_date']))->format('d/m/Y H:i');
+                        $endDate = (new \DateTimeImmutable($tmpUser['discovery_end_datetime']))->format('d/m/Y H:i');
+                        echo '<li>LICENCE DÉCOUVERTE : valide du ' . $joinDate . ' au ' . $endDate . '</li>';
+                    } catch (\Exception $e) {
+                        echo '<li>LICENCE DÉCOUVERTE : validité inconnue</li>';
+                    }
 		        } elseif (allowed('user_read_private')) {
 		            echo '<li>DATE D\'ADHÉSION : ';
 		            if (!empty($tmpUser['join_date'])) {
