@@ -86,7 +86,7 @@ class BrevetExtension extends AbstractExtension
         if (null === $userGroupeComp) {
             return null;
         }
-        if (!empty($commission) && !in_array($groupe, $commission->getGroupesCompetences()->toArray(), true)) {
+        if (!empty($commission) && !$commission->getGroupesCompetences()->contains($groupe)) {
             return null;
         }
         if (empty($commission) && !empty($groupe->getActivite())) {
