@@ -2,7 +2,6 @@
   "16 6 * * * $ROOT/clevercloud/crons/sync-nomads.sh",
   "3 7 * * * $ROOT/clevercloud/crons/sync-members.sh",
   "28 7 * * * $ROOT/clevercloud/crons/anonymize-users.sh",
-  "57 * * * * $ROOT/clevercloud/crons/save-images.sh",
   "54 5 * * * $ROOT/clevercloud/crons/send-reminders.sh",
   "54 8 * * * $ROOT/clevercloud/crons/clean-alerts.sh",
   "36 6 * * * $ROOT/clevercloud/crons/google-groups-sync.sh",
