@@ -40,7 +40,7 @@
                 </a>
                 {% for commission in list_commissions() %}
                     {% set target = 'accueil' %}
-                    {% if p1 == 'agenda' or p1 == 'article-new' %}{% set target = p1 %}{% endif %}
+                    {% if p1 == 'agenda' %}{% set target = p1 %}{% endif %}
                     <a href="/{{ target }}/{{ commission.code }}.html" title="">
                         <span class="picto" style="background-image:url({{ commission_picto(commission.code, 'light') }})">
                             <img src="{{ commission_picto(commission.code, 'dark') }}" alt="" title="" />
