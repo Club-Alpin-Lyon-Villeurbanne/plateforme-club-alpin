@@ -477,6 +477,11 @@ class SortieController extends AbstractController
                 continue;
             }
 
+            $currentStatus = $participation->getStatus();
+            if (EventParticipation::STATUS_VALIDE === $status && EventParticipation::STATUS_VALIDE !== $currentStatus) {
+                ++$currentParticipantNb;
+            }
+
             // there can be no role passed in the request
             if ($role) {
                 $participation->setRole($role);
@@ -489,9 +494,6 @@ class SortieController extends AbstractController
             ;
 
             // reste-t-il assez de place ?
-            if (EventParticipation::STATUS_VALIDE === $status) {
-                ++$currentParticipantNb;
-            }
             if ($currentParticipantNb > $nbPeopleMax && EventParticipation::STATUS_VALIDE === $status) {
                 $this->addFlash('error', 'Vous ne pouvez pas valider plus de participants que de places disponibles (' . $availableSpotNb . '). Vous pouvez augmenter le nombre maximum de places pour ensuite rajouter des personnes.');
                 $flush = false;
