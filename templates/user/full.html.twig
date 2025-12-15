@@ -87,6 +87,8 @@
                 <li>NUMÉRO DE LICENCE FFCAM : {{ user.cafnum }}</a> </li>
                 {% if user.doitRenouveler %}
                     <li class="red">LICENCE EXPIRÉE</li>
+                {% elseif user.nomade %}
+                    <li>LICENCE DÉCOUVERTE : valide du {{ user.joinDate|date('d/m/Y H:i') }} au {{ user.discoveryEndDatetime|date('d/m/Y H:i') }}</li>
                 {% else %}
                 <li>DATE D'ADHÉSION :
                     {% if user.joinDate %}

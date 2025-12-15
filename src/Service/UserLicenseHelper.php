@@ -33,6 +33,11 @@ class UserLicenseHelper
             $isLicenseValid = false;
         }
 
+        // les cartes découvertes peuvent être prises en avance
+        if ($user->getNomade() && $user->getJoinDate() > $event->getStartDate()) {
+            $isLicenseValid = false;
+        }
+
         return $isLicenseValid;
     }
 

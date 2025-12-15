@@ -114,6 +114,8 @@ else {
 		             . '<li>NUMÉRO DE LICENCE FFCAM : ' . html_utf8($tmpUser['cafnum_user']) . '</a> </li>';
 		        if (allowed('user_read_private') && $tmpUser['doit_renouveler_user']) {
 		            echo '<li class="red">LICENCE EXPIRÉE</li>';
+                } elseif (allowed('user_read_private') && 1 == $tmpUser['nomade_user']) {
+                    echo '<li>LICENCE DÉCOUVERTE : valide du ' . (new \DateTimeImmutable($tmpUser['join_date']))?->format('d/m/Y H:i') . ' au ' . (new \DateTimeImmutable($tmpUser['discovery_end_datetime']))?->format('d/m/Y H:i') . '</li>';
 		        } elseif (allowed('user_read_private')) {
 		            echo '<li>DATE D\'ADHÉSION : ';
 		            if (!empty($tmpUser['join_date'])) {
