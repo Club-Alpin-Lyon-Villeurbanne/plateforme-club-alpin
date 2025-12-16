@@ -6,6 +6,7 @@ use App\Entity\Commission;
 use App\Entity\Evt;
 use App\Entity\ExpenseReport;
 use App\Entity\User;
+use App\Trait\PaginationRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -20,6 +21,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class EvtRepository extends ServiceEntityRepository
 {
+    use PaginationRepositoryTrait;
+
     private int $defaultLimit = 30;
 
     public function __construct(ManagerRegistry $registry)
@@ -385,13 +388,5 @@ class EvtRepository extends ServiceEntityRepository
         }
 
         return $qb;
-    }
-
-    private function getPaginatedResults(QueryBuilder $qb, int $first, int $perPage)
-    {
-        return $qb->setFirstResult($first)
-            ->setMaxResults($perPage)
-            ->getQuery()
-            ->getResult();
     }
 }

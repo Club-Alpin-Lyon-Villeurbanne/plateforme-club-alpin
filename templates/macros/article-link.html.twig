@@ -1,10 +1,10 @@
-{% macro article_link(article) %}
+{% macro article_link(article, display_style = 'profile', class = 'encart_article_small') %}
     {% set url = path('article_view', {'id': article.id, 'code': article.code}) %}
     {% set img = '' %}
     {% if article.mediaUpload and article.mediaUpload.id %}
         {% set img = media_thumbnail(article.mediaUpload, 'min_thumbnail') %}
     {% endif %}
-    <div class="encart_article_small">
+    <div class="{{ class }}">
         <!-- image -->
         <a target="_top" title="Voir cet article" href="{{ url }}" class="illustration fader" style="background-image:url({{ img }})"></a>
 
@@ -14,6 +14,30 @@
                 {{article.titre}}
             </a>
         </h2>
+
+        {% if display_style is same as ('home') %}
+        <!-- lien commission -->
+        <p class="commission-title">
+            {% if article.validationDate is not same as (null) %}
+                {{ article.validationDate|date('d/m/Y') }} -
+            {% endif %}
+
+            {% if article.commission %}
+                <a href="{{ path('commission_homepage', {'code': article.commission.code}) }}#home-articles" title="Toutes les actus de cette commission">
+                    {{ article.commission.title }}
+                </a>
+            {% elseif article.event %}
+                <a href="{{ path('sortie', {'code': article.event.code, 'id': article.event.id}) }}" title="Voir la sortie liée à cet article : &laquo; {{ article.event.titre }} &raquo;">
+                    compte rendu de sortie
+                </a>
+            {% else %}
+                <a href="{{ path('homepage') }}#home-articles" title="Toutes les actus du club">
+                    CLUB
+                </a>
+            {% endif %}
+        </p>
+        {% endif %}
+
         <!-- summup -->
         <p class="summup">
             {% set limit = 150 %}

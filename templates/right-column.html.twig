@@ -1,6 +1,4 @@
-{% if current_commission is not defined %}
-    {% set current_commission = null %}
-{% endif %}
+{% set current_commission = current_commission.code | default('') %}
 <div id="right1">
     <div class="right-light">
         &nbsp; {# important #}

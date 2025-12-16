@@ -4,7 +4,11 @@ namespace App\Repository;
 
 use App\Entity\Article;
 use App\Entity\Commission;
+use App\Trait\PaginationRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -15,6 +19,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class ArticleRepository extends ServiceEntityRepository
 {
+    use PaginationRepositoryTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Article::class);
@@ -48,28 +54,13 @@ class ArticleRepository extends ServiceEntityRepository
     }
 
     /** @return Article[] */
-    public function getArticles(?Commission $commission = null, array $options = [])
+    public function getArticles(int $first = 0, int $perPage = 10, ?Commission $commission = null): array
     {
-        $options = array_merge([
-            'limit' => 10,
-        ], $options);
-
-        $qb = $this->createQueryBuilder('a')
-            ->select('a, c')
-            ->leftJoin('a.commission', 'c')
-            ->where('a.status > 0')
+        $qb = $this->getArticlesByCommissionDql($commission)
             ->orderBy('a.validationDate', 'DESC')
-            ->setMaxResults($options['limit'])
         ;
 
-        if ($commission) {
-            $qb = $qb->andWhere('a.commission = :commission_id')
-                ->setParameter('commission_id', $commission->getId());
-        }
-
-        return $qb
-            ->getQuery()
-            ->getResult();
+        return $this->getPaginatedResults($qb, $first, $perPage);
     }
 
     public function updateViews(Article $article): int
@@ -82,5 +73,37 @@ class ArticleRepository extends ServiceEntityRepository
             ->getQuery()
             ->execute()
         ;
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getArticlesByCommissionCount(?Commission $commission = null): int
+    {
+        return $this
+            ->getArticlesByCommissionDql($commission)
+            ->select('count(a)')
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+    }
+
+    protected function getArticlesByCommissionDql(?Commission $commission = null): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->select('a')
+            ->where('a.status = :status')
+            ->setParameter('status', Article::STATUS_PUBLISHED)
+        ;
+
+        if ($commission instanceof Commission) {
+            $qb = $qb
+                ->andWhere('a.commission = :commission')
+                ->setParameter('commission', $commission)
+            ;
+        }
+
+        return $qb;
     }
 }
