@@ -105,9 +105,11 @@ class FfcamFileParser
         $lastname = strtoupper($this->normalizeNames(trim($line[6])));
 
         $birthdate = new \DateTimeImmutable(trim($line[4]));
-        $joinDate = new \DateTimeImmutable(trim($line[2]) . ' ' . trim($line[3]));
+        $joinDate = new \DateTimeImmutable(trim($line[2]) . ' ' . trim($line[3]));      // pas couvert par l'assurance avant l'heure indiquée
         $duration = (int) trim($line[1]);
-        $endDate = (clone $joinDate)->modify('+' . $duration . ' hour');
+        $dayDuration = $duration / 24;
+        $endDate = (clone $joinDate)->modify('+' . ($dayDuration - 1) . ' day');        // durée 24h = fin le jour même ; durée 48h = fin le lendemain (j+1) ; durée 72h = fin le surlendemain (j+2)
+        $endDate = $endDate->setTime(23, 59, 59);                            // couvert par l'assurance jusqu'à minuit
 
         $doitRenouveler = false;
         if ($endDate < new \DateTimeImmutable()) {
