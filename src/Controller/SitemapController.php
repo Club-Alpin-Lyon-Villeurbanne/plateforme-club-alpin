@@ -66,12 +66,15 @@ class SitemapController
         foreach ($this->commissionRepository->findVisible() as $commission) {
             $code = method_exists($commission, 'getCode') ? $commission->getCode() : null;
             if ($code) {
-                $add('/accueil/' . $code . '.html');
+                $url = $this->urlGenerator->generate('commission_homepage', [
+                    'code' => $code,
+                ], UrlGeneratorInterface::ABSOLUTE_URL);
+                $add($url);
             }
         }
 
         // Derniers articles publiés (limite raisonnable)
-        foreach ($this->articleRepository->getArticles(null, ['limit' => 200]) as $article) {
+        foreach ($this->articleRepository->getArticles(0, 200) as $article) {
             if (method_exists($article, 'getCode') && method_exists($article, 'getId')) {
                 $url = $this->urlGenerator->generate('article_view', [
                     'code' => $article->getCode(),
