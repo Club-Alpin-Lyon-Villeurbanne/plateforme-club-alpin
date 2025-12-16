@@ -1,4 +1,4 @@
-{% set current_commission = current_commission | default('') %}
+{% set current_commission = current_commission.code | default('') %}
 {% set p1 = p1 | default('') %}
 {% set impersonification_style = is_granted('IS_IMPERSONATOR') ? "background-color:#df4949;" : "" %}
 

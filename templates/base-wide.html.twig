@@ -66,8 +66,7 @@
 <div id="container">
     <div id="siteHeight">
         {% include 'header.html.twig' %}
-        {% set fond = fond_commission(current_commission is defined ? current_commission : null) %}
-        <div id="bigfond" {% if fond is defined and fond is not same as ('') %}style="background-image:url({{ fond }});"{% endif %}></div>
+        <div id="bigfond"></div>
         <div id="main" class="wide-site" role="main">
             <div id="full">
                 {% block body %}{% endblock %}
