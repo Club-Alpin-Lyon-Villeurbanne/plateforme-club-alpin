@@ -87,6 +87,8 @@
                 <li>NUMÉRO DE LICENCE FFCAM : {{ user.cafnum }}</a> </li>
                 {% if user.doitRenouveler %}
                     <li class="red">LICENCE EXPIRÉE</li>
+                {% elseif user.nomade %}
+                    <li>LICENCE DÉCOUVERTE : valide du {{ user.joinDate|date('d/m/Y H:i') }} au {{ user.discoveryEndDatetime|date('d/m/Y H:i') }}</li>
                 {% else %}
                 <li>DATE D'ADHÉSION :
                     {% if user.joinDate %}
@@ -121,6 +123,7 @@
                 <thead>
                     <tr>
                         <th>Commission</th>
+                        <th>Non attribuée</th>
                         {% for commission in commissions %}
                             <th>{{ commission.title }}</th>
                         {% endfor %}
@@ -132,6 +135,7 @@
                             <td class="groupe-comp">
                                 {{ groupe.intitule }}
                             </td>
+                            <td>{{ date_competence_user(user, groupe, null) }}</td>
                             {% for commission in commissions %}
                                 <td>{{ date_competence_user(user, groupe, commission) }}</td>
                             {% endfor %}
@@ -142,6 +146,7 @@
                             <td class="niveau-pratique">
                                 {{ niveau.libelle }}
                             </td>
+                            <td></td>
                             {% for commission in commissions %}
                                 <td>{{ date_niveau_user(user, niveau, commission) }}</td>
                             {% endfor %}
@@ -149,14 +154,16 @@
                     {% endfor %}
                     <tr>
                         <td class="formation-generale">UFCA (STG-UFFG10)</td>
+                        <td>{{ date_formation_user(user, 'STG-UFFG10') }}</td>
                         {% for commission in commissions %}
-                            <td>{{ date_formation_user(user, 'STG-UFFG10') }}</td>
+                            <td></td>
                         {% endfor %}
                     </tr>
                     <tr>
                         <td class="formation-generale">PSC1 (STG-PSC1)</td>
+                        <td>{{ date_formation_user(user, 'STG-PSC1') }}</td>
                         {% for commission in commissions %}
-                            <td>{{ date_formation_user(user, 'STG-PSC1') }}</td>
+                            <td></td>
                         {% endfor %}
                     </tr>
                 </tbody>

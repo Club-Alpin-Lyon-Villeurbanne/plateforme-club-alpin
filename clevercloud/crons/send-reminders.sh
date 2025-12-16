@@ -5,4 +5,6 @@
 # https://developers.clever-cloud.com/doc/administrate/cron/#access-environment-variables
 
 cd ${APP_HOME}
-bin/console event-to-publish-reminder-cron
+if [ "$DEPLOY_ENV" = "production" ]; then
+    bin/console event-to-publish-reminder-cron
+fi

@@ -217,7 +217,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[SerializedName('dateNaissance')]
     private ?\DateTimeInterface $birthdate = null;
 
-    #[ORM\Column(name: 'join_date', type: Types::DATE_IMMUTABLE, nullable: true, options: ['comment' => 'Date adhésion'])]
+    #[ORM\Column(name: 'join_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'Date adhésion'])]
     #[Groups('user:details')]
     private ?\DateTimeInterface $joinDate = null;
 
@@ -276,7 +276,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
             'alerteRenouveler' => $this->getAlerteRenouveler(),
             'createdAt' => $this->getCreatedAt()->format('Y-m-d H:i:s'),
             'updatedAt' => $this->getUpdatedAt()->format('Y-m-d H:i:s'),
-            'joinDate' => $this->getJoinDate()?->format('Y-m-d'),
+            'joinDate' => $this->getJoinDate()?->format('Y-m-d H:i:s'),
             'birthdate' => $this->getBirthdate()?->format('Y-m-d'),
         ];
     }

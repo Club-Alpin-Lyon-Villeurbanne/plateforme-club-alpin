@@ -47,7 +47,7 @@ class ArticleViewVoter extends Voter
             return false;
         }
 
-        if ($commission && $this->userRights->allowedOnCommission('article_read', $commission) || $this->userRights->allowedOnCommission('article_validate', $commission)) {
+        if ($commission && ($this->userRights->allowedOnCommission('article_read', $commission) || $this->userRights->allowedOnCommission('article_validate', $commission))) {
             return true;
         }
 
