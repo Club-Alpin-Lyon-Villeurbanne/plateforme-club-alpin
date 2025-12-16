@@ -564,13 +564,13 @@
                                         {% elseif is_license_valid_for_event(participation.user, event) is same as (false) %}
                                             <p style="color:orange"
                                             {% if participation.user.nomade %}
-                                               title="A la date de la sortie, la licence découverte de ce non-adhérent ne sera pas valide">🧐 Licence découverte NOK
+                                               title="A la date de la sortie, la carte découverte de ce non-adhérent ne sera pas valide">🧐 Carte découverte NOK
                                             {% else %}
                                                 title="A la date de la sortie, la licence de cet adhérent sera expirée s'il ne renouvelle pas d'ici là">Licence à renouveler (exp. 30/09)
                                             {% endif %}
                                             </p>
                                         {% elseif participation.user.nomade %}
-                                            <p style="color:green" title="A la date de la sortie, la licence découverte de ce non-adhérent sera valide">🧐 Licence découverte OK</p>
+                                            <p style="color:green" title="A la date de la sortie, la carte découverte de ce non-adhérent sera valide">🧐 Carte découverte OK</p>
                                         {% endif %}
                                     </td>
 
