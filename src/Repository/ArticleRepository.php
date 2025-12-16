@@ -81,7 +81,7 @@ class ArticleRepository extends ServiceEntityRepository
      */
     public function getArticlesByCommissionCount(?Commission $commission = null): int
     {
-        return $this
+        return (int) $this
             ->getArticlesByCommissionDql($commission)
             ->select('count(a)')
             ->getQuery()

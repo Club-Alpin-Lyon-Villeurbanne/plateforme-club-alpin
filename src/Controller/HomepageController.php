@@ -10,6 +10,7 @@ use App\Repository\ArticleRepository;
 use App\Trait\PaginationControllerTrait;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,6 +31,7 @@ class HomepageController extends AbstractController
     public function index(
         Request $request,
         ArticleRepository $articleRepository,
+        #[MapEntity(mapping: ['commission' => 'code'])]
         ?Commission $commission = null,
     ): array {
         $limit = $this->getParameter('max_home_articles');

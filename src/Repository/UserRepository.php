@@ -10,6 +10,8 @@ use App\Entity\Evt;
 use App\Entity\User;
 use App\Trait\PaginationRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -272,9 +274,13 @@ SQL;
         return $this->getPaginatedResults($qb, $first, $perPage);
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function getUsersCount(string $type, string $searchText = ''): int
     {
-        return $this
+        return (int) $this
             ->getQueryBuilder($type, $searchText)
             ->select('count(u)')
             ->getQuery()

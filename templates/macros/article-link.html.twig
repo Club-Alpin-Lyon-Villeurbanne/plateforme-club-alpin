@@ -18,7 +18,7 @@
         {% if display_style is same as ('home') %}
         <!-- lien commission -->
         <p class="commission-title">
-            {% if article.validationDate is not same as (null) %}
+            {% if article.validationDate is not null %}
                 {{ article.validationDate|date('d/m/Y') }} -
             {% endif %}
 
