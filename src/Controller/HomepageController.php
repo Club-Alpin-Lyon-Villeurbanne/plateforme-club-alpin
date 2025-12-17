@@ -31,7 +31,6 @@ class HomepageController extends AbstractController
     public function index(
         Request $request,
         ArticleRepository $articleRepository,
-        #[MapEntity(mapping: ['commission' => 'code'])]
         ?Commission $commission = null,
     ): array {
         $limit = $this->getParameter('max_home_articles');
