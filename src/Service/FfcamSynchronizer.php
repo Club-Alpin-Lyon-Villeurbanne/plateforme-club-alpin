@@ -95,6 +95,11 @@ class FfcamSynchronizer
 
         /** @var User $parsedUser */
         foreach ($members as $parsedUser) {
+            // date de validité déjà dépassée ? si oui, on n'importe pas
+            if ($parsedUser->getDiscoveryEndDatetime() < new \DateTime()) {
+                continue;
+            }
+
             try {
                 $this->logger->info("Processing CAF member {$parsedUser->getCafnum()}");
 
