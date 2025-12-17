@@ -84,7 +84,7 @@ class HtmlSanitizerTest extends KernelTestCase
             ],
             'onerror on img' => [
                 '<img src="x" onerror="alert(\'xss\')">',
-                '<img />',
+                '<img src="x" />',
             ],
             'javascript href' => [
                 '<a href="javascript:alert(\'xss\')">Click</a>',
@@ -232,5 +232,25 @@ HTML;
         $this->assertStringNotContainsString('javascript:', $result);
         $this->assertStringNotContainsString('onclick', $result);
         $this->assertStringNotContainsString('stealData', $result);
+    }
+
+    public function testPreservesSiteImages(): void
+    {
+        // Use localhost as it's the BACKEND_URL host in test environment
+        $input = '<figure class="image image_resized" style="width:49.71%;"><img style="aspect-ratio:1999/2999;" src="https://localhost/ftp/uploads/files/photo.jpg" width="1999" height="2999"></figure>';
+
+        $result = $this->sanitizer->sanitize($input);
+
+        // Figure tag with class and style preserved
+        $this->assertStringContainsString('<figure', $result);
+        $this->assertStringContainsString('class="image image_resized"', $result);
+        $this->assertStringContainsString('style="width:49.71%;"', $result);
+
+        // Image tag with all attributes preserved
+        $this->assertStringContainsString('<img', $result);
+        $this->assertStringContainsString('src="https://localhost/ftp/uploads/files/photo.jpg"', $result);
+        $this->assertStringContainsString('style="aspect-ratio:1999/2999;"', $result);
+        $this->assertStringContainsString('width="1999"', $result);
+        $this->assertStringContainsString('height="2999"', $result);
     }
 }
