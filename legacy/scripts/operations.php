@@ -75,16 +75,16 @@ if (user()) {
     elseif ('renew_date_article' == $operation) {
         require $operationsDir . 'operations.renew_date_article.php';
     }
+
+    // ARTICLES : SUPPRIMER UN COMMENTAIRE
+    elseif ('comment_hide' == $operation) {
+        require $operationsDir . 'operations.comment_hide.php';
+    }
 }
 
 // ARTICLES : COMMENTER
 elseif ('comment' == $operation) {
     require $operationsDir . 'operations.comment.php';
-}
-
-// ARTICLES : SUPPRIMER UN COMMENTAIRE
-elseif ('comment_hide' == $operation) {
-    require $operationsDir . 'operations.comment_hide.php';
 }
 
 // PARTENAIRE : EDIT or ADD
