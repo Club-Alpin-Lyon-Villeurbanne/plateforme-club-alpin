@@ -27,16 +27,16 @@
                     {% if right.code is same as('redacteur') and allowed('user_giveright_1', right.params) %}
                         {% set delete_right = true %}
                     {% endif %}
-                    {% if right.code is same as('salarie') and allowed('user_giveright_2', right.params) %}
+                    {% if right.code is same as('salarie') and allowed('user_giveright_2') %}
                         {% set delete_right = true %}
                     {% endif %}
                     {% if right.code is same as('responsable-commission') and allowed('comm_delier_responsable', right.params) %}
                         {% set delete_right = true %}
                     {% endif %}
-                    {% if right.code is same as('vice-president') and allowed('user_givepresidence', right.params) %}
+                    {% if right.code is same as('vice-president') and allowed('user_givepresidence') %}
                         {% set delete_right = true %}
                     {% endif %}
-                    {% if right.code is same as('president') and allowed('user_givepresidence', right.params) %}
+                    {% if right.code is same as('president') and allowed('user_givepresidence') %}
                         {% set delete_right = true %}
                     {% endif %}
                     {% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) and right.code is not same as('adherent') %}
