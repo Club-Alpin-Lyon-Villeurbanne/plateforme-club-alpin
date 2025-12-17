@@ -162,8 +162,9 @@ class HtmlSanitizerTest extends KernelTestCase
     {
         $input = '<iframe src="https://malicious-site.com/embed"></iframe>';
         $result = $this->sanitizer->sanitize($input);
-        // The iframe tag is kept but the malicious src is stripped
+        // The iframe tag is kept but the malicious src is cleared
         $this->assertStringNotContainsString('malicious-site.com', $result);
+        $this->assertStringContainsString('<iframe', $result);
     }
 
     public function testBlocksHttpIframes(): void
@@ -171,15 +172,8 @@ class HtmlSanitizerTest extends KernelTestCase
         // HTTP (non-HTTPS) should be blocked
         $input = '<iframe src="http://www.youtube.com/embed/dQw4w9WgXcQ"></iframe>';
         $result = $this->sanitizer->sanitize($input);
-        // The iframe should either be removed or the src should be empty
-        $this->assertThat(
-            $result,
-            $this->logicalOr(
-                $this->equalTo(''),
-                $this->stringContains('<iframe></iframe>'),
-                $this->logicalNot($this->stringContains('http://'))
-            )
-        );
+        // The HTTP URL should not appear in the result
+        $this->assertStringNotContainsString('http://www.youtube.com', $result);
     }
 
     public function testPreservesComplexArticleContent(): void
@@ -252,5 +246,21 @@ HTML;
         $this->assertStringContainsString('style="aspect-ratio:1999/2999;"', $result);
         $this->assertStringContainsString('width="1999"', $result);
         $this->assertStringContainsString('height="2999"', $result);
+    }
+
+    public function testAllowsExternalImages(): void
+    {
+        // External HTTPS images from any domain should be allowed
+        $input = '<img src="https://some-external-site.com/photo.jpg" alt="External photo">';
+        $result = $this->sanitizer->sanitize($input);
+        $this->assertStringContainsString('src="https://some-external-site.com/photo.jpg"', $result);
+    }
+
+    public function testBlocksHttpImages(): void
+    {
+        // HTTP images should be blocked (only HTTPS allowed)
+        $input = '<img src="http://external-site.com/photo.jpg" alt="HTTP photo">';
+        $result = $this->sanitizer->sanitize($input);
+        $this->assertStringNotContainsString('http://external-site.com', $result);
     }
 }
