@@ -11,7 +11,7 @@ if (isset($current_commission) && $current_commission) {
 
 // check image
 $img = '';
-if ($article['media_upload_id']) {
+if ($article['filename']) {
     $img = LegacyContainer::get('legacy_twig')->getExtension('App\Twig\MediaExtension')->getLegacyThumbnail(['filename' => $article['filename']], 'min_thumbnail');
 }
 
