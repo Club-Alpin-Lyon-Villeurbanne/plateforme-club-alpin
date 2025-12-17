@@ -96,7 +96,7 @@ class FfcamSynchronizer
         /** @var User $parsedUser */
         foreach ($members as $parsedUser) {
             // date de validité déjà dépassée ? si oui, on n'importe pas
-            if ($parsedUser->getDiscoveryEndDatetime() < new \DateTime()) {
+            if (null !== $parsedUser->getDiscoveryEndDatetime() && $parsedUser->getDiscoveryEndDatetime() < new \DateTime()) {
                 continue;
             }
 
