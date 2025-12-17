@@ -101,7 +101,7 @@
                 <li><a href="mailto:{{ user.email }}" title="Contact direct">{{ user.email }}</a> </li>
                 <li>TEL : {{ user.tel }}</li>
                 <li>TEL (secours) : {{ user.tel2 }}</li>
-                <li>ÂGE : {% if age_user(user) %}{{ age_user(user) }} ans{% else %}?{% endif %}</li>
+                <li>ÂGE : <span title="{{ user.birthdate|date('d/m/Y') }}">{% if age_user(user) %}{{ age_user(user) }} ans{% else %}?{% endif %}</span></li>
                 <li class="wide">{{ user.fullAddress(true) }}</li>
             </ul>
             <br style="clear:both" />
