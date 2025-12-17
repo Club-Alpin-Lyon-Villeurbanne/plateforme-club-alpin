@@ -6,9 +6,11 @@ framework:
                 allow_elements:
                     a: ['href', 'title', 'target', 'rel']
                     img: ['src', 'alt', 'title', 'width', 'height', 'class', 'style']
+                    figure: ['class', 'style']
                     iframe: ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen', 'title']
                 allowed_media_schemes: ['https']
                 allowed_media_hosts:
+                    - '%env(key:host:url:BACKEND_URL)%'
                     - 'youtube.com'
                     - 'www.youtube.com'
                     - 'youtube-nocookie.com'
@@ -21,5 +23,5 @@ framework:
                     - 'www.loom.com'
                     - 'luna.loom.com'
                     - 'cdn.loom.com'
-                allow_relative_medias: false
+                allow_relative_medias: true
                 force_https_urls: true
