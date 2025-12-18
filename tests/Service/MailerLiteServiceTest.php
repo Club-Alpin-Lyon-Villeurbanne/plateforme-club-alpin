@@ -163,11 +163,11 @@ class MailerLiteServiceTest extends TestCase
     public function testSyncNewMembersWithMultipleUsers(): void
     {
         $users = [];
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < 5; ++$i) {
             $user = new User($i + 1);
             $user->setEmail("user{$i}@example.com");
             $user->setFirstname("User{$i}");
-            $user->setLastname("Test");
+            $user->setLastname('Test');
             $users[] = $user;
         }
 
@@ -195,16 +195,16 @@ class MailerLiteServiceTest extends TestCase
     {
         $users = [];
         // Create 250 users to test batching (BATCH_SIZE is 100)
-        for ($i = 0; $i < 250; $i++) {
+        for ($i = 0; $i < 250; ++$i) {
             $user = new User($i + 1);
             $user->setEmail("user{$i}@example.com");
-            $user->setFirstname("User");
-            $user->setLastname("Test");
+            $user->setFirstname('User');
+            $user->setLastname('Test');
             $users[] = $user;
         }
 
         $mockResponses = [];
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 3; ++$i) {
             $mockResponses[] = new MockResponse(json_encode([
                 'imported' => 100,
                 'updated' => 0,
@@ -311,11 +311,11 @@ class MailerLiteServiceTest extends TestCase
     public function testSyncNewMembersWithPartialResults(): void
     {
         $users = [];
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 3; ++$i) {
             $user = new User($i + 1);
             $user->setEmail("user{$i}@example.com");
-            $user->setFirstname("User");
-            $user->setLastname("Test");
+            $user->setFirstname('User');
+            $user->setLastname('Test');
             $users[] = $user;
         }
 

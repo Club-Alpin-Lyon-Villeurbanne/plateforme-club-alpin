@@ -194,7 +194,7 @@ class EmailMarketingSyncServiceTest extends TestCase
     public function testSyncUsersLargeUserBase(): void
     {
         $users = [];
-        for ($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 50; ++$i) {
             $user = new User($i + 1);
             $user->setEmail('user' . $i . '@example.com');
             $users[] = $user;
