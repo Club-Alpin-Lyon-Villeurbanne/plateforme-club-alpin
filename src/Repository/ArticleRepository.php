@@ -97,7 +97,6 @@ class ArticleRepository extends ServiceEntityRepository
     public function getUserArticlesCount(User $user, array $statuses = [Article::STATUS_PUBLISHED]): int
     {
         return (int) $this->createQueryBuilder('a')
-            ->select('a')
             ->where('a.status IN (:status)')
             ->setParameter('status', $statuses)
             ->andWhere('a.user = :user')
