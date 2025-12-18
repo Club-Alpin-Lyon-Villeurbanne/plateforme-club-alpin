@@ -25,7 +25,7 @@
         {% elseif event.cancelled %}
             <div class="erreur">
                 <img src="/img/base/cross.png" alt="" title="" style="float:left; padding:2px 6px 0 0;" /> <b>Sortie annulée :</b><br /> Cette sortie a été annulée le {{ event.cancellationDate|date('d/m/Y à H:i') }}, par
-                <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.cancelledWho.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
+                <a href="{{ path('user_profile', {'id': event.cancelledWho.id, 'id_event': event.id}) }}" class="fancyframe userlink">
                     {{ event.cancelledWho.nickname }}
                 </a>.<br />
             </div>

@@ -136,7 +136,7 @@
                     <b>Sortie annulée :</b><br /> Cette sortie a été annulée le {{ event.cancellationDate | date('d/m/Y à H:i') }}
 
                 {% if event.cancelledWho %}
-                    , par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.cancelledWho.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ event.cancelledWho.nickname }}</a>
+                    , par <a href="{{ path('user_profile', {'id': event.cancelledWho.id, 'id_event': event.id}) }}" class="fancyframe userlink">{{ event.cancelledWho.nickname }}</a>
                 {% endif %}
                 <br />
 
@@ -554,7 +554,7 @@
 
                                     <td>
                                         {{ participation.user.firstname | capitalize }} {{ participation.user.lastname | upper }}<br/>
-                                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ participation.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ participation.user.nickname }}</a>
+                                        <a href="{{ path('user_profile', {'id': participation.user.id, 'id_event': event.id}) }}" class="fancyframe userlink">{{ participation.user.nickname }}</a>
 
                                         {% if age_user(participation.user) and age_user(participation.user) < 18 %}
                                             <p style="color:red">{{ age_user(participation.user) }} ans</p>
@@ -1061,7 +1061,7 @@
         <ul class="nice-list">
             <li class="wide">
                 <b>SORTIE PROPOSÉE PAR :</b>
-                <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
+                <a href="{{ path('user_profile', {'id': event.user.id, 'id_event': event.id}) }}" class="fancyframe userlink">
                     {{ event.user.nickname }}
                 </a>
                 <span class="mini">
@@ -1073,7 +1073,7 @@
             <li class="wide">
                 <b>SORTIE APPROUVÉE PAR :</b>
                 {% if event.status is same as (constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE')) and event.statusWho %}
-                    <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.statusWho.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
+                    <a href="{{ path('user_profile', {'id': event.statusWho.id, 'id_event': event.id}) }}" class="fancyframe userlink">
                         {{ event.statusWho.nickname }}
                     </a>
                 {% else %}
@@ -1155,7 +1155,7 @@
                             {% if allowed('user_read_private', event.commission.code) %}
                                 <p class="mini">{{ inscrit.user.firstname|capitalize }} {{ inscrit.user.lastname|upper }}</p>
                             {% endif %}
-                            <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
+                            <a href="{{ path('user_profile', {'id': inscrit.user.id, 'id_event': event.id}) }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
                         </td>
                         <td class="small">
                             {% if inscrit.role not in (constant('App\\Entity\\EventParticipation::ROLES_SIMPLES')) %}
@@ -1235,7 +1235,7 @@
                                                         name="id_user_filiation[]"
                                                         value="{{ app.user.id }}"
                                                         id="filiation_id_user_{{ app.user.id }}" />
-                                                    Moi-même (<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ app.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ app.user.nickname }}</a>)
+                                                    Moi-même (<a href="{{ path('user_profile', {'id': app.user.id, 'id_event': event.id}) }}" class="fancyframe userlink">{{ app.user.nickname }}</a>)
                                                 </label>
                                                 <br />
                                                 {% for filiation in filiations %}

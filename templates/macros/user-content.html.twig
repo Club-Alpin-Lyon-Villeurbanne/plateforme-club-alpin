@@ -1,0 +1,37 @@
+{% macro user_content(user, nb_articles, user_articles, nb_events, user_events, type = 'full') %}
+    {% import 'macros/article-link.html.twig' as article_macro %}
+    {% import 'macros/event-line.html.twig' as event_macro %}
+
+    <h2 id="user-sorties">
+        {% if type is same as ('reduced') %}
+            Dernières sorties :
+        {% else %}
+            Ses sorties :
+        {% endif %}
+    </h2>
+    <p class="mini">{{ nb_events }} sortie(s) en tout</p>
+    <div class="profile-block">
+        <table id="agenda">
+            {% for event in user_events %}
+                {{ event_macro.event_line(event, user, '', false) }}
+            {% endfor %}
+        </table>
+    </div>
+    <br style="clear:both" />
+    <hr  />
+
+    <h2 id="user-articles">
+        {% if type is same as ('reduced') %}
+            Derniers articles :
+        {% else %}
+            Ses articles :
+        {% endif %}
+    </h2>
+    <p class="mini">{{ nb_articles }} articles en tout</p>
+    <div class="profile-block">
+        {% for article in user_articles %}
+            {{ article_macro.article_link(article) }}
+        {% endfor %}
+    </div>
+    <br style="clear:both" />
+{% endmacro %}

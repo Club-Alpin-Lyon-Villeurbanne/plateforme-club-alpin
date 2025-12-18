@@ -20,7 +20,7 @@
                 {% for roleCode,roleName in roles %}
                     <td>
                         {% for userId,userNickname in users[roleCode] %}
-                            <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ userId }}" class="fancyframe userlink">{{ userNickname }}</a><br>
+                            <a href="{{ path('user_profile', {'id': userId}) }}" class="fancyframe userlink">{{ userNickname }}</a><br>
                         {% endfor %}
                     </td>
                 {% endfor %}
