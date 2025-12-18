@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Article;
 use App\Entity\Commission;
+use App\Entity\User;
 use App\Trait\PaginationRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
@@ -83,6 +84,23 @@ class ArticleRepository extends ServiceEntityRepository
     {
         return (int) $this
             ->getArticlesByCommissionDql($commission)
+            ->select('count(a)')
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getUserArticlesCount(User $user, array $statuses = [Article::STATUS_PUBLISHED]): int
+    {
+        return (int) $this->createQueryBuilder('a')
+            ->where('a.status IN (:status)')
+            ->setParameter('status', $statuses)
+            ->andWhere('a.user = :user')
+            ->setParameter('user', $user)
             ->select('count(a)')
             ->getQuery()
             ->getSingleScalarResult()

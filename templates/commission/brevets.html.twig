@@ -61,7 +61,7 @@
             {% for user in users %}
                 <tr>
                     <td title="{{ user.role }}">
-                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ user.user.id }}" class="fancyframe userlink">
+                        <a href="{{ path('user_profile', {'id': user.user.id}) }}" class="fancyframe userlink">
                             {{ user.user.fullname }}
                         </a>
                     </td>
