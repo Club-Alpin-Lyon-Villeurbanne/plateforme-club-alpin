@@ -204,13 +204,23 @@ class MailerLiteServiceTest extends TestCase
         }
 
         $mockResponses = [];
-        for ($i = 0; $i < 3; ++$i) {
-            $mockResponses[] = new MockResponse(json_encode([
-                'imported' => 100,
-                'updated' => 0,
-                'failed' => 0,
-            ]), ['http_code' => 200]);
-        }
+        // First two batches: 100 users each
+        $mockResponses[] = new MockResponse(json_encode([
+            'imported' => 100,
+            'updated' => 0,
+            'failed' => 0,
+        ]), ['http_code' => 200]);
+        $mockResponses[] = new MockResponse(json_encode([
+            'imported' => 100,
+            'updated' => 0,
+            'failed' => 0,
+        ]), ['http_code' => 200]);
+        // Third batch: 50 users
+        $mockResponses[] = new MockResponse(json_encode([
+            'imported' => 50,
+            'updated' => 0,
+            'failed' => 0,
+        ]), ['http_code' => 200]);
 
         $this->httpClient = new MockHttpClient($mockResponses);
         $this->service = new MailerLiteService(
@@ -223,7 +233,7 @@ class MailerLiteServiceTest extends TestCase
         $result = $this->service->syncNewMembers($users);
 
         $this->assertEquals(250, $result['total']);
-        $this->assertEquals(300, $result['imported']);
+        $this->assertEquals(250, $result['imported']);
     }
 
     public function testSyncNewMembersHandlesApiError(): void
