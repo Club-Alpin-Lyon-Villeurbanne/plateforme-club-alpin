@@ -91,7 +91,7 @@ class ParticipantServiceTest extends TestCase
         // Mock that no encadrants are found - use callback to create fresh generators
         $this->userAttrRepository
             ->method('listAllEncadrants')
-            ->willReturnCallback(function($commission, $roles) {
+            ->willReturnCallback(function ($commission, $roles) {
                 return $this->createGenerator([]);
             })
         ;
@@ -127,8 +127,8 @@ class ParticipantServiceTest extends TestCase
         // Mock the repository to return these attributes for ENCADRANT role
         $this->userAttrRepository
             ->method('listAllEncadrants')
-            ->willReturnCallback(function($commission, $roles) use ($attr1, $attr2) {
-                return match([$roles]) {
+            ->willReturnCallback(function ($commission, $roles) use ($attr1, $attr2) {
+                return match ([$roles]) {
                     [[EventParticipation::ROLE_ENCADRANT]] => $this->createGenerator([$attr1, $attr2]),
                     [[EventParticipation::ROLE_STAGIAIRE]] => $this->createGenerator([]),
                     [[EventParticipation::ROLE_COENCADRANT]] => $this->createGenerator([]),
@@ -163,8 +163,8 @@ class ParticipantServiceTest extends TestCase
         // Mock repository responses
         $this->userAttrRepository
             ->method('listAllEncadrants')
-            ->willReturnCallback(function($commission, $roles) use ($attr1) {
-                return match([$roles]) {
+            ->willReturnCallback(function ($commission, $roles) use ($attr1) {
+                return match ([$roles]) {
                     [[EventParticipation::ROLE_ENCADRANT]] => $this->createGenerator([$attr1]),
                     [[EventParticipation::ROLE_STAGIAIRE]] => $this->createGenerator([]),
                     [[EventParticipation::ROLE_COENCADRANT]] => $this->createGenerator([]),
@@ -234,8 +234,8 @@ class ParticipantServiceTest extends TestCase
         // Mock repository responses for each role
         $this->userAttrRepository
             ->method('listAllEncadrants')
-            ->willReturnCallback(function($commission, $roles) use ($attr1, $attr2, $attr3, $attr4) {
-                return match([$roles]) {
+            ->willReturnCallback(function ($commission, $roles) use ($attr1, $attr2, $attr3, $attr4) {
+                return match ([$roles]) {
                     [[EventParticipation::ROLE_ENCADRANT]] => $this->createGenerator([$attr1]),
                     [[EventParticipation::ROLE_STAGIAIRE]] => $this->createGenerator([$attr2]),
                     [[EventParticipation::ROLE_COENCADRANT]] => $this->createGenerator([$attr3]),
