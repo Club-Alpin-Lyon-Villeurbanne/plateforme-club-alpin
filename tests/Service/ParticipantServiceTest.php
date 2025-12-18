@@ -130,9 +130,7 @@ class ParticipantServiceTest extends TestCase
             ->willReturnCallback(function ($commission, $roles) use ($attr1, $attr2) {
                 return match ([$roles]) {
                     [[EventParticipation::ROLE_ENCADRANT]] => $this->createGenerator([$attr1, $attr2]),
-                    [[EventParticipation::ROLE_STAGIAIRE]] => $this->createGenerator([]),
-                    [[EventParticipation::ROLE_COENCADRANT]] => $this->createGenerator([]),
-                    [[EventParticipation::ROLE_BENEVOLE]] => $this->createGenerator([]),
+                    default => $this->createGenerator([]),
                 };
             });
 
@@ -166,9 +164,7 @@ class ParticipantServiceTest extends TestCase
             ->willReturnCallback(function ($commission, $roles) use ($attr1) {
                 return match ([$roles]) {
                     [[EventParticipation::ROLE_ENCADRANT]] => $this->createGenerator([$attr1]),
-                    [[EventParticipation::ROLE_STAGIAIRE]] => $this->createGenerator([]),
-                    [[EventParticipation::ROLE_COENCADRANT]] => $this->createGenerator([]),
-                    [[EventParticipation::ROLE_BENEVOLE]] => $this->createGenerator([]),
+                    default => $this->createGenerator([]),
                 };
             });
 
@@ -240,6 +236,7 @@ class ParticipantServiceTest extends TestCase
                     [[EventParticipation::ROLE_STAGIAIRE]] => $this->createGenerator([$attr2]),
                     [[EventParticipation::ROLE_COENCADRANT]] => $this->createGenerator([$attr3]),
                     [[EventParticipation::ROLE_BENEVOLE]] => $this->createGenerator([$attr4]),
+                    default => $this->createGenerator([]),
                 };
             });
 

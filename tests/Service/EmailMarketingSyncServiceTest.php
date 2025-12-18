@@ -161,12 +161,17 @@ class EmailMarketingSyncServiceTest extends TestCase
                 'failed' => 0,
             ]);
 
-        $this->logger->expects($this->atLeastOnce())
+        $this->logger->expects($this->exactly(2))
             ->method('info')
-            ->withConsecutive(
-                [$this->stringContains('Synchronizing')],
-                [$this->stringContains('MailerLite sync')]
-            );
+            ->willReturnCallback(function (string $message) {
+                static $callCount = 0;
+                ++$callCount;
+                if (1 === $callCount) {
+                    $this->assertStringContainsString('Synchronizing', $message);
+                } else {
+                    $this->assertStringContainsString('MailerLite sync', $message);
+                }
+            });
 
         $this->service->syncUsers([$user1, $user2]);
     }

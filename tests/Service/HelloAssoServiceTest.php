@@ -158,7 +158,6 @@ class HelloAssoServiceTest extends TestCase
 
         $this->helloAssoClient->expects($this->once())
             ->method('createForm')
-            ->withConsecutive()
             ->willReturn(['id' => 1000]);
 
         $this->service->createFormForEvent($event);
