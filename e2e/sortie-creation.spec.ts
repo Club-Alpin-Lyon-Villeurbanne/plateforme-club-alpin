@@ -14,38 +14,92 @@ const CONTENU = 'test de contenu de page';
 const TITRE = `test création de sortie ${Date.now()}`;
 const DATE_SORTIE = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR');
 
+// Prepare an ISO datetime-local value for the sortie start (YYYY-MM-DDTHH:MM)
+const START_DATETIME = (() => {
+  const d = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
+  d.setHours(8, 0, 0, 0);
+  // build a local datetime string without seconds: YYYY-MM-DDTHH:MM
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth() + 1).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const hh = String(d.getHours()).padStart(2, '0');
+  const min = String(d.getMinutes()).padStart(2, '0');
+  return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
+})();
+
 // Fonction utilitaire pour créer une sortie
 const creerSortie = async (page: Page) => {
   await page.locator('#toolbar-user').hover();
   await page.getByRole('link', { name: '• proposer une sortie' }).click();
   await page.getByRole('link', { name: '> Créer une sortie Sorties familles' }).click();
 
-  await page.locator('input[name="titre_evt"]').fill(TITRE);
-  await page.locator('#encadrant-1').check();
-  await page.locator('input[name="rdv_evt"]').fill(RDV_LIEU);
-  const codeAddressBtn = page.locator('input[name="codeAddress"][value="Placer le point sur la carte"]');
-  await expect(codeAddressBtn).toBeVisible({ timeout: 2000 });
-  await codeAddressBtn.click();
-  await page.waitForTimeout(1000);
-  await page.locator('input[name="tsp_evt_day"]').fill(DATE_SORTIE);
-  await page.locator('input[name="tsp_evt_hour"]').fill(HEURE);
-  await page.getByRole('button', { name: 'même jour ?' }).click();
-  await page.locator('input[name="ngens_max_evt"]').fill(NGENS_MAX);
-  await page.locator('input[name="join_start_evt_days"]').fill(JOIN_START_DAYS);
-  await page.locator('input[name="join_max_evt"]').fill(JOIN_MAX);
-  // Correction du typage de window.tinymce
-  await page.evaluate((content) => {
-    const w = window as typeof window & { tinymce?: any };
-    if (typeof w.tinymce !== 'undefined') {
-      const editor = w.tinymce.get('mce_editor_0');
-      if (editor) {
-        editor.setContent(content);
-      }
-    } else {
-      throw new Error('TinyMCE n\'est pas disponible sur cette page');
-    }
-  }, CONTENU);
-  await page.getByRole('button', { name: 'Enregistrer' }).click();
+  // Fill fields using Symfony form labels / names from EventType
+  await page.getByLabel('Titre').fill(TITRE);
+
+  // check first encadrant checkbox (name ends with [encadrants][] or similar)
+  const encadrantCheckbox = page.locator('input[name$="[encadrants][]"]').first();
+  if (await encadrantCheckbox.count() > 0) {
+    await encadrantCheckbox.check();
+  }
+
+  // Lieu de rendez-vous
+  const rdvField = page.getByLabel(/Lieu de rendez-vous covoiturage/i);
+  if (await rdvField.count() > 0) {
+    await rdvField.fill(RDV_LIEU);
+  }
+
+  // Place marker on the map (button with id #codeAddress)
+  const codeAddressBtn = page.locator('#codeAddress');
+  if (await codeAddressBtn.count() > 0) {
+    await expect(codeAddressBtn).toBeVisible({ timeout: 2000 });
+    await codeAddressBtn.click();
+    await page.waitForTimeout(1000);
+  }
+
+  // Date/time fields — EventType uses a single datetime input for startDate
+  const startDateField = page.getByLabel(/Date et heure de RDV/i);
+  if (await startDateField.count() > 0) {
+    await startDateField.fill(START_DATETIME);
+  }
+
+  // Number of participants
+  const ngensField = page.getByLabel(/Nombre maximum de personnes/i);
+  if (await ngensField.count() > 0) {
+    await ngensField.fill(NGENS_MAX);
+  }
+
+  // Join start date — use same start date for simplicity
+  const joinStartField = page.getByLabel(/Les inscriptions démarrent le/i);
+  if (await joinStartField.count() > 0) {
+    await joinStartField.fill(START_DATETIME);
+  }
+
+  // Join max
+  const joinMaxField = page.getByLabel(/Inscriptions maximum via internet/i);
+  if (await joinMaxField.count() > 0) {
+    await joinMaxField.fill(JOIN_MAX);
+  }
+
+  // Description (CKEditor5) — fill underlying textarea and update editable area
+  const descriptionField = page.getByLabel(/Description complète|Description/i).first();
+  if (await descriptionField.count() > 0) {
+    await descriptionField.fill(CONTENU);
+    await page.evaluate((content) => {
+      const editable = document.querySelector('.ck-editor__editable');
+      if (editable) editable.innerHTML = '<p>' + content + '</p>';
+    }, CONTENU);
+  }
+
+  // check required checkboxes (images and editorial agreement)
+  const imagesCheckbox = page.locator('input[name$="[imagesAuthorized]"]');
+  if (await imagesCheckbox.count() > 0) await imagesCheckbox.check();
+  const agreeCheckbox = page.locator('input[name$="[agreeEdito]"]');
+  if (await agreeCheckbox.count() > 0) await agreeCheckbox.check();
+
+  // submit using the publish button
+  const publishBtn = page.getByRole('button', { name: /ENREGISTRER ET DEMANDER LA PUBLICATION/i });
+  await expect(publishBtn).toBeVisible({ timeout: 2000 });
+  await publishBtn.click();
   await page.waitForTimeout(1000);
 };
 
