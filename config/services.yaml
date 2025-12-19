@@ -351,3 +351,13 @@ services:
   App\Command\AutoRenewSpecialAccounts:
     arguments:
       $specialAccountsIds: '%env(SPECIAL_ACCOUNTS_IDS)%'
+
+  App\Helper\CarbonCostHelper:
+    arguments:
+      $trainRate: '%env(TRAIN_CARBON_COST_RATE)%'
+      $thermicCoachRate: '%env(THERMIC_COACH_CARBON_COST_RATE)%'
+      $bikeRate: '%env(BIKE_CARBON_COST_RATE)%'
+      $walkRate: '%env(WALK_CARBON_COST_RATE)%'
+      $thermicCarpoolingRate: '%env(THERMIC_CARPOOLING_CARBON_COST_RATE)%'
+      $electricCarpoolingRate: '%env(ELECTRIC_CARPOOLING_CARBON_COST_RATE)%'
+      $planeRate: '%env(PLANE_CARBON_COST_RATE)%'
