@@ -256,9 +256,11 @@ class GoogleGroupsSync extends Command
                 $this->output->writeln("\t☑️ ️Inserting new Google Group Member <comment>$type</comment> <info>$email</info> to <info>$groupKey</info>");
                 try {
                     $this->googleGroupsService->members->insert($groupKey, $member);
-                } catch (Exception $e) {
+                } catch (Exception $exception) {
                     // évite d'arrêter brutalement tout le traitement
-                    if (Response::HTTP_CONFLICT === $e->getCode()) {
+                    if (Response::HTTP_CONFLICT === $exception->getCode()) {
+                        \Sentry\captureException($exception);
+
                         return;
                     }
                 }
