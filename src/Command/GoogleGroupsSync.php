@@ -21,6 +21,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
 #[AsCommand(name: 'google-groups-sync')]
@@ -244,25 +245,6 @@ class GoogleGroupsSync extends Command
         $this->upsertMemberToGoogleGroup($existingCommissionsAll, self::ALL_COMMISSIONS_ADRESSE, $groupKey);
     }
 
-    private function normalizeEmail(string $email): string
-    {
-        $email = mb_strtolower(trim($email));
-
-        if (!str_ends_with($email, '@gmail.com') && !str_ends_with($email, '@googlemail.com')) {
-            return $email;
-        }
-
-        [$local, $domain] = explode('@', $email, 2);
-
-        // remove dots
-        $local = str_replace('.', '', $local);
-
-        // remove +tag
-        $local = preg_replace('/\+.*/', '', $local);
-
-        return $local . '@' . $domain;
-    }
-
     private function upsertMemberToGoogleGroup(array $existingMembers, string $groupKey, string $email, string $type = 'MEMBER'): void
     {
         if (!isset($existingMembers[$email])) {
@@ -272,7 +254,16 @@ class GoogleGroupsSync extends Command
 
             if (!$this->dryRun) {
                 $this->output->writeln("\t☑️ ️Inserting new Google Group Member <comment>$type</comment> <info>$email</info> to <info>$groupKey</info>");
-                $this->googleGroupsService->members->insert($groupKey, $member);
+                try {
+                    $this->googleGroupsService->members->insert($groupKey, $member);
+                } catch (Exception $exception) {
+                    // évite d'arrêter brutalement tout le traitement
+                    if (Response::HTTP_CONFLICT === $exception->getCode()) {
+                        \Sentry\captureException($exception);
+
+                        return;
+                    }
+                }
             } else {
                 $this->output->writeln("\t💨 Ajout d'un membre au Google Group <comment>$type</comment> <info>$email</info> à <info>$groupKey</info>");
             }
@@ -465,7 +456,7 @@ class GoogleGroupsSync extends Command
 
     private function getCommissionGoogleGroupMembers(string $groupEmail): array
     {
-        $members = array_map(fn (Member $member) => $this->normalizeEmail($member->getEmail() ?? ''), $this->googleGroupsService->members->listMembers($groupEmail)->getMembers());
+        $members = array_map(fn (Member $member) => mb_strtolower($member->getEmail() ?? ''), $this->googleGroupsService->members->listMembers($groupEmail)->getMembers());
 
         // return a map, more easy to process by the algo
         return array_combine($members, $members);
@@ -542,6 +533,6 @@ class GoogleGroupsSync extends Command
             $email = $user->getGdriveEmail();
         }
 
-        return $this->normalizeEmail($email);
+        return $email;
     }
 }
