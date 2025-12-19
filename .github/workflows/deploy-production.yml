@@ -43,7 +43,7 @@ permissions:
 
 jobs:
   deploy-to-clevercloud:
-    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/heads/hotfix-prod-')
+    if: github.ref == 'refs/heads/prod' || startsWith(github.ref, 'refs/heads/hotfix-prod-')
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     steps:
