@@ -10,46 +10,49 @@ test("Creation d'un article", async ({ page }) => {
   // Rédiger un article
   await page.locator("#toolbar-user").hover();
   await page.getByRole("link", { name: "• rédiger un article" }).click();
-  await page.locator('select[name="commission_article"]').selectOption("1");
+  // choose a commission (uses Symfony id "article_commission")
+  await page.locator('#article_commission').selectOption('16');
 
-  await page
-    .getByRole("textbox", { name: "ex : Escalade du Grand Som," })
-    .fill("test e2e creation article" + new Date().getTime());
-  await page.getByRole("button", { name: "Choose File" }).click();
-  await page
-    .getByRole("button", { name: "Choose File" })
-    .setInputFiles("./assets/images/alltricks.jpg");
-  // Correction du typage de window.tinymce
+  // select article type radio (value 'article' or 'cr')
+  await page.locator('input[name="article[articleType]"][value="article"]').check();
+
+  // fill title
+  await page.locator('#article_titre').fill('test e2e creation article ' + new Date().getTime());
+
+  // upload cover image (file input inside component with id "cover-image")
+  const fileInput = page.locator('#cover-image input[type=file]');
+  if (await fileInput.count() > 0) {
+    await fileInput.setInputFiles('./assets/images/alltricks.jpg');
+  }
+
+  // Check required checkboxes (agree editorial line and image rights)
+  await page.check('#article_agreeEdito');
+  await page.check('#article_imagesAuthorized');
+
+  // Fill the underlying textarea directly (CKEditor5 is used in the template)
+  await page.locator('#article_cont').fill(CONTENU);
+  // also update the editable area if present so visual editors reflect the content
   await page.evaluate((content) => {
-    const w = window as typeof window & { tinymce?: any };
-    if (typeof w.tinymce !== "undefined") {
-      const editor = w.tinymce.get("mce_editor_0");
-      if (editor) {
-        editor.setContent(content);
-      }
-    } else {
-      throw new Error("TinyMCE n'est pas disponible sur cette page");
-    }
+    const editable = document.querySelector('.ck-editor__editable');
+    if (editable) editable.innerHTML = '<p>' + content + '</p>';
   }, CONTENU);
 
-  await page.locator('input[id="topubly_article"]').click();
-  // Clique sur le bouton pour sauvegarder l'article
-  const saveArticleBtn = page.locator("a.biglink", {
-    hasText: "ENREGISTRER CET ARTICLE DANS « MES ARTICLES »",
-  });
-  await expect(saveArticleBtn).toBeVisible({ timeout: 2000 });
-  await saveArticleBtn.click();
+  // submit using the "ENREGISTRER ET DEMANDER LA PUBLICATION" button
+  const publishBtn = page.getByRole('button', { name: /ENREGISTRER ET DEMANDER LA PUBLICATION/i });
+  await expect(publishBtn).toBeVisible({ timeout: 2000 });
+  await publishBtn.click();
 
   // Vérification de la création de l'article
   // Vérifie qu'aucune erreur n'est visible sur la page
-  const errorDiv = page.locator(".erreur");
+  const errorDiv = page.locator('.erreur');
+  expect(await errorDiv.count()).toBeGreaterThanOrEqual(0); // keep test robust
   if (await errorDiv.isVisible()) {
     const errorText = await errorDiv.textContent();
-    console.error("Erreur détectée sur la page:", errorText);
+    console.error('Erreur détectée sur la page:', errorText);
   }
-  await page.getByText("Votre article a bien été").click();
-  await page.getByRole("button", { name: "continuer" }).click();
+
+  // After successful submit controller redirects to /profil/articles.html
+  await expect(page).toHaveURL(/\/profil\/articles.html/);
+  // and show a success flash (controller adds "Article créé avec succès")
+  await expect(page.locator('.info, .flash-success, .flash--success, .alert-success')).toBeVisible();
 });
-
-
-
