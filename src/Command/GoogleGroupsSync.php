@@ -21,6 +21,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\String\Slugger\AsciiSlugger;
 
 #[AsCommand(name: 'google-groups-sync')]
@@ -265,6 +266,7 @@ class GoogleGroupsSync extends Command
 
     private function upsertMemberToGoogleGroup(array $existingMembers, string $groupKey, string $email, string $type = 'MEMBER'): void
     {
+        $email = $this->normalizeEmail($email);
         if (!isset($existingMembers[$email])) {
             $member = new Member();
             $member->setEmail($email);
@@ -272,7 +274,14 @@ class GoogleGroupsSync extends Command
 
             if (!$this->dryRun) {
                 $this->output->writeln("\t☑️ ️Inserting new Google Group Member <comment>$type</comment> <info>$email</info> to <info>$groupKey</info>");
-                $this->googleGroupsService->members->insert($groupKey, $member);
+                try {
+                    $this->googleGroupsService->members->insert($groupKey, $member);
+                } catch (Exception $e) {
+                    // évite d'arrêter brutalement tout le traitement
+                    if (Response::HTTP_CONFLICT === $e->getCode()) {
+                        return;
+                    }
+                }
             } else {
                 $this->output->writeln("\t💨 Ajout d'un membre au Google Group <comment>$type</comment> <info>$email</info> à <info>$groupKey</info>");
             }
