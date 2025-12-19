@@ -245,28 +245,8 @@ class GoogleGroupsSync extends Command
         $this->upsertMemberToGoogleGroup($existingCommissionsAll, self::ALL_COMMISSIONS_ADRESSE, $groupKey);
     }
 
-    private function normalizeEmail(string $email): string
-    {
-        $email = mb_strtolower(trim($email));
-
-        if (!str_ends_with($email, '@gmail.com') && !str_ends_with($email, '@googlemail.com')) {
-            return $email;
-        }
-
-        [$local, $domain] = explode('@', $email, 2);
-
-        // remove dots
-        $local = str_replace('.', '', $local);
-
-        // remove +tag
-        $local = preg_replace('/\+.*/', '', $local);
-
-        return $local . '@' . $domain;
-    }
-
     private function upsertMemberToGoogleGroup(array $existingMembers, string $groupKey, string $email, string $type = 'MEMBER'): void
     {
-        $email = $this->normalizeEmail($email);
         if (!isset($existingMembers[$email])) {
             $member = new Member();
             $member->setEmail($email);
@@ -474,7 +454,7 @@ class GoogleGroupsSync extends Command
 
     private function getCommissionGoogleGroupMembers(string $groupEmail): array
     {
-        $members = array_map(fn (Member $member) => $this->normalizeEmail($member->getEmail() ?? ''), $this->googleGroupsService->members->listMembers($groupEmail)->getMembers());
+        $members = array_map(fn (Member $member) => mb_strtolower($member->getEmail() ?? ''), $this->googleGroupsService->members->listMembers($groupEmail)->getMembers());
 
         // return a map, more easy to process by the algo
         return array_combine($members, $members);
@@ -551,6 +531,6 @@ class GoogleGroupsSync extends Command
             $email = $user->getGdriveEmail();
         }
 
-        return $this->normalizeEmail($email);
+        return $email;
     }
 }
