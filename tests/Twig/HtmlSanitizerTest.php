@@ -47,6 +47,14 @@ class HtmlSanitizerTest extends KernelTestCase
                 '<a href="https://example.com" title="Example">Link</a>',
                 '<a href="https://example.com" title="Example">Link</a>',
             ],
+            'link with relative path' => [
+                '<a href="/ftp/user/4896/files/revue-alpine-665.pdf"><strong>Afficher le n° 665</strong></a>',
+                '<a href="/ftp/user/4896/files/revue-alpine-665.pdf"><strong>Afficher le n° 665</strong></a>',
+            ],
+            'link with relative path without leading slash' => [
+                '<a href="ftp/user/1161/files/revuealpine202101651.pdf">Afficher le n° 651</a>',
+                '<a href="ftp/user/1161/files/revuealpine202101651.pdf">Afficher le n° 651</a>',
+            ],
             'image with safe attributes' => [
                 '<img src="https://www.youtube.com/image.jpg" alt="Image" width="100" height="100">',
                 '<img src="https://www.youtube.com/image.jpg" alt="Image" width="100" height="100" />',
@@ -84,7 +92,7 @@ class HtmlSanitizerTest extends KernelTestCase
             ],
             'onerror on img' => [
                 '<img src="x" onerror="alert(\'xss\')">',
-                '<img />',
+                '<img src="x" />', // src="x" is kept (relative path allowed), onerror is removed
             ],
             'javascript href' => [
                 '<a href="javascript:alert(\'xss\')">Click</a>',
