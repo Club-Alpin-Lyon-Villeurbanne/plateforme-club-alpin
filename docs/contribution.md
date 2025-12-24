@@ -1,5 +1,43 @@
 # Guide de Contribution
 
+## Workflow des branches
+
+```
+main                    ← Branche principale de développement
+  │
+  ├── feature/*         ← Nouvelles fonctionnalités
+  ├── fix/*             ← Corrections de bugs
+  └── docs/*            ← Documentation
+        │
+        ▼
+production              ← Branche de déploiement en prod
+  │
+  └── hotfix-prod-*     ← Hotfixes urgents (déployables directement)
+```
+
+### Branches principales
+
+| Branche | Rôle | Déploiement |
+|---------|------|-------------|
+| `main` | Développement, PRs, reviews | Non |
+| `production` | Code en production | Oui (Clever Cloud) |
+| `hotfix-prod-*` | Corrections urgentes | Oui (Clever Cloud) |
+
+### Workflow standard
+
+1. Créer une branche depuis `main` : `git checkout -b feature/ma-fonctionnalite`
+2. Développer et commiter
+3. Ouvrir une PR vers `main`
+4. Après review et merge dans `main`, merger `main` dans `production` pour déployer
+
+### Hotfixes urgents
+
+Pour les corrections critiques en production :
+1. Créer une branche `hotfix-prod-*` depuis `production`
+2. Corriger et tester
+3. Déployer directement depuis cette branche
+4. Merger ensuite dans `main` pour synchroniser
+
 ## Avant de Commencer
 
 Avant de commencer à travailler sur une contribution :

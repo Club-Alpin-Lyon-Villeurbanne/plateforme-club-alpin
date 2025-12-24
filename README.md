@@ -52,6 +52,7 @@ Application web permettant de gérer un Club Alpin Francais! Ce projet est utili
 
 ### Infrastructure
 - [Environnements](docs/environments.md)
+- [CI/CD et déploiement](docs/ci-cd.md)
 - [Tâches automatisées](docs/cronjobs.md)
 
 ## 🔗 Liens utiles
