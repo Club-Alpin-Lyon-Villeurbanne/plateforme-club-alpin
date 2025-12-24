@@ -16,36 +16,53 @@
 
 Le déploiement sur staging est **automatique** à chaque push sur `main`.
 
-#### Production (manuel)
+#### Production Lyon (automatique)
+
+| Workflow | Déclencheur | Cible |
+|----------|-------------|-------|
+| `lyon-production-deploy.yml` | Push sur `production` | clubalpinlyon.fr |
+
+Le déploiement en production Lyon est **automatique** à chaque push sur `production`.
+
+#### Production autres clubs (manuel)
 
 | Workflow | Cible |
 |----------|-------|
-| `lyon-production-deploy.yml` | clubalpinlyon.fr |
 | `chambery-production-deploy.yml` | Production Chambéry |
 | `clermont-production-deploy.yml` | Production Clermont |
 
-Les déploiements en production sont déclenchés **manuellement** via GitHub Actions.
+Ces clubs déploient **manuellement** via GitHub Actions (workflow_dispatch).
 
 #### Branches autorisées
 
-| Branche | Staging | Production |
-|---------|---------|------------|
-| `main` | ✅ Auto | ❌ |
-| `production` | ❌ | ✅ Manuel |
-| `hotfix-prod-*` | ❌ | ✅ Manuel |
+| Branche | Staging | Prod Lyon | Prod autres |
+|---------|---------|-----------|-------------|
+| `main` | ✅ Auto | ❌ | ❌ |
+| `production` | ❌ | ✅ Auto | ✅ Manuel |
+| `hotfix-prod-*` | ❌ | ✅ Manuel | ✅ Manuel |
 
 #### Comment déployer en production
 
-1. Merger les changements dans `production` (ou créer une branche `hotfix-prod-*`)
-2. Aller dans **Actions** > **Deploy on Production - Lyon** (ou autre club)
-3. Cliquer sur **Run workflow**
-4. Sélectionner la branche (`production` ou `hotfix-prod-*`)
-5. Cliquer sur **Run workflow**
+**Lyon** : Merger dans `production` → déploiement automatique
+
+**Chambéry / Clermont** (manuel) :
+1. Aller dans **Actions** > **Deploy on Production - Chambéry** (ou Clermont)
+2. Cliquer sur **Run workflow**
+3. Sélectionner la branche (`production` ou `hotfix-prod-*`)
+
+**Hotfix urgent** :
+1. Créer une branche `hotfix-prod-*` depuis `production`
+2. Déclencher manuellement le workflow du club concerné
 
 Le déploiement :
 - Pousse le code sur Clever Cloud
 - Envoie une notification Slack (succès ou échec)
 - Met à jour la variable `*_LAST_DEPLOYED_SHA` pour tracker les déploiements
+
+#### Bonnes pratiques
+
+- **Protéger la branche `production`** : Activer la protection dans GitHub Settings pour éviter les pushs directs non autorisés
+- **Tester sur staging** : Toujours valider sur clubalpinlyon.top avant de merger dans `production`
 
 ## Test local avec `act`
 

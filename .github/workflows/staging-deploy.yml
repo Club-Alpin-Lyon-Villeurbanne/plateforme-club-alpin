@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   deploy:
-    uses: ./.github/workflows/deploy-production.yml
+    uses: ./.github/workflows/deploy-clevercloud.yml
     with:
       environment: staging
       deployment_label: Staging (clubalpinlyon.top)

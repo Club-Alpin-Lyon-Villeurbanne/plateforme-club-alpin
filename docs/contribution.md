@@ -20,7 +20,7 @@ production              ← Branche de déploiement en prod
 | Branche | Rôle | Déploiement |
 |---------|------|-------------|
 | `main` | Développement, PRs, reviews | Staging (auto) |
-| `production` | Code en production | Production (manuel) |
+| `production` | Code en production | Prod Lyon (auto) |
 | `hotfix-prod-*` | Corrections urgentes | Production (manuel) |
 
 ### Environnements

@@ -1,4 +1,4 @@
-name: Reusable Production Deploy
+name: Reusable Clever Cloud Deploy
 
 on:
   workflow_call:
@@ -43,7 +43,9 @@ permissions:
 
 jobs:
   deploy-to-clevercloud:
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix-prod-')
+    if: >-
+      (inputs.environment == 'staging' && github.ref == 'refs/heads/main') ||
+      (inputs.environment != 'staging' && (github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix-prod-')))
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     steps:
