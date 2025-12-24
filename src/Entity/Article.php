@@ -135,6 +135,9 @@ class Article
     #[ORM\Column(name: 'images_authorized', type: 'boolean', nullable: false, options: ['default' => false])]
     private bool $imagesAuthorized = false;
 
+    #[ORM\Column(name: 'allow_comments', type: 'boolean', nullable: false, options: ['default' => true])]
+    private bool $allowComments = true;
+
     #[ORM\Column(name: 'validation_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'date de publication de l\'article'])]
     #[Groups('event:read')]
     private ?\DateTimeImmutable $validationDate = null;
@@ -327,6 +330,18 @@ class Article
     public function setImagesAuthorized(bool $imagesAuthorized): self
     {
         $this->imagesAuthorized = $imagesAuthorized;
+
+        return $this;
+    }
+
+    public function isAllowComments(): bool
+    {
+        return $this->allowComments;
+    }
+
+    public function setAllowComments(bool $allowComments): self
+    {
+        $this->allowComments = $allowComments;
 
         return $this;
     }

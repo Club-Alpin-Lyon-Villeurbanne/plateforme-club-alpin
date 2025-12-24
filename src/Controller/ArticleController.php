@@ -199,6 +199,10 @@ class ArticleController extends AbstractController
             ++$errors;
             $this->addFlash('error', 'L\'article visé ne semble pas publié.');
         }
+        if (!$article->isAllowComments()) {
+            ++$errors;
+            $this->addFlash('error', 'Les commentaires sont désactivés sur cet article.');
+        }
         if ('unlocked' !== $request->request->get('unlock1')) {
             ++$errors;
             $this->addFlash('error', 'L\'antispam n\'a pas autorisé l\'envoi. Merci de cliquer sur le bouton &laquo;OK&raquo; pour envoyer le message.');
