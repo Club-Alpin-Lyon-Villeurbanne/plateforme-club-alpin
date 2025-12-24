@@ -135,8 +135,8 @@ class Article
     #[ORM\Column(name: 'images_authorized', type: 'boolean', nullable: false, options: ['default' => false])]
     private bool $imagesAuthorized = false;
 
-    #[ORM\Column(name: 'allow_comments', type: 'boolean', nullable: false, options: ['default' => true])]
-    private bool $allowComments = true;
+    #[ORM\Column(name: 'allow_comments', type: 'boolean', nullable: false, options: ['default' => false])]
+    private bool $allowComments = false;
 
     #[ORM\Column(name: 'validation_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'date de publication de l\'article'])]
     #[Groups('event:read')]

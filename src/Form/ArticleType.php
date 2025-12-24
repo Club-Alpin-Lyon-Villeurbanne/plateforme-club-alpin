@@ -127,7 +127,7 @@ class ArticleType extends AbstractType
                 'attr' => [
                     'class' => 'custom',
                 ],
-                'help' => 'Décochez cette case pour désactiver les commentaires sur cet article.',
+                'help' => 'Cochez cette case pour permettre aux adhérents de commenter cet article.',
             ])
             ->add('cont', TextareaType::class, [
                 'label' => 'Contenu',

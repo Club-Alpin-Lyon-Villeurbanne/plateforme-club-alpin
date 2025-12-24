@@ -16,7 +16,7 @@ final class Version20251224152100 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE caf_article ADD allow_comments TINYINT(1) DEFAULT 1 NOT NULL');
+        $this->addSql('ALTER TABLE caf_article ADD allow_comments TINYINT(1) DEFAULT 0 NOT NULL');
     }
 
     public function down(Schema $schema): void
