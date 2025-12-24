@@ -1,5 +1,52 @@
 # Guide de Contribution
 
+## Workflow des branches
+
+```
+main                    ← Branche principale de développement
+  │                       (déploie auto sur staging)
+  ├── feature/*         ← Nouvelles fonctionnalités
+  ├── fix/*             ← Corrections de bugs
+  └── docs/*            ← Documentation
+        │
+        ▼
+production              ← Branche de déploiement en prod
+  │
+  └── hotfix-prod-*     ← Hotfixes urgents (déployables directement)
+```
+
+### Branches principales
+
+| Branche | Rôle | Déploiement |
+|---------|------|-------------|
+| `main` | Développement, PRs, reviews | Staging (auto) |
+| `production` | Code en production | Prod Lyon (auto) |
+| `hotfix-prod-*` | Corrections urgentes | Production (manuel) |
+
+### Environnements
+
+| Environnement | URL | Branche |
+|---------------|-----|---------|
+| Staging | https://www.clubalpinlyon.top | `main` (auto) |
+| Production Lyon | https://www.clubalpinlyon.fr | `production` |
+
+### Workflow standard
+
+1. Créer une branche depuis `main` : `git checkout -b feature/ma-fonctionnalite`
+2. Développer et commiter
+3. Ouvrir une PR vers `main`
+4. Après merge dans `main` → déploiement automatique sur staging
+5. Tester sur staging (clubalpinlyon.top)
+6. Merger `main` dans `production` pour déployer en prod
+
+### Hotfixes urgents
+
+Pour les corrections critiques en production :
+1. Créer une branche `hotfix-prod-*` depuis `production`
+2. Corriger et tester
+3. Déployer directement depuis cette branche
+4. Merger ensuite dans `main` pour synchroniser
+
 ## Avant de Commencer
 
 Avant de commencer à travailler sur une contribution :

@@ -1,6 +1,9 @@
 name: Deploy on Production - Lyon 🚀
 
 on:
+  push:
+    branches:
+      - production
   workflow_dispatch:
 
 concurrency:
@@ -9,7 +12,7 @@ concurrency:
 
 jobs:
   deploy:
-    uses: ./.github/workflows/deploy-production.yml
+    uses: ./.github/workflows/deploy-clevercloud.yml
     with:
       environment: production
       deployment_label: Production - Lyon
