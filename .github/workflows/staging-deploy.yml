@@ -1,0 +1,25 @@
+name: Deploy on Staging 🚀
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    uses: ./.github/workflows/deploy-production.yml
+    with:
+      environment: staging
+      deployment_label: Staging (clubalpinlyon.top)
+      clever_app_id: app_9621fbc8-3bbc-4a15-a48c-cca8f8051557
+      last_deployed_variable: STAGING_LAST_DEPLOYED_SHA
+      failure_logs_url: https://console.clever-cloud.com/organisations/orga_ad557a52-c460-4455-88b0-8acd46733724/applications/app_9621fbc8-3bbc-4a15-a48c-cca8f8051557/logs
+    secrets:
+      clever_token: ${{ secrets.CLEVER_TOKEN }}
+      clever_secret: ${{ secrets.CLEVER_SECRET }}
+      slack_webhook: ${{ secrets.SLACK_WEBHOOK_URL }}

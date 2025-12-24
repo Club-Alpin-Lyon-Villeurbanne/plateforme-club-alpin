@@ -4,7 +4,7 @@
 
 ```
 main                    ← Branche principale de développement
-  │
+  │                       (déploie auto sur staging)
   ├── feature/*         ← Nouvelles fonctionnalités
   ├── fix/*             ← Corrections de bugs
   └── docs/*            ← Documentation
@@ -19,16 +19,25 @@ production              ← Branche de déploiement en prod
 
 | Branche | Rôle | Déploiement |
 |---------|------|-------------|
-| `main` | Développement, PRs, reviews | Non |
-| `production` | Code en production | Oui (Clever Cloud) |
-| `hotfix-prod-*` | Corrections urgentes | Oui (Clever Cloud) |
+| `main` | Développement, PRs, reviews | Staging (auto) |
+| `production` | Code en production | Production (manuel) |
+| `hotfix-prod-*` | Corrections urgentes | Production (manuel) |
+
+### Environnements
+
+| Environnement | URL | Branche |
+|---------------|-----|---------|
+| Staging | https://www.clubalpinlyon.top | `main` (auto) |
+| Production Lyon | https://www.clubalpinlyon.fr | `production` |
 
 ### Workflow standard
 
 1. Créer une branche depuis `main` : `git checkout -b feature/ma-fonctionnalite`
 2. Développer et commiter
 3. Ouvrir une PR vers `main`
-4. Après review et merge dans `main`, merger `main` dans `production` pour déployer
+4. Après merge dans `main` → déploiement automatique sur staging
+5. Tester sur staging (clubalpinlyon.top)
+6. Merger `main` dans `production` pour déployer en prod
 
 ### Hotfixes urgents
 

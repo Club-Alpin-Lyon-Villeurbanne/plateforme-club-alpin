@@ -6,23 +6,35 @@
 - **code-quality.yaml** : PHP-CS-Fixer et PHPStan
 - **tests.yaml** : Tests PHPUnit avec coverage
 
-### Déploiement en production
+### Déploiement
 
-Les déploiements sont déclenchés **manuellement** via GitHub Actions (workflow_dispatch).
+#### Staging (automatique)
+
+| Workflow | Déclencheur | Cible |
+|----------|-------------|-------|
+| `staging-deploy.yml` | Push sur `main` | clubalpinlyon.top |
+
+Le déploiement sur staging est **automatique** à chaque push sur `main`.
+
+#### Production (manuel)
 
 | Workflow | Cible |
 |----------|-------|
-| `lyon-production-deploy.yml` | Production Lyon |
+| `lyon-production-deploy.yml` | clubalpinlyon.fr |
 | `chambery-production-deploy.yml` | Production Chambéry |
 | `clermont-production-deploy.yml` | Production Clermont |
 
-#### Branches autorisées pour le déploiement
+Les déploiements en production sont déclenchés **manuellement** via GitHub Actions.
 
-Seules ces branches peuvent déclencher un déploiement en production :
-- `production` : Branche principale de déploiement
-- `hotfix-prod-*` : Branches de hotfix (ex: `hotfix-prod-fix-urgent`)
+#### Branches autorisées
 
-#### Comment déployer
+| Branche | Staging | Production |
+|---------|---------|------------|
+| `main` | ✅ Auto | ❌ |
+| `production` | ❌ | ✅ Manuel |
+| `hotfix-prod-*` | ❌ | ✅ Manuel |
+
+#### Comment déployer en production
 
 1. Merger les changements dans `production` (ou créer une branche `hotfix-prod-*`)
 2. Aller dans **Actions** > **Deploy on Production - Lyon** (ou autre club)
@@ -33,7 +45,7 @@ Seules ces branches peuvent déclencher un déploiement en production :
 Le déploiement :
 - Pousse le code sur Clever Cloud
 - Envoie une notification Slack (succès ou échec)
-- Met à jour la variable `LAST_DEPLOYED_SHA` pour tracker les déploiements
+- Met à jour la variable `*_LAST_DEPLOYED_SHA` pour tracker les déploiements
 
 ## Test local avec `act`
 
