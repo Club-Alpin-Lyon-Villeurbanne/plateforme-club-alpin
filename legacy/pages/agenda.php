@@ -3,6 +3,7 @@
 // default values if nothing provided
 
 use App\Legacy\LegacyContainer;
+use App\Helper\HtmlHelper;
 
 if (isset($_GET['year']) && $_GET['year'] > 2000) {
     $year = (int) $_GET['year'];
@@ -172,7 +173,7 @@ echo '<a href="/agenda.html?month=' . (int) $month . '&amp;year=' . (int) $year 
 // choix de la commission
 ksort($comTab);
 foreach ($comTab as $code => $data) {
-    echo '<a href="/agenda/' . html_utf8($code) . '.html?month=' . (int) $month . '&amp;year=' . (int) $year . '" title="" class="' . ($code == $current_commission ? 'up' : '') . '">' . html_utf8($data['title_commission']) . '</a> ';
+    echo '<a href="/agenda/' . HtmlHelper::escape($code) . '.html?month=' . (int) $month . '&amp;year=' . (int) $year . '" title="" class="' . ($code == $current_commission ? 'up' : '') . '">' . HtmlHelper::escape($data['title_commission']) . '</a> ';
 }
 ?>
 				</div>

@@ -3,6 +3,7 @@
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Helper\HtmlHelper;
 
 if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
@@ -201,7 +202,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     if (is_array($userTab['articles'])) {
         $rowValue = [];
         foreach ($userTab['articles'] as $article) {
-            $rowValue[] = '<a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL) . '" target="_blank">' . (new \DateTime($article['created_at']))?->format('d/m/Y') . ' - ' . $article['titre_article'] . '</a>';
+            $rowValue[] = '<a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => HtmlHelper::escape($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL) . '" target="_blank">' . (new \DateTime($article['created_at']))?->format('d/m/Y') . ' - ' . $article['titre_article'] . '</a>';
         }
         printTableRow('Articles :', '<font size="-1" >' . implode('<br />', $rowValue) . '</font>');
     }
@@ -218,11 +219,11 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
             }
             ++$rowValueHeader[$evt['role_evt_join']];
 
-            $row = '<a target="_blank" href="' . LegacyContainer::get('legacy_router')->generate('sortie', ['code' => html_utf8($evt['code_evt']), 'id' => (int) $evt['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL);
+            $row = '<a target="_blank" href="' . LegacyContainer::get('legacy_router')->generate('sortie', ['code' => HtmlHelper::escape($evt['code_evt']), 'id' => (int) $evt['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL);
             if (allowed('evt_validate') && 1 != $evt['status_evt']) {
                 $row .= '&forceshow=true';
             }
-            $row .= '" title="">' . (new \DateTimeImmutable($evt['start_date']))?->format('d/m/Y') . ' - ' . html_utf8($evt['title_commission']) . ' - ' . html_utf8($evt['titre_evt']) . '</a>';
+            $row .= '" title="">' . (new \DateTimeImmutable($evt['start_date']))?->format('d/m/Y') . ' - ' . HtmlHelper::escape($evt['title_commission']) . ' - ' . HtmlHelper::escape($evt['titre_evt']) . '</a>';
             $rowValue[] = $row;
         }
         arsort($rowValueHeader);

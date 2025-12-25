@@ -3,6 +3,7 @@
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Helper\HtmlHelper;
 
 require __DIR__ . '/../app/includes.php';
 
@@ -34,7 +35,7 @@ $targetAbs = LegacyContainer::get('legacy_router')->generate('legacy_root', [], 
 			<h3>URL absolue</h3>
 			<p>Pour partager un fichier par e-mail, ou sur un autre site internet.</p>
             <div class="input-wrapper">
-                <input type="text" id="absolute-url" name="" value="<?php echo html_utf8($targetAbs); ?>" class="urlSelecter" />
+                <input type="text" id="absolute-url" name="" value="<?php echo HtmlHelper::escape($targetAbs); ?>" class="urlSelecter" />
                 <input type="button" class="copy-paste nice" data-target="absolute-url" value="Copier" />
             </div>
 			<br />
@@ -43,7 +44,7 @@ $targetAbs = LegacyContainer::get('legacy_router')->generate('legacy_root', [], 
 			<h3>URL relative</h3>
 			<p>Pour affichage d'une image, ou pour créer un lien vers un fichier, dans une page de ce site.</p>
             <div class="input-wrapper">
-                <input type="text" id="relative-url" name="" value="<?php echo html_utf8($targetRel); ?>" class="urlSelecter" />
+                <input type="text" id="relative-url" name="" value="<?php echo HtmlHelper::escape($targetRel); ?>" class="urlSelecter" />
                 <input type="button" class="copy-paste nice" data-target="relative-url" value="Copier" />
             </div>
 

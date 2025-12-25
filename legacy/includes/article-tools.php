@@ -2,6 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Helper\HtmlHelper;
 
 if (user()) {
     ?>
@@ -22,7 +23,7 @@ if (user()) {
     // BOUTONS
     // publié ? voir
     if (1 == $article['status_article']) {
-        $article_link = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL);
+        $article_link = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => HtmlHelper::escape($article['code_article']), 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL);
         ?>
 			<a href="<?php echo $article_link; ?>" title="" class="nice2">
 				Voir
@@ -32,7 +33,7 @@ if (user()) {
 
     // Sinon : apercu
     else {
-        $article_link = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL);
+        $article_link = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => HtmlHelper::escape($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL);
         ?>
 			<a href="<?php echo $article_link; ?>" title="" class="nice2">
 				Aperçu

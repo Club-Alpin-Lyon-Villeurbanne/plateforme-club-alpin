@@ -3,9 +3,10 @@
 use App\Entity\EventParticipation;
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Helper\HtmlHelper;
 
 ?>
-<a class="agenda-evt-courant" href="<?php echo LegacyContainer::get('legacy_router')->generate('sortie', ['code' => html_utf8($evt['code_evt']), 'id' => (int) $evt['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL); ?>?commission=<?php echo $evt['code_commission']; ?>" title="">
+<a class="agenda-evt-courant" href="<?php echo LegacyContainer::get('legacy_router')->generate('sortie', ['code' => HtmlHelper::escape($evt['code_evt']), 'id' => (int) $evt['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL); ?>?commission=<?php echo $evt['code_commission']; ?>" title="">
 
 	<!-- picto (retiré) -->
 	<div class="picto">
@@ -32,7 +33,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 		<h2 class="tw-flex tw-items-center tw-gap-2"><?php if ($evt['cancelled_evt']) {
 		    echo ' <span style="padding:1px 3px ; color:red; font-family:Arial">ANNULÉE - </span> ';
 		}
-echo html_utf8($evt['titre_evt'] . ($evt['jourN'] ? ' [jour ' . $evt['jourN'] . ']' : ''));
+echo HtmlHelper::escape($evt['titre_evt'] . ($evt['jourN'] ? ' [jour ' . $evt['jourN'] . ']' : ''));
 
 if (is_array($evt) && array_key_exists('status_evt_join', $evt) && null !== $evt['status_evt_join']) {
     if (EventParticipation::STATUS_REFUSE == $evt['status_evt_join']) {

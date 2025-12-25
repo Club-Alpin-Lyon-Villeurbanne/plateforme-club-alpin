@@ -2,6 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
+use App\Helper\HtmlHelper;
 
 $MAX_ADMINS_SUB_LEVELS = LegacyContainer::getParameter('legacy_env_MAX_ADMINS_SUB_LEVELS');
 
@@ -76,7 +77,7 @@ if (($currentPage['admin_page'] && !isGranted(SecurityConstants::ROLE_CONTENT_MA
 			<b>Titre de la page pour chaque langue :</b><br />
 			<p style="width:350px; font-size: 0.7rem; line-height:9px;">META titles : ce titre apparaît dans le menu supérieur du navigateur, et dans les résultats de recherche Google</p>
 			<img src="/img/base/flag-fr.png" title="fr" alt="fr" style="height:28px; vertical-align:top" />
-            <input type="text" name="titre[]" class="type1" value="<?php echo html_utf8(stripslashes($_POST['titre'][0])); ?>" placeholder="" /><br />
+            <input type="text" name="titre[]" class="type1" value="<?php echo HtmlHelper::escape(stripslashes($_POST['titre'][0])); ?>" placeholder="" /><br />
 
 			<br />
 		</div>
@@ -112,7 +113,7 @@ if (($currentPage['admin_page'] && !isGranted(SecurityConstants::ROLE_CONTENT_MA
 		} ?>">
 			<b>Intitulé du lien dans le menu principal :</b><br />
             <img src="/img/base/flag-fr.png" title="fr" alt="fr" style="height:28px; vertical-align:top" />
-            <input type="text" name="menuname[]" class="type1" value="<?php echo html_utf8(stripslashes($_POST['menuname'][0])); ?>" placeholder="" /><br />
+            <input type="text" name="menuname[]" class="type1" value="<?php echo HtmlHelper::escape(stripslashes($_POST['menuname'][0])); ?>" placeholder="" /><br />
 
 			<img src="/img/base/info.png" style="vertical-align:middle" /> Cette nouvelle page apparaîtra à la fin du menu. Utilisez la flèche <img src="/img/base/move.png" style="height:16px;vertical-align:middle;" /> pour la déplacer après enregistrement.
 		</div>

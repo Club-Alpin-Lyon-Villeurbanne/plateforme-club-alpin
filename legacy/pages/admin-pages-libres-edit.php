@@ -2,6 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
+use App\Helper\HtmlHelper;
 
 if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
@@ -24,7 +25,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 	<form action="<?php echo $versCettePage; ?>" method="post">
 		<input type="hidden" name="operation" value="pagelibre_edit" />
 		<input type="hidden" name="id_page" value="<?php echo $id_page; ?>" />
-		<input type="hidden" name="code_page_original" value="<?php echo html_utf8($page['code_page']); ?>" />
+		<input type="hidden" name="code_page_original" value="<?php echo HtmlHelper::escape($page['code_page']); ?>" />
 
 		<?php
         // TABLEAU
@@ -51,7 +52,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 				En minuscules, lettres, chiffres et tirets<br />
 				Utilisez le bouton &laquo;Générer&raquo; pour gagner du temps.
 			</p>
-			<input type="text" name="code_page" class="type1" value="<?php echo html_utf8($page['code_page']); ?>" placeholder="" />.html
+			<input type="text" name="code_page" class="type1" value="<?php echo HtmlHelper::escape($page['code_page']); ?>" placeholder="" />.html
 			&nbsp;&nbsp;&nbsp; <a href="javascript:void(0)" onclick="generateCode()" class="boutonFancy">&gt; Générer automatiquement</a>
 			<br />
 			<br />

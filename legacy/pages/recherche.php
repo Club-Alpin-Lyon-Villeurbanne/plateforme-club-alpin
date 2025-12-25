@@ -1,12 +1,13 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use App\Helper\HtmlHelper;
 
 $searchResultsPerPage = LegacyContainer::getParameter('legacy_env_SEARCH_RESULTS_PER_PAGE');
 
 if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
     // vérification des caractères
-    $safeStr = substr(html_utf8(stripslashes($_GET['str'])), 0, 80);
+    $safeStr = substr(HtmlHelper::escape(stripslashes($_GET['str'])), 0, 80);
     $safeStrSql = LegacyContainer::get('legacy_mysqli_handler')->escapeString(substr(stripslashes($_GET['str']), 0, 80));
     $safeStrSqlWildCard = '%' . $safeStrSql . '%';
 

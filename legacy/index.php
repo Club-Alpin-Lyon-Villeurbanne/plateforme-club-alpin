@@ -3,6 +3,7 @@
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Helper\HtmlHelper;
 
 require __DIR__ . '/app/includes.php';
 
@@ -48,10 +49,10 @@ if (!empty($evt) && is_array($evt) && array_key_exists('titre_evt', $evt) && !em
 <head>
     <meta charset="utf-8">
     <title>
-    <?php echo html_utf8($meta_title); ?>
+    <?php echo HtmlHelper::escape($meta_title); ?>
     </title>
     <base href="<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>" />
-    <meta name="description" content="<?php echo html_utf8($meta_description); ?>">
+    <meta name="description" content="<?php echo HtmlHelper::escape($meta_description); ?>">
     <meta name="author" content="<?php echo LegacyContainer::getParameter('legacy_env_SITENAME'); ?>">
     <meta name="viewport" content="width=1000">
     <?php

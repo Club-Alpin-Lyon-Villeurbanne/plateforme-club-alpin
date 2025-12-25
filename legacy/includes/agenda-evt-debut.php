@@ -3,8 +3,9 @@
 use App\Entity\EventParticipation;
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Helper\HtmlHelper;
 
-echo '<a class="agenda-evt-debut" target="_top" href="' . LegacyContainer::get('legacy_router')->generate('sortie', ['code' => html_utf8($evt['code_evt']), 'id' => (int) $evt['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL) . '?commission=' . $evt['code_commission'];
+echo '<a class="agenda-evt-debut" target="_top" href="' . LegacyContainer::get('legacy_router')->generate('sortie', ['code' => HtmlHelper::escape($evt['code_evt']), 'id' => (int) $evt['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL) . '?commission=' . $evt['code_commission'];
 if (allowed('evt_validate') && isset($evt['status_evt']) && 1 != $evt['status_evt']) {
     echo '&forceshow=true';
 }
@@ -40,9 +41,9 @@ echo '" title="">';
             if (isset($evt['cancelled_evt']) && $evt['cancelled_evt']) {
                 echo ' <span style="padding:1px 3px; color:red; font-family:Arial">ANNULÉE - </span>';
             }
-echo html_utf8($evt['titre_evt'] . (isset($evt['jourN']) && $evt['jourN'] ? ' [jour ' . $evt['jourN'] . ']' : ''));
+echo HtmlHelper::escape($evt['titre_evt'] . (isset($evt['jourN']) && $evt['jourN'] ? ' [jour ' . $evt['jourN'] . ']' : ''));
 if (isset($evt['groupe']) && is_array($evt['groupe'])) {
-    echo ' <small>(' . html_utf8($evt['groupe']['nom']) . ')</small>';
+    echo ' <small>(' . HtmlHelper::escape($evt['groupe']['nom']) . ')</small>';
 }
 
 if (is_array($evt) && array_key_exists('status_evt_join', $evt) && null !== $evt['status_evt_join']) {
@@ -52,7 +53,7 @@ if (is_array($evt) && array_key_exists('status_evt_join', $evt) && null !== $evt
         if (getUser()->getId() == $evt['user_evt']) {
             $str .= '✍️';
         }
-        $str .= html_utf8($evt['role_evt_join']) . '</span>';
+        $str .= HtmlHelper::escape($evt['role_evt_join']) . '</span>';
         echo $str;
         unset($str);
     } elseif (EventParticipation::STATUS_REFUSE == $evt['status_evt_join']) {
@@ -93,7 +94,7 @@ if (is_array($evt) && array_key_exists('status_evt_join', $evt) && null !== $evt
 			<?php
 echo ''
     // commission
-    . '<b>' . html_utf8($evt['title_commission']) . '</b>'
+    . '<b>' . HtmlHelper::escape($evt['title_commission']) . '</b>'
 ;
 ?>
 		</p>

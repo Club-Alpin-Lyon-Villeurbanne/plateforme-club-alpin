@@ -1,6 +1,7 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use App\Helper\HtmlHelper;
 
 $id_comment = (int) $_GET['id_comment'];
 if (!$id_comment) {
@@ -57,7 +58,7 @@ if (!$id_comment) {
 			Aperçu :
 			<div style="background:white; padding:10px; border:1px solid silver">
 				<?php
-                echo nl2br(html_utf8($comment['cont_comment'])); ?>
+                echo nl2br(HtmlHelper::escape($comment['cont_comment'])); ?>
 			</div>
 		</form>
 		<br />

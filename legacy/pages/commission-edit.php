@@ -1,6 +1,7 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use App\Helper\HtmlHelper;
 
 ?>
 <!-- MAIN -->
@@ -116,7 +117,7 @@ use App\Legacy\LegacyContainer;
 
 						<h2>Nom de la commission :</h2>
 						<?php inclure('commission-add-nom', 'vide'); ?>
-						<input type="text" name="title_commission" class="type1" value="<?php echo html_utf8($commissionTmp['title_commission']); ?>" placeholder="< 25 caractères" />
+						<input type="text" name="title_commission" class="type1" value="<?php echo HtmlHelper::escape($commissionTmp['title_commission']); ?>" placeholder="< 25 caractères" />
 
 
                         <hr>

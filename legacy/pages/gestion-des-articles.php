@@ -2,6 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Helper\HtmlHelper;
 
 $MAX_ARTICLES_VALIDATION = LegacyContainer::getParameter('legacy_env_MAX_ARTICLES_VALIDATION');
 $notif_validerunarticle = 0;
@@ -160,7 +161,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
                             $type = 'Actualité « ' . $article['title_commission'] . ' »';
                         }
 
-                        $article_link = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL);
+                        $article_link = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => HtmlHelper::escape($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL);
 
                         // Aff
                         echo '<hr />'
@@ -203,7 +204,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
                             // INFOS
                             . '<p style="padding:5px 5px; line-height:18px;">'
-                                . '<b><a href="' . $article_link . '" target="_blank">' . html_utf8($article['titre_article']) . '</a></b><br />'
+                                . '<b><a href="' . $article_link . '" target="_blank">' . HtmlHelper::escape($article['titre_article']) . '</a></b><br />'
                                 . '<b>Type d\'article :</b> ' . $type . '<br />'
                                 . '<span class="mini">Par ' . userlink($article['id_user'], $article['nickname_user']) . '</span> - '
                                 . '<span class="mini">Le ' . $creationDate->format('d') . ' ' . mois($creationDate->format('m')) . ' ' . $creationDate->format('Y') . ' à ' . $creationDate->format('H:i') . '<br />'
@@ -239,7 +240,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
                             $type = 'Actualité « ' . $article['title_commission'] . ' »';
                         }
 
-                        $article_link = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL);
+                        $article_link = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => HtmlHelper::escape($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL);
 
                         // Aff
                         echo '<hr />'
@@ -283,7 +284,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
                             // INFOS
                             . '<p style="padding:5px 5px; line-height:18px;">'
-                                . '<b><a href="' . $article_link . '" target="_blank">' . html_utf8($article['titre_article']) . '</a></b><br />'
+                                . '<b><a href="' . $article_link . '" target="_blank">' . HtmlHelper::escape($article['titre_article']) . '</a></b><br />'
                                 . '<b>Type d\'article :</b> ' . $type . '<br />'
                                 . '<span class="mini">Par ' . userlink($article['id_user'], $article['nickname_user']) . '</span> - '
                                 . '<span class="mini">Le ' . $creationDate->format('d') . ' ' . mois($creationDate->format('m')) . ' ' . $creationDate->format('Y') . ' à ' . $creationDate->format('H:i') . '<br />'

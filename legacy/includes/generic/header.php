@@ -4,6 +4,7 @@ use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 use App\Twig\JwtExtension;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Helper\HtmlHelper;
 
 global $ogImage;
 $jwt = LegacyContainer::get(JwtExtension::class)->generateJwtToken();
@@ -68,14 +69,14 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) { ?>
 
 
 	<!-- OPENGRAPHS -->
-	<meta property="og:title" content="<?php echo html_utf8($meta_title); ?>" />
-	<meta property="og:description" content="<?php echo htmlspecialchars_decode(html_utf8($meta_description)); ?>" />
+	<meta property="og:title" content="<?php echo HtmlHelper::escape($meta_title); ?>" />
+	<meta property="og:description" content="<?php echo htmlspecialchars_decode(HtmlHelper::escape($meta_description)); ?>" />
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="<?php echo $versCettePage; ?>" />
 	<?php if ($ogImage) { ?>
 		<meta property="og:image" content="<?php echo $ogImage; ?>" />
 	<?php } ?>
-	<meta property="og:site_name" content="<?php echo html_utf8($p_sitename); ?>" />
+	<meta property="og:site_name" content="<?php echo HtmlHelper::escape($p_sitename); ?>" />
 
 	<!-- RSS -->
 	<link rel="alternate" type="application/rss+xml" title="RSS" href="<?php echo LegacyContainer::get('legacy_router')->generate('legacy_root', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>rss.xml?mode=articles" />

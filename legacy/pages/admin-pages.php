@@ -2,6 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
+use App\Helper\HtmlHelper;
 
 $MAX_ADMINS_SUB_LEVELS = LegacyContainer::getParameter('legacy_env_MAX_ADMINS_SUB_LEVELS');
 
@@ -69,8 +70,8 @@ if (isset($currentPage['admin_page']) && $currentPage['admin_page'] && !isGrante
 							onsubmit="return(confirm(\'Voulez-vous vraiment supprimer définitivement cette page ? \n\n ' . addslashes($page['default_name_page']) . ' \'))">
 							<input type="hidden" name="operation" value="page_del" />
 							<input type="hidden" name="id_page" value="' . $page['id_page'] . '" />
-							<input type="hidden" name="default_name_page" value="' . html_utf8($page['default_name_page']) . '" />
-							<input type="hidden" name="code_page" value="' . html_utf8($page['code_page']) . '" />
+							<input type="hidden" name="default_name_page" value="' . HtmlHelper::escape($page['default_name_page']) . '" />
+							<input type="hidden" name="code_page" value="' . HtmlHelper::escape($page['code_page']) . '" />
 							<input type="image" src="/img/base/x.png" class="upimage" alt="Supprimer" title="Supprimer" />
 						</form>')
                         // deplacer

@@ -3,6 +3,7 @@
 use App\Ftp\FtpFile;
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
+use App\Helper\HtmlHelper;
 
 global $errTab;
 global $compte;
@@ -108,11 +109,11 @@ if (count($errTab) > 0) {
                 <p>
                     Ce dossier contient actuellement <b><?php echo $compte - 1; ?></b> éléments.
                 </p>
-                <p><b><?php echo html_utf8(substr($target, 7)); ?></b></p>
+                <p><b><?php echo HtmlHelper::escape(substr($target, 7)); ?></b></p>
 
                 <form action="ftp-deletedir.php" method="GET">
                     <input type="hidden" name="operation" value="delete" />
-                    <input type="hidden" name="target" value="<?php echo html_utf8($target); ?>" />
+                    <input type="hidden" name="target" value="<?php echo HtmlHelper::escape($target); ?>" />
                     <input type="hidden" name="lock" value="locked" />
                     <br />
                     <input type="submit" class="nice red" value="Supprimer ce dossier et les éléments contenus" onclick="$(this).siblings('input[name=lock]').val('unlocked')" />
