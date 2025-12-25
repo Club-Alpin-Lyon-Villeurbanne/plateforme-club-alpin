@@ -372,7 +372,10 @@
 
                 {% if display_notes_de_frais %}
                     {% if event.finished and not event.cancelled and (my_status.role == 'encadrant' or my_status.role == 'coencadrant' or my_status.role == 'stagiaire') %}
-                        {% if not is_event_after_cutoff %}
+                        {% if has_viewable_expense_report %}
+                            {# User already has a submitted/approved/accounted expense report, always show it #}
+                            {% include 'vuejs/expense-report-form.twig' %}
+                        {% elseif not is_event_after_cutoff %}
                             <div class="alerte info-container" style="margin-bottom:2rem !important">
                                 <img src="/img/base/cross.png" alt="" title=""/>
                                 <div class="text-container">
