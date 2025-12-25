@@ -3,8 +3,9 @@
 
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Helper\HtmlHelper;
 
-$url = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL);
+$url = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => HtmlHelper::escape($article['code_article']), 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL);
 if ($article['code_commission'] ?? null) {
     $url .= '?commission=' . $article['code_commission'];
 } // commission de la sortie associée
@@ -29,7 +30,7 @@ if ($article['media_upload_id']) {
 	<!-- titre + lien article -->
 	<h2>
 		<a href="<?php echo $url; ?>" title="Voir cet article">
-			<?php echo html_utf8($article['titre_article']); ?>
+			<?php echo HtmlHelper::escape($article['titre_article']); ?>
 		</a>
 	</h2>
 
@@ -45,8 +46,8 @@ if ($article['media_upload_id']) {
 // une commission est bien liée
 if ($article['code_commission'] ?? null) {
     ?>
-			<a href="/accueil/<?php echo html_utf8($article['code_commission']); ?>.html#home-articles" title="Toutes les actus de cette commission">
-				<?php echo html_utf8($article['title_commission']); ?>
+			<a href="/accueil/<?php echo HtmlHelper::escape($article['code_commission']); ?>.html#home-articles" title="Toutes les actus de cette commission">
+				<?php echo HtmlHelper::escape($article['title_commission']); ?>
 			</a>
 			<?php
 }
@@ -60,8 +61,8 @@ elseif (0 == $article['commission_article']) {
 }
 // -1 = compte rendu de sortie (code_commission compris dans evt)
 elseif (-1 == $article['commission_article']) {
-    $urlEvt = LegacyContainer::get('legacy_router')->generate('sortie', ['code' => html_utf8($article['evt']['code_evt']), 'id' => (int) $article['evt']['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL) . '?commission=' . html_utf8($article['evt']['code_commission']); ?>
-			<a href="<?php echo $urlEvt; ?>" title="Voir la sortie liée à cet article : &laquo; <?php echo html_utf8($article['evt']['titre_evt']); ?> &raquo;">
+    $urlEvt = LegacyContainer::get('legacy_router')->generate('sortie', ['code' => HtmlHelper::escape($article['evt']['code_evt']), 'id' => (int) $article['evt']['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL) . '?commission=' . HtmlHelper::escape($article['evt']['code_commission']); ?>
+			<a href="<?php echo $urlEvt; ?>" title="Voir la sortie liée à cet article : &laquo; <?php echo HtmlHelper::escape($article['evt']['titre_evt']); ?> &raquo;">
 				compte rendu de sortie
 			</a>
 			<?php

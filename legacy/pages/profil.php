@@ -9,6 +9,7 @@
 // 				...
 
 use App\Legacy\LegacyContainer;
+use App\Helper\HtmlHelper;
 
 $MAX_ARTICLES_ADHERENT = LegacyContainer::getParameter('legacy_env_MAX_ARTICLES_ADHERENT');
 
@@ -120,7 +121,7 @@ if ('infos' == $p2 && getUser()) {
 					<h3>Compte créé avec succès</h3>
 					<p class='info'>
 						Votre compte a été créé, <b>mais vous devez le valider</b> en cliquant sur le lien
-						contenu dans l'e-mail que nous venons d'envoyer à " . html_utf8(stripslashes($email_user)) . '
+						contenu dans l'e-mail que nous venons d'envoyer à " . HtmlHelper::escape(stripslashes($email_user)) . '
 					</p>';
                 }
 

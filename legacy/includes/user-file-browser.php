@@ -4,6 +4,7 @@ use App\Ftp\FtpFile;
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Asset\PathPackage;
 use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
+use App\Helper\HtmlHelper;
 
 require __DIR__ . '/../app/includes.php';
 
@@ -304,16 +305,16 @@ if (user()) {
 						</td>
 						<td>
 							' . ('image' == $type ?
-                            '<a class="fancybox" href="' . $fichier['icon'] . '" title="' . html_utf8($fichier['file']) . '"><img src="' . $fichier['icon'] . '" alt="" title="Aperçu de cette image" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
+                            '<a class="fancybox" href="' . $fichier['icon'] . '" title="' . HtmlHelper::escape($fichier['file']) . '"><img src="' . $fichier['icon'] . '" alt="" title="Aperçu de cette image" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
                             :
-                            '<a target="_blank" href="' . $fichier['url'] . '" title="Ouvrir ' . html_utf8($fichier['file']) . ' dans une nouvelle fenêtre"><img src="' . $fichier['icon'] . '" alt="" title="" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
+                            '<a target="_blank" href="' . $fichier['url'] . '" title="Ouvrir ' . HtmlHelper::escape($fichier['file']) . ' dans une nouvelle fenêtre"><img src="' . $fichier['icon'] . '" alt="" title="" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
         ) . '
 						</td>
 						<td>
 							' . ('image' == $type ?
-            '<a class="fancybox" href="' . $fichier['icon'] . '" title="' . html_utf8($fichier['file']) . '">' . substr($fichier['file'], 0, 70) . '</a>'
+            '<a class="fancybox" href="' . $fichier['icon'] . '" title="' . HtmlHelper::escape($fichier['file']) . '">' . substr($fichier['file'], 0, 70) . '</a>'
             :
-            '<a target="_blank" href="' . $fichier['url'] . '" title="Ouvrir ' . html_utf8($fichier['file']) . ' dans une nouvelle fenêtre">' . substr($fichier['file'], 0, 70) . '</a>'
+            '<a target="_blank" href="' . $fichier['url'] . '" title="Ouvrir ' . HtmlHelper::escape($fichier['file']) . ' dans une nouvelle fenêtre">' . substr($fichier['file'], 0, 70) . '</a>'
         ) . '
 						</td>
 						<td>

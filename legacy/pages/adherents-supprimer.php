@@ -1,6 +1,7 @@
 <?php
 
 use App\Security\SecurityConstants;
+use App\Helper\HtmlHelper;
 
 if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';
@@ -12,7 +13,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     } ?>
 
 	<div style="text-align:left;">
-		<h1>Supprimer le compte de l'utilisateur : <?php echo html_utf8(stripslashes($_GET['nom'])); ?></h1><br />
+		<h1>Supprimer le compte de l'utilisateur : <?php echo HtmlHelper::escape(stripslashes($_GET['nom'])); ?></h1><br />
 
 		<p>
 			<h2>Voulez-vous vraiment supprimer ce compte utilisateur ?<br />Cette personne ne pourra plus se connecter au site en tant qu'utilisateur.<br />Toutes les informations le concernant seront effacées.<br /></h2>
