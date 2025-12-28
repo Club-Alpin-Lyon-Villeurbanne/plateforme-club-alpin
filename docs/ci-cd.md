@@ -39,7 +39,15 @@ Ces clubs déploient **manuellement** via GitHub Actions (workflow_dispatch).
 
 #### Comment déployer en production
 
-**Lyon** : Merger dans `production` → déploiement automatique
+**Lyon** (depuis le terminal) :
+```bash
+git checkout production
+git pull
+git merge --ff-only main
+git push
+```
+
+Le `--ff-only` garantit un historique linéaire et échoue si `production` a divergé de `main`.
 
 **Chambéry / Clermont** (manuel) :
 1. Aller dans **Actions** > **Deploy on Production - Chambéry** (ou Clermont)

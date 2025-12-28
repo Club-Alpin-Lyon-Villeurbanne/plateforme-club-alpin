@@ -37,7 +37,7 @@ production              ← Branche de déploiement en prod
 3. Ouvrir une PR vers `main`
 4. Après merge dans `main` → déploiement automatique sur staging (via Clever Cloud)
 5. Tester sur staging (clubalpinlyon.top)
-6. Merger `main` dans `production` pour déployer en prod (via GitHub Actions)
+6. Déployer en prod : `git checkout production && git merge --ff-only main && git push`
 
 ### Hotfixes urgents
 
