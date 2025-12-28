@@ -121,6 +121,14 @@ class ArticleType extends AbstractType
                 ],
                 'help' => 'À utiliser avec parcimonie. Ceci place l\'article au sommet de la page d\'accueil, dans les actualités défilantes. Il reste affiché là jusqu\'à ce qu\'un autre article à la Une vienne l\'en déloger. Utile pour une actualité qui dure dans le temps, ou une alerte à mettre en valeur. La photo est alors obligatoire.',
             ])
+            ->add('allowComments', CheckboxType::class, [
+                'label' => 'Autoriser les commentaires',
+                'required' => false,
+                'attr' => [
+                    'class' => 'custom',
+                ],
+                'help' => 'Cochez cette case pour permettre aux adhérents de commenter cet article.',
+            ])
             ->add('cont', TextareaType::class, [
                 'label' => 'Contenu',
                 'required' => true,

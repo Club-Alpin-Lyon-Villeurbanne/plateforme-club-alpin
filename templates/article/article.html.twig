@@ -31,7 +31,9 @@
                         {% endif %}
                         <br>
                     {% endif %}
-                    <a href="{{ article_url }}#comments">{{ comments|length }} commentaire{% if comments|length > 1 %}s{% endif %}</a>
+                    {% if article.allowComments %}
+                        <a href="{{ article_url }}#comments">{{ comments|length }} commentaire{% if comments|length > 1 %}s{% endif %}</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -168,17 +170,19 @@
                 </div>
 
 
-                <!-- commentaires -->
-                <hr id="comments" />
-                <h2 class="comments-h2"><span>{{ comments|length }}</span> Commentaires</h2>
-                <br />
-                {% if app.user %}
-                    {% include 'components/add-comment.html.twig' with {'article': article, 'article_url': article_url} %}
-                {% endif %}
+                {% if article.allowComments %}
+                    <!-- commentaires -->
+                    <hr id="comments" />
+                    <h2 class="comments-h2"><span>{{ comments|length }}</span> Commentaires</h2>
+                    <br />
+                    {% if app.user %}
+                        {% include 'components/add-comment.html.twig' with {'article': article, 'article_url': article_url} %}
+                    {% endif %}
 
-                {% for comment in comments %}
-                    {% include 'components/comment.html.twig' with {'comment': comment} %}
-                {% endfor %}
+                    {% for comment in comments %}
+                        {% include 'components/comment.html.twig' with {'comment': comment} %}
+                    {% endfor %}
+                {% endif %}
 
             </aside>
         {% endif %}
