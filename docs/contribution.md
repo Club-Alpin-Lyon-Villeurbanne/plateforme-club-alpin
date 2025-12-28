@@ -134,6 +134,5 @@ Le site comporte deux rôles principaux :
 2. **Gestionnaire de contenu** : Modification des pages et blocs de contenu
 
 Accès : https://www.clubalpinlyon.fr/admin/
-Identifiants locaux : 
-- Admin : `admin` / `admin`
-- Gestionnaire de contenu : `admin_contenu` / `contenu` 
+
+Identifiants locaux : voir [guide d'installation](installation.md#accès) 
