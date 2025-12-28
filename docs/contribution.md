@@ -2,7 +2,7 @@
 
 ## Workflow des branches
 
-```
+```text
 main                    ← Branche principale de développement
   │                       (déploie auto sur staging via Clever Cloud)
   ├── feature/*         ← Nouvelles fonctionnalités
@@ -27,8 +27,8 @@ production              ← Branche de déploiement en prod
 
 | Environnement | URL | Branche | Mécanisme |
 |---------------|-----|---------|-----------|
-| Staging | https://www.clubalpinlyon.top | `main` | Clever Cloud (auto) |
-| Production Lyon | https://www.clubalpinlyon.fr | `production` | GitHub Actions (auto) |
+| Staging | [clubalpinlyon.top](https://www.clubalpinlyon.top) | `main` | Clever Cloud (auto) |
+| Production Lyon | [clubalpinlyon.fr](https://www.clubalpinlyon.fr) | `production` | GitHub Actions (auto) |
 
 ### Workflow standard
 
