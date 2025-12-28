@@ -43,9 +43,7 @@ permissions:
 
 jobs:
   deploy-to-clevercloud:
-    if: >-
-      (inputs.environment == 'staging' && github.ref == 'refs/heads/main') ||
-      (inputs.environment != 'staging' && (github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix-prod-')))
+    if: github.ref == 'refs/heads/production' || startsWith(github.ref, 'refs/heads/hotfix-prod-')
     environment: ${{ inputs.environment }}
     runs-on: ubuntu-latest
     steps:

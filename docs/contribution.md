@@ -4,7 +4,7 @@
 
 ```
 main                    ← Branche principale de développement
-  │                       (déploie auto sur staging)
+  │                       (déploie auto sur staging via Clever Cloud)
   ├── feature/*         ← Nouvelles fonctionnalités
   ├── fix/*             ← Corrections de bugs
   └── docs/*            ← Documentation
@@ -19,25 +19,25 @@ production              ← Branche de déploiement en prod
 
 | Branche | Rôle | Déploiement |
 |---------|------|-------------|
-| `main` | Développement, PRs, reviews | Staging (auto) |
-| `production` | Code en production | Prod Lyon (auto) |
-| `hotfix-prod-*` | Corrections urgentes | Production (manuel) |
+| `main` | Développement, PRs, reviews | Staging (auto via Clever Cloud) |
+| `production` | Code en production | Prod Lyon (auto via GitHub Actions) |
+| `hotfix-prod-*` | Corrections urgentes | Production (manuel via GitHub Actions) |
 
 ### Environnements
 
-| Environnement | URL | Branche |
-|---------------|-----|---------|
-| Staging | https://www.clubalpinlyon.top | `main` (auto) |
-| Production Lyon | https://www.clubalpinlyon.fr | `production` |
+| Environnement | URL | Branche | Mécanisme |
+|---------------|-----|---------|-----------|
+| Staging | https://www.clubalpinlyon.top | `main` | Clever Cloud (auto) |
+| Production Lyon | https://www.clubalpinlyon.fr | `production` | GitHub Actions (auto) |
 
 ### Workflow standard
 
 1. Créer une branche depuis `main` : `git checkout -b feature/ma-fonctionnalite`
 2. Développer et commiter
 3. Ouvrir une PR vers `main`
-4. Après merge dans `main` → déploiement automatique sur staging
+4. Après merge dans `main` → déploiement automatique sur staging (via Clever Cloud)
 5. Tester sur staging (clubalpinlyon.top)
-6. Merger `main` dans `production` pour déployer en prod
+6. Merger `main` dans `production` pour déployer en prod (via GitHub Actions)
 
 ### Hotfixes urgents
 

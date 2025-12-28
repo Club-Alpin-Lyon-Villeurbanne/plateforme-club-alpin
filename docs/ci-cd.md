@@ -8,15 +8,11 @@
 
 ### Déploiement
 
-#### Staging (automatique)
+#### Staging (automatique via Clever Cloud)
 
-| Workflow | Déclencheur | Cible |
-|----------|-------------|-------|
-| `staging-deploy.yml` | Push sur `main` | clubalpinlyon.top |
+Le déploiement sur staging (clubalpinlyon.top) est géré **automatiquement par Clever Cloud** à chaque push sur `main`. Aucune GitHub Action n'est nécessaire pour cet environnement.
 
-Le déploiement sur staging est **automatique** à chaque push sur `main`.
-
-#### Production Lyon (automatique)
+#### Production Lyon (automatique via GitHub Actions)
 
 | Workflow | Déclencheur | Cible |
 |----------|-------------|-------|
@@ -33,10 +29,10 @@ Le déploiement en production Lyon est **automatique** à chaque push sur `produ
 
 Ces clubs déploient **manuellement** via GitHub Actions (workflow_dispatch).
 
-#### Branches autorisées
+#### Branches et déploiements
 
-| Branche | Staging | Prod Lyon | Prod autres |
-|---------|---------|-----------|-------------|
+| Branche | Staging (Clever Cloud) | Prod Lyon (GitHub Actions) | Prod autres (GitHub Actions) |
+|---------|------------------------|----------------------------|------------------------------|
 | `main` | ✅ Auto | ❌ | ❌ |
 | `production` | ❌ | ✅ Auto | ✅ Manuel |
 | `hotfix-prod-*` | ❌ | ✅ Manuel | ✅ Manuel |
