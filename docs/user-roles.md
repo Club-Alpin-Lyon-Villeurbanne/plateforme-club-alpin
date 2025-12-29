@@ -17,6 +17,4 @@ Le site comporte deux rôles annexes :
 
 L'interface d'administration est accessible via l'url : https://www.clubalpinlyon.fr/admin/
 
-### Identifiants de test (environnement local)
-- Admin : `admin` / `admin`
-- Gestionnaire de contenu : `admin_contenu` / `contenu` 
+Pour les identifiants de test en local, voir le [guide d'installation](installation.md#accès). 
