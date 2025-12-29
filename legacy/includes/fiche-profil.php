@@ -2,6 +2,7 @@
 
 use App\Entity\EventParticipation;
 use App\Legacy\LegacyContainer;
+use App\Helper\HtmlHelper;
 
 // id du profil
 $id_user = LegacyContainer::get('legacy_mysqli_handler')->escapeString((int) $_GET['id_user']);
@@ -111,7 +112,7 @@ else {
 		        echo '<hr  />'
 		             . '<h3>Infos privées : </h3>'
 		             . '<ul class="nice-list">'
-		             . '<li>NUMÉRO DE LICENCE FFCAM : ' . html_utf8($tmpUser['cafnum_user']) . '</a> </li>';
+		             . '<li>NUMÉRO DE LICENCE FFCAM : ' . HtmlHelper::escape($tmpUser['cafnum_user']) . '</a> </li>';
 		        if (allowed('user_read_private') && $tmpUser['doit_renouveler_user']) {
 		            echo '<li class="red">LICENCE EXPIRÉE</li>';
                 } elseif (allowed('user_read_private') && 1 == $tmpUser['nomade_user']) {
@@ -131,7 +132,7 @@ else {
 		            }
 		            echo '</li>';
 		        }
-		        echo '<li><a href="mailto:' . html_utf8($tmpUser['email_user']) . '" title="Contact direct">' . html_utf8($tmpUser['email_user']) . '</a> </li>'
+		        echo '<li><a href="mailto:' . HtmlHelper::escape($tmpUser['email_user']) . '" title="Contact direct">' . HtmlHelper::escape($tmpUser['email_user']) . '</a> </li>'
 		             . '</ul>'
 		             . '<br style="clear:both" />'
 		        ;

@@ -3,8 +3,9 @@
 
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use App\Helper\HtmlHelper;
 
-$url = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL);
+$url = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => HtmlHelper::escape($article['code_article']), 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL);
 if (isset($current_commission) && $current_commission) {
     $url .= '?commission=' . $current_commission;
 }
@@ -24,7 +25,7 @@ if ($article['media_upload_id']) {
 	<!-- titre + lien article -->
 	<h2>
 		<a target="_top" href="<?php echo $url; ?>" title="Voir cet article">
-			<?php echo html_utf8($article['titre_article']); ?>
+			<?php echo HtmlHelper::escape($article['titre_article']); ?>
 		</a>
 	</h2>
 	<!-- summup -->

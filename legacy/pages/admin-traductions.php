@@ -1,6 +1,7 @@
 <?php
 
 use App\Legacy\LegacyContainer;
+use App\Helper\HtmlHelper;
 
 if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     echo 'Vous n\'êtes pas autorisé à accéder à cette page. Pour toute question, rapprochez-vous du service informatique de votre club.';
@@ -96,11 +97,11 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
             echo '<td class="cont-edit">
 						<input type="hidden" class="jId" value="' . (int) $contTab[$i]['id_content_inline'] . '" />
 						<input type="hidden" class="jGroupe" value="' . (int) $contTab[$i]['groupe_content_inline'] . '" />
-						<input type="text" style="display:none" class="jBase" id="base-' . (int) $contTab[$i]['id_content_inline'] . '" value="' . html_utf8($contTab[$i]['contenu_content_inline']) . '" />
-						<input type="hidden" class="jCode" value="' . html_utf8($contTab[$i]['code_content_inline']) . '" />
-						<input type="hidden" class="jLinkedtopage" value="' . html_utf8($contTab[$i]['linkedtopage_content_inline']) . '" />
+						<input type="text" style="display:none" class="jBase" id="base-' . (int) $contTab[$i]['id_content_inline'] . '" value="' . HtmlHelper::escape($contTab[$i]['contenu_content_inline']) . '" />
+						<input type="hidden" class="jCode" value="' . HtmlHelper::escape($contTab[$i]['code_content_inline']) . '" />
+						<input type="hidden" class="jLinkedtopage" value="' . HtmlHelper::escape($contTab[$i]['linkedtopage_content_inline']) . '" />
 
-						<input type="text" style="min-width:300px;" class="jVal" name="contenu-' . $contTab[$i]['code_content_inline'] . '-' . $dejaVus . '" value="' . html_utf8($contTab[$i]['contenu_content_inline']) . '" />
+						<input type="text" style="min-width:300px;" class="jVal" name="contenu-' . $contTab[$i]['code_content_inline'] . '-' . $dejaVus . '" value="' . HtmlHelper::escape($contTab[$i]['contenu_content_inline']) . '" />
 					</td>';
             echo '<td class="cont-save"><a href="javascript:void(0)" title="Sauvegarder cette ligne" rel="' . (int) $contTab[$i]['id_content_inline'] . '"><img src="/img/base/save.png" alt="Sauvegarder cette ligne" title="Sauvegarder cette ligne" class="upimage" style="height:20px; " /></a></td>';
             echo '<td class="cont-versions">' . jour(date('N', $contTab[$i]['date_content_inline'])) . ' ' . date('d/m/y - H:i:s', $contTab[$i]['date_content_inline']) . '</td>';

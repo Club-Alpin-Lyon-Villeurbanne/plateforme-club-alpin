@@ -2,6 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
+use App\Helper\HtmlHelper;
 
 if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     echo 'Vous n\'êtes pas autorisé à accéder à cette page. Pour toute question, rapprochez-vous du service informatique de votre club.';
@@ -86,12 +87,12 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 				<tr>
 					<td>
                         (isset($context["token"]) || array_key_exists("token", $context) ?
-						<input type="text" name="code_content_inline" value="<?php echo isset($_POST['code_content_inline']) || array_key_exists('code_content_inline', $_POST) ? trim(html_utf8(stripslashes(mb_convert_encoding($_POST['code_content_inline'], 'ISO-8859-1', 'UTF-8')))) : 'Copiez le code ici'; ?>"
+						<input type="text" name="code_content_inline" value="<?php echo isset($_POST['code_content_inline']) || array_key_exists('code_content_inline', $_POST) ? trim(HtmlHelper::escape(stripslashes(mb_convert_encoding($_POST['code_content_inline'], 'ISO-8859-1', 'UTF-8')))) : 'Copiez le code ici'; ?>"
 							onfocus="if($(this).val()=='Copiez le code ici') $(this).val('');"
 							onblur="if($(this).val()=='') $(this).val('Copiez le code ici');" />
 					</td>
 					<td>
-						<input type="text" name="contenu_content_inline" value="<?php echo isset($_POST['contenu_content_inline']) || array_key_exists('contenu_content_inline', $_POST) ? trim(html_utf8(stripslashes(mb_convert_encoding($_POST['contenu_content_inline'], 'ISO-8859-1', 'UTF-8')))) : ''; ?>" style="width:500px;" placeholder="Contenu..." />
+						<input type="text" name="contenu_content_inline" value="<?php echo isset($_POST['contenu_content_inline']) || array_key_exists('contenu_content_inline', $_POST) ? trim(HtmlHelper::escape(stripslashes(mb_convert_encoding($_POST['contenu_content_inline'], 'ISO-8859-1', 'UTF-8')))) : ''; ?>" style="width:500px;" placeholder="Contenu..." />
 					</td>
 					<td>
 						<select name="groupe_content_inline" style="min-width:150px;">
@@ -139,7 +140,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 			</tr>
 			<tr>
 				<td>
-					<input type="text" name="nom_content_inline_group" value="<?php echo trim(html_utf8(stripslashes(mb_convert_encoding($_POST['nom_content_inline_group'] ?? null, 'ISO-8859-1', 'UTF-8')))); ?>" />
+					<input type="text" name="nom_content_inline_group" value="<?php echo trim(HtmlHelper::escape(stripslashes(mb_convert_encoding($_POST['nom_content_inline_group'] ?? null, 'ISO-8859-1', 'UTF-8')))); ?>" />
 				</td>
 				<td>
 					<input type="submit" value="OK" class="boutonFancy" />
@@ -181,8 +182,8 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
             echo '<td class="cont-indice">' . $contTab[$i]['code_content_inline'] . '&nbsp;</td>';
             echo '<td class="cont-edit">
 						<input type="hidden" class="jId" value="' . (int) $contTab[$i]['id_content_inline'] . '" />
-						<input type="text" style="display:none" class="jBase" id="base-' . (int) $contTab[$i]['id_content_inline'] . '" value="' . html_utf8($contTab[$i]['contenu_content_inline']) . '" />
-						<input type="text"   class="jVal" name="contenu-' . $contTab[$i]['code_content_inline'] . '-' . $dejaVus . '" value="' . html_utf8($contTab[$i]['contenu_content_inline']) . '" />
+						<input type="text" style="display:none" class="jBase" id="base-' . (int) $contTab[$i]['id_content_inline'] . '" value="' . HtmlHelper::escape($contTab[$i]['contenu_content_inline']) . '" />
+						<input type="text"   class="jVal" name="contenu-' . $contTab[$i]['code_content_inline'] . '-' . $dejaVus . '" value="' . HtmlHelper::escape($contTab[$i]['contenu_content_inline']) . '" />
 					</td>';
             echo '<td class="cont-save"><a href="javascript:void(0)" title="Sauvegarder cette ligne" rel="' . (int) $contTab[$i]['id_content_inline'] . '"><img src="/img/base/save.png" alt="Sauvegarder cette ligne" title="Sauvegarder cette ligne" class="upimage" style="height:20px; " /></a></td>';
             echo '<td class="cont-versions">' . jour(date('N', $contTab[$i]['date_content_inline'])) . ' ' . date('d/m/y - H:i:s', $contTab[$i]['date_content_inline']) . '</td>';

@@ -2,6 +2,7 @@
 
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
+use App\Helper\HtmlHelper;
 
 if (($currentPage['admin_page'] && !isGranted(SecurityConstants::ROLE_ADMIN)) || $currentPage['superadmin_page']) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
@@ -47,7 +48,7 @@ if (($currentPage['admin_page'] && !isGranted(SecurityConstants::ROLE_ADMIN)) ||
 
                 echo '
 				<tr>
-					<td><img src="/img/base/' . $img . '" alt="" title="" style="vertical-align:middle" /> ' . html_utf8($item['code_log_admin']) . '</td>
+					<td><img src="/img/base/' . $img . '" alt="" title="" style="vertical-align:middle" /> ' . HtmlHelper::escape($item['code_log_admin']) . '</td>
 					<td>' . $item['desc_log_admin'] . '</td>
 					<td><span style="display:none">' . $item['date_log_admin'] . '</span>' . date('d/m/y H:i', $item['date_log_admin']) . '</td>
 				</tr>';
