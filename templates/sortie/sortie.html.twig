@@ -33,7 +33,7 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        .event-user-skill {display: none;}
+        {% if afficher_competences %}.event-user-skill {display: none;}{% endif %}
         .inscription-gestion-content .datatable {
             width: 595px;
             overflow: auto;
@@ -485,6 +485,7 @@
                         {% endif %}
                     </select>
 
+                    {% if afficher_competences %}
                     <p>
                         <label>
                             <span class="bold">Vue gestion</span>
@@ -499,6 +500,7 @@
                     <div class="event-user-skill">
                         {{ easy_include('event-skills', '') }}
                     </div>
+                    {% endif %}
                 </div>
 
                 <form id="contact_update_participants" method="post" class="loading">
@@ -519,6 +521,7 @@
                                 {% endif %}
                                 <th class="event-manage-user">Contact</th>
 
+                                {% if afficher_competences %}
                                 {% for groupe in groupes_competences %}
                                     <th class="event-user-skill groupe-comp">
                                         {{ groupe.intitule }}
@@ -531,6 +534,7 @@
                                 {% endfor %}
                                 <th class="event-user-skill formation-generale">STG-UFFG10</th>
                                 <th class="event-user-skill formation-generale">STG-PSC1</th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
@@ -802,6 +806,7 @@
                                         {% endif %}
                                     </td>
 
+                                    {% if afficher_competences %}
                                     {% for groupe in groupes_competences %}
                                         <td class="event-user-skill">
                                             {{ date_competence_user(participation.user, groupe, current_commission) }}
@@ -814,6 +819,7 @@
                                     {% endfor %}
                                     <td class="event-user-skill">{{ date_formation_user(participation.user, 'STG-UFFG10') }}</td>
                                     <td class="event-user-skill">{{ date_formation_user(participation.user, 'STG-PSC1') }}</td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -1350,6 +1356,7 @@
                 }
             });
 
+            {% if afficher_competences %}
             // vue compétences & brevets OU gestion
             const toggle = document.getElementById('skill_view_toggle');
             toggle.addEventListener('change', (event) => {
@@ -1375,6 +1382,7 @@
 
                 return false;
             });
+            {% endif %}
 
             // sélection automatique de certains participants
             const checkboxes = document.querySelectorAll('.contact-cb');
