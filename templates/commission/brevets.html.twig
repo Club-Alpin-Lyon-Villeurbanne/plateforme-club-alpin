@@ -3,6 +3,7 @@
 {% block title %}Brevets & formations du staff de {{ commission.title }}{% endblock %}
 
 {% block body %}
+    {% if afficher_competences %}
     <h2>Brevets, niveaux de pratique & formations du staff de {{ commission.title }}</h2>
     {{ easy_include('commission-staff-skills', '')}}
 
@@ -88,4 +89,9 @@
             </tbody>
         </table>
     </div>
+    {% else %}
+    <div class="info">
+        <p>L'affichage des compétences est désactivé sur cette instance.</p>
+    </div>
+    {% endif %}
 {% endblock %}
