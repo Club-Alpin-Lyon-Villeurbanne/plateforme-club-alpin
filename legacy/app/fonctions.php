@@ -5,6 +5,7 @@ use App\Legacy\LegacyContainer;
 use Egulias\EmailValidator\EmailValidator;
 use Egulias\EmailValidator\Validation\NoRFCWarningsValidation;
 use Symfony\Bridge\Twig\AppVariable;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 global $_POST;
 global $allowedError; // Erreur facultative à afficher si la fonction renvoie false
@@ -104,7 +105,9 @@ function userlink($id_user, $nickname_user, $civ_user = false, $firstname_user =
         $complement .= '&amp;id_article=' . $idArticle;
     }
 
-    return '<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user=' . (int) $id_user . $complement . '" class="fancyframe userlink" title="' . cont('userlink-title') . '">' . $return . '</a>';
+    $userLink = LegacyContainer::get('legacy_router')->generate('user_profile', ['id' => (int) $id_user], UrlGeneratorInterface::ABSOLUTE_URL);
+
+    return '<a href="' . $userLink . $complement . '" class="fancyframe userlink" title="' . cont('userlink-title') . '">' . $return . '</a>';
 }
 
 /*

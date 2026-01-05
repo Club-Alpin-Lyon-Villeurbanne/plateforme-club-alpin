@@ -1,0 +1,12 @@
+{% macro taux_presence(user, fiabilite, nb_absences, total_sorties) %}
+    <p>
+        <b>Taux de présence : {{ fiabilite }}% - ({{ nb_absences }} absences sur {{ total_sorties }} sorties)</b>
+        {% if app.user is same as (user) %}
+            <br/>
+            Ce taux donne une information sur le nombre d'absences aux sorties auxquelles vous êtes inscrit.e.<br/>
+            Il n'est visible que par les encadrant.e.s.<br />
+            Vous pouvez consulter la liste des sorties où vous avez été absent.e sur <a href="{{ path('profil_sorties_prev') }}">la page de vos sorties passées</a>.
+        {% endif %}
+    </p>
+    <br style="clear:both" />
+{% endmacro %}
