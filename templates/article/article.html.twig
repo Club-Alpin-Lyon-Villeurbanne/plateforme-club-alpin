@@ -18,20 +18,22 @@
                     <div class="article-title-commission">{{ article.evt.commission.title }}</div>
                 {% endif %}
                 <div class="article-title-author">
-                    Rédigé par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.user.id }}&amp;id_article={{ article.id }}" class="fancyframe userlink">{{ article.user.nickname }}</a>
+                    Rédigé par <a href="{{ path('user_profile', {'id': article.user.id, 'id_article': article.id}) }}" class="fancyframe userlink">{{ article.user.nickname }}</a>
                     le {{ article.createdAt|date('d/m/Y') }}<br>
                     {% if article.lastEditWho %}
-                        Modifié par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.lastEditWho.id }}&amp;id_article={{ article.id }}" class="fancyframe userlink">{{ article.lastEditWho.nickname }}</a>
+                        Modifié par <a href="{{ path('user_profile', {'id': article.lastEditWho.id, 'id_article': article.id}) }}" class="fancyframe userlink">{{ article.lastEditWho.nickname }}</a>
                         le {{ article.updatedAt|date('d/m/Y') }}<br>
                     {% endif %}
                     {% if article.status is same as (constant('App\\Entity\\Article::STATUS_PUBLISHED')) and article.statusWho %}
-                        Publié par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.statusWho.id }}&amp;id_article={{ article.id }}" class="fancyframe userlink">{{ article.statusWho.nickname }}</a>
+                        Publié par <a href="{{ path('user_profile', {'id': article.statusWho.id, 'id_article': article.id}) }}" class="fancyframe userlink">{{ article.statusWho.nickname }}</a>
                         {% if article.validationDate %}
                             le {{ article.validationDate|date('d/m/Y') }}
                         {% endif %}
                         <br>
                     {% endif %}
-                    <a href="{{ article_url }}#comments">{{ comments|length }} commentaire{% if comments|length > 1 %}s{% endif %}</a>
+                    {% if article.allowComments %}
+                        <a href="{{ article_url }}#comments">{{ comments|length }} commentaire{% if comments|length > 1 %}s{% endif %}</a>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -49,7 +51,7 @@
             {% endif %}
 
             {% if article.topubly is not same as (1) and article.status is not same as (constant('App\\Entity\\Article::STATUS_PUBLISHED')) %}
-                <b>Note :</b> Cet article est en cours de rédaction par <b><a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.user.id }}&amp;id_article={{ article.id }}" class="fancyframe userlink">{{ article.user.nickname }}</a></b>. La publication n'a pas encore été demandée.<br />
+                <b>Note :</b> Cet article est en cours de rédaction par <b><a href="{{ path('user_profile', {'id': article.user.id, 'id_article': article.id}) }}" class="fancyframe userlink">{{ article.user.nickname }}</a></b>. La publication n'a pas encore été demandée.<br />
             {% elseif article.status is not same as (constant('App\\Entity\\Article::STATUS_PUBLISHED')) %}
                 <b>Note :</b> Cet article n'est pas publié sur le site. Si vous voyez ce message apparaître, c'est que vous disposez de droits particuliers qui vous autorisent à voir cette page. Les usagers réguliers du site n'ont pas accès aux informations ci-dessous.<br />
 
@@ -82,7 +84,7 @@
                 or allowed('article_delete') and app.user and article.user is same as (app.user)
                 or allowed('article_edit') and app.user and article.user is same as (app.user))
                 and article.status is same as (constant('App\\Entity\\Article::STATUS_PUBLISHED')) %}
-                    <b>Note :</b> Cet article est publié (par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ article.statusWho.id }}&amp;id_article={{ article.id }}" class="fancyframe">{{ article.statusWho.nickname }}</a> le {{ article.validationDate|date('d/m/Y') }}) sur le site et visible par les adhérents !<br />
+                    <b>Note :</b> Cet article est publié (par <a href="{{ path('user_profile', {'id': article.statusWho.id, 'id_article': article.id}) }}" class="fancyframe">{{ article.statusWho.nickname }}</a> le {{ article.validationDate|date('d/m/Y') }}) sur le site et visible par les adhérents !<br />
             {% endif %}
 
             {% if article.commission and allowed('article_edit_notmine', 'commission:' ~ article.commission.code)
@@ -168,17 +170,19 @@
                 </div>
 
 
-                <!-- commentaires -->
-                <hr id="comments" />
-                <h2 class="comments-h2"><span>{{ comments|length }}</span> Commentaires</h2>
-                <br />
-                {% if app.user %}
-                    {% include 'components/add-comment.html.twig' with {'article': article, 'article_url': article_url} %}
-                {% endif %}
+                {% if article.allowComments %}
+                    <!-- commentaires -->
+                    <hr id="comments" />
+                    <h2 class="comments-h2"><span>{{ comments|length }}</span> Commentaires</h2>
+                    <br />
+                    {% if app.user %}
+                        {% include 'components/add-comment.html.twig' with {'article': article, 'article_url': article_url} %}
+                    {% endif %}
 
-                {% for comment in comments %}
-                    {% include 'components/comment.html.twig' with {'comment': comment} %}
-                {% endfor %}
+                    {% for comment in comments %}
+                        {% include 'components/comment.html.twig' with {'comment': comment} %}
+                    {% endfor %}
+                {% endif %}
 
             </aside>
         {% endif %}

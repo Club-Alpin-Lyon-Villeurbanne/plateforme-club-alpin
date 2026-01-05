@@ -141,6 +141,13 @@
                         ou une alerte à mettre en valeur. La photo est alors obligatoire.
                     </p>
                     <br />
+
+                    {{ form_widget(form.allowComments) }}
+                    {{ form_label(form.allowComments) }}
+                    <p class="mini" style="padding-right:20px;">
+                        {{ form_help(form.allowComments) }}
+                    </p>
+                    <br />
                 </div>
 
                 <h2 class="title-header">Photo</h2>

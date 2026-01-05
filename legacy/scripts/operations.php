@@ -41,11 +41,6 @@ if (user()) {
         require $operationsDir . 'operations.groupe_edit.php';
     }
 
-    // JOINS : USER / SORTIE : annulation
-    elseif ('user_join_del' == $operation) {
-        require $operationsDir . 'operations.user_join_del.php';
-    }
-
     // ARTICLE : publication OU refus
     elseif ('article_validate' == $operation) {
         require $operationsDir . 'operations.article_validate.php';
@@ -61,16 +56,6 @@ if (user()) {
         require $operationsDir . 'operations.article_depublier.php';
     }
 
-    // ARTICLE : MODIFIER
-    elseif ('article_update' == $operation) {
-        require $operationsDir . 'operations.article_update.php';
-    }
-
-    // ARTICLE : CRÉER
-    elseif ('article_create' == $operation) {
-        require $operationsDir . 'operations.article_create.php';
-    }
-
     // ARTICLE : REMONTER EN TETE
     elseif ('renew_date_article' == $operation) {
         require $operationsDir . 'operations.renew_date_article.php';
@@ -82,23 +67,8 @@ if (user()) {
     }
 }
 
-// ARTICLES : COMMENTER
-elseif ('comment' == $operation) {
-    require $operationsDir . 'operations.comment.php';
-}
-
-// PARTENAIRE : EDIT or ADD
-elseif ('partenaire_edit' == $operation || 'partenaire_add' == $operation) {
-    require $operationsDir . 'operations.partenaire_edit.php';
-}
-
-// PARTENAIRE : DELETE
-elseif ('partenaire_delete' == $operation) {
-    require $operationsDir . 'operations.partenaire_delete.php';
-}
-
 // USER : CREATE (manuel)
-elseif ('user_create' == $operation) {
+if ('user_create' == $operation) {
     require $operationsDir . 'operations.user_create.php';
 }
 

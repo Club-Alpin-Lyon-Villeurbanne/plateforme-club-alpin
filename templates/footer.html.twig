@@ -7,7 +7,7 @@
             {% set commissions = list_commissions() %}
             {% set break = ((commissions | length / 2) | round(0, 'ceil')) - 1 %}
             {% for commission in commissions %}
-                <a href="/accueil/{{ commission.code }}.html" title="">> {{ commission.title }}</a>
+                <a href="{{ path('commission_homepage', {'code': commission.code }) }}" title="">> {{ commission.title }}</a>
 
                 {% if loop.index0 == break %}
                     </div><div style="width:47%; float:right; white-space:nowrap; overflow:hidden;">

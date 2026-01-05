@@ -8,12 +8,12 @@ Nous disposons de deux environnements hébergés sur [Clever Cloud](https://www.
 
 1. **Staging** ([www.clubalpinlyon.top](https://www.clubalpinlyon.top))
    - Environnement de test
-   - Déploiement continu via Github Actions
+   - Déploiement automatique par Clever Cloud à chaque push sur `main`
    - Chaque Pull Request mergée devient rapidement disponible à tester
 
 2. **Production** ([www.clubalpinlyon.fr](https://www.clubalpinlyon.fr))
    - Environnement final des utilisateurs
-   - Déclenchement manuel et déploiement automatisé via Github Actions
+   - Déploiement automatisé via GitHub Actions à chaque push sur `production`
 
 ## Infrastructure technique
 
@@ -24,11 +24,15 @@ Nous disposons de deux environnements hébergés sur [Clever Cloud](https://www.
 
 ## Gestion des déploiements
 
-### Token d'authentification Clever Cloud
+### Staging
+
+Le déploiement sur staging est géré directement par Clever Cloud via l'intégration Git native. Aucune configuration GitHub Actions n'est nécessaire.
+
+### Production - Token d'authentification Clever Cloud
 
 > **Note importante** : Un seul token Clever Cloud est partagé entre tous les clubs utilisant cette plateforme (Lyon, Chambéry, Clermont, etc.)
 
-Le déploiement automatique via GitHub Actions nécessite un token d'authentification Clever Cloud avec les contraintes suivantes :
+Le déploiement en production via GitHub Actions nécessite un token d'authentification Clever Cloud avec les contraintes suivantes :
 
 - **Expiration** : Le token expire après 1 an et doit être renouvelé avant cette date
 - **Type de compte** : Token nominatif lié à un compte personnel (Clever Cloud ne propose pas de compte service)

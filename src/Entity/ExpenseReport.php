@@ -53,7 +53,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Patch(
             uriTemplate: '/notes-de-frais/{id}',
             security: 'object.getUser() == user or is_granted("manage_expense_reports")',
-            // normalizationContext: ['groups' => ['report:read', 'attachment:read', 'user:read', 'event:read']]
+            denormalizationContext: ['groups' => ['report:read']],
         ),
     ],
     security: "is_granted('ROLE_USER')",

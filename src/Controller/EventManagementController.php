@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
+use App\Trait\PaginationControllerTrait;
 use App\UserRights;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -15,6 +16,8 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class EventManagementController extends AbstractController
 {
+    use PaginationControllerTrait;
+
     public function __construct(
         protected UserRights $userRights,
         protected CommissionRepository $commissionRepository,
@@ -45,23 +48,16 @@ class EventManagementController extends AbstractController
             $commissions = $this->commissionRepository->findBy(['code' => $commissionCodes]);
         }
 
-        $perPage = 30;
-        $page = $request->query->getInt('page', 1);
         $total = $this->eventRepository->getEventsToPublishCount($commissions);
-        $pages = ceil($total / $perPage);
-        $first = $perPage * ($page - 1);
+        $paginationParams = $this->getPaginationParams($request, $total);
 
-        return [
-            'events' => $this->eventRepository->getEventsToPublish($commissions, $first, $perPage),
+        return array_merge([
+            'events' => $this->eventRepository->getEventsToPublish($commissions, $paginationParams['first'], $paginationParams['per_page']),
             'title' => 'Approbation des sorties',
-            'total' => $total,
-            'per_page' => $perPage,
-            'pages' => $pages,
-            'page' => $page,
             'page_url' => $this->generateUrl('manage_events'),
             'to_include' => 'gestion-des-sorties-main',
             'action' => 'approbation',
-        ];
+        ], $paginationParams);
     }
 
     /**
@@ -76,23 +72,16 @@ class EventManagementController extends AbstractController
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
-        $perPage = 30;
         $dateMax = (int) strtotime($this->maxTimestampForLegalValidation);
-        $page = $request->query->getInt('page', 1);
         $total = $this->eventRepository->getEventsToLegalValidateCount($dateMax);
-        $pages = ceil($total / $perPage);
-        $first = $perPage * ($page - 1);
+        $paginationParams = $this->getPaginationParams($request, $total);
 
-        return [
-            'events' => $this->eventRepository->getEventsToLegalValidate($dateMax, $first, $perPage),
+        return array_merge([
+            'events' => $this->eventRepository->getEventsToLegalValidate($dateMax, $paginationParams['first'], $paginationParams['per_page']),
             'title' => 'Validation des sorties en tant que sortie officielle du CAF',
-            'total' => $total,
-            'per_page' => $perPage,
-            'pages' => $pages,
-            'page' => $page,
             'page_url' => $this->generateUrl('legal_manage_events'),
             'to_include' => 'validation-des-sorties-main',
             'action' => 'validation',
-        ];
+        ], $paginationParams);
     }
 }
