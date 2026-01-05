@@ -70,7 +70,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) { ?>
 
 	<!-- OPENGRAPHS -->
 	<meta property="og:title" content="<?php echo HtmlHelper::escape($meta_title); ?>" />
-	<meta property="og:description" content="<?php echo htmlspecialchars_decode(HtmlHelper::escape($meta_description)); ?>" />
+	<meta property="og:description" content="<?php echo HtmlHelper::escape($meta_description); ?>" />
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="<?php echo $versCettePage; ?>" />
 	<?php if ($ogImage) { ?>

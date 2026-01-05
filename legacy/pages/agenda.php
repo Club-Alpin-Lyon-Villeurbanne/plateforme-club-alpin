@@ -173,7 +173,7 @@ echo '<a href="/agenda.html?month=' . (int) $month . '&amp;year=' . (int) $year 
 // choix de la commission
 ksort($comTab);
 foreach ($comTab as $code => $data) {
-    echo '<a href="/agenda/' . HtmlHelper::escape($code) . '.html?month=' . (int) $month . '&amp;year=' . (int) $year . '" title="" class="' . ($code == $current_commission ? 'up' : '') . '">' . HtmlHelper::escape($data['title_commission']) . '</a> ';
+    echo '<a href="/agenda/' . rawurlencode($code) . '.html?month=' . (int) $month . '&amp;year=' . (int) $year . '" title="" class="' . ($code == $current_commission ? 'up' : '') . '">' . HtmlHelper::escape($data['title_commission']) . '</a> ';
 }
 ?>
 				</div>

@@ -6,7 +6,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Helper\HtmlHelper;
 
 ?>
-<a class="agenda-evt-courant" href="<?php echo LegacyContainer::get('legacy_router')->generate('sortie', ['code' => HtmlHelper::escape($evt['code_evt']), 'id' => (int) $evt['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL); ?>?commission=<?php echo $evt['code_commission']; ?>" title="">
+<a class="agenda-evt-courant" href="<?php echo LegacyContainer::get('legacy_router')->generate('sortie', ['code' => $evt['code_evt'], 'id' => (int) $evt['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL); ?>?commission=<?php echo $evt['code_commission']; ?>" title="">
 
 	<!-- picto (retiré) -->
 	<div class="picto">

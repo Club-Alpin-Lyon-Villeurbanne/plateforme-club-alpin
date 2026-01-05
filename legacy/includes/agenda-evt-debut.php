@@ -5,7 +5,7 @@ use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Helper\HtmlHelper;
 
-echo '<a class="agenda-evt-debut" target="_top" href="' . LegacyContainer::get('legacy_router')->generate('sortie', ['code' => HtmlHelper::escape($evt['code_evt']), 'id' => (int) $evt['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL) . '?commission=' . $evt['code_commission'];
+echo '<a class="agenda-evt-debut" target="_top" href="' . LegacyContainer::get('legacy_router')->generate('sortie', ['code' => $evt['code_evt'], 'id' => (int) $evt['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL) . '?commission=' . $evt['code_commission'];
 if (allowed('evt_validate') && isset($evt['status_evt']) && 1 != $evt['status_evt']) {
     echo '&forceshow=true';
 }

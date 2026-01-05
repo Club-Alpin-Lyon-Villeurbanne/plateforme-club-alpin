@@ -202,7 +202,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     if (is_array($userTab['articles'])) {
         $rowValue = [];
         foreach ($userTab['articles'] as $article) {
-            $rowValue[] = '<a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => HtmlHelper::escape($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL) . '" target="_blank">' . (new \DateTime($article['created_at']))?->format('d/m/Y') . ' - ' . $article['titre_article'] . '</a>';
+            $rowValue[] = '<a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => $article['code_article'], 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL) . '" target="_blank">' . (new \DateTime($article['created_at']))?->format('d/m/Y') . ' - ' . HtmlHelper::escape($article['titre_article']) . '</a>';
         }
         printTableRow('Articles :', '<font size="-1" >' . implode('<br />', $rowValue) . '</font>');
     }
@@ -219,7 +219,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
             }
             ++$rowValueHeader[$evt['role_evt_join']];
 
-            $row = '<a target="_blank" href="' . LegacyContainer::get('legacy_router')->generate('sortie', ['code' => HtmlHelper::escape($evt['code_evt']), 'id' => (int) $evt['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL);
+            $row = '<a target="_blank" href="' . LegacyContainer::get('legacy_router')->generate('sortie', ['code' => $evt['code_evt'], 'id' => (int) $evt['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL);
             if (allowed('evt_validate') && 1 != $evt['status_evt']) {
                 $row .= '&forceshow=true';
             }

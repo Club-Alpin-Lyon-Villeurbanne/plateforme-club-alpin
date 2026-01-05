@@ -329,7 +329,7 @@ if (allowed('stats_commissions_read') && 'commissions' == $p2) {
                 }
                 echo '<tr id="tr-' . $article['id_article'] . '" class="vis-on">'
                 . '<td>' . ((null !== $validationDate) ? $validationDate->format('d/m/Y') : '') . '</td>'
-                . '<td><a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => HtmlHelper::escape($article['code_article']), 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL) . '" target="_blank">' . $article['titre_article'] . '</a></td>'
+                . '<td><a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => $article['code_article'], 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL) . '" target="_blank">' . HtmlHelper::escape($article['titre_article']) . '</a></td>'
                 . '<td>' . userlink($article['id_user'], ucfirst(mb_strtolower($article['firstname_user'], 'UTF-8')) . ' ' . $article['lastname_user']) . '</td>'
                 . '<td>' . HtmlHelper::escape($article['title_commission']) . '</td>'
                 . '<td>';

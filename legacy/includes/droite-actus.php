@@ -52,7 +52,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     // AFFICHAGE
     $article = $handle;
 
-    $url = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => HtmlHelper::escape($article['code_article']), 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL);
+    $url = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => $article['code_article'], 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL);
     if ($current_commission) {
         $url .= '?commission=' . $current_commission;
     } ?>
@@ -75,7 +75,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         // un ID de commission est bien enregistré
         if (isset($article['commission']) && $article['commission']) {
             ?>
-            - <a href="/accueil/<?php echo HtmlHelper::escape($article['commission']['code_commission']); ?>.html#home-articles" title="Toutes les actus de cette commission">
+            - <a href="/accueil/<?php echo rawurlencode($article['commission']['code_commission']); ?>.html#home-articles" title="Toutes les actus de cette commission">
                     <?php echo HtmlHelper::escape($article['commission']['title_commission']); ?>
                 </a>
                 <?php
@@ -90,7 +90,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     }
     // -1 = compte rendu de sortie
     elseif (-1 == $article['commission_article']) {
-        $urlEvt = LegacyContainer::get('legacy_router')->generate('sortie', ['code' => HtmlHelper::escape($article['evt']['code_evt']), 'id' => (int) $article['evt']['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL); ?>
+        $urlEvt = LegacyContainer::get('legacy_router')->generate('sortie', ['code' => $article['evt']['code_evt'], 'id' => (int) $article['evt']['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL); ?>
                 <a href="<?php echo $urlEvt; ?>" title="Voir la sortie liée à cet article : &laquo; <?php echo HtmlHelper::escape($article['evt']['titre_evt']); ?> &raquo;">
                     compte rendu de sortie
                 </a>

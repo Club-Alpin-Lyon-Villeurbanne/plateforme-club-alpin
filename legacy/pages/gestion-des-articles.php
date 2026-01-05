@@ -161,7 +161,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
                             $type = 'Actualité « ' . $article['title_commission'] . ' »';
                         }
 
-                        $article_link = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => HtmlHelper::escape($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL);
+                        $article_link = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => $article['code_article'], 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL);
 
                         // Aff
                         echo '<hr />'
@@ -240,7 +240,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
                             $type = 'Actualité « ' . $article['title_commission'] . ' »';
                         }
 
-                        $article_link = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => HtmlHelper::escape($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL);
+                        $article_link = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => $article['code_article'], 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL);
 
                         // Aff
                         echo '<hr />'
