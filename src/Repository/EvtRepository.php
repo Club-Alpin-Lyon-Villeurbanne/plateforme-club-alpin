@@ -6,6 +6,7 @@ use App\Entity\Commission;
 use App\Entity\Evt;
 use App\Entity\ExpenseReport;
 use App\Entity\User;
+use App\Trait\PaginationRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -20,6 +21,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class EvtRepository extends ServiceEntityRepository
 {
+    use PaginationRepositoryTrait;
+
     private int $defaultLimit = 30;
 
     public function __construct(ManagerRegistry $registry)
@@ -148,9 +151,9 @@ class EvtRepository extends ServiceEntityRepository
      * @throws NonUniqueResultException
      * @throws NoResultException
      */
-    public function getUserCreatedEventsCount(User $user): float|bool|int|string|null
+    public function getUserCreatedEventsCount(User $user): int
     {
-        return $this
+        return (int) $this
             ->getEventsCreatedByUserDql($user)
             ->select('count(e)')
             ->getQuery()
@@ -158,9 +161,13 @@ class EvtRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function getUserEventsCount(User $user, array $status = []): int
     {
-        return $this
+        return (int) $this
             ->getUserEventsDql($user, $status)
             ->select('count(e)')
             ->getQuery()
@@ -180,9 +187,13 @@ class EvtRepository extends ServiceEntityRepository
         return $this->getPaginatedResults($qb, $first, $perPage);
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function getUserPastEventsCount(User $user): int
     {
-        return $this
+        return (int) $this
             ->getUserPastEventsDql($user)
             ->select('count(e)')
             ->getQuery()
@@ -212,9 +223,13 @@ class EvtRepository extends ServiceEntityRepository
         return $this->getPaginatedResults($qb, $first, $perPage);
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function getUserUpcomingEventsCount(User $user): int
     {
-        return $this
+        return (int) $this
             ->getUserUpcomingEventsDql($user)
             ->select('count(e)')
             ->getQuery()
@@ -269,9 +284,9 @@ class EvtRepository extends ServiceEntityRepository
      * @throws NonUniqueResultException
      * @throws NoResultException
      */
-    public function getEventsToPublishCount(array $commissions): float|bool|int|string|null
+    public function getEventsToPublishCount(array $commissions): int
     {
-        return $this
+        return (int) $this
             ->getEventsToPublishQueryBuilder($commissions)
             ->select('count(e)')
             ->getQuery()
@@ -292,9 +307,9 @@ class EvtRepository extends ServiceEntityRepository
      * @throws NonUniqueResultException
      * @throws NoResultException
      */
-    public function getEventsToLegalValidateCount(int $dateMax): float|bool|int|string|null
+    public function getEventsToLegalValidateCount(int $dateMax): int
     {
-        return $this
+        return (int) $this
             ->getEventsToLegalValidateQueryBuilder($dateMax)
             ->select('count(e)')
             ->getQuery()
@@ -385,13 +400,5 @@ class EvtRepository extends ServiceEntityRepository
         }
 
         return $qb;
-    }
-
-    private function getPaginatedResults(QueryBuilder $qb, int $first, int $perPage)
-    {
-        return $qb->setFirstResult($first)
-            ->setMaxResults($perPage)
-            ->getQuery()
-            ->getResult();
     }
 }
