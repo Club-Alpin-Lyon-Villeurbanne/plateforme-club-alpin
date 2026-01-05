@@ -21,6 +21,6 @@ final class Version20260105142507 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE caf_article CHANGE cont_article cont_article TEXT NOT NULL');
+        // pas de down car risque de perte de données si on réduit la longueur du champ
     }
 }
