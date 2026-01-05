@@ -62,7 +62,7 @@
             {{ easy_include('infos-profil-filiation-enfants') }}
             <ul class="nice-list">
                 {% for child in filiations %}
-                    <li><a href="/includer.php?p=includes/fiche-profil.php&id_user={{ child.id }}" class="fancyframe userlink" title="Voir le profil">{{ child.fullName }}</a></li>
+                    <li><a href="{{ path('user_profile', {'id': child.id}) }}" class="fancyframe userlink" title="Voir le profil">{{ child.fullName }}</a></li>
                 {% endfor %}
             </ul>
             <br style="clear:both" />
@@ -74,7 +74,7 @@
             <h2><span class="bleucaf">&gt;</span> Filiation :</h2>
             {{ easy_include('infos-profil-filiation-parent') }}
             <ul class="nice-list">
-                <li><a href="/includer.php?p=includes/fiche-profil.php&id_user={{ parent.id }}" class="fancyframe userlink" title="Voir le profil">{{ parent.fullName }}</a></li>
+                <li><a href="{{ path('user_profile', {'id': parent.id}) }}" class="fancyframe userlink" title="Voir le profil">{{ parent.fullName }}</a></li>
             </ul>
             <br style="clear:both" />
             <hr />
@@ -100,7 +100,7 @@
 
         <b>Votre pseudonyme :</b>
         <br />
-        <a href="/includer.php?p=includes/fiche-profil.php&id_user={{ user.id }}" class="fancyframe" title="Aperçu de votre fiche">{{ user.nickname }}</a><br />
+        <a href="{{ path('user_profile', {'id': user.id}) }}" class="fancyframe" title="Aperçu de votre fiche">{{ user.nickname }}</a><br />
 
         <br />
         <b>Modifier votre photo :</b><br />

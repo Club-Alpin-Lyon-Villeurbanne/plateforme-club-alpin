@@ -1,0 +1,20 @@
+{% macro contact_form(form, style) %}
+    <div id="trigger-userinfo" style="{{ style }}">
+        <hr  />
+        {{ form_start(form) }}
+
+        <h2>Formulaire de contact</h2>
+        <p>Le destinataire de ce message sera informé de votre nom et votre e-mail</p>
+
+        <br />
+        {{ form_row(form.objet) }}
+
+        {{ form_row(form.message) }}
+
+        <br />
+        <input type="submit" class="nice" value="&gt; Envoyer mon message" onclick="$.fancybox.close()" />
+
+        {{ form_end(form) }}
+        <hr  />
+    </div>
+{% endmacro %}
