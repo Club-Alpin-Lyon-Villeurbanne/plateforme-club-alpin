@@ -1,8 +1,8 @@
 <?php
 
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use App\Helper\HtmlHelper;
 
 $MAX_ARTICLES_VALIDATION = LegacyContainer::getParameter('legacy_env_MAX_ARTICLES_VALIDATION');
 $notif_validerunarticle = 0;
@@ -193,7 +193,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 									<input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
 								</form>
 							</div>';
-                        $creationDate = new \DateTime($article['created_at']);
+                        $creationDate = new DateTime($article['created_at']);
                         echo '</div>'
 
                             . '<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="' . $article_link . '" target="_blank">'
@@ -275,7 +275,7 @@ if (allowed('article_validate_all') || allowed('article_validate')) {
 
                         echo '</div>';
 
-                        $creationDate = new \DateTime($article['created_at']);
+                        $creationDate = new DateTime($article['created_at']);
                         echo '<div style="width:100px; float:left; padding:6px 10px 0 0;"><a href="' . $article_link . '" target="_blank">'
                                 // image liee
                                 . '<img src="' . $img . '" alt="" title="" style="width:100%; " />'

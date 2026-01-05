@@ -2,7 +2,6 @@
 
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use App\Helper\HtmlHelper;
 
 if (user()) {
     ?>

@@ -1,7 +1,7 @@
 <?php
 
-use App\Security\SecurityConstants;
 use App\Helper\HtmlHelper;
+use App\Security\SecurityConstants;
 
 if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';

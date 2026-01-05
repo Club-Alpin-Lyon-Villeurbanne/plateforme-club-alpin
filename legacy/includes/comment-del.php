@@ -1,7 +1,7 @@
 <?php
 
-use App\Legacy\LegacyContainer;
 use App\Helper\HtmlHelper;
+use App\Legacy\LegacyContainer;
 
 $id_comment = (int) $_GET['id_comment'];
 if (!$id_comment) {

@@ -1,7 +1,7 @@
 <?php
 
-use App\Legacy\LegacyContainer;
 use App\Helper\HtmlHelper;
+use App\Legacy\LegacyContainer;
 
 if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     echo 'Vous n\'êtes pas autorisé à accéder à cette page. Pour toute question, rapprochez-vous du service informatique de votre club.';

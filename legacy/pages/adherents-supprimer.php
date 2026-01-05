@@ -1,7 +1,7 @@
 <?php
 
-use App\Security\SecurityConstants;
 use App\Helper\HtmlHelper;
+use App\Security\SecurityConstants;
 
 if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     echo 'Vos droits ne sont pas assez élevés pour accéder à cette page';

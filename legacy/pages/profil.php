@@ -8,8 +8,8 @@
 // 				aux filiations
 // 				...
 
-use App\Legacy\LegacyContainer;
 use App\Helper\HtmlHelper;
+use App\Legacy\LegacyContainer;
 
 $MAX_ARTICLES_ADHERENT = LegacyContainer::getParameter('legacy_env_MAX_ARTICLES_ADHERENT');
 
@@ -111,23 +111,23 @@ if ('infos' == $p2 && getUser()) {
                 // texte explicatif
                 inclure('activer-profil', 'vide');
 
-                // error
-                if (isset($_POST['operation']) && 'user_subscribe' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                    echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
-                }
-                // success
-                if (isset($_POST['operation']) && 'user_subscribe' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-                    echo "
+            // error
+            if (isset($_POST['operation']) && 'user_subscribe' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
+                echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
+            }
+            // success
+            if (isset($_POST['operation']) && 'user_subscribe' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
+                echo "
 					<h3>Compte créé avec succès</h3>
 					<p class='info'>
 						Votre compte a été créé, <b>mais vous devez le valider</b> en cliquant sur le lien
 						contenu dans l'e-mail que nous venons d'envoyer à " . HtmlHelper::escape(stripslashes($email_user)) . '
 					</p>';
-                }
+            }
 
-                // affichage
-                if ('user_subscribe' != ($_POST['operation'] ?? null) || ('user_subscribe' == $_POST['operation'] && isset($errTab) && count($errTab) > 0)) {
-                    ?>
+            // affichage
+            if ('user_subscribe' != ($_POST['operation'] ?? null) || ('user_subscribe' == $_POST['operation'] && isset($errTab) && count($errTab) > 0)) {
+                ?>
                     <br />
                     <form action="<?php echo $versCettePage; ?>" method="post">
                         <input type="hidden" name="operation" value="user_subscribe" />
@@ -166,7 +166,7 @@ if ('infos' == $p2 && getUser()) {
                         </div>
                     </form>
                     <?php
-                } ?>
+            } ?>
             </div>
             <?php
         }
@@ -181,7 +181,7 @@ if ('infos' == $p2 && getUser()) {
                 echo '<p class="erreur">Erreur : fichier introuvable</p>';
             }
         }
-        ?>
+?>
         <br style="clear:both" />
     </div>
 

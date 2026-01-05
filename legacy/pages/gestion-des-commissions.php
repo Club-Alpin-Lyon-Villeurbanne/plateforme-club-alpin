@@ -1,7 +1,7 @@
 <?php
 
-use App\Legacy\LegacyContainer;
 use App\Helper\HtmlHelper;
+use App\Legacy\LegacyContainer;
 
 ?>
 <!-- MAIN -->

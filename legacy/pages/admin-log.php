@@ -1,8 +1,8 @@
 <?php
 
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
-use App\Helper\HtmlHelper;
 
 if (($currentPage['admin_page'] && !isGranted(SecurityConstants::ROLE_ADMIN)) || $currentPage['superadmin_page']) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';

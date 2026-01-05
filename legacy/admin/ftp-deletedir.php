@@ -1,9 +1,9 @@
 <?php
 
 use App\Ftp\FtpFile;
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
-use App\Helper\HtmlHelper;
 
 global $errTab;
 global $compte;

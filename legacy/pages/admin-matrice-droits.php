@@ -1,9 +1,9 @@
 <?php
 
 use App\Entity\UserAttr;
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
-use App\Helper\HtmlHelper;
 
 if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     echo 'Session expirée';

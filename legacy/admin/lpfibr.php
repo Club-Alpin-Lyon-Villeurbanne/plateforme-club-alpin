@@ -1,11 +1,11 @@
 <?php
 
 use App\Ftp\FtpFile;
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 use Symfony\Component\Asset\PathPackage;
 use Symfony\Component\Asset\VersionStrategy\EmptyVersionStrategy;
-use App\Helper\HtmlHelper;
 
 require __DIR__ . '/../app/includes.php';
 
