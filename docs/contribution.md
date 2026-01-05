@@ -32,7 +32,7 @@ production              ← Branche de déploiement en prod
 
 ### Workflow standard
 
-1. Créer une branche depuis `main` : `git checkout -b feature/ma-fonctionnalite`
+1. Créer une branche depuis `main` : `git checkout -b feat/ma-fonctionnalite`
 2. Développer et commiter
 3. Ouvrir une PR vers `main`
 4. Après merge dans `main` → déploiement automatique sur staging (via Clever Cloud)
