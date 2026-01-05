@@ -25,66 +25,6 @@ $CONTENUS_INLINE = [];
 // -------------------------------------------- FONCTIONS SPECIFIQUES AU SITE DU CLUB ALPIN FRANCAIS
 // ----------------------------------------------------------------------------------------------------------------
 
-function presidence()
-{
-    global $president;
-    global $vicepresident;
-
-    $president = $vicepresident = [];
-    $president_sql = 'SELECT * FROM `caf_user` AS U LEFT JOIN `caf_user_attr` AS A  ON A.usertype_user_attr = 6 WHERE U.id_user = A.user_user_attr ORDER BY U.firstname_user ASC, U.lastname_user ASC';
-    $president_result = LegacyContainer::get('legacy_mysqli_handler')->query($president_sql);
-    while ($row_president = $president_result->fetch_assoc()) {
-        if ('1' !== $row_president['id_user']) {
-            $president[] = $row_president;
-        }
-    }
-
-    $vicepresident = [];
-    $vicepresident_sql = 'SELECT * FROM `caf_user` AS U LEFT JOIN `caf_user_attr` AS A  ON A.usertype_user_attr = 7 WHERE U.id_user = A.user_user_attr ORDER BY U.firstname_user ASC, U.lastname_user ASC';
-    $vicepresident_result = LegacyContainer::get('legacy_mysqli_handler')->query($vicepresident_sql);
-    while ($row_vicepresident = $vicepresident_result->fetch_assoc()) {
-        if ('1' !== $row_vicepresident['id_user']) {
-            $vicepresident[] = $row_vicepresident;
-        }
-    }
-}
-
-/*
-Find URLs in Text, Make Links
-*/
-function getUrlFriendlyString($text)
-{
-    $SCHEMES = ['http', 'https', 'ftp', 'mailto', 'news',
-        'gopher', 'nntp', 'telnet', 'wais', 'prospero', 'aim', 'webcal', ];
-    // Note: fragment id is uchar | reserved, see rfc 1738 page 19
-    // %% for % because of string formating
-    // puncuation = ? , ; . : !
-    // if punctuation is at the end, then don't include it
-
-    $URL_FORMAT = '~(?<!\w)((?:' . implode('|',
-        $SCHEMES) . '):' // protocol + :
-    . '/*(?!/)(?:' // get any starting /'s
-    . '[\w$\+\*@&=\-/]' // reserved | unreserved
-    . '|%%[a-fA-F0-9]{2}' // escape
-    . '|[\?\.:\(\),;!\'](?!(?:\s|$))' // punctuation
-    . '|(?:(?<=[^/:]{2})#)' // fragment id
-    . '){2,}' // at least two characters in the main url part
-    . ')~';
-
-    preg_match_all($URL_FORMAT, $text, $matches, \PREG_SPLIT_DELIM_CAPTURE);
-
-    $usedPatterns = [];
-    foreach ($matches as $patterns) {
-        $pattern = $patterns[0];
-        if (!array_key_exists($pattern, $usedPatterns)) {
-            $usedPatterns[$pattern] = true;
-            $text = str_replace($pattern, "<a href='" . $pattern . "' rel='nofollow'>" . $pattern . '</a> ', $text);
-        }
-    }
-
-    return $text;
-}
-
 /*
 La fonction "userlink" affiche un lien vers le profil d'un utilisateur en fonction du contexte demandé par "style"
 */
@@ -296,10 +236,6 @@ function getUser(): ?User
 
     return null;
 };
-function csrfToken(string $intention): ?string
-{
-    return LegacyContainer::get('legacy_csrf_token_manager')->getToken($intention);
-}
 function generateRoute(string $path, array $parameters = []): ?string
 {
     return LegacyContainer::get('legacy_router')->generate($path, $parameters);
@@ -334,17 +270,6 @@ function mylog($code, $desc, $connectme = true)
 function html_utf8($str)
 {
     return htmlentities($str ?? '', \ENT_QUOTES, 'UTF-8');
-}
-
-// assurer un lien http
-function linker($link)
-{
-    $link = trim($link);
-    if ('http://' != substr($link, 0, 7) && 'https://' != substr($link, 0, 8)) {
-        $link = 'https://' . $link;
-    }
-
-    return $link;
 }
 
 // ma fonction d'insertion élément inline
