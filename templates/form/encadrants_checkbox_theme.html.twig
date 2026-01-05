@@ -5,7 +5,7 @@
         <label for="{{ child.vars.id }}" class="{% if child.vars.checked %}up{% else %}down{% endif %}">
             {{ form_widget(child, { attr: { 'data-id': custom_id } }) }}
             {{ field_label(child) }}
-            <a class="fancyframe" href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ field_value(child) }}" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
+            <a class="fancyframe" href="{{ path('user_profile', {'id': field_value(child)}) }}" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
         </label>
     {% endfor %}
 {% endblock %}

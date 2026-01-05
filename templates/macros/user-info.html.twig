@@ -1,0 +1,30 @@
+{% macro user_info(user, type = 'full') %}
+    {% if allowed('user_read_private') %}
+        <hr  />
+        <h3>Infos privées : </h3>
+        <ul class="nice-list">
+            <li>NUMÉRO DE LICENCE FFCAM : {{ user.cafnum }}</li>
+            {% if user.doitRenouveler %}
+                <li class="red">LICENCE EXPIRÉE</li>
+            {% elseif user.nomade %}
+                <li>CARTE DÉCOUVERTE : valide du {{ user.joinDate|date('d/m/Y H:i') }} au {{ user.discoveryEndDatetime|date('d/m/Y H:i') }}</li>
+            {% else %}
+                <li>DATE D'ADHÉSION :
+                    {% if user.joinDate %}
+                        <span class="green">{{ user.joinDate|date('d/m/Y') }}</span>
+                    {% else %}
+                        inconnue
+                    {% endif %}
+                </li>
+            {% endif %}
+            <li><a href="mailto:{{ user.email }}" title="Contact direct">{{ user.email }}</a></li>
+            {% if type is same as ('full') %}
+                <li>TEL : {{ user.tel }}</li>
+                <li>TEL (secours) : {{ user.tel2 }}</li>
+                <li>ÂGE : <span{% if user.birthdate %} title="{{ user.birthdate|date('d/m/Y') }}"{% endif %}>{% if age_user(user) %}{{ age_user(user) }} ans{% else %}?{% endif %}</span></li>
+                <li class="wide">{{ user.fullAddress(true) }}</li>
+            {% endif %}
+        </ul>
+        <br style="clear:both" />
+    {% endif %}
+{% endmacro %}
