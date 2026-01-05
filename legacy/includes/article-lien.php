@@ -1,9 +1,9 @@
 <?php
 // URL
 
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use App\Helper\HtmlHelper;
 
 $url = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => $article['code_article'], 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL);
 if ($article['code_commission'] ?? null) {
@@ -39,7 +39,7 @@ if ($article['media_upload_id']) {
 
 		<?php
         if (!empty($article['validation_date'])) {
-            $creationDate = new \DateTime($article['validation_date']);
+            $creationDate = new DateTime($article['validation_date']);
             echo $creationDate->format('d/m/Y') . ' - ';
         }
 

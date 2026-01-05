@@ -1,10 +1,10 @@
 <?php
 
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 use App\Twig\JwtExtension;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use App\Helper\HtmlHelper;
 
 global $ogImage;
 $jwt = LegacyContainer::get(JwtExtension::class)->generateJwtToken();

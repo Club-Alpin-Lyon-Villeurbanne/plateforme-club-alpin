@@ -1,8 +1,8 @@
 <?php
 
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use App\Helper\HtmlHelper;
 
 if ($current_commission) {
     echo '<h1 class="actus-h1"><a href="' . LegacyContainer::get('legacy_router')->generate('commission_homepage', ['code' => $current_commission], UrlGeneratorInterface::ABSOLUTE_URL) . '" title="Afficher tous les articles pour cette commission">actus</a></h1>';
@@ -68,7 +68,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         <p class="commission-title">
 
             <?php
-        echo (new \DateTime($article['created_at']))?->format('d/m/Y'); ?>
+        echo (new DateTime($article['created_at']))?->format('d/m/Y'); ?>
 
 
             <?php
