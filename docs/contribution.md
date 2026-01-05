@@ -5,7 +5,7 @@
 ```text
 main                    ← Branche principale de développement
   │                       (déploie auto sur staging via Clever Cloud)
-  ├── feature/*         ← Nouvelles fonctionnalités
+  ├── feat/*            ← Nouvelles fonctionnalités
   ├── fix/*             ← Corrections de bugs
   └── docs/*            ← Documentation
         │
