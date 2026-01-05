@@ -9,20 +9,10 @@ framework:
                     figure: ['class', 'style']
                     iframe: ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen', 'title']
                 allowed_media_schemes: ['https']
-                allowed_media_hosts:
-                    - '%env(key:host:url:BACKEND_URL)%'
-                    - 'youtube.com'
-                    - 'www.youtube.com'
-                    - 'youtube-nocookie.com'
-                    - 'www.youtube-nocookie.com'
-                    - 'vimeo.com'
-                    - 'player.vimeo.com'
-                    - 'dailymotion.com'
-                    - 'www.dailymotion.com'
-                    - 'loom.com'
-                    - 'www.loom.com'
-                    - 'luna.loom.com'
-                    - 'cdn.loom.com'
+                # Images: all HTTPS domains allowed
+                # Iframes: restricted by IframeSrcSanitizer to video platforms only
                 allow_relative_medias: true
                 allow_relative_links: true
                 force_https_urls: true
+                with_attribute_sanitizers:
+                    - App\HtmlSanitizer\IframeSrcSanitizer
