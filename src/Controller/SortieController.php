@@ -18,6 +18,7 @@ use App\Messenger\Message\SortiePubliee;
 use App\Repository\CommissionRepository;
 use App\Repository\EventParticipationRepository;
 use App\Repository\EventUnrecognizedPayerRepository;
+use App\Repository\ExpenseReportRepository;
 use App\Repository\FormationValidationGroupeCompetenceRepository;
 use App\Repository\FormationValidationNiveauPratiqueRepository;
 use App\Repository\UserAttrRepository;
@@ -26,6 +27,7 @@ use App\Service\HelloAssoService;
 use App\Service\UserLicenseHelper;
 use App\Twig\JavascriptGlobalsExtension;
 use App\UserRights;
+use App\Utils\Enums\ExpenseReportStatusEnum;
 use App\Utils\ExcelExport;
 use App\Utils\PdfGenerator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -278,6 +280,7 @@ class SortieController extends AbstractController
         EventUnrecognizedPayerRepository $unrecognizedPayerRepository,
         FormationValidationNiveauPratiqueRepository $formationNiveauRepository,
         FormationValidationGroupeCompetenceRepository $formationCompetenceValidationRepository,
+        ExpenseReportRepository $expenseReportRepository,
         Environment $twig,
         $baseUrl = '/',
     ) {
@@ -338,6 +341,19 @@ class SortieController extends AbstractController
         $cutoffYear = $currentMonth >= 12 ? $currentYear : $currentYear - 1;
         $cutoffDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $cutoffYear . '-' . UserLicenseHelper::LICENSE_TOLERANCY_PERIOD_END);
 
+        // Check if user has a viewable expense report (submitted, approved, or accounted)
+        $hasViewableExpenseReport = false;
+        if ($user) {
+            $expenseReport = $expenseReportRepository->getExpenseReportByEventAndUser($event->getId(), $user->getId());
+            if ($expenseReport && \in_array($expenseReport->getStatus(), [
+                ExpenseReportStatusEnum::SUBMITTED,
+                ExpenseReportStatusEnum::APPROVED,
+                ExpenseReportStatusEnum::ACCOUNTED,
+            ], true)) {
+                $hasViewableExpenseReport = true;
+            }
+        }
+
         return [
             'event' => $event,
             'participations' => $participationRepository->getSortedParticipations($event, null, null),
@@ -351,6 +367,8 @@ class SortieController extends AbstractController
             'current_user_accepted' => $currentUserAccepted,
             'accepted_participations' => $participationRepository->getSortedParticipations($event),
             'is_event_after_cutoff' => $event->getEndDate() >= $cutoffDate,
+            'cutoff_year' => $cutoffYear,
+            'has_viewable_expense_report' => $hasViewableExpenseReport,
             'groupes_competences' => $groupesCompRefs,
             'niveaux' => $nivRefs,
         ];

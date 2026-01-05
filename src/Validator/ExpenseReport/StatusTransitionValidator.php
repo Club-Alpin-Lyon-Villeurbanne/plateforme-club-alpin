@@ -30,7 +30,7 @@ class StatusTransitionValidator
             ExpenseReportStatusEnum::SUBMITTED->value => [ExpenseReportStatusEnum::APPROVED->value, ExpenseReportStatusEnum::REJECTED->value],
             ExpenseReportStatusEnum::APPROVED->value => [ExpenseReportStatusEnum::ACCOUNTED->value],
             ExpenseReportStatusEnum::REJECTED->value => [ExpenseReportStatusEnum::SUBMITTED->value],
-            ExpenseReportStatusEnum::ACCOUNTED->value => [ExpenseReportStatusEnum::PAID->value],
+            // ACCOUNTED is a terminal state
         ];
 
         if (!isset($validTransitions[$oldStatus->value]) || !\in_array($newStatus->value, $validTransitions[$oldStatus->value], true)) {

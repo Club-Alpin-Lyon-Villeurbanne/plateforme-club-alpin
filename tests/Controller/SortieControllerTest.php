@@ -4,9 +4,11 @@ namespace App\Tests\Controller;
 
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
+use App\Entity\ExpenseReport;
 use App\Entity\UserAttr;
 use App\Messenger\Message\SortiePubliee;
 use App\Tests\WebTestCase;
+use App\Utils\Enums\ExpenseReportStatusEnum;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Mailer\Messenger\SendEmailMessage;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -558,5 +560,179 @@ class SortieControllerTest extends WebTestCase
         $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Absent] ' . $event->getTitre() . ' du ' . $event->getStartDate()->format('d/m/Y'));
         $this->assertEmailTextBodyContains($emails[0], 'absent à la sortie');
         $this->assertEmailHtmlBodyContains($emails[0], 'absent à la sortie');
+    }
+
+    /**
+     * Test that a user with a submitted expense report can see the form
+     * even if the event is past the cutoff date.
+     */
+    public function testExpenseReportFormVisibleForSubmittedReportPastCutoff()
+    {
+        $user = $this->signup();
+        $this->signin($user);
+        $this->addAttribute($user, UserAttr::ENCADRANT, 'commission:*');
+
+        $event = $this->createPastEvent($user);
+        $this->createExpenseReport($event, $user, ExpenseReportStatusEnum::SUBMITTED);
+
+        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+
+        // The Vue expense report form should be included
+        $this->assertSelectorExists('#expense-report-form');
+    }
+
+    /**
+     * Test that a user with an approved expense report can see the form
+     * even if the event is past the cutoff date.
+     */
+    public function testExpenseReportFormVisibleForApprovedReportPastCutoff()
+    {
+        $user = $this->signup();
+        $this->signin($user);
+        $this->addAttribute($user, UserAttr::ENCADRANT, 'commission:*');
+
+        $event = $this->createPastEvent($user);
+        $this->createExpenseReport($event, $user, ExpenseReportStatusEnum::APPROVED);
+
+        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+
+        // The Vue expense report form should be included
+        $this->assertSelectorExists('#expense-report-form');
+    }
+
+    /**
+     * Test that a user with an accounted expense report can see the form
+     * even if the event is past the cutoff date.
+     */
+    public function testExpenseReportFormVisibleForAccountedReportPastCutoff()
+    {
+        $user = $this->signup();
+        $this->signin($user);
+        $this->addAttribute($user, UserAttr::ENCADRANT, 'commission:*');
+
+        $event = $this->createPastEvent($user);
+        $this->createExpenseReport($event, $user, ExpenseReportStatusEnum::ACCOUNTED);
+
+        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+
+        // The Vue expense report form should be included
+        $this->assertSelectorExists('#expense-report-form');
+    }
+
+    /**
+     * Test that a user with a draft expense report cannot see the form
+     * if the event is past the cutoff date.
+     */
+    public function testExpenseReportFormNotVisibleForDraftReportPastCutoff()
+    {
+        $user = $this->signup();
+        $this->signin($user);
+        $this->addAttribute($user, UserAttr::ENCADRANT, 'commission:*');
+
+        $event = $this->createPastEvent($user);
+        $this->createExpenseReport($event, $user, ExpenseReportStatusEnum::DRAFT);
+
+        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+
+        // The Vue expense report form should NOT be included (draft is not viewable past cutoff)
+        $this->assertSelectorNotExists('#expense-report-form');
+    }
+
+    /**
+     * Test that a user with a rejected expense report cannot see the form
+     * if the event is past the cutoff date.
+     */
+    public function testExpenseReportFormNotVisibleForRejectedReportPastCutoff()
+    {
+        $user = $this->signup();
+        $this->signin($user);
+        $this->addAttribute($user, UserAttr::ENCADRANT, 'commission:*');
+
+        $event = $this->createPastEvent($user);
+        $this->createExpenseReport($event, $user, ExpenseReportStatusEnum::REJECTED);
+
+        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+
+        // The Vue expense report form should NOT be included (rejected is not viewable past cutoff)
+        $this->assertSelectorNotExists('#expense-report-form');
+    }
+
+    /**
+     * Test that a user without any expense report cannot see the form
+     * if the event is past the cutoff date.
+     */
+    public function testExpenseReportFormNotVisibleWithoutReportPastCutoff()
+    {
+        $user = $this->signup();
+        $this->signin($user);
+        $this->addAttribute($user, UserAttr::ENCADRANT, 'commission:*');
+
+        $event = $this->createPastEvent($user);
+        // No expense report created
+
+        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+
+        // The Vue expense report form should NOT be included (no report, past cutoff)
+        $this->assertSelectorNotExists('#expense-report-form');
+    }
+
+    /**
+     * Helper method to create a past event (before cutoff date).
+     */
+    protected function createPastEvent($user): Evt
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $commission = $this->createCommission();
+
+        // Create an event that ended 2 years ago (definitely past any cutoff)
+        $event = new Evt(
+            $user,
+            $commission,
+            'Sortie passée',
+            'sortie-passee-' . bin2hex(random_bytes(4)),
+            new \DateTimeImmutable('-2 years -10 days'),
+            new \DateTimeImmutable('-2 years -9 days'),
+            'Hotel de ville',
+            12,
+            2,
+            'Une sortie passée',
+            12,
+            12,
+            new \DateTimeImmutable('-2 years -20 days')
+        );
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($user);
+        $event->setStatusLegal(Evt::STATUS_LEGAL_VALIDE);
+        $event->setStatusLegalWho($user);
+        $event->addParticipation($user, EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE);
+        $em->persist($event);
+        $em->flush();
+
+        return $event;
+    }
+
+    /**
+     * Helper method to create an expense report for testing.
+     */
+    protected function createExpenseReport(Evt $event, $user, ExpenseReportStatusEnum $status): ExpenseReport
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+
+        $expenseReport = new ExpenseReport();
+        $expenseReport->setEvent($event);
+        $expenseReport->setUser($user);
+        $expenseReport->setStatus($status);
+        $expenseReport->setRefundRequired(true);
+
+        $em->persist($expenseReport);
+        $em->flush();
+
+        return $expenseReport;
     }
 }
