@@ -7,7 +7,7 @@ use App\Helper\HtmlHelper;
 
 $url = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => $article['code_article'], 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL);
 if ($article['code_commission'] ?? null) {
-    $url .= '?commission=' . $article['code_commission'];
+    $url .= '?commission=' . urlencode($article['code_commission']);
 } // commission de la sortie associée
 
 // disabling links :

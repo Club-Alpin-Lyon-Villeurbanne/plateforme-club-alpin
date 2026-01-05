@@ -7,7 +7,7 @@ use App\Helper\HtmlHelper;
 
 $url = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => $article['code_article'], 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL);
 if (isset($current_commission) && $current_commission) {
-    $url .= '?commission=' . $current_commission;
+    $url .= '?commission=' . urlencode($current_commission);
 }
 
 // check image
