@@ -1,0 +1,33 @@
+{% macro user_rights(club_roles, comm_roles) %}
+    <h3>Responsabilité sur le site :</h3>
+    <ul class="nice-list">
+        {% if club_roles %}
+            {% for role in club_roles %}
+                <li>{{ role.usertype.title }}
+                    {% if role.description %}
+                        <img src="/img/base/info.png" title="{{ role.description }}" alt="i" />
+                    {% endif %}
+                </li>
+            {% endfor %}
+        {% else %}
+            <li>N/A</li>
+        {% endif %}
+    </ul>
+    <br style="clear:left;" />
+
+    <h3>Responsabilité dans les commissions :</h3>
+    <ul class="nice-list">
+        {% if comm_roles %}
+            {% for commission, role in comm_roles %}
+                <li>{{ commission }} : {{ role.usertype.title }}
+                    {% if role.description %}
+                        <img src="/img/base/info.png" title="{{ role.description }}" alt="i" />
+                    {% endif %}
+                </li>
+            {% endfor %}
+        {% else %}
+            <li>N/A</li>
+        {% endif %}
+    </ul>
+    <br style="clear:left;" />
+{% endmacro %}

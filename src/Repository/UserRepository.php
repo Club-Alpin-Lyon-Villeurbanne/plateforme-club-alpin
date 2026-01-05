@@ -8,7 +8,10 @@ use App\Entity\Comment;
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\User;
+use App\Trait\PaginationRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -25,6 +28,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
  */
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
+    use PaginationRepositoryTrait;
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
@@ -269,9 +274,13 @@ SQL;
         return $this->getPaginatedResults($qb, $first, $perPage);
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     public function getUsersCount(string $type, string $searchText = ''): int
     {
-        return $this
+        return (int) $this
             ->getQueryBuilder($type, $searchText)
             ->select('count(u)')
             ->getQuery()
@@ -339,15 +348,6 @@ SQL;
         }
 
         return $qb;
-    }
-
-    protected function getPaginatedResults(QueryBuilder $qb, int $first, int $perPage)
-    {
-        return $qb->setFirstResult($first)
-            ->setMaxResults($perPage)
-            ->getQuery()
-            ->getResult()
-        ;
     }
 
     private function getAttributeByColNumber(int $colNumber): string

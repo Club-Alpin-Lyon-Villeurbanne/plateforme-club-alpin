@@ -76,7 +76,7 @@ class UserRightController extends AbstractController
 
         $data = $request->request->all();
         $usertype = $this->manager->getRepository(Usertype::class)->find($data['id_usertype']);
-        if (!$this->isCurrentUserAllowed($usertype)) {
+        if (!$usertype instanceof Usertype || !$this->isCurrentUserAllowed($usertype)) {
             throw new AccessDeniedHttpException('Vous n\'avez pas le droit d\'accéder à cette fonctionnalité');
         }
 

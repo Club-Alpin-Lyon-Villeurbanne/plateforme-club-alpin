@@ -1,0 +1,60 @@
+{% extends 'base-light.html.twig' %}
+
+{% block title %}Fiche profil{% endblock %}
+
+{% block body %}
+    {% import 'macros/user-rights.html.twig' as right_macro %}
+    {% import 'macros/user-info.html.twig' as info_macro %}
+    {% import 'macros/contact-form.html.twig' as contact_macro %}
+    {% import 'macros/taux-presence.html.twig' as taux_macro %}
+    {% import 'macros/user-content.html.twig' as content_macro %}
+
+    <div id="includer-stuff">
+        <!-- AVATAR-->
+        <div style="float:left; padding:0 20px 30px 0; width:150px; overflow:hidden; text-align:center;">
+            <img src="{{ media_thumbnail(user.profilePicture, 'profile_thumbnail') }}" alt="Photo de profil" title="{{ user.nickname }}" style="max-width:100%" />
+
+            <!-- fiche complète -->
+            {% if allowed('user_read_limited') %}
+                <a href="{{ path('user_full', {'id': user.id}) }}" title="Quitter cette page pour voir la fiche complète de cet adhérent" class="nice2" target="_top">
+                    <img src="/img/base/user.png" alt="" title="" /> &nbsp; &nbsp; Profil complet
+                </a>
+            {% endif %}
+
+            <!-- contacter -->
+            <a href="javascript:void(0)" title="Utiliser le formulaire de contact pour écrire un message à cet adhérent" class="nice2" onclick="$('#trigger-userinfo, #trigger-usercontact').slideToggle()">
+                <img src="/img/base/email.png" alt="" title="" /> &nbsp; &nbsp; Contacter
+            </a>
+        </div>
+
+        <!-- nick -->
+        <div style="float:right; width:740px">
+            <h1>
+                {% if allowed('user_read_limited') %}
+                    {{ user.fullName }} ({{ user.nickname }})
+                {% else %}
+                    {{ user.nickname }}
+                {% endif %}
+            </h1>
+            <br style="clear:left;" />
+
+            <!-- statuts -->
+            {{ right_macro.user_rights(club_roles, comm_roles) }}
+
+            <!-- formulaire de contact -->
+            {{ contact_macro.contact_form(form, style) }}
+
+            <div id="trigger-userinfo" style="{{ reversed_style }}">
+                <!-- infos persos réduites -->
+                {{ info_macro.user_info(user, 'reduced') }}
+                <hr  />
+
+                {% if allowed('user_read_private') or app.user is same as (user) %}
+                    {{ taux_macro.taux_presence(user, fiabilite, nb_absences, total_sorties) }}
+
+                    {{ content_macro.user_content(user, nb_articles, user_articles, nb_events, user_events, 'reduced') }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

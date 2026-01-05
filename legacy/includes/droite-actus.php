@@ -5,9 +5,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use App\Helper\HtmlHelper;
 
 if ($current_commission) {
-    echo '<h1 class="actus-h1"><a href="/accueil/' . $current_commission . '.html" title="Afficher tous les articles pour cette commission">actus</a></h1>';
+    echo '<h1 class="actus-h1"><a href="' . LegacyContainer::get('legacy_router')->generate('commission_homepage', ['code' => $current_commission], UrlGeneratorInterface::ABSOLUTE_URL) . '" title="Afficher tous les articles pour cette commission">actus</a></h1>';
 } else {
-    echo '<h1 class="actus-h1"><a href="/accueil.html" title="Afficher tous les articles">actus</a></h1>';
+    echo '<h1 class="actus-h1"><a href="' . LegacyContainer::get('legacy_router')->generate('homepage', [], UrlGeneratorInterface::ABSOLUTE_URL) . '" title="Afficher tous les articles">actus</a></h1>';
 }
 ?>
 
@@ -74,8 +74,9 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
             <?php
         // un ID de commission est bien enregistré
         if (isset($article['commission']) && $article['commission']) {
+            $url = LegacyContainer::get('legacy_router')->generate('commission_homepage', ['code' => $article['commission']['code_commission']], UrlGeneratorInterface::ABSOLUTE_URL);
             ?>
-            - <a href="/accueil/<?php echo rawurlencode($article['commission']['code_commission']); ?>.html#home-articles" title="Toutes les actus de cette commission">
+            - <a href="<?php echo $url; ?>#home-articles" title="Toutes les actus de cette commission">
                     <?php echo HtmlHelper::escape($article['commission']['title_commission']); ?>
                 </a>
                 <?php
@@ -83,7 +84,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     // 0 = actu club
     elseif (0 == $article['commission_article']) {
         ?>
-                <a href="/accueil.html#home-articles" title="Toutes les actus du club">
+                <a href="<?php echo LegacyContainer::get('legacy_router')->generate('homepage', [], UrlGeneratorInterface::ABSOLUTE_URL); ?>#home-articles" title="Toutes les actus du club">
                     CLUB
                 </a>
                 <?php
@@ -116,7 +117,7 @@ while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
 <!-- lien vers la page actus -->
 <?php
 if ($current_commission) {
-    echo '<a href="/accueil/' . $current_commission . '.html" title="Afficher tous les articles pour cette commission" class="lien-big">&gt; Voir tous les articles ' . $comTab[$current_commission]['title_commission'] . '</a>';
+    echo '<a href="' . LegacyContainer::get('legacy_router')->generate('commission_homepage', ['code' => $current_commission], UrlGeneratorInterface::ABSOLUTE_URL) . '" title="Afficher tous les articles pour cette commission" class="lien-big">&gt; Voir tous les articles ' . $comTab[$current_commission]['title_commission'] . '</a>';
 } else {
-    echo '<a href="/accueil.html" title="Afficher tous les articles" class="lien-big">&gt; Voir tous les articles</a>';
+    echo '<a href="' . LegacyContainer::get('legacy_router')->generate('homepage', [], UrlGeneratorInterface::ABSOLUTE_URL) . '" title="Afficher tous les articles" class="lien-big">&gt; Voir tous les articles</a>';
 }

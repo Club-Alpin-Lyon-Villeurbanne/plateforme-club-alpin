@@ -170,8 +170,9 @@ class HtmlSanitizerTest extends KernelTestCase
     {
         $input = '<iframe src="https://malicious-site.com/embed"></iframe>';
         $result = $this->sanitizer->sanitize($input);
-        // The iframe tag is kept but the malicious src is stripped
+        // The iframe tag is kept but the malicious src is cleared
         $this->assertStringNotContainsString('malicious-site.com', $result);
+        $this->assertStringContainsString('<iframe', $result);
     }
 
     public function testBlocksHttpIframes(): void
@@ -179,15 +180,8 @@ class HtmlSanitizerTest extends KernelTestCase
         // HTTP (non-HTTPS) should be blocked
         $input = '<iframe src="http://www.youtube.com/embed/dQw4w9WgXcQ"></iframe>';
         $result = $this->sanitizer->sanitize($input);
-        // The iframe should either be removed or the src should be empty
-        $this->assertThat(
-            $result,
-            $this->logicalOr(
-                $this->equalTo(''),
-                $this->stringContains('<iframe></iframe>'),
-                $this->logicalNot($this->stringContains('http://'))
-            )
-        );
+        // The HTTP URL should not appear in the result
+        $this->assertStringNotContainsString('http://www.youtube.com', $result);
     }
 
     public function testPreservesComplexArticleContent(): void
@@ -240,5 +234,41 @@ HTML;
         $this->assertStringNotContainsString('javascript:', $result);
         $this->assertStringNotContainsString('onclick', $result);
         $this->assertStringNotContainsString('stealData', $result);
+    }
+
+    public function testPreservesSiteImages(): void
+    {
+        // Use localhost as it's the BACKEND_URL host in test environment
+        $input = '<figure class="image image_resized" style="width:49.71%;"><img style="aspect-ratio:1999/2999;" src="https://localhost/ftp/uploads/files/photo.jpg" width="1999" height="2999"></figure>';
+
+        $result = $this->sanitizer->sanitize($input);
+
+        // Figure tag with class and style preserved
+        $this->assertStringContainsString('<figure', $result);
+        $this->assertStringContainsString('class="image image_resized"', $result);
+        $this->assertStringContainsString('style="width:49.71%;"', $result);
+
+        // Image tag with all attributes preserved
+        $this->assertStringContainsString('<img', $result);
+        $this->assertStringContainsString('src="https://localhost/ftp/uploads/files/photo.jpg"', $result);
+        $this->assertStringContainsString('style="aspect-ratio:1999/2999;"', $result);
+        $this->assertStringContainsString('width="1999"', $result);
+        $this->assertStringContainsString('height="2999"', $result);
+    }
+
+    public function testAllowsExternalImages(): void
+    {
+        // External HTTPS images from any domain should be allowed
+        $input = '<img src="https://some-external-site.com/photo.jpg" alt="External photo">';
+        $result = $this->sanitizer->sanitize($input);
+        $this->assertStringContainsString('src="https://some-external-site.com/photo.jpg"', $result);
+    }
+
+    public function testBlocksHttpImages(): void
+    {
+        // HTTP images should be blocked (only HTTPS allowed)
+        $input = '<img src="http://external-site.com/photo.jpg" alt="HTTP photo">';
+        $result = $this->sanitizer->sanitize($input);
+        $this->assertStringNotContainsString('http://external-site.com', $result);
     }
 }

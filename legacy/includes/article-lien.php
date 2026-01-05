@@ -45,16 +45,18 @@ if ($article['media_upload_id']) {
 
 // une commission est bien liée
 if ($article['code_commission'] ?? null) {
+    $url = LegacyContainer::get('legacy_router')->generate('commission_homepage', ['code' => $article['code_commission']], UrlGeneratorInterface::ABSOLUTE_URL);
     ?>
-			<a href="/accueil/<?php echo rawurlencode($article['code_commission']); ?>.html#home-articles" title="Toutes les actus de cette commission">
+			<a href="<?php echo $url; ?>#home-articles" title="Toutes les actus de cette commission">
 				<?php echo HtmlHelper::escape($article['title_commission']); ?>
 			</a>
 			<?php
 }
 // 0 = actu club
 elseif (0 == $article['commission_article']) {
+    $url = LegacyContainer::get('legacy_router')->generate('homepage', [], UrlGeneratorInterface::ABSOLUTE_URL);
     ?>
-			<a href="/accueil.html#home-articles" title="Toutes les actus du club">
+			<a href="<?php echo $url; ?>#home-articles" title="Toutes les actus du club">
 				CLUB
 			</a>
 			<?php

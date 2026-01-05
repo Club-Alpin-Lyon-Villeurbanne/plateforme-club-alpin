@@ -96,7 +96,7 @@
                     <td>{{ user.lastname|upper }}</td>
                     <td>{{ user.firstname }}</td>
                     <td>
-                        <a class="fancyframe" href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ user.id }}" title="Voir la fiche">
+                        <a class="fancyframe" href="{{ path('user_profile', {'id': user.id}) }}" title="Voir la fiche">
                             {{ user.nickname }}
                         </a>
                     </td>
