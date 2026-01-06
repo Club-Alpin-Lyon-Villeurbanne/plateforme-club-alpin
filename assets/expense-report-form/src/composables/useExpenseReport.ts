@@ -5,8 +5,50 @@ import {
   ExpenseReportPayload,
 } from "../types/api";
 import axios from "../services/axios";
+import { isAxiosError } from "axios";
 import { useAttachments } from "./useAttachment";
 import config from "../config/expense-reports.json";
+
+interface ApiViolation {
+  propertyPath: string;
+  message: string;
+}
+
+interface ApiErrorResponse {
+  violations?: ApiViolation[];
+  "hydra:description"?: string;
+}
+
+const getErrorMessages = (error: unknown): string[] => {
+  if (!isAxiosError(error) || !error.response?.data) {
+    return [];
+  }
+
+  const data = error.response.data as ApiErrorResponse;
+
+  if (data.violations && data.violations.length > 0) {
+    return data.violations.map((v) => v.message);
+  }
+
+  if (data["hydra:description"]) {
+    return [data["hydra:description"]];
+  }
+
+  return [];
+};
+
+const displayApiErrors = (
+  error: unknown,
+  toastr: Toastr | undefined,
+  fallbackMessage = "Une erreur s'est produite",
+): void => {
+  const messages = getErrorMessages(error);
+  if (messages.length > 0) {
+    messages.forEach((msg) => toastr?.error(msg));
+  } else {
+    toastr?.error(fallbackMessage);
+  }
+};
 
 export interface ExpenseReportContext {
   expenseReport: Ref<ExpenseReport | null>;
@@ -46,7 +88,7 @@ export function useExpenseReport(initialEventId: number) {
       await save(payload);
       toastr?.info("Votre note de frais a été sauvegardée");
     } catch (error) {
-      toastr?.error("Une erreur s'est produite");
+      displayApiErrors(error, toastr);
     }
   };
 
@@ -56,7 +98,7 @@ export function useExpenseReport(initialEventId: number) {
       await fetchOrCreateExpenseReport(initialEventId);
       toastr?.success("Votre note de frais a bien été envoyée");
     } catch (error) {
-      toastr?.error("Une erreur s'est produite");
+      displayApiErrors(error, toastr);
     }
   };
 
