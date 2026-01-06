@@ -13,8 +13,6 @@ use App\Tests\WebTestCase;
  *
  * Pour activer ces tests, il faudrait refactorer LegacyContainer pour utiliser
  * l'injection de dépendances au lieu d'un kernel global.
- *
- * @see https://github.com/Club-Alpin-Lyon-Villeurbanne/plateforme-club-alpin/issues/XXX
  */
 class LegacyPagesTest extends WebTestCase
 {
