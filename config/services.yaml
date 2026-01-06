@@ -349,3 +349,7 @@ services:
   App\Command\AutoRenewSpecialAccounts:
     arguments:
       $specialAccountsIds: '%env(SPECIAL_ACCOUNTS_IDS)%'
+
+  App\HtmlSanitizer\ImageSrcDataSanitizer:
+    tags:
+      - { name: 'html_sanitizer.attribute_sanitizer' }
