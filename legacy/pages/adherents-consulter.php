@@ -174,7 +174,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     if ($userTab['birthdate']) {
         $birthdate = new DateTimeImmutable($userTab['birthdate']);
         $age = $birthdate->diff(new DateTime())->y;
-        printTableRow('Date de naissance :', $birthdate->format('d/m/Y') . '&nbsp;&nbsp;&nbsp;(' . $age > 0 ? $age . ' ans' : '?)');
+        printTableRow('Date de naissance :', $birthdate->format('d/m/Y') . '&nbsp;&nbsp;&nbsp;(' . ($age > 0 ? $age . ' ans' : '?') . ')');
     }
     if ($userTab['email_user']) {
         printTableRow('E-mail :', '<a href="mailto:' . $userTab['email_user'] . '">' . $userTab['email_user'] . '</a>');
