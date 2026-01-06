@@ -1,0 +1,96 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Votre recherche{% endblock %}
+
+{% block body %}
+    {% import 'macros/article-link.html.twig' as article_macro %}
+    {% import 'macros/event-line.html.twig' as event_macro %}
+    <div class="main-type">
+        {% if not safeStr or safeStr|length <= 0 %}
+            <h1>Recherche</h1>
+            <p>Utilisez le champ de recherche pour trouver des articles, sorties ou pages.</p>
+        {% else %}
+            <!-- TITRE -->
+            <h1>Votre recherche : &laquo;&nbsp;{{ safeStr }}&nbsp;&raquo;</h1>
+
+            <!-- ERREURS -->
+            {% if errTab|length > 0 %}
+                <div class="erreur">
+                    Erreur :
+                    <ul>
+                        {% for err in errTab %}
+                            <li>{{ err }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% else %}
+                <!-- RECHERCHE - ARTICLES -->
+                <hr />
+                <h2>Articles</h2>
+
+                {% if articlesTab|length == 0 %}
+                    <p class="alerte">Aucun article trouvé</p>
+                {% else %}
+                    <p class="mini">
+                        {{ totalArticles }} article{% if totalArticles > 1 %}s{% endif %} trouvé{% if totalArticles > 1 %}s{% endif %}.
+                        {% if totalArticles != articlesTab|length %}
+                            Voici les {{ articlesTab|length }} plus récents :
+                        {% endif %}
+                    </p>
+
+                    {% for article in articlesTab %}
+                        {{ article_macro.article_link(article, 'profile', 'encart_article', 165) }}
+                    {% endfor %}
+                {% endif %}
+
+                <!-- RECHERCHE - SORTIES -->
+                <br />
+                <hr />
+                <h2>Sorties</h2>
+
+                {% if evtTab|length == 0 %}
+                    <p class="alerte">Aucune sortie trouvée</p>
+                {% else %}
+                    <p class="mini">
+                        {{ totalEvt }} sortie{% if totalEvt > 1 %}s{% endif %} trouvée{% if totalEvt > 1 %}s{% endif %}.
+                        {% if totalEvt != evtTab|length %}
+                            Voici les {{ evtTab|length }} plus récentes :
+                        {% endif %}
+                    </p>
+                    <br />
+
+                    <table id="agenda">
+                        {% for event in evtTab %}
+                            {{ event_macro.event_line(event, null, '', false) }}
+                        {% endfor %}
+                    </table>
+                {% endif %}
+
+                <!-- RECHERCHE - PAGES LIBRES -->
+                <br />
+                <hr />
+                <h2>Pages</h2>
+
+                {% if freePagesTab|length == 0 %}
+                    <p class="alerte">Aucune page trouvée</p>
+                {% else %}
+                    <p class="mini">
+                        {{ totalFreePages }} page{% if totalFreePages > 1 %}s{% endif %} trouvée{% if totalFreePages > 1 %}s{% endif %}.
+                        {% if totalFreePages != freePagesTab|length %}
+                            Voici les {{ freePagesTab|length }} plus récentes :
+                        {% endif %}
+                    </p>
+                    <br />
+
+                    {% for freePage in freePagesTab %}
+                        <div class="search-result-page">
+                            <a href="/pages/{{ freePage.code }}.html">{{ freePage.defaultName }}</a>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endif %}
+        {% endif %}
+
+        <br style="clear:both" />
+    </div>
+{% endblock %}

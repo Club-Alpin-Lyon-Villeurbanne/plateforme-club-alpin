@@ -2,13 +2,18 @@
 
 use App\Helper\HtmlHelper;
 
+use App\Legacy\LegacyContainer;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
 // suggestions
 $tmpTab = ['Refuge du gouter', 'Enneigement', 'Ski de randonnée', 'Mont Blanc', 'Slackline'];
+
+$link = LegacyContainer::get('legacy_router')->generate('search_result', [], UrlGeneratorInterface::ABSOLUTE_URL);
 ?>
 
-<form action="recherche.html" id="recherche-form" class="right-light-in" method="get">
+<form action="<?php echo $link; ?>" id="recherche-form" class="right-light-in" method="post">
 	<p class="big">Recherche :</p>
-	<input type="text" class="textfield" name="str" value="<?php echo HtmlHelper::escape(stripslashes($_GET['str'] ?? '')); ?>" placeholder="ex: <?php echo $tmpTab[rand(0, count($tmpTab) - 1)]; ?>">
+	<input type="text" class="textfield" name="str" value="<?php echo HtmlHelper::escape(stripslashes($_POST['str'] ?? '')); ?>" placeholder="ex: <?php echo $tmpTab[rand(0, count($tmpTab) - 1)]; ?>">
 	<input type="submit" value="OK" class="submit" />
 	<?php
     // filtre à la commission
