@@ -31,7 +31,7 @@
     </td>
     <td>
         <div>
-            <a class="agenda-evt-debut" target="_top" href="{{ path('sortie', { code: event.code, id: event.id }) }}?commission={{ event.commission.code }}" title="">
+            <a class="agenda-evt-debut" href="{{ path('sortie', { code: event.code, id: event.id }) }}?commission={{ event.commission.code }}" title="">
 
                 <!-- picto -->
                 <div class="picto">
@@ -40,17 +40,17 @@
                 </div>
 
                 <div class="droite">
-                                    <span title="{{ event | temoin_event_title }}" style="padding: 10px 10px 5px 5px;float:left;">
-                                        <span class="temoin-places-dispos"> {{ event | temoin_event_picto }}</span>
-                                    </span>
+                    <span title="{{ event | temoin_event_title }}" style="padding: 10px 10px 5px 5px;float:left;">
+                        <span class="temoin-places-dispos"> {{ event | temoin_event_picto }}</span>
+                    </span>
 
                     <h2 class="tw-flex tw-items-center tw-gap-2">
-                        {% if event.cancelled %}<span style="padding:1px 3px; color:red; font-family:Arial">ANNULÉE - </span>{% endif %}
+                        {% if event.cancelled %}<span style="padding:1px 3px; color:red; font-family:Arial;white-space: nowrap;">ANNULÉE - </span>{% endif %}
                         {{ event.titre }}
 
                         {% set participation = event.participation(user) %}
-                        <div class="tw-flex tw-flex-col tw-items-end tw-ml-auto">
-                            {% if participation %}
+                        {% if participation %}
+                            <div class="tw-flex tw-flex-col tw-items-end tw-ml-auto">
                                 {% set is_orga = false %}
                                 {% if app.user == event.user %}
                                     {% set is_orga = true %}
@@ -94,14 +94,14 @@
                                                         En attente
                                                     </span>
                                 {% endif %}
-                            {% endif %}
-                        </div>
+                            </div>
+                        {% endif %}
                     </h2>
 
                     <p class="tw-flex tw-justify-between tw-items-center">
-                                        <span>
-                                            <b>{{ event.commission.title }}</b>
-                                        </span>
+                        <span>
+                            <b>{{ event.commission.title }}</b>
+                        </span>
                         {% if participation and display_notes_de_frais and include_name is same as ('profil-sorties-prev')
                             and event.finished and not event.cancelled and event.statusLegal
                             and (participation.role in constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT')) %}

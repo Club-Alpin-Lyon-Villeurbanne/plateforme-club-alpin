@@ -1,4 +1,4 @@
-{% macro article_link(article, display_style = 'profile', class = 'encart_article_small') %}
+{% macro article_link(article, display_style = 'profile', class = 'encart_article_small', limit = 150) %}
     {% set url = path('article_view', {'id': article.id, 'code': article.code}) %}
     {% set img = '' %}
     {% if article.mediaUpload and article.mediaUpload.id %}
@@ -6,11 +6,11 @@
     {% endif %}
     <div class="{{ class }}">
         <!-- image -->
-        <a target="_top" title="Voir cet article" href="{{ url }}" class="illustration fader" style="background-image:url({{ img }})"></a>
+        <a title="Voir cet article" href="{{ url }}" class="illustration fader" style="background-image:url({{ img }})"></a>
 
         <!-- titre + lien article -->
         <h2>
-            <a target="_top" href="{{ url }}" title="Voir cet article">
+            <a href="{{ url }}" title="Voir cet article">
                 {{article.titre}}
             </a>
         </h2>
@@ -40,12 +40,11 @@
 
         <!-- summup -->
         <p class="summup">
-            {% set limit = 150 %}
             {% set text = article.cont|striptags %}
             {{ text|raw|slice(0, limit) }}
 
             {% if text|length > limit %}
-                <a target="_top" href="{{ url }}" title="Voir cet article">
+                <a href="{{ url }}" title="Voir cet article">
                     [...]
                 </a>
             {% endif %}
