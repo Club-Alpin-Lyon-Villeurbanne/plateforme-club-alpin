@@ -1,5 +1,6 @@
 <?php
 
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 
@@ -38,7 +39,7 @@ if (count($errTab) > 0) {
         // traitement du nom de dossier
         $nouveauDossier = formater(stripslashes($_GET['nouveauDossier']), 3);
         if (strlen($nouveauDossier) > 40) {
-            $errTab[] = 'Le nom de dossier ne peut pas dépasser 40 caractères : <b>' . html_utf8($nouveauDossier) . '</b>';
+            $errTab[] = 'Le nom de dossier ne peut pas dépasser 40 caractères : <b>' . HtmlHelper::escape($nouveauDossier) . '</b>';
         }
         if ('' === $nouveauDossier) {
             $errTab[] = 'Entrez un nom de dossier valide';
@@ -95,11 +96,11 @@ if (count($errTab) > 0) {
 
                 <form action="ftp-adddir.php" method="GET">
                     <input type="hidden" name="operation" value="create" />
-                    <input type="hidden" name="target" value="<?php echo html_utf8($target); ?>" />
+                    <input type="hidden" name="target" value="<?php echo HtmlHelper::escape($target); ?>" />
                     <input type="hidden" name="lock" value="locked" />
                     <br />
 
-                    <span style="font-size: 0.9rem; font-weight:100; color:silver;">ftp/<?php echo html_utf8(substr($target, 7)); ?></span>
+                    <span style="font-size: 0.9rem; font-weight:100; color:silver;">ftp/<?php echo HtmlHelper::escape(substr($target, 7)); ?></span>
                     <input type="text" class="nice" name="nouveauDossier" value=""placeholder="nom-du-dossier" />
                     <br />
                     <br />

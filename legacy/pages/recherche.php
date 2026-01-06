@@ -1,12 +1,13 @@
 <?php
 
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 
 $searchResultsPerPage = LegacyContainer::getParameter('legacy_env_SEARCH_RESULTS_PER_PAGE');
 
 if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
     // vérification des caractères
-    $safeStr = substr(html_utf8(stripslashes($_GET['str'])), 0, 80);
+    $safeStr = substr(HtmlHelper::escape(stripslashes($_GET['str'])), 0, 80);
     $safeStrSql = LegacyContainer::get('legacy_mysqli_handler')->escapeString(substr(stripslashes($_GET['str']), 0, 80));
     $safeStrSqlWildCard = '%' . $safeStrSql . '%';
 
@@ -203,7 +204,7 @@ if ('recherche' == $p1 && isset($_GET['str']) && strlen($_GET['str'])) {
                         $evt = $evtTab[$i];
 
                         echo '<tr>'
-                                . '<td class="agenda-gauche">' . (new \DateTimeImmutable($evt['start_date']))?->format('d/m/Y') . '</td>'
+                                . '<td class="agenda-gauche">' . (new DateTimeImmutable($evt['start_date']))?->format('d/m/Y') . '</td>'
                                 . '<td>';
                         require __DIR__ . '/../includes/agenda-evt-debut.php';
                         echo '</td>'

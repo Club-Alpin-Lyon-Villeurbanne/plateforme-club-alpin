@@ -1,6 +1,7 @@
 <?php
 
 use App\Entity\User;
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 use Egulias\EmailValidator\EmailValidator;
 use Egulias\EmailValidator\Validation\NoRFCWarningsValidation;
@@ -32,11 +33,11 @@ function userlink($id_user, $nickname_user, $civ_user = false, $firstname_user =
 {
     $complement = '';
     switch ($style) {
-        case 'public': 	$return = html_utf8($nickname_user);
+        case 'public': 	$return = HtmlHelper::escape($nickname_user);
             break;
-        case 'short': 	$return = html_utf8(ucfirst($firstname_user)) . ' ' . strtoupper(substr(trim($lastname_user), 0, 1));
+        case 'short': 	$return = HtmlHelper::escape(ucfirst($firstname_user)) . ' ' . strtoupper(substr(trim($lastname_user), 0, 1));
             break;
-        case 'full': 	$return = html_utf8(ucfirst($firstname_user)) . ' ' . html_utf8(strtoupper($lastname_user));
+        case 'full': 	$return = HtmlHelper::escape(ucfirst($firstname_user)) . ' ' . HtmlHelper::escape(strtoupper($lastname_user));
             break;
         default:		return;
     }
@@ -266,10 +267,15 @@ function mylog($code, $desc, $connectme = true)
     }
 }
 
-// htmlentities avec utf8
-function html_utf8($str)
+// assurer un lien http
+function linker($link)
 {
-    return htmlentities($str ?? '', \ENT_QUOTES, 'UTF-8');
+    $link = trim($link);
+    if ('http://' != substr($link, 0, 7) && 'https://' != substr($link, 0, 8)) {
+        $link = 'https://' . $link;
+    }
+
+    return $link;
 }
 
 // ma fonction d'insertion élément inline
@@ -329,24 +335,24 @@ function inputVal($inputName, $defaultVal = '')
     $input = explode('|', $inputName);
     if (empty($input[1])) {
         if (!empty($_POST[$inputName])) {
-            return html_utf8(stripslashes($_POST[$inputName]));
+            return HtmlHelper::escape(stripslashes($_POST[$inputName]));
         }
 
-        return html_utf8($defaultVal);
+        return HtmlHelper::escape($defaultVal);
     }
     if (2 == count($input)) {
         if ($_POST[$input[0]][$input[1]]) {
-            return html_utf8(stripslashes($_POST[$input[0]][$input[1]]));
+            return HtmlHelper::escape(stripslashes($_POST[$input[0]][$input[1]]));
         }
 
-        return html_utf8($defaultVal);
+        return HtmlHelper::escape($defaultVal);
     }
     if (3 == count($input)) {
         if ($_POST[$input[0]][$input[1]][$input[2]]) {
-            return html_utf8(stripslashes($_POST[$input[0]][$input[1]][$input[2]]));
+            return HtmlHelper::escape(stripslashes($_POST[$input[0]][$input[1]][$input[2]]));
         }
 
-        return html_utf8($defaultVal);
+        return HtmlHelper::escape($defaultVal);
     }
 }
 

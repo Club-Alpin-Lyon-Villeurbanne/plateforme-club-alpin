@@ -103,9 +103,9 @@ if (!isset($errTab) || 0 === count($errTab)) {
     $eventLink = $articleLink = null;
 
     if ($event) {
-        $eventLink = LegacyContainer::get('legacy_router')->generate('sortie', ['code' => html_utf8($event['code_evt']), 'id' => (int) $event['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL);
+        $eventLink = LegacyContainer::get('legacy_router')->generate('sortie', ['code' => $event['code_evt'], 'id' => (int) $event['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL);
     } elseif ($article) {
-        $articleLink = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL);
+        $articleLink = LegacyContainer::get('legacy_router')->generate('article_view', ['code' => $article['code_article'], 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL);
     }
     LegacyContainer::get('legacy_mailer')->send($destinataire['email_user'], 'transactional/contact-form', [
         'contact_name' => $nom,

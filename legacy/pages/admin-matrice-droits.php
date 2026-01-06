@@ -1,6 +1,7 @@
 <?php
 
 use App\Entity\UserAttr;
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 
@@ -81,7 +82,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     echo '<table class="user-right-edit-table"><thead><tr><th></th>';
     foreach ($typeTab as $usertype) {
         echo '<th>';
-        echo html_utf8($usertype['title_usertype']);
+        echo HtmlHelper::escape($usertype['title_usertype']);
         if ($isDev) {
             echo '<br/><code>' . $usertype['code_usertype'] . '</code>';
         }
@@ -92,22 +93,22 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     foreach ($rightTab as $userright) { // types (ordonnées)
         if ($tmp != $userright['parent_userright']) {
             $tmp = $userright['parent_userright'];
-            echo '<tr><td colspan="' . (count($typeTab) + 1) . '"><b>' . html_utf8($userright['parent_userright']) . '</b></td></tr>';
+            echo '<tr><td colspan="' . (count($typeTab) + 1) . '"><b>' . HtmlHelper::escape($userright['parent_userright']) . '</b></td></tr>';
         }
         echo '<tr class="rightline">
                 <td class="left">';
-        echo '<span>' . html_utf8($userright['title_userright']) . '</span>';
+        echo '<span>' . HtmlHelper::escape($userright['title_userright']) . '</span>';
         if ($isDev) {
             echo '<br/><code>' . $userright['code_userright'] . '</code>';
         }
-        echo '<input type="text" value="' . html_utf8($userright['code_userright']) . '" />';
+        echo '<input type="text" value="' . HtmlHelper::escape($userright['code_userright']) . '" />';
         echo '</td>';
         for ($i = 0; $i < count($typeTab); ++$i) {
             // right>type : autorisé ou pas ? valeur true || false
             $on = (in_array($typeTab[$i]['id_usertype'] . '-' . $userright['id_userright'], $attrTab, true) ? true : false);
             echo '<td class="toggle ' . ($on ? 'true' : 'false') . '">'
                     . '<input ' . ($on ? '' : 'disabled="disabled"') . ' type="hidden" name="usertype_attr[]" value="' . $typeTab[$i]['id_usertype'] . '-' . $userright['id_userright'] . '" />' // Paire d'ID
-                    . '<span class="clair">' . html_utf8($typeTab[$i]['title_usertype']) . '</span>'
+                    . '<span class="clair">' . HtmlHelper::escape($typeTab[$i]['title_usertype']) . '</span>'
                     . '</td>';
         }
         echo '</tr>';

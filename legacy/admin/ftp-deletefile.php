@@ -1,6 +1,7 @@
 <?php
 
 use App\Ftp\FtpFile;
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 
@@ -95,11 +96,11 @@ if (count($errTab) > 0) {
                     Voulez-vous vraiment supprimer le fichier ci-dessous ? Cette opération est <u>définitive</u>. Si des liens existent vers ce fichier, ils deviendront
                     des liens morts, renvoyant une erreur 404.
                 </p>
-                <p><b><a href="<?php echo html_utf8($target); ?>" target="_blank"><?php echo html_utf8(substr($target, 7)); ?></a></b></p>
+                <p><b><a href="<?php echo HtmlHelper::escape($target); ?>" target="_blank"><?php echo HtmlHelper::escape(substr($target, 7)); ?></a></b></p>
 
                 <form action="ftp-deletefile.php" method="GET">
                     <input type="hidden" name="operation" value="delete" />
-                    <input type="hidden" name="target" value="<?php echo html_utf8($target); ?>" />
+                    <input type="hidden" name="target" value="<?php echo HtmlHelper::escape($target); ?>" />
                     <input type="hidden" name="lock" value="locked" />
                     <br />
                     <input type="submit" class="nice red" value="Supprimer ce fichier" onclick="$(this).siblings('input[name=lock]').val('unlocked')" />
