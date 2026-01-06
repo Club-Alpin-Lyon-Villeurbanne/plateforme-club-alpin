@@ -83,6 +83,12 @@ if (allowed('stats_commissions_read') && 'commissions' == $p2) {
     $dateMin = DateTimeImmutable::createFromFormat('d/m/Y', $dateMin);
     $dateMax = DateTimeImmutable::createFromFormat('d/m/Y', $dateMax);
 
+    if (false === $dateMin || false === $dateMax) {
+        echo '<p class="erreur">Format de date invalide. Utilisez le format jj/mm/aaaa.</p>';
+
+        return;
+    }
+
     /*** COMMISSIONS **/
 
     if ('commissions' == $p2) {
