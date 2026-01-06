@@ -111,7 +111,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
                     . '<td>' . HtmlHelper::escape($elt['code_page']) . '</td>'
                     . '<td>' . HtmlHelper::escape($elt['default_name_page']) . '</td>'
                     . '<td><a href="/pages/' . rawurlencode($elt['code_page']) . '.html" title="">/pages/' . HtmlHelper::escape($elt['code_page']) . '.html</a></td>'
-                    . '<td>' . substr(HtmlHelper::escape($elt['default_name_page']), 0, 200) . '</td>'
+                    . '<td>' . HtmlHelper::escape(substr($elt['default_name_page'] ?? '', 0, 200)) . '</td>'
                     . '<td>' . ((int) $elt['priority_page'] * 10) . '%</td>'
                     . '<td><span style="display:none">' . $elt['created_page'] . '</span> ' . date('d/m/Y H:i', $elt['created_page']) . '</td>'
                     . '<td><span style="display:none">' . $elt['lastedit_page'] . '</span> ' . (!$elt['lastedit_page'] ? 'Jamais' : date('d/m/Y H:i', $elt['lastedit_page'])) . '</td>'
