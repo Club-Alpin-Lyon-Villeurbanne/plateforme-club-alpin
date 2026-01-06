@@ -107,6 +107,39 @@ class ArticleRepository extends ServiceEntityRepository
         ;
     }
 
+    public function searchArticles(string $searchText, int $limit, ?Commission $commission = null)
+    {
+        return $this->getSearchQueryBuilder($searchText, $commission)
+            ->setMaxResults($limit)
+            ->orderBy('a.validationDate', 'DESC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getSearchArticlesCount(string $searchText, ?Commission $commission = null): int
+    {
+        return (int) $this
+            ->getSearchQueryBuilder($searchText, $commission)
+            ->select('count(a)')
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+    }
+
+    protected function getSearchQueryBuilder(string $searchText, ?Commission $commission = null): QueryBuilder
+    {
+        return $this->getArticlesByCommissionDql($commission)
+            ->innerJoin('a.user', 'u')
+            ->andWhere('a.titre LIKE :search OR	a.cont LIKE :search OR u.nickname LIKE :search')
+            ->setParameter('search', '%' . $searchText . '%')
+        ;
+    }
+
     protected function getArticlesByCommissionDql(?Commission $commission = null): QueryBuilder
     {
         $qb = $this->createQueryBuilder('a')
