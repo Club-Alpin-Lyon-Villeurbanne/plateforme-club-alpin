@@ -19,6 +19,7 @@
                             </a>
                         </td>
                     {% endif %}
+                    {% if afficher_competences %}
                     <td>
                         {% if commission.code in skilled_commissions %}
                             <a href="{{ path('commission_brevet', {'id': commission.id}) }}" title="Voir les brevets, niveaux de pratique & formations du staff de {{ commission.title }}">
@@ -26,6 +27,7 @@
                             </a>
                         {% endif %}
                     </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
         </table>

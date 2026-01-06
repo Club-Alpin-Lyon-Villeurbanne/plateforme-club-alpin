@@ -9,6 +9,7 @@ twig:
         google_site_verification: "%env(GOOGLE_SITE_VERIFICATION)%"
         display_banner:  "%env(bool:DISPLAY_BANNER)%"
         display_notes_de_frais:  "%env(bool:DISPLAY_NOTES_DE_FRAIS)%"
+        afficher_competences: "%env(bool:AFFICHER_COMPETENCES)%"
         whatsapp_commu_link: "%env(WHATSAPP_COMMU_LINK)%"
         caf_id: "%env(CAF_ID)%"
         default_alert_article_prefix: "%env(ALERT_ARTICLE_PREFIX)%"

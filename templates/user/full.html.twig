@@ -41,6 +41,7 @@
         <br style="clear:both" />
         <hr  />
 
+        {% if afficher_competences %}
         <h2 id="user-skills">Ses compétences :</h2>
         {{ easy_include('full-profile-skills', '')}}
 
@@ -102,6 +103,8 @@
         </div>
 
         <br style="clear:both" />
+        <hr  />
+        {% endif %}
 
         {% if allowed('user_read_private') or app.user is same as (user) %}
             <hr  />
