@@ -5,10 +5,10 @@
 Nous disposons de deux environnements hébergés sur [Clever Cloud](https://www.clever-cloud.com/) :
 
 - **Staging** : [www.clubalpinlyon.top](https://www.clubalpinlyon.top)
-  - Déploiement automatique via Github Actions
+  - Déploiement automatique par Clever Cloud (à chaque push sur `main`)
   - Environnement de test
 - **Production** : [www.clubalpinlyon.fr](https://www.clubalpinlyon.fr)
-  - Déploiement manuel via Github Actions
+  - Déploiement automatique via GitHub Actions (à chaque push sur `production`)
   - Environnement final
 
 ## Architecture

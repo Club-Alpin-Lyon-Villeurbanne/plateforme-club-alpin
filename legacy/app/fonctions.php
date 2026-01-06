@@ -1,10 +1,12 @@
 <?php
 
 use App\Entity\User;
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 use Egulias\EmailValidator\EmailValidator;
 use Egulias\EmailValidator\Validation\NoRFCWarningsValidation;
 use Symfony\Bridge\Twig\AppVariable;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 global $_POST;
 global $allowedError; // Erreur facultative à afficher si la fonction renvoie false
@@ -24,66 +26,6 @@ $CONTENUS_INLINE = [];
 // -------------------------------------------- FONCTIONS SPECIFIQUES AU SITE DU CLUB ALPIN FRANCAIS
 // ----------------------------------------------------------------------------------------------------------------
 
-function presidence()
-{
-    global $president;
-    global $vicepresident;
-
-    $president = $vicepresident = [];
-    $president_sql = 'SELECT * FROM `caf_user` AS U LEFT JOIN `caf_user_attr` AS A  ON A.usertype_user_attr = 6 WHERE U.id_user = A.user_user_attr ORDER BY U.firstname_user ASC, U.lastname_user ASC';
-    $president_result = LegacyContainer::get('legacy_mysqli_handler')->query($president_sql);
-    while ($row_president = $president_result->fetch_assoc()) {
-        if ('1' !== $row_president['id_user']) {
-            $president[] = $row_president;
-        }
-    }
-
-    $vicepresident = [];
-    $vicepresident_sql = 'SELECT * FROM `caf_user` AS U LEFT JOIN `caf_user_attr` AS A  ON A.usertype_user_attr = 7 WHERE U.id_user = A.user_user_attr ORDER BY U.firstname_user ASC, U.lastname_user ASC';
-    $vicepresident_result = LegacyContainer::get('legacy_mysqli_handler')->query($vicepresident_sql);
-    while ($row_vicepresident = $vicepresident_result->fetch_assoc()) {
-        if ('1' !== $row_vicepresident['id_user']) {
-            $vicepresident[] = $row_vicepresident;
-        }
-    }
-}
-
-/*
-Find URLs in Text, Make Links
-*/
-function getUrlFriendlyString($text)
-{
-    $SCHEMES = ['http', 'https', 'ftp', 'mailto', 'news',
-        'gopher', 'nntp', 'telnet', 'wais', 'prospero', 'aim', 'webcal', ];
-    // Note: fragment id is uchar | reserved, see rfc 1738 page 19
-    // %% for % because of string formating
-    // puncuation = ? , ; . : !
-    // if punctuation is at the end, then don't include it
-
-    $URL_FORMAT = '~(?<!\w)((?:' . implode('|',
-        $SCHEMES) . '):' // protocol + :
-    . '/*(?!/)(?:' // get any starting /'s
-    . '[\w$\+\*@&=\-/]' // reserved | unreserved
-    . '|%%[a-fA-F0-9]{2}' // escape
-    . '|[\?\.:\(\),;!\'](?!(?:\s|$))' // punctuation
-    . '|(?:(?<=[^/:]{2})#)' // fragment id
-    . '){2,}' // at least two characters in the main url part
-    . ')~';
-
-    preg_match_all($URL_FORMAT, $text, $matches, \PREG_SPLIT_DELIM_CAPTURE);
-
-    $usedPatterns = [];
-    foreach ($matches as $patterns) {
-        $pattern = $patterns[0];
-        if (!array_key_exists($pattern, $usedPatterns)) {
-            $usedPatterns[$pattern] = true;
-            $text = str_replace($pattern, "<a href='" . $pattern . "' rel='nofollow'>" . $pattern . '</a> ', $text);
-        }
-    }
-
-    return $text;
-}
-
 /*
 La fonction "userlink" affiche un lien vers le profil d'un utilisateur en fonction du contexte demandé par "style"
 */
@@ -91,11 +33,11 @@ function userlink($id_user, $nickname_user, $civ_user = false, $firstname_user =
 {
     $complement = '';
     switch ($style) {
-        case 'public': 	$return = html_utf8($nickname_user);
+        case 'public': 	$return = HtmlHelper::escape($nickname_user);
             break;
-        case 'short': 	$return = html_utf8(ucfirst($firstname_user)) . ' ' . strtoupper(substr(trim($lastname_user), 0, 1));
+        case 'short': 	$return = HtmlHelper::escape(ucfirst($firstname_user)) . ' ' . strtoupper(substr(trim($lastname_user), 0, 1));
             break;
-        case 'full': 	$return = html_utf8(ucfirst($firstname_user)) . ' ' . html_utf8(strtoupper($lastname_user));
+        case 'full': 	$return = HtmlHelper::escape(ucfirst($firstname_user)) . ' ' . HtmlHelper::escape(strtoupper($lastname_user));
             break;
         default:		return;
     }
@@ -104,7 +46,9 @@ function userlink($id_user, $nickname_user, $civ_user = false, $firstname_user =
         $complement .= '&amp;id_article=' . $idArticle;
     }
 
-    return '<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user=' . (int) $id_user . $complement . '" class="fancyframe userlink" title="' . cont('userlink-title') . '">' . $return . '</a>';
+    $userLink = LegacyContainer::get('legacy_router')->generate('user_profile', ['id' => (int) $id_user], UrlGeneratorInterface::ABSOLUTE_URL);
+
+    return '<a href="' . $userLink . $complement . '" class="fancyframe userlink" title="' . cont('userlink-title') . '">' . $return . '</a>';
 }
 
 /*
@@ -293,10 +237,6 @@ function getUser(): ?User
 
     return null;
 };
-function csrfToken(string $intention): ?string
-{
-    return LegacyContainer::get('legacy_csrf_token_manager')->getToken($intention);
-}
 function generateRoute(string $path, array $parameters = []): ?string
 {
     return LegacyContainer::get('legacy_router')->generate($path, $parameters);
@@ -325,12 +265,6 @@ function mylog($code, $desc, $connectme = true)
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL lors du log';
     }
-}
-
-// htmlentities avec utf8
-function html_utf8($str)
-{
-    return htmlentities($str ?? '', \ENT_QUOTES, 'UTF-8');
 }
 
 // assurer un lien http
@@ -401,24 +335,24 @@ function inputVal($inputName, $defaultVal = '')
     $input = explode('|', $inputName);
     if (empty($input[1])) {
         if (!empty($_POST[$inputName])) {
-            return html_utf8(stripslashes($_POST[$inputName]));
+            return HtmlHelper::escape(stripslashes($_POST[$inputName]));
         }
 
-        return html_utf8($defaultVal);
+        return HtmlHelper::escape($defaultVal);
     }
     if (2 == count($input)) {
         if ($_POST[$input[0]][$input[1]]) {
-            return html_utf8(stripslashes($_POST[$input[0]][$input[1]]));
+            return HtmlHelper::escape(stripslashes($_POST[$input[0]][$input[1]]));
         }
 
-        return html_utf8($defaultVal);
+        return HtmlHelper::escape($defaultVal);
     }
     if (3 == count($input)) {
         if ($_POST[$input[0]][$input[1]][$input[2]]) {
-            return html_utf8(stripslashes($_POST[$input[0]][$input[1]][$input[2]]));
+            return HtmlHelper::escape(stripslashes($_POST[$input[0]][$input[1]][$input[2]]));
         }
 
-        return html_utf8($defaultVal);
+        return HtmlHelper::escape($defaultVal);
     }
 }
 

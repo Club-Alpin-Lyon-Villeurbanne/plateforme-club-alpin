@@ -11,6 +11,7 @@ use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
 use App\Repository\UserRepository;
 use App\Service\UserRightService;
+use App\Trait\PaginationControllerTrait;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -25,6 +26,8 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 #[Route(path: '/profil', methods: ['GET'])]
 class ProfilController extends AbstractController
 {
+    use PaginationControllerTrait;
+
     #[Route(path: '/alertes', name: 'profil_alertes')]
     #[IsGranted('ROLE_USER')]
     #[Template('profil/alertes.html.twig')]
@@ -66,45 +69,31 @@ class ProfilController extends AbstractController
     #[Route(path: '/sorties/next', name: 'profil_sorties_next')]
     #[IsGranted('ROLE_USER')]
     #[Template('profil/sorties.html.twig')]
-    public function sortiesNext(Request $request, EvtRepository $evtRepository)
+    public function sortiesNext(Request $request, EvtRepository $evtRepository): array
     {
-        $perPage = 30;
-        $page = $request->query->getInt('page', 1);
         $total = $evtRepository->getUserUpcomingEventsCount($this->getUser());
-        $pages = ceil($total / $perPage);
-        $first = $perPage * ($page - 1);
+        $paginationParams = $this->getPaginationParams($request, $total);
 
-        return [
-            'events' => $evtRepository->getUserUpcomingEvents($this->getUser(), $first, $perPage),
-            'total' => $total,
-            'per_page' => $perPage,
-            'pages' => $pages,
-            'page' => $page,
+        return array_merge([
+            'events' => $evtRepository->getUserUpcomingEvents($this->getUser(), $paginationParams['first'], $paginationParams['per_page']),
             'page_url' => $this->generateUrl('profil_sorties_next'),
             'include_name' => 'profil-sorties-next',
-        ];
+        ], $paginationParams);
     }
 
     #[Route(path: '/sorties/prev', name: 'profil_sorties_prev')]
     #[IsGranted('ROLE_USER')]
     #[Template('profil/sorties.html.twig')]
-    public function sortiesPrev(Request $request, EvtRepository $evtRepository)
+    public function sortiesPrev(Request $request, EvtRepository $evtRepository): array
     {
-        $perPage = 30;
-        $page = $request->query->getInt('page', 1);
         $total = $evtRepository->getUserPastEventsCount($this->getUser());
-        $pages = ceil($total / $perPage);
-        $first = $perPage * ($page - 1);
+        $paginationParams = $this->getPaginationParams($request, $total);
 
-        return [
-            'events' => $evtRepository->getUserPastEvents($this->getUser(), $first, $perPage),
-            'total' => $total,
-            'per_page' => $perPage,
-            'pages' => $pages,
-            'page' => $page,
+        return array_merge([
+            'events' => $evtRepository->getUserPastEvents($this->getUser(), $paginationParams['first'], $paginationParams['per_page']),
             'page_url' => $this->generateUrl('profil_sorties_prev'),
             'include_name' => 'profil-sorties-prev',
-        ];
+        ], $paginationParams);
     }
 
     /**
@@ -116,21 +105,14 @@ class ProfilController extends AbstractController
     #[Template('profil/sorties.html.twig')]
     public function sortiesSelf(Request $request, EvtRepository $evtRepository): array
     {
-        $perPage = 30;
-        $page = $request->query->getInt('page', 1);
         $total = $evtRepository->getUserCreatedEventsCount($this->getUser());
-        $pages = ceil($total / $perPage);
-        $first = $perPage * ($page - 1);
+        $paginationParams = $this->getPaginationParams($request, $total);
 
-        return [
-            'events' => $evtRepository->getUserCreatedEvents($this->getUser(), $first, $perPage),
-            'total' => $total,
-            'per_page' => $perPage,
-            'pages' => $pages,
-            'page' => $page,
+        return array_merge([
+            'events' => $evtRepository->getUserCreatedEvents($this->getUser(), $paginationParams['first'], $paginationParams['per_page']),
             'page_url' => $this->generateUrl('profil_sorties_self'),
             'include_name' => 'profil-sorties-self',
-        ];
+        ], $paginationParams);
     }
 
     #[Route(path: '/mon-compte', name: 'my_profile', methods: ['GET', 'POST'])]

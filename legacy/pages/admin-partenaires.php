@@ -1,5 +1,6 @@
 <?php
 
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 
@@ -129,11 +130,11 @@ for ($i = 0; $i < count($partenairesTab); ++$i) {
     //						echo '<a href="/includer.php?p=pages/partenaire-enable.php&amp;part_id='.intval($elt['part_id']).'" class="fancyframe" title="Activer ce partenaire"><img src="/img/base/add.png" alt="ACTIVER" title=""></a> ';
 
     echo '</td>'
-                . '<td>' . html_utf8($elt['part_name']) . '</td>'
-                . '<td>' . html_utf8($elt['part_desc']) . '</td>'
+                . '<td>' . HtmlHelper::escape($elt['part_name']) . '</td>'
+                . '<td>' . HtmlHelper::escape($elt['part_desc']) . '</td>'
                 . '<td>' . (1 == $elt['part_enable'] ? 'ACTIF' : 'INACTIF') . '</td>'
-                . '<td><a target="_blank" href="' . html_utf8($elt['part_url']) . '">' . html_utf8($elt['part_url']) . '</a></td>'
-                . '<td>' . html_utf8($elt['part_desc']) . '</td>'
+                . '<td><a target="_blank" href="' . HtmlHelper::escape($elt['part_url']) . '">' . HtmlHelper::escape($elt['part_url']) . '</a></td>'
+                . '<td>' . HtmlHelper::escape($elt['part_desc']) . '</td>'
                 . '<td align="center">';
     echo '<a target="_blank" href="' . $elt['part_url'] . '">';
     if (file_exists(__DIR__ . '/../../public/ftp/partenaires/' . $elt['part_image'])) {
@@ -143,7 +144,7 @@ for ($i = 0; $i < count($partenairesTab); ++$i) {
     }
     echo '</a></td>'
                 . '<td>' . (1 == $elt['part_type'] ? 'PRIVÉ' : 'PUBLIC') . '</td>'
-                . '<td>' . html_utf8($elt['part_order']) . '</td>'
+                . '<td>' . HtmlHelper::escape($elt['part_order']) . '</td>'
             . '</tr>';
 } ?>
 		</tbody>

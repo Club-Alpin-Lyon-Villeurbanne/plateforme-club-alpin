@@ -46,12 +46,13 @@ Application web permettant de gérer un Club Alpin Francais! Ce projet est utili
 - [Décision Open Source](docs/decisions/2025.05.29-rendre_le_repo_publique.md)
 
 ### Fonctionnalités
-- [Notes de frais](docs/expense-reports.md)
+- [Notes de frais](docs/notes-de-frais.md)
 - [Synchronisation des adhérents](docs/synchronization.md)
 - [Rôles utilisateurs](docs/user-roles.md)
 
 ### Infrastructure
 - [Environnements](docs/environments.md)
+- [CI/CD et déploiement](docs/ci-cd.md)
 - [Tâches automatisées](docs/cronjobs.md)
 
 ## 🔗 Liens utiles

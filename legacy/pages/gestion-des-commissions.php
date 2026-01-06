@@ -1,5 +1,6 @@
 <?php
 
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 
 ?>
@@ -55,7 +56,7 @@ use App\Legacy\LegacyContainer;
                             echo '<img class="handle" style="float:right; cursor:move; height:30px" src="/img/base/move.png" alt="MOVE" title="Réordonner" />';
                         }
                         // titre
-                        echo '<h2>' . html_utf8($row['title_commission']) . (1 == $row['vis_commission'] ? '' : ' <span style="color:red">[invisible]</span>') . '</h2>';
+                        echo '<h2>' . HtmlHelper::escape($row['title_commission']) . (1 == $row['vis_commission'] ? '' : ' <span style="color:red">[invisible]</span>') . '</h2>';
                         // boutons
                         $groupes = get_groupes($row['id_commission'], true);
                         if (count($groupes) > 0) {

@@ -136,7 +136,7 @@
                     <b>Sortie annulée :</b><br /> Cette sortie a été annulée le {{ event.cancellationDate | date('d/m/Y à H:i') }}
 
                 {% if event.cancelledWho %}
-                    , par <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.cancelledWho.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ event.cancelledWho.nickname }}</a>
+                    , par <a href="{{ path('user_profile', {'id': event.cancelledWho.id, 'id_event': event.id}) }}" class="fancyframe userlink">{{ event.cancelledWho.nickname }}</a>
                 {% endif %}
                 <br />
 
@@ -372,7 +372,10 @@
 
                 {% if display_notes_de_frais %}
                     {% if event.finished and not event.cancelled and (my_status.role == 'encadrant' or my_status.role == 'coencadrant' or my_status.role == 'stagiaire') %}
-                        {% if not is_event_after_cutoff %}
+                        {% if has_viewable_expense_report %}
+                            {# User already has a submitted/approved/accounted expense report, always show it #}
+                            {% include 'vuejs/expense-report-form.twig' %}
+                        {% elseif not is_event_after_cutoff %}
                             <div class="alerte info-container" style="margin-bottom:2rem !important">
                                 <img src="/img/base/cross.png" alt="" title=""/>
                                 <div class="text-container">
@@ -485,6 +488,7 @@
                         {% endif %}
                     </select>
 
+                    {% if afficher_competences %}
                     <p>
                         <label>
                             <span class="bold">Vue gestion</span>
@@ -499,6 +503,7 @@
                     <div class="event-user-skill">
                         {{ easy_include('event-skills', '') }}
                     </div>
+                    {% endif %}
                 </div>
 
                 <form id="contact_update_participants" method="post" class="loading">
@@ -519,6 +524,7 @@
                                 {% endif %}
                                 <th class="event-manage-user">Contact</th>
 
+                                {% if afficher_competences %}
                                 {% for groupe in groupes_competences %}
                                     <th class="event-user-skill groupe-comp">
                                         {{ groupe.intitule }}
@@ -531,6 +537,7 @@
                                 {% endfor %}
                                 <th class="event-user-skill formation-generale">STG-UFFG10</th>
                                 <th class="event-user-skill formation-generale">STG-PSC1</th>
+                                {% endif %}
                             </tr>
                         </thead>
                         <tbody>
@@ -554,7 +561,7 @@
 
                                     <td>
                                         {{ participation.user.firstname | capitalize }} {{ participation.user.lastname | upper }}<br/>
-                                        <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ participation.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ participation.user.nickname }}</a>
+                                        <a href="{{ path('user_profile', {'id': participation.user.id, 'id_event': event.id}) }}" class="fancyframe userlink">{{ participation.user.nickname }}</a>
 
                                         {% if age_user(participation.user) and age_user(participation.user) < 18 %}
                                             <p style="color:red">{{ age_user(participation.user) }} ans</p>
@@ -564,13 +571,13 @@
                                         {% elseif is_license_valid_for_event(participation.user, event) is same as (false) %}
                                             <p style="color:orange"
                                             {% if participation.user.nomade %}
-                                               title="A la date de la sortie, la licence découverte de ce non-adhérent ne sera pas valide">🧐 Licence découverte NOK
+                                               title="A la date de la sortie, la carte découverte de ce non-adhérent ne sera pas valide">🧐 Carte découverte NOK
                                             {% else %}
                                                 title="A la date de la sortie, la licence de cet adhérent sera expirée s'il ne renouvelle pas d'ici là">Licence à renouveler (exp. 30/09)
                                             {% endif %}
                                             </p>
                                         {% elseif participation.user.nomade %}
-                                            <p style="color:green" title="A la date de la sortie, la licence découverte de ce non-adhérent sera valide">🧐 Licence découverte OK</p>
+                                            <p style="color:green" title="A la date de la sortie, la carte découverte de ce non-adhérent sera valide">🧐 Carte découverte OK</p>
                                         {% endif %}
                                     </td>
 
@@ -802,6 +809,7 @@
                                         {% endif %}
                                     </td>
 
+                                    {% if afficher_competences %}
                                     {% for groupe in groupes_competences %}
                                         <td class="event-user-skill">
                                             {{ date_competence_user(participation.user, groupe, current_commission) }}
@@ -814,6 +822,7 @@
                                     {% endfor %}
                                     <td class="event-user-skill">{{ date_formation_user(participation.user, 'STG-UFFG10') }}</td>
                                     <td class="event-user-skill">{{ date_formation_user(participation.user, 'STG-PSC1') }}</td>
+                                    {% endif %}
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -1061,7 +1070,7 @@
         <ul class="nice-list">
             <li class="wide">
                 <b>SORTIE PROPOSÉE PAR :</b>
-                <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
+                <a href="{{ path('user_profile', {'id': event.user.id, 'id_event': event.id}) }}" class="fancyframe userlink">
                     {{ event.user.nickname }}
                 </a>
                 <span class="mini">
@@ -1073,7 +1082,7 @@
             <li class="wide">
                 <b>SORTIE APPROUVÉE PAR :</b>
                 {% if event.status is same as (constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE')) and event.statusWho %}
-                    <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ event.statusWho.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">
+                    <a href="{{ path('user_profile', {'id': event.statusWho.id, 'id_event': event.id}) }}" class="fancyframe userlink">
                         {{ event.statusWho.nickname }}
                     </a>
                 {% else %}
@@ -1155,7 +1164,7 @@
                             {% if allowed('user_read_private', event.commission.code) %}
                                 <p class="mini">{{ inscrit.user.firstname|capitalize }} {{ inscrit.user.lastname|upper }}</p>
                             {% endif %}
-                            <a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ inscrit.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
+                            <a href="{{ path('user_profile', {'id': inscrit.user.id, 'id_event': event.id}) }}" class="fancyframe userlink">{{ inscrit.user.nickname }}</a>
                         </td>
                         <td class="small">
                             {% if inscrit.role not in (constant('App\\Entity\\EventParticipation::ROLES_SIMPLES')) %}
@@ -1235,7 +1244,7 @@
                                                         name="id_user_filiation[]"
                                                         value="{{ app.user.id }}"
                                                         id="filiation_id_user_{{ app.user.id }}" />
-                                                    Moi-même (<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user={{ app.user.id }}&amp;id_event={{ event.id }}" class="fancyframe userlink">{{ app.user.nickname }}</a>)
+                                                    Moi-même (<a href="{{ path('user_profile', {'id': app.user.id, 'id_event': event.id}) }}" class="fancyframe userlink">{{ app.user.nickname }}</a>)
                                                 </label>
                                                 <br />
                                                 {% for filiation in filiations %}
@@ -1350,6 +1359,7 @@
                 }
             });
 
+            {% if afficher_competences %}
             // vue compétences & brevets OU gestion
             const toggle = document.getElementById('skill_view_toggle');
             toggle.addEventListener('change', (event) => {
@@ -1375,6 +1385,7 @@
 
                 return false;
             });
+            {% endif %}
 
             // sélection automatique de certains participants
             const checkboxes = document.querySelectorAll('.contact-cb');

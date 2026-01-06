@@ -2,6 +2,7 @@
 
 // default values if nothing provided
 
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 
 if (isset($_GET['year']) && $_GET['year'] > 2000) {
@@ -20,8 +21,8 @@ if (isset($_GET['month']) && $_GET['month'] > 0 && $_GET['month'] < 13) {
 $nDays = date('t', strtotime("$year-$month-10"));
 
 // timestamp minimal et maximal
-$startDate = new \DateTimeImmutable("$year-$month-01 00:00:00");
-$endDate = new \DateTimeImmutable("$year-$month-$nDays 23:59:59");
+$startDate = new DateTimeImmutable("$year-$month-01 00:00:00");
+$endDate = new DateTimeImmutable("$year-$month-$nDays 23:59:59");
 
 // le tableau couvre tous les jours du mois
 $agendaTab = [];
@@ -69,8 +70,8 @@ while ($handleSql && $handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
     $handle['groupe'] = get_groupe($handle['id_groupe']);
 
     // dates utiles pour ranger cet evenement dans le tableau
-    $startDate = new \DateTimeImmutable($handle['start_date']);
-    $endDate = new \DateTimeImmutable($handle['end_date']);
+    $startDate = new DateTimeImmutable($handle['start_date']);
+    $endDate = new DateTimeImmutable($handle['end_date']);
     $tmpStartD = $startDate->format('d'); // jour de cet evt de 1 à 28-30-31
     $tmpStartM = $startDate->format('m'); // mois de cet evt
     $tmpStartY = $startDate->format('Y'); // annee de cet evt
@@ -112,7 +113,7 @@ while ($handleSql && $handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
         while ($bool) {
             // Nième jour de cet event :
             $tmpDay = mktime(23, 59, 59, $month, $i, $year); // jour ciblé ici
-            $eventTsp = (new \DateTimeImmutable($handle['start_date']))->getTimestamp();
+            $eventTsp = (new DateTimeImmutable($handle['start_date']))->getTimestamp();
             $handle['jourN'] = ceil(($tmpDay - $eventTsp) / 86400); // nombre de jours d'ecart
 
             // si ce jour dépasse le nombre de jours du mois, on s'arrête là
@@ -172,7 +173,7 @@ echo '<a href="/agenda.html?month=' . (int) $month . '&amp;year=' . (int) $year 
 // choix de la commission
 ksort($comTab);
 foreach ($comTab as $code => $data) {
-    echo '<a href="/agenda/' . html_utf8($code) . '.html?month=' . (int) $month . '&amp;year=' . (int) $year . '" title="" class="' . ($code == $current_commission ? 'up' : '') . '">' . html_utf8($data['title_commission']) . '</a> ';
+    echo '<a href="/agenda/' . rawurlencode($code) . '.html?month=' . (int) $month . '&amp;year=' . (int) $year . '" title="" class="' . ($code == $current_commission ? 'up' : '') . '">' . HtmlHelper::escape($data['title_commission']) . '</a> ';
 }
 ?>
 				</div>

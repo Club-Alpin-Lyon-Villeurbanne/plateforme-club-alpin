@@ -1,5 +1,6 @@
 <?php
 
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -155,7 +156,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     $rowValue = 'NC';
 
     if (!empty($userTab['join_date'])) {
-        $rowValue = (new \DateTimeImmutable($userTab['join_date']))?->format('d/m/Y');
+        $rowValue = (new DateTimeImmutable($userTab['join_date']))?->format('d/m/Y');
     }
 
     if ($userTab['alerte_renouveler_user'] || $userTab['doit_renouveler_user']) {
@@ -171,9 +172,9 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
     printTableRow('Date d\'adhésion (renouvellement) :', $rowValue);
 
     if ($userTab['birthdate']) {
-        $birthdate = new \DateTimeImmutable($userTab['birthdate']);
-        $age = $birthdate->diff(new \DateTime())->y;
-        printTableRow('Date de naissance :', $birthdate->format('d/m/Y') . '&nbsp;&nbsp;&nbsp;(' . $age > 0 ? $age . ' ans' : '?' . ')');
+        $birthdate = new DateTimeImmutable($userTab['birthdate']);
+        $age = $birthdate->diff(new DateTime())->y;
+        printTableRow('Date de naissance :', $birthdate->format('d/m/Y') . '&nbsp;&nbsp;&nbsp;(' . ($age > 0 ? $age . ' ans' : '?') . ')');
     }
     if ($userTab['email_user']) {
         printTableRow('E-mail :', '<a href="mailto:' . $userTab['email_user'] . '">' . $userTab['email_user'] . '</a>');
@@ -193,15 +194,15 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
         printTableRow('Nomade :', 'OUI&nbsp;&nbsp;&nbsp;<img src="/img/base/nomade_user.png">');
     }
     if ($userTab['created_at']) {
-        printTableRow('Insertion en base :', (new \DateTime($userTab['created_at']))?->format('d/m/Y'));
+        printTableRow('Insertion en base :', (new DateTime($userTab['created_at']))?->format('d/m/Y'));
     }
     if ($userTab['updated_at']) {
-        printTableRow('Mise à jour en base :', (new \DateTime($userTab['updated_at']))?->format('d/m/Y'));
+        printTableRow('Mise à jour en base :', (new DateTime($userTab['updated_at']))?->format('d/m/Y'));
     }
     if (is_array($userTab['articles'])) {
         $rowValue = [];
         foreach ($userTab['articles'] as $article) {
-            $rowValue[] = '<a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL) . '" target="_blank">' . (new \DateTime($article['created_at']))?->format('d/m/Y') . ' - ' . $article['titre_article'] . '</a>';
+            $rowValue[] = '<a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => $article['code_article'], 'id' => (int) $article['id_article'], 'forceshow' => 'true'], UrlGeneratorInterface::ABSOLUTE_URL) . '" target="_blank">' . (new DateTime($article['created_at']))?->format('d/m/Y') . ' - ' . HtmlHelper::escape($article['titre_article']) . '</a>';
         }
         printTableRow('Articles :', '<font size="-1" >' . implode('<br />', $rowValue) . '</font>');
     }
@@ -218,11 +219,11 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN) && !allowed('user_edit_notme')) {
             }
             ++$rowValueHeader[$evt['role_evt_join']];
 
-            $row = '<a target="_blank" href="' . LegacyContainer::get('legacy_router')->generate('sortie', ['code' => html_utf8($evt['code_evt']), 'id' => (int) $evt['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL);
+            $row = '<a target="_blank" href="' . LegacyContainer::get('legacy_router')->generate('sortie', ['code' => $evt['code_evt'], 'id' => (int) $evt['id_evt']], UrlGeneratorInterface::ABSOLUTE_URL);
             if (allowed('evt_validate') && 1 != $evt['status_evt']) {
                 $row .= '&forceshow=true';
             }
-            $row .= '" title="">' . (new \DateTimeImmutable($evt['start_date']))?->format('d/m/Y') . ' - ' . html_utf8($evt['title_commission']) . ' - ' . html_utf8($evt['titre_evt']) . '</a>';
+            $row .= '" title="">' . (new DateTimeImmutable($evt['start_date']))?->format('d/m/Y') . ' - ' . HtmlHelper::escape($evt['title_commission']) . ' - ' . HtmlHelper::escape($evt['titre_evt']) . '</a>';
             $rowValue[] = $row;
         }
         arsort($rowValueHeader);

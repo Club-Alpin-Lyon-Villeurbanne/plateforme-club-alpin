@@ -1,5 +1,6 @@
 <?php
 
+use App\Helper\HtmlHelper;
 use App\Security\SecurityConstants;
 
 if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
@@ -12,7 +13,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     } ?>
 
 	<div style="text-align:left;">
-		<h1>Supprimer le compte de l'utilisateur : <?php echo html_utf8(stripslashes($_GET['nom'])); ?></h1><br />
+		<h1>Supprimer le compte de l'utilisateur : <?php echo HtmlHelper::escape(stripslashes($_GET['nom'])); ?></h1><br />
 
 		<p>
 			<h2>Voulez-vous vraiment supprimer ce compte utilisateur ?<br />Cette personne ne pourra plus se connecter au site en tant qu'utilisateur.<br />Toutes les informations le concernant seront effacées.<br /></h2>

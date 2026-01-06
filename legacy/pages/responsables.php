@@ -1,5 +1,6 @@
 <?php
 
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 
 ?>
@@ -18,7 +19,7 @@ ksort($comTab);
 // creation des raccourcis vers les commissions
 echo '<p>';
 foreach ($comTab as $code => $data) {
-    echo '<a class="lien-big" style="color:black;" href="/responsables.html#' . $data['code_commission'] . '">' . html_utf8($data['title_commission']) . '</a>
+    echo '<a class="lien-big" style="color:black;" href="/responsables.html#' . $data['code_commission'] . '">' . HtmlHelper::escape($data['title_commission']) . '</a>
 				&nbsp;';
 }
 echo '<p>';
@@ -27,7 +28,7 @@ echo '<p>';
 foreach ($comTab as $code => $data) {
     $dejaVus = []; // IDs des users déja mis en responsable dans cette commsision (evite les doublons pour qqn à la fois resp. de comm' et encadrant...)
 
-    echo '<h2><a id="' . $data['code_commission'] . '">&gt; ' . html_utf8($data['title_commission']) . '</a></h2>';
+    echo '<h2><a id="' . $data['code_commission'] . '">&gt; ' . HtmlHelper::escape($data['title_commission']) . '</a></h2>';
     $req = " SELECT
 						id_user, civ_user, firstname_user, lastname_user, nickname_user, tel_user, tel2_user, email_user, doit_renouveler_user
 						, title_usertype

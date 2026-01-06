@@ -1,5 +1,6 @@
 <?php
 
+use App\Helper\HtmlHelper;
 use App\Security\SecurityConstants;
 
 if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
@@ -24,7 +25,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 		<div style="float:left; width:430px; padding-right:20px;">
 			<b>Titre de la page :</b><br />
 			<p style="width:350px; font-size: 0.7rem; line-height:9px;">META titles : ce titre apparaît dans le menu supérieur du navigateur, et dans les résultats de recherche Google</p>
-			<input type="text" name="default_name_page" class="type1 getcodefrom" value="<?php echo html_utf8(stripslashes($_POST['default_name_page'] ?? '')); ?>" placeholder="" />
+			<input type="text" name="default_name_page" class="type1 getcodefrom" value="<?php echo HtmlHelper::escape(stripslashes($_POST['default_name_page'] ?? '')); ?>" placeholder="" />
 			<br />
 			<br />
 			<br />

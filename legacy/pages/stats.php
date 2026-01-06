@@ -1,5 +1,6 @@
 <?php
 
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -79,8 +80,14 @@ if (allowed('stats_commissions_read') && 'commissions' == $p2) {
     $tspMax = strtotime(str_replace('/', '-', $dateMax) . ' 23:59');
 
     // filtres date
-    $dateMin = \DateTimeImmutable::createFromFormat('d/m/Y', $dateMin);
-    $dateMax = \DateTimeImmutable::createFromFormat('d/m/Y', $dateMax);
+    $dateMin = DateTimeImmutable::createFromFormat('d/m/Y', $dateMin);
+    $dateMax = DateTimeImmutable::createFromFormat('d/m/Y', $dateMax);
+
+    if (false === $dateMin || false === $dateMax) {
+        echo '<p class="erreur">Format de date invalide. Utilisez le format jj/mm/aaaa.</p>';
+
+        return;
+    }
 
     /*** COMMISSIONS **/
 
@@ -237,7 +244,7 @@ if (allowed('stats_commissions_read') && 'commissions' == $p2) {
 						<?php
                 foreach ($comTab as $key => $comm) {
                     echo '<tr id="tr-' . $comm['id_commission'] . '" class="' . ($comm['vis_commission'] ? 'vis-on' : 'vis-off') . '">'
-                        . '<td>' . html_utf8($comm['title_commission']) . '</td>'
+                        . '<td>' . HtmlHelper::escape($comm['title_commission']) . '</td>'
                         . '<td>' . (int) $comm['stats']['evt_total'] . '</td>'
                         . '<td>' . (int) $comm['stats']['evt_1'] . '</td>'
                         . '<td>' . (int) $comm['stats']['evt_2'] . '</td>'
@@ -324,13 +331,13 @@ if (allowed('stats_commissions_read') && 'commissions' == $p2) {
             while ($article = $result->fetch_assoc()) {
                 $validationDate = null;
                 if (!empty($article['validation_date'])) {
-                    $validationDate = new \DateTimeImmutable($article['validation_date']);
+                    $validationDate = new DateTimeImmutable($article['validation_date']);
                 }
                 echo '<tr id="tr-' . $article['id_article'] . '" class="vis-on">'
                 . '<td>' . ((null !== $validationDate) ? $validationDate->format('d/m/Y') : '') . '</td>'
-                . '<td><a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => html_utf8($article['code_article']), 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL) . '" target="_blank">' . $article['titre_article'] . '</a></td>'
+                . '<td><a href="' . LegacyContainer::get('legacy_router')->generate('article_view', ['code' => $article['code_article'], 'id' => (int) $article['id_article']], UrlGeneratorInterface::ABSOLUTE_URL) . '" target="_blank">' . HtmlHelper::escape($article['titre_article']) . '</a></td>'
                 . '<td>' . userlink($article['id_user'], ucfirst(mb_strtolower($article['firstname_user'], 'UTF-8')) . ' ' . $article['lastname_user']) . '</td>'
-                . '<td>' . html_utf8($article['title_commission']) . '</td>'
+                . '<td>' . HtmlHelper::escape($article['title_commission']) . '</td>'
                 . '<td>';
                 echo $comments[$article['id_article']] ?? '0';
                 echo '</td><td';

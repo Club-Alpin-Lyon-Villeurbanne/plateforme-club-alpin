@@ -1,6 +1,7 @@
 <?php
 
 use App\Ftp\FtpFile;
+use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 use Symfony\Component\Asset\PathPackage;
@@ -297,16 +298,16 @@ if (isGranted(SecurityConstants::ROLE_ADMIN) || isGranted(SecurityConstants::ROL
                                     </td>
                                     <td>
                                         ' . ('image' == $type ?
-                        '<a class="fancybox" href="' . $icon . '" title="' . html_utf8($fichier) . '"><img src="' . $icon . '" alt="" title="Aperçu de cette image" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
+                        '<a class="fancybox" href="' . $icon . '" title="' . HtmlHelper::escape($fichier) . '"><img src="' . $icon . '" alt="" title="Aperçu de cette image" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
                     :
-                        '<a target="_blank" href="' . $relativeUrl . '" title="Ouvrir ' . html_utf8($fichier) . ' dans une nouvelle fenêtre"><img src="' . $icon . '" alt="" title="" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
+                        '<a target="_blank" href="' . $relativeUrl . '" title="Ouvrir ' . HtmlHelper::escape($fichier) . ' dans une nouvelle fenêtre"><img src="' . $icon . '" alt="" title="" style="max-height:25px; max-width:30px; padding:2px 5px 2px 0" /></a>'
         ) . '
                                     </td>
                                     <td>
                                         ' . ('image' == $type ?
-        '<a class="fancybox" href="' . $icon . '" title="' . html_utf8($fichier) . '">' . substr($fichier, 0, 70) . '</a>'
+        '<a class="fancybox" href="' . $icon . '" title="' . HtmlHelper::escape($fichier) . '">' . substr($fichier, 0, 70) . '</a>'
         :
-        '<a target="_blank" href="' . $relativeUrl . '" title="Ouvrir ' . html_utf8($fichier) . ' dans une nouvelle fenêtre">' . substr($fichier, 0, 70) . '</a>'
+        '<a target="_blank" href="' . $relativeUrl . '" title="Ouvrir ' . HtmlHelper::escape($fichier) . ' dans une nouvelle fenêtre">' . substr($fichier, 0, 70) . '</a>'
         ) . '
                                     </td>
                                     <td>

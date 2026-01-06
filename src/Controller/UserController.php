@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Entity\Commission;
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\FormationValidationGroupeCompetence;
@@ -13,7 +14,7 @@ use App\Entity\Usertype;
 use App\Form\NomadeType;
 use App\Form\UserContactType;
 use App\Mailer\Mailer;
-use App\Repository\CommissionRepository;
+use App\Repository\ArticleRepository;
 use App\Repository\EvtRepository;
 use App\Repository\FormationReferentielGroupeCompetenceRepository;
 use App\Repository\FormationReferentielNiveauPratiqueRepository;
@@ -25,6 +26,7 @@ use App\Security\SecurityConstants;
 use App\UserRights;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -41,7 +43,46 @@ class UserController extends AbstractController
 {
     /**
      * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    #[Route(path: '/fiche-profil/{id}', name: 'user_profile', requirements: ['id' => '\d+'], priority: 10)]
+    #[Template('user/profile.html.twig')]
+    public function view(
+        User $user,
+        Request $request,
+        EntityManagerInterface $manager,
+        EvtRepository $eventRepository,
+        ArticleRepository $articleRepository,
+    ): array {
+        if ($user->isDeleted()) {
+            throw new NotFoundHttpException('Cet adhérent est introuvable');
+        }
+
+        $userData = $this->getUserData($user, $request, $manager);
+
+        $userArticles = $articleRepository->findBy(
+            [
+                'user' => $user,
+                'status' => Article::STATUS_PUBLISHED,
+            ],
+            ['updatedAt' => 'DESC'],
+            6
+        );
+        $userEvents = $eventRepository->getUserEvents($user, 0, 3, [Evt::STATUS_PUBLISHED_VALIDE]);
+
+        return array_merge($userData, [
+            'user' => $user,
+            'user_articles' => $userArticles,
+            'user_events' => $userEvents,
+            'nb_events' => $eventRepository->getUserEventsCount($user, [Evt::STATUS_PUBLISHED_VALIDE]),
+            'nb_articles' => $articleRepository->getUserArticlesCount($user),
+        ]);
+    }
+
+    /**
+     * @throws NonUniqueResultException
      * @throws TransportExceptionInterface
+     * @throws NoResultException
      */
     #[Route(path: '/user-full/{id}.html', name: 'user_full', requirements: ['id' => '\d+'], priority: 10)]
     #[Template('user/full.html.twig')]
@@ -50,7 +91,6 @@ class UserController extends AbstractController
         UserRights $userRights,
         EntityManagerInterface $manager,
         Request $request,
-        CommissionRepository $commissionRepository,
         EvtRepository $eventRepository,
         Mailer $mailer,
         FormationReferentielNiveauPratiqueRepository $referentielNiveauPratiqueRepository,
@@ -58,38 +98,16 @@ class UserController extends AbstractController
         FormationValidationNiveauPratiqueRepository $formationNiveauRepository,
         FormationValidationGroupeCompetenceRepository $formationCompetenceValidationRepository,
     ): array {
-        if (!$user || $user->isDeleted()) {
+        if ($user->isDeleted()) {
             throw new NotFoundHttpException('Cet adhérent est introuvable');
         }
         if (!$userRights->allowed('user_read_limited') && !$userRights->allowed('user_read_private')) {
             throw $this->createAccessDeniedException('Désolé. Vous n\'avez pas les droits requis pour afficher cette page');
         }
 
-        $id_event = $id_article = 0;
-        if (!empty($request->get('id_event'))) {
-            $id_event = $request->get('id_event');
-        }
-        if (!empty($request->get('id_article'))) {
-            $id_article = $request->get('id_article');
-        }
+        $userData = $this->getUserData($user, $request, $manager);
 
-        $article = $manager->getRepository(Article::class)->find($id_article);
-        $event = $manager->getRepository(Evt::class)->find($id_event);
-
-        $defaultObject = '';
-        if ($article) {
-            $defaultObject = $article->getTitre();
-        } elseif ($event) {
-            $defaultObject = $event->getTitre();
-        }
-
-        $form = $this->createForm(UserContactType::class, null, [
-            'user_id' => $user->getId(),
-            'article_id' => $id_article,
-            'event_id' => $id_event,
-            'default_object' => $defaultObject,
-        ]);
-
+        $form = $userData['form'];
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -101,9 +119,12 @@ class UserController extends AbstractController
             $email = $this->getUser()->getEmail();
             $eventLink = $articleLink = '';
 
+            $event = $userData['event'] ?? null;
             if ($event instanceof Evt) {
                 $eventLink = $this->generateUrl('sortie', ['id' => $event->getId(), 'code' => $event->getCode()], UrlGeneratorInterface::ABSOLUTE_URL);
             }
+
+            $article = $userData['article'] ?? null;
             if ($article instanceof Article) {
                 $articleLink = $this->generateUrl('article_view', ['id' => $article->getId(), 'code' => $article->getCode()], UrlGeneratorInterface::ABSOLUTE_URL);
             }
@@ -123,30 +144,6 @@ class UserController extends AbstractController
             ], [], null, $email);
 
             $this->addFlash('success', 'Votre message a bien été envoyé.');
-        }
-
-        ['absences' => $absences, 'presences' => $presences] = $manager
-            ->getRepository(EventParticipation::class)
-            ->getEventPresencesAndAbsencesOfUser($user->getId())
-        ;
-        $total = $presences + $absences;
-        $fiabilite = $total > 0 ? round(($presences / $total) * 100) : 100;
-
-        $userRights = $user->getAttributes();
-        $roles = [
-            'club' => [],
-            'commission' => [],
-        ];
-        foreach ($userRights as $userRight) {
-            $commissionCode = $userRight->getCommission();
-            if (empty($commissionCode)) {
-                $roles['club'][] = $userRight;
-            } else {
-                $commission = $commissionRepository->findOneBy(['code' => $commissionCode]);
-                if (!in_array($commission->getTitle(), array_keys($roles['commission']), true)) {
-                    $roles['commission'][$commission->getTitle()] = $userRight;
-                }
-            }
         }
 
         $userArticles = $manager->getRepository(Article::class)->findBy(
@@ -186,25 +183,16 @@ class UserController extends AbstractController
             }
         }
 
-        return [
+        return array_merge($userData, [
             'user' => $user,
-            'fiabilite' => $fiabilite,
-            'nb_absences' => $absences,
-            'total_sorties' => $total,
-            'club_roles' => $roles['club'],
-            'comm_roles' => $roles['commission'],
-            'id_event' => $id_event,
-            'id_article' => $id_article,
-            'default_object' => $defaultObject,
-            'style' => count($form->getErrors(true, true)) > 0 ? '' : 'display: none',
             'user_articles' => $userArticles,
             'user_events' => $userEvents,
             'nb_events' => $eventRepository->getUserEventsCount($user, [Evt::STATUS_PUBLISHED_VALIDE]),
-            'form' => $form,
+            'nb_articles' => count($userArticles),
             'niveaux' => $nivRefs,
             'commissions' => $commissions,
             'groupes_competences' => $groupesCompRefs,
-        ];
+        ]);
     }
 
     #[Route(path: '/statuts-adherents', name: 'user_status_list', methods: ['GET'])]
@@ -643,7 +631,7 @@ class UserController extends AbstractController
                 'lastname' => strtoupper($user->getLastname()),
                 'firstname' => ucfirst($user->getFirstname()),
                 'renew' => $renew,
-                'nickname' => '<a href="/includer.php?p=includes/fiche-profil.php&amp;id_user=' . $user->getId() . '" class="fancyframe userlink">' . $user->getNickname() . '</a>',
+                'nickname' => '<a href="' . $this->generateUrl('user_profile', ['id' => $user->getId()]) . '" class="fancyframe userlink">' . $user->getNickname() . '</a>',
                 'age' => $age,
                 'tel' => $tel,
                 'email' => $email,
@@ -660,5 +648,79 @@ class UserController extends AbstractController
             'recordsFiltered' => $recordsFiltered,
             'data' => $results,
         ]);
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    protected function getUserData(
+        User $user,
+        Request $request,
+        EntityManagerInterface $manager,
+    ): array {
+        $id_event = $id_article = 0;
+        if (!empty($request->get('id_event'))) {
+            $id_event = $request->get('id_event');
+        }
+        if (!empty($request->get('id_article'))) {
+            $id_article = $request->get('id_article');
+        }
+
+        $article = $manager->getRepository(Article::class)->find($id_article);
+        $event = $manager->getRepository(Evt::class)->find($id_event);
+
+        $defaultObject = '';
+        if ($article) {
+            $defaultObject = $article->getTitre();
+        } elseif ($event) {
+            $defaultObject = $event->getTitre();
+        }
+
+        $form = $this->createForm(UserContactType::class, null, [
+            'user_id' => $user->getId(),
+            'article_id' => $id_article,
+            'event_id' => $id_event,
+            'default_object' => $defaultObject,
+        ]);
+
+        ['absences' => $absences, 'presences' => $presences] = $manager
+            ->getRepository(EventParticipation::class)
+            ->getEventPresencesAndAbsencesOfUser($user->getId())
+        ;
+        $total = $presences + $absences;
+        $fiabilite = $total > 0 ? round(($presences / $total) * 100) : 100;
+
+        $userRights = $user->getAttributes();
+        $roles = [
+            'club' => [],
+            'commission' => [],
+        ];
+        foreach ($userRights as $userRight) {
+            $commissionCode = $userRight->getCommission();
+            if (empty($commissionCode)) {
+                $roles['club'][] = $userRight;
+            } else {
+                $commission = $manager->getRepository(Commission::class)->findOneBy(['code' => $commissionCode]);
+                if (!in_array($commission->getTitle(), array_keys($roles['commission']), true)) {
+                    $roles['commission'][$commission->getTitle()] = $userRight;
+                }
+            }
+        }
+
+        return [
+            'fiabilite' => $fiabilite,
+            'nb_absences' => $absences,
+            'total_sorties' => $total,
+            'club_roles' => $roles['club'],
+            'comm_roles' => $roles['commission'],
+            'id_event' => $id_event,
+            'id_article' => $id_article,
+            'default_object' => $defaultObject,
+            'style' => count($form->getErrors(true, true)) > 0 ? '' : 'display: none',
+            'reversed_style' => count($form->getErrors(true, true)) > 0 ? 'display: none' : '',
+            'form' => $form,
+            'event' => $event,
+            'article' => $article,
+        ];
     }
 }
