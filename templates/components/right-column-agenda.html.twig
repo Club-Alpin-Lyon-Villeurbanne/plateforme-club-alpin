@@ -1,0 +1,38 @@
+{% set date_anchor = 'now'|date('d') %}
+{% if current_commission %}
+    <h1 class="agenda-h1"><a href="{{ path('commission_agenda', {'code': current_commission}) }}" title="Afficher l'agenda complet pour cette commission">Agenda</a></h1>
+{% else %}
+    <h1 class="agenda-h1"><a href="{{ path('agenda') }}#{{ date_anchor }}" title="Afficher l'agenda complet">Agenda</a></h1>
+{% endif %}
+
+<div id="evt-list">
+    {% for event in list_events(get_commission(current_commission)) %}
+        {% set nInscritsTotal = event.participations() | length %}
+        {% set nPlacesRestantesTotal = max(0, event.ngensMax - nInscritsTotal) %}
+        <a href="{{ path('sortie', {'code': event.code, 'id': event.id}) }}?commission={{ event.commission.code }}" title="Voir la sortie">
+            <span style="color:#000">{{ event.startDate | intldate('ccc d/MM') | capitalize }} </span> |
+            {% if event.cancelled %}
+                <span class="cancelled">Sortie annulée</span>
+            {% else %}
+                <span style="color:#000">
+                                    {{ event.commission.title }}
+                    {% if nPlacesRestantesTotal <= 0 %}
+                        <span class="label-complet"> complet </span>
+                    {% endif %}
+                                </span>
+            {% endif %}
+            <h2 style="color:#000">{{ event.titre }}</h2>
+        </a>
+    {% else %}
+        {% if current_commission %}
+            <p>Désolé, il n'y a pas de sortie à venir pour cette commission...</p>
+        {% else %}
+            <p>Désolé, il n'y a pas de sortie à venir...</p>
+        {% endif %}
+    {% endfor %}
+</div>
+
+{% if current_commission %}
+    <a href="{{ path('commission_agenda', {'code': current_commission}) }}" title="Afficher l'agenda complet pour cette commission" class="lien-big">> Voir toutes les sorties {{ commission_title(current_commission) }}</a>
+{% endif %}
+<a href="{{ path('agenda') }}#{{ date_anchor }}" title="Afficher l'agenda complet" class="lien-big">> Voir toutes les sorties du club</a>

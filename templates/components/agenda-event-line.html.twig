@@ -1,0 +1,71 @@
+<div class="picto">
+    {% if evt.commission %}
+        <img src="{{ commission_picto(evt.commission.code) }}" alt="" title="" class="picto-light" />
+        <img src="{{ commission_picto(evt.commission.code, 'dark') }}" alt="" title="" class="picto-dark" />
+    {% endif %}
+</div>
+
+<div class="droite">
+    <div title="{{ evt | temoin_event_title }}" style="padding: 10px 10px 5px 5px;float:left;">
+        <span class="temoin-places-dispos">
+            {{ evt | temoin_event_picto }}
+        </span>
+    </div>
+
+    <h2 class="tw-flex tw-items-center tw-gap-2">
+        {% if evt.cancelled %}
+            <span style="padding:1px 3px; color:red; font-family:Arial;white-space: nowrap">ANNULÉE - </span>
+        {% endif %}
+        {{ evt.titre }}{% if count > 0 %} [jour {{ count }}]{% endif %}
+
+        {% if is_granted('ROLE_USER') %}
+            {% set userParticipation = null %}
+            {% for participation in evt.participations %}
+                {% if participation.user == app.user %}
+                    {% set userParticipation = participation %}
+                {% endif %}
+            {% endfor %}
+
+            {% if userParticipation %}
+                {% set status = userParticipation.status %}
+
+                {% if status == 2 %}
+                    <span class="tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
+                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                        Refusé
+                    </span>
+                {% elseif status == 1 %}
+                    <span class="tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
+                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                        </svg>
+                        Accepté
+                    </span>
+                {% elseif status == 3 %}
+                    <span class="tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
+                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        Absent
+                    </span>
+                {% else %}
+                    <span class="tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-orange-600 tw-whitespace-nowrap">
+                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                        En attente
+                    </span>
+                {% endif %}
+            {% endif %}
+        {% endif %}
+    </h2>
+
+    {% if ongoing is same as (false) %}
+        <p>
+            <b>{{ evt.commission.title }}</b>
+        </p>
+    {% endif %}
+</div>
+<br style="clear:both" />

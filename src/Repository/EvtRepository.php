@@ -401,4 +401,39 @@ class EvtRepository extends ServiceEntityRepository
 
         return $qb;
     }
+
+    /**
+     * @return Evt[]
+     */
+    public function getEventsByDateRange(
+        \DateTimeImmutable $startDate,
+        \DateTimeImmutable $endDate,
+        ?Commission $commission = null,
+    ): array {
+        $qb = $this->createQueryBuilder('e')
+            ->select('e, c')
+            ->innerJoin('e.commission', 'c')
+            ->where('e.status = :status')
+            ->andWhere('e.isDraft = false')
+            ->andWhere('e.startDate IS NOT NULL')
+            ->andWhere('(
+                e.startDate >= :startDate AND e.endDate <= :endDate
+                OR e.startDate BETWEEN :startDate AND :endDate
+                OR e.endDate BETWEEN :startDate AND :endDate
+            )')
+            ->setParameter('status', Evt::STATUS_PUBLISHED_VALIDE)
+            ->setParameter('startDate', $startDate)
+            ->setParameter('endDate', $endDate)
+            ->orderBy('e.startDate', 'ASC')
+        ;
+
+        if ($commission) {
+            $qb
+                ->andWhere('e.commission = :commission')
+                ->setParameter('commission', $commission)
+            ;
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

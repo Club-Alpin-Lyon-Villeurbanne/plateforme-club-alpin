@@ -1,0 +1,66 @@
+{% if current_commission %}
+    <h1 class="actus-h1"><a href="{{ path('commission_homepage', {'code': current_commission}) }}" title="Afficher tous les articles pour cette commission">actus</a></h1>
+{% else %}
+    <h1 class="actus-h1"><a href="{{ path('homepage') }}" title="Afficher tous les articles">actus</a></h1>
+{% endif %}
+
+<!-- Liste -->
+<br />
+<div id="actus-list">
+    {% for article in articles %}
+        {# Build article URL #}
+        {% set article_url = path('article_view', {'code': article.code, 'id': article.id}) %}
+        {% if current_commission %}
+            {% set article_url = article_url ~ '?commission=' ~ current_commission %}
+        {% endif %}
+
+        <!-- titre + lien article -->
+        <h2>
+            <a href="{{ article_url }}" title="Voir cet article">
+                {{ article.titre }}
+            </a>
+        </h2>
+
+        <!-- lien commission + date -->
+        <p class="commission-title">
+            {{ article.createdAt | date('d/m/Y') }}
+
+            {% if article.commission %}
+                - <a href="{{ path('commission_homepage', {'code': article.commission.code}) }}#home-articles" title="Toutes les actus de cette commission">
+                    {{ article.commission.title }}
+                </a>
+            {% elseif article.event %}
+                - <a href="{{ path('sortie', {'code': article.event.code, 'id': article.event.id}) }}" title="Voir la sortie liée à cet article : &laquo; {{ article.event.titre }} &raquo;">
+                    compte rendu de sortie
+                </a>
+            {% else %}
+                - <a href="{{ path('homepage') }}#home-articles" title="Toutes les actus du club">
+                    CLUB
+                </a>
+            {% endif %}
+        </p>
+
+        <!-- summary -->
+        <p class="summup">
+            {% set excerpt = article.cont | striptags | decode_html_entities | slice(0, 100) %}
+            {{ excerpt }}{% if excerpt | length == 100 %}...{% endif %}
+            <a href="{{ article_url }}" title="Voir cet article">
+                [...]
+            </a>
+        </p>
+        <br style="clear:both" />
+
+    {% else %}
+        {% if current_commission %}
+            <p>Désolé, il n'y a pas d'article à venir pour cette commission...</p>
+        {% else %}
+            <p>Désolé, il n'y a pas d'article à venir...</p>
+        {% endif %}
+    {% endfor %}
+</div>
+
+<!-- liens vers les pages actus -->
+{% if current_commission %}
+    <a href="{{ path('commission_homepage', {'code': current_commission}) }}" title="Afficher tous les articles pour cette commission" class="lien-big">> Voir tous les articles {{ current_commission }}</a>
+{% endif %}
+<a href="{{ path('homepage') }}" title="Afficher tous les articles" class="lien-big">> Voir tous les articles</a>
