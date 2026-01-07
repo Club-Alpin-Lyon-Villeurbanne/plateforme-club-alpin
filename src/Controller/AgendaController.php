@@ -16,8 +16,8 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class AgendaController extends AbstractController
 {
-    #[Route('/agenda', name: 'agenda', priority: 10)]
-    #[Route('/agenda/{code}', name: 'commission_agenda', priority: 10)]
+    #[Route('/agenda.html', name: 'agenda', priority: 10)]
+    #[Route('/agenda/{code}.html', name: 'commission_agenda', priority: 10)]
     #[Template('agenda/index.html.twig')]
     public function index(
         Request $request,
@@ -77,7 +77,7 @@ class AgendaController extends AbstractController
                 $commission ? ['code' => $commission->getCode()] : [],
             ),
             'first_day_weekday' => $firstDayOfMonth,
-            'articles' => $articleRepository->getPublishedArticlesForRightColumn($commission),
+            'right_articles' => $articleRepository->getPublishedArticlesForRightColumn($commission),
         ];
     }
 
