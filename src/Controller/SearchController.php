@@ -19,7 +19,7 @@ class SearchController extends AbstractController
      * @throws NonUniqueResultException
      * @throws NoResultException
      */
-    #[Route('/recherche.html', name: 'search_result', methods: ['GET', 'POST'], priority: 10)]
+    #[Route('/recherche.html', name: 'search_result', methods: ['POST'], priority: 10)]
     public function index(
         Request $request,
         CommissionRepository $commissionRepository,
