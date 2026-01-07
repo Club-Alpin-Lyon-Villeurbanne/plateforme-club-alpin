@@ -107,7 +107,7 @@ class ArticleRepository extends ServiceEntityRepository
         ;
     }
 
-    public function searchArticles(string $searchText, int $limit, ?Commission $commission = null)
+    public function searchArticles(string $searchText, int $limit, ?Commission $commission = null): array
     {
         return $this->getSearchQueryBuilder($searchText, $commission)
             ->setMaxResults($limit)

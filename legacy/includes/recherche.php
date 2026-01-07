@@ -18,7 +18,7 @@ $link = LegacyContainer::get('legacy_router')->generate('search_result', [], Url
 	<?php
     // filtre à la commission
     if ($current_commission) {
-        echo '<br><input type="checkbox" name="commission" value="' . HtmlHelper::escape($current_commission) . '" id="search_filter" ' . (($_GET['filter'] ?? null) ? 'checked="checked"' : '') . '><label for="search_filter"> commission <span style="color:black">' . HtmlHelper::escape($comTab[$current_commission]['title_commission']) . '</span> uniquement</label>';
+        echo '<br><input type="checkbox" name="commission" value="' . HtmlHelper::escape($current_commission) . '" id="search_filter" ' . (($_POST['filter'] ?? null) ? 'checked="checked"' : '') . '><label for="search_filter"> commission <span style="color:black">' . HtmlHelper::escape($comTab[$current_commission]['title_commission']) . '</span> uniquement</label>';
     }
 ?>
 </form>
