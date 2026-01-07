@@ -2,17 +2,19 @@ framework:
     html_sanitizer:
         sanitizers:
             app.content_sanitizer:
+                max_input_length: 500000
                 allow_safe_elements: true
                 allow_elements:
                     a: ['href', 'title', 'target', 'rel']
                     img: ['src', 'alt', 'title', 'width', 'height', 'class', 'style']
                     figure: ['class', 'style']
                     iframe: ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen', 'title']
-                allowed_media_schemes: ['https']
+                allowed_media_schemes: ['https', 'data']
                 # Images: all HTTPS domains allowed
                 # Iframes: restricted by IframeSrcSanitizer to video platforms only
                 allow_relative_medias: true
                 allow_relative_links: true
-                force_https_urls: true
+                force_https_urls: false
                 with_attribute_sanitizers:
+                    - App\HtmlSanitizer\ImageSrcDataSanitizer
                     - App\HtmlSanitizer\IframeSrcSanitizer
