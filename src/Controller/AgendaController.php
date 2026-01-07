@@ -104,7 +104,6 @@ class AgendaController extends AbstractController
 
             $eventStart = $event->getStartDate();
             $eventEnd = $event->getEndDate();
-            $eventTsp = $eventStart->getTimestamp();
 
             $tmpStartD = (int) $eventStart->format('d');
             $tmpStartM = (int) $eventStart->format('m');
@@ -116,20 +115,20 @@ class AgendaController extends AbstractController
             // Check if event starts in this month
             if ($tmpStartM === $month && $tmpStartY === $year) {
                 $dayCount = 0;
-                if ($tmpStartD . $tmpStartM !== $tmpEndD . $tmpEndM) {
+                if ($eventStart->format('Y-m-d') !== $eventEnd->format('Y-m-d')) {
                     $dayCount = 1;
                 }
                 $agendaTab[$tmpStartD]['debut'][] = ['event' => $event, 'day_count' => $dayCount];
             }
 
             // Handle multi-day events
-            if ($tmpStartD . $tmpStartM !== $tmpEndD . $tmpEndM) {
+            if ($eventStart->format('Y-m-d') !== $eventEnd->format('Y-m-d')) {
                 // Determine start day for continuous display
                 $i = ($tmpStartM !== $month || $tmpStartY !== $year) ? 1 : $tmpStartD + 1;
 
                 while ($i <= $nDays) {
-                    $tmpDay = mktime(23, 59, 59, $month, $i, $year);
-                    $dayCount = (int) ceil(($tmpDay - $eventTsp) / 86400);
+                    $currentDay = new \DateTimeImmutable("$year-$month-$i");
+                    $dayCount = (int) $eventStart->diff($currentDay)->days + 1;
 
                     // Stop if we've passed the end date
                     if ($tmpEndM === $month && $tmpEndY === $year && $i > $tmpEndD) {
@@ -146,9 +145,6 @@ class AgendaController extends AbstractController
         return $agendaTab;
     }
 
-    /**
-     * @param array<int, array<string, array<Evt>>> $agendaTab
-     */
     private function countMonthEvents(array $agendaTab): int
     {
         $count = 0;

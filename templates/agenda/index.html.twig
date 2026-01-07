@@ -169,9 +169,9 @@
         </a>
         {% if current_commission %}
             <a href="{{ path('rss', {'mode': 'sorties-' ~ current_commission.code}) }}"
-               title="Flux RSS des sorties « {{ current_commission.code }} » uniquement" class="nice2">
+               title="Flux RSS des sorties « {{ current_commission.title }} » uniquement" class="nice2">
                 <img src="/img/base/rss.png" alt="RSS" title="" /> &nbsp;
-                sorties « {{ current_commission.code }} »
+                sorties « {{ current_commission.title }} »
             </a>
         {% endif %}
 

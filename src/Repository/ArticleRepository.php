@@ -141,7 +141,7 @@ class ArticleRepository extends ServiceEntityRepository
         if ($commission instanceof Commission) {
             $qb
                 ->innerJoin('a.commission', 'c')
-                ->andWhere('a.commission IS NULL OR a.commission = :commission')
+                ->andWhere('a.commission = :commission')
                 ->setParameter('commission', $commission)
             ;
         }

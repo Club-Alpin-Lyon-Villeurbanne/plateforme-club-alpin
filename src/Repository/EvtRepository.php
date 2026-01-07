@@ -417,9 +417,9 @@ class EvtRepository extends ServiceEntityRepository
             ->andWhere('e.isDraft = false')
             ->andWhere('e.startDate IS NOT NULL')
             ->andWhere('(
-                e.startDate >= :startDate AND e.endDate <= :endDate
-                OR e.startDate BETWEEN :startDate AND :endDate
-                OR e.endDate BETWEEN :startDate AND :endDate
+                e.endDate > :startDate AND e.endDate < :endDate
+                OR e.startDate > :startDate AND e.startDate < :endDate
+                OR e.startDate < :startDate AND e.endDate > :endDate
             )')
             ->setParameter('status', Evt::STATUS_PUBLISHED_VALIDE)
             ->setParameter('startDate', $startDate)

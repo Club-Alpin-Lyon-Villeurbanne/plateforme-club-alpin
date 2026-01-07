@@ -29,21 +29,21 @@
             {% if userParticipation %}
                 {% set status = userParticipation.status %}
 
-                {% if status == 2 %}
+                {% if status == constant('App\\Entity\\EventParticipation::STATUS_REFUSE') %}
                     <span class="tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
                         <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
                         </svg>
                         Refusé
                     </span>
-                {% elseif status == 1 %}
+                {% elseif status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') %}
                     <span class="tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
                         <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                         </svg>
                         Accepté
                     </span>
-                {% elseif status == 3 %}
+                {% elseif status == constant('App\\Entity\\EventParticipation::STATUS_ABSENT') %}
                     <span class="tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-ml-auto tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
                         <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
