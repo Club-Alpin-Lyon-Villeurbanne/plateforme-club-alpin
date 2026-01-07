@@ -8,6 +8,13 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class AttachmentValidator
 {
+    private const EXPENSE_LABELS = [
+        'fuelExpense' => 'Carburant',
+        'rentalPrice' => 'Location',
+        'ticketPrice' => 'Billet de transport',
+        'tollExpense' => 'Péage',
+    ];
+
     public function validate(Collection $attachments, array $requiredAttachments, ExecutionContextInterface $context)
     {
         foreach ($requiredAttachments as $expenseId) {
@@ -22,8 +29,9 @@ class AttachmentValidator
         });
 
         if (!$attachmentExists) {
-            $context->buildViolation('Attachment is missing for expense with ID \'{expenseId}\'.')
-                ->setParameter('{expenseId}', $expenseId)
+            $label = self::EXPENSE_LABELS[$expenseId] ?? $expenseId;
+            $context->buildViolation('Un justificatif est requis pour le champ « {label} ».')
+                ->setParameter('{label}', $label)
                 ->addViolation();
         }
     }

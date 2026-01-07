@@ -28,6 +28,22 @@ class TransportDetailsValidator
         'PUBLIC_TRANSPORT' => ['ticketPrice'],
     ];
 
+    private const FIELD_LABELS = [
+        'distance' => 'Distance',
+        'fuelExpense' => 'Carburant',
+        'rentalPrice' => 'Location',
+        'ticketPrice' => 'Billet de transport',
+        'passengerCount' => 'Nombre de passagers',
+        'tollExpense' => 'Péage',
+    ];
+
+    private const TYPE_LABELS = [
+        'PERSONAL_VEHICLE' => 'véhicule personnel',
+        'CLUB_MINIBUS' => 'minibus du club',
+        'RENTAL_MINIBUS' => 'minibus de location',
+        'PUBLIC_TRANSPORT' => 'transport en commun',
+    ];
+
     public function __construct(
         private AttachmentValidator $attachmentValidator
     ) {
@@ -51,7 +67,7 @@ class TransportDetailsValidator
     private function isValidTransportObject($transport, ExecutionContextInterface $context): bool
     {
         if (!\is_array($transport)) {
-            $context->buildViolation('Transport details must be an object.')
+            $context->buildViolation('Les détails du transport sont invalides.')
                 ->atPath('details.transport')
                 ->addViolation();
 
@@ -59,7 +75,7 @@ class TransportDetailsValidator
         }
 
         if (!isset($transport['type'])) {
-            $context->buildViolation('Transport type is missing.')
+            $context->buildViolation('Le type de transport est requis.')
                 ->atPath('details.transport.type')
                 ->addViolation();
 
@@ -72,7 +88,7 @@ class TransportDetailsValidator
     private function isValidTransportType(string $type, ExecutionContextInterface $context): bool
     {
         if (!\in_array($type, self::VALID_TYPES, true)) {
-            $context->buildViolation('Invalid transport type.')
+            $context->buildViolation('Type de transport invalide.')
                 ->atPath('details.transport.type')
                 ->addViolation();
 
@@ -85,10 +101,12 @@ class TransportDetailsValidator
     private function validateRequiredFields(array $transport, string $type, ExecutionContextInterface $context): void
     {
         $requiredFields = self::REQUIRED_FIELDS[$type] ?? [];
+        $typeLabel = self::TYPE_LABELS[$type] ?? $type;
 
         foreach ($requiredFields as $field) {
             if (!isset($transport[$field])) {
-                $context->buildViolation("{$field} is required for {$type}.")
+                $fieldLabel = self::FIELD_LABELS[$field] ?? $field;
+                $context->buildViolation("Le champ « {$fieldLabel} » est requis pour le {$typeLabel}.")
                     ->atPath("details.transport.{$field}")
                     ->addViolation();
             }
