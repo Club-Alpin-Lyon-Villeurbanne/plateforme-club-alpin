@@ -7,7 +7,7 @@
 {% endif %}
 
 <div id="evt-list">
-    {% for event in list_events(current_commission ? current_commission : null) %}
+    {% for event in list_events(current_commission) %}
         {% set nInscritsTotal = event.participations() | length %}
         {% set nPlacesRestantesTotal = max(0, event.ngensMax - nInscritsTotal) %}
         <a href="{{ path('sortie', {'code': event.code, 'id': event.id}) }}?commission={{ event.commission.code }}" title="Voir la sortie">
