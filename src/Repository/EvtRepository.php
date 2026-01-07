@@ -381,7 +381,7 @@ class EvtRepository extends ServiceEntityRepository
     {
         return $this->getEventsByCommissionDql($commission)
             ->innerJoin('e.user', 'u')
-            ->andWhere('e.titre LIKE :search OR	e.description LIKE :search OR e.place LIKE :search OR e.rdv LIKE :search OR e.massif LIKE :search OR u.nickname LIKE :search')
+            ->andWhere('e.titre LIKE :search OR e.description LIKE :search OR e.place LIKE :search OR e.rdv LIKE :search OR e.massif LIKE :search OR u.nickname LIKE :search')
             ->setParameter('search', '%' . $searchText . '%')
         ;
     }

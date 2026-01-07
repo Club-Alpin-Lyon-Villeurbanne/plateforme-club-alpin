@@ -135,7 +135,7 @@ class ArticleRepository extends ServiceEntityRepository
     {
         return $this->getArticlesByCommissionDql($commission)
             ->innerJoin('a.user', 'u')
-            ->andWhere('a.titre LIKE :search OR	a.cont LIKE :search OR u.nickname LIKE :search')
+            ->andWhere('a.titre LIKE :search OR a.cont LIKE :search OR u.nickname LIKE :search')
             ->setParameter('search', '%' . $searchText . '%')
         ;
     }
