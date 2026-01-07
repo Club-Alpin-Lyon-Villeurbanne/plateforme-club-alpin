@@ -1,3 +1,4 @@
+{% set current_commission = current_commission | default(null) %}
 {% if current_commission %}
     <h1 class="actus-h1"><a href="{{ path('commission_homepage', {'code': current_commission.code}) }}" title="Afficher tous les articles pour cette commission">actus</a></h1>
 {% else %}

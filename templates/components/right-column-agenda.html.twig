@@ -1,3 +1,4 @@
+{% set current_commission = current_commission | default(null) %}
 {% set date_anchor = 'now'|date('d') %}
 {% if current_commission %}
     <h1 class="agenda-h1"><a href="{{ path('commission_agenda', {'code': current_commission.code}) }}" title="Afficher l'agenda complet pour cette commission">Agenda</a></h1>
@@ -6,7 +7,7 @@
 {% endif %}
 
 <div id="evt-list">
-    {% for event in list_events(current_commission) %}
+    {% for event in list_events(current_commission ? current_commission : null) %}
         {% set nInscritsTotal = event.participations() | length %}
         {% set nPlacesRestantesTotal = max(0, event.ngensMax - nInscritsTotal) %}
         <a href="{{ path('sortie', {'code': event.code, 'id': event.id}) }}?commission={{ event.commission.code }}" title="Voir la sortie">
