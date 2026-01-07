@@ -1,5 +1,5 @@
 {% if current_commission %}
-    <h1 class="actus-h1"><a href="{{ path('commission_homepage', {'code': current_commission}) }}" title="Afficher tous les articles pour cette commission">actus</a></h1>
+    <h1 class="actus-h1"><a href="{{ path('commission_homepage', {'code': current_commission.code}) }}" title="Afficher tous les articles pour cette commission">actus</a></h1>
 {% else %}
     <h1 class="actus-h1"><a href="{{ path('homepage') }}" title="Afficher tous les articles">actus</a></h1>
 {% endif %}
@@ -11,7 +11,7 @@
         {# Build article URL #}
         {% set article_url = path('article_view', {'code': article.code, 'id': article.id}) %}
         {% if current_commission %}
-            {% set article_url = article_url ~ '?commission=' ~ current_commission %}
+            {% set article_url = article_url ~ '?commission=' ~ current_commission.code %}
         {% endif %}
 
         <!-- titre + lien article -->
@@ -61,6 +61,10 @@
 
 <!-- liens vers les pages actus -->
 {% if current_commission %}
-    <a href="{{ path('commission_homepage', {'code': current_commission}) }}" title="Afficher tous les articles pour cette commission" class="lien-big">> Voir tous les articles {{ current_commission }}</a>
+    <a href="{{ path('commission_homepage', {'code': current_commission.code}) }}" title="Afficher tous les articles pour cette commission" class="lien-big">
+        > Voir tous les articles {{ current_commission.title }}
+    </a>
 {% endif %}
-<a href="{{ path('homepage') }}" title="Afficher tous les articles" class="lien-big">> Voir tous les articles</a>
+<a href="{{ path('homepage') }}" title="Afficher tous les articles" class="lien-big">
+    > Voir tous les articles
+</a>

@@ -1,8 +1,8 @@
-{% set current_commission = current_commission.code | default('') %}
+{% set current_commission_code = current_commission.code | default('') %}
 <div id="right1">
     <div class="right-light">
         &nbsp; {# important #}
-        {{ easy_include('presentation-' ~ (current_commission ?: 'general'), 'right-light-in') }}
+        {{ easy_include('presentation-' ~ (current_commission_code ?: 'general'), 'right-light-in') }}
 
         <script type="text/javascript" src="/js/slidesjs/jquery.slides.min.js"></script>
 
@@ -27,8 +27,8 @@
             <input type="text" class="textfield" name="str" value="{{ app.request.query.get('str') }}" placeholder="ex: {{ ['Refuge du gouter', 'Enneigement', 'Ski de randonnée', 'Mont Blanc', 'Slackline'] | random_item }}">
             <input type="submit" value="OK" class="submit" />
             {% if current_commission %}
-                <br><input type="checkbox" checked="checked" name="commission" value="{{ current_commission }}" id="search_filter" {{ app.request.query.get('filter') ? 'checked="checked"' }}>
-                <label for="search_filter"> commission <span style="color:black">{{ commission_title(current_commission) }}</span> uniquement</label>
+                <br><input type="checkbox" checked="checked" name="commission" value="{{ current_commission.code }}" id="search_filter" {{ app.request.query.get('filter') ? 'checked="checked"' }}>
+                <label for="search_filter"> commission <span style="color:black">{{ commission_title(current_commission.code) }}</span> uniquement</label>
             {% endif %}
         </form>
     </div>

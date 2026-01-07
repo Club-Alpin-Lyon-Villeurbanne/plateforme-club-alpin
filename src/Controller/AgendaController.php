@@ -71,7 +71,6 @@ class AgendaController extends AbstractController
             'max_year' => $maxYear,
             'commissions' => $commissions,
             'current_commission' => $commission,
-            'current_commission_code' => $commission?->getCode(),
             'current_url' => $this->generateUrl(
                 $request->attributes->get('_route'),
                 $commission ? ['code' => $commission->getCode()] : [],

@@ -1,4 +1,4 @@
-{% set current_commission = current_commission.code | default('') %}
+{% set current_commission_code = current_commission.code | default('') %}
 {% set p1 = p1 | default('') %}
 {% set impersonification_style = is_granted('IS_IMPERSONATOR') ? "background-color:#df4949;" : "" %}
 
@@ -15,13 +15,13 @@
         </a>
 
         {# COMMISSION #}
-        <a id="toolbar-commission" href="javascript:void(0)" title="{{ commission_title(current_commission) }}" class="toptrigger" style="{{ impersonification_style }}">
+        <a id="toolbar-commission" href="javascript:void(0)" title="{{ commission_title(current_commission_code) }}" class="toptrigger" style="{{ impersonification_style }}">
             <div style="position:absolute;"><span id="shadowcache-commission" class="shadowcache"></span></div>
             {% if current_commission %}
                 <span class="picto">
-                    <img src="{{ commission_picto(current_commission) }}" alt="" title="" class="light" />
-                    <img src="{{ commission_picto(current_commission, 'dark') }}" alt="" title="" class="dark" />
-                </span> Commission - Activité<br /><b>{{ commission_title(current_commission) }}</b>
+                    <img src="{{ commission_picto(current_commission.code) }}" alt="" title="" class="light" />
+                    <img src="{{ commission_picto(current_commission.code, 'dark') }}" alt="" title="" class="dark" />
+                </span> Commission - Activité<br /><b>{{ commission_title(current_commission.code) }}</b>
             {% else %}
                 <span class="picto">
                     <img src="/img/comm-please.png" alt="" title="" class="light" />
@@ -251,7 +251,7 @@
                                     {% if allowed('article_create') %}
                                         {% set params = {} %}
                                         {% if current_commission %}
-                                            {% set params = {'commission': current_commission} %}
+                                            {% set params = {'commission': current_commission.code} %}
                                         {% endif %}
                                         <li>
                                         <a href="{{ path('article_new', params) }}" title="">
@@ -259,7 +259,7 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="/profil/articles.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
+                                        <a href="/profil/articles.html{{ current_commission ? '?commission=' ~ current_commission.code : '' }}" title="">
                                             mes articles
                                         </a>
                                     </li>
@@ -267,7 +267,7 @@
 
                                 {% if allowed('article_validate') or allowed('article_validate_all') %}
                                     <li>
-                                        <a href="/gestion-des-articles.html{{ current_commission ? '?commission=' ~ current_commission : '' }}" title="">
+                                        <a href="/gestion-des-articles.html{{ current_commission ? '?commission=' ~ current_commission.code : '' }}" title="">
                                             {% set notif_article = notifications_counter_articles() %}
                                             {% if notif_article > 0 %}<span class="notification">{{ notif_article }}</span>{% endif %}
                                             validation / gestion des articles
