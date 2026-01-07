@@ -317,7 +317,7 @@ class EvtRepository extends ServiceEntityRepository
         ;
     }
 
-    public function searchEvents(string $searchText, int $limit, ?Commission $commission = null)
+    public function searchEvents(string $searchText, int $limit, ?Commission $commission = null): array
     {
         return $this->getSearchQueryBuilder($searchText, $commission)
             ->setMaxResults($limit)

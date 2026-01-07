@@ -52,7 +52,7 @@ class PageRepository extends ServiceEntityRepository
         ;
     }
 
-    public function searchPages(string $searchText, int $limit)
+    public function searchPages(string $searchText, int $limit): array
     {
         return $this->getSearchQueryBuilder($searchText)
             ->setMaxResults($limit)

@@ -8,7 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
  * ContentInline.
  */
 #[ORM\Table(name: 'caf_content_inline')]
-#[ORM\Index(name: 'contenu_content_inline', columns: ['contenu_content_inline'])]
+#[ORM\Index(columns: ['code_content_inline'], name: 'code_content_inline')]
+#[ORM\Index(columns: ['contenu_content_inline'], name: 'contenu_content_inline')]
 #[ORM\Entity]
 class ContentInline
 {
