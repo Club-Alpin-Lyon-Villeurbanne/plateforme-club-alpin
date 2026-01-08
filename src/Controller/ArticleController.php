@@ -15,6 +15,7 @@ use App\UserRights;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -276,6 +277,7 @@ class ArticleController extends AbstractController
         Request $request,
         Article $article,
         EntityManagerInterface $manager,
+        Filesystem $filesystem,
     ): RedirectResponse {
         if (!$this->isGranted('ARTICLE_DELETE', $article)) {
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
@@ -291,11 +293,13 @@ class ArticleController extends AbstractController
             return $this->redirectToRoute('profil_articles');
         }
 
+        // suppression des medias associés
+        $filesystem->remove($this->getParameter('kernel.project_dir') . '/public/ftp/articles/' . $article->getId());
+        $filesystem->remove($this->getParameter('kernel.project_dir') . '/public/ftp/uploads/files/' . $article->getMediaUpload()->getFilename());
+        $manager->remove($article->getMediaUpload());
+
         $manager->remove($article);
         $manager->flush();
-
-        // suppression des medias associés
-        /* @todo à implémenter plus tard */
 
         $this->addFlash('info', 'L\'article est supprimé');
 
