@@ -67,6 +67,10 @@ class HtmlSanitizerTest extends KernelTestCase
                 '<blockquote>Quote</blockquote>',
                 '<blockquote>Quote</blockquote>',
             ],
+            'data base64 in img' => [
+                '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYcAAAD" />',
+                '<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAYcAAAD" />',
+            ],
         ];
     }
 
@@ -106,7 +110,7 @@ class HtmlSanitizerTest extends KernelTestCase
                 '<div onmouseover="alert(\'xss\')">Hover</div>',
                 '<div>Hover</div>',
             ],
-            'data uri in img' => [
+            'data script in img' => [
                 '<img src="data:text/html,<script>alert(\'xss\')</script>">',
                 '<img />',
             ],
