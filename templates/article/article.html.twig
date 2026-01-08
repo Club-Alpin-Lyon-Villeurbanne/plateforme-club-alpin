@@ -112,7 +112,7 @@
             {% elseif allowed('article_validate_all')
                 or article.commission and allowed('article_validate', 'commission:' ~ article.commission.code)
                 or allowed('article_edit') and app.user and article.user is same as (app.user) %}
-                <a href="javascript:$.fancybox($('#depublier-form-{{ article.id }}').html());" title="" class="nice2 red" id="button-depublier">
+                <a href="javascript:$.fancybox($('#depublier-form-{{ article.id }}').html());" title="Dépublier l'article" class="nice2 red" id="button-depublier">
                     <img src="/img/base/pencil_delete.png" alt="" title="" style="" />&nbsp;&nbsp;Dépublier
                 </a>
                 <div id="depublier-form-{{ article.id }}" style="display:none">

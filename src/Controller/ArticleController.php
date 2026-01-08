@@ -43,13 +43,13 @@ class ArticleController extends AbstractController
         if (!$article && !$this->isGranted('ARTICLE_CREATE')) {
             $this->addFlash('error', 'Vous n\'êtes pas autorisé à créer un article');
 
-            return $this->redirect('/profil/articles.html');
+            return $this->redirectToRoute('profil_articles');
         }
 
         if ($article && !$this->isGranted('ARTICLE_UPDATE', $article)) {
             $this->addFlash('error', 'Vous n\'êtes pas autorisé à modifier cet article');
 
-            return $this->redirect('/profil/articles.html');
+            return $this->redirectToRoute('profil_articles');
         }
 
         if (!$article) {
@@ -134,7 +134,7 @@ class ArticleController extends AbstractController
 
                     $this->addFlash('success', $isNew ? 'Article créé avec succès' : 'Article modifié avec succès');
 
-                    return $this->redirect('/profil/articles.html');
+                    return $this->redirectToRoute('profil_articles');
                 }
             } else {
                 foreach ($form->getErrors(true) as $error) {
