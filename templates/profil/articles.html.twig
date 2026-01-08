@@ -50,10 +50,8 @@
                         Supprimer
                     </a>
                     <div id="supprimer-form-{{ article.id }}" style="display:none; margin-bottom: 20px; padding: 20px; background-color: #f0f0f0; border-radius: 4px;">
-                        <form action="{{ path('article_view', {'id': article.id, 'code': article.code}) }}" method="post" style="width:600px; text-align:left">
-                            <input type="hidden" name="operation" value="article_del" />
-                            <input type="hidden" name="id_article" value="{{ article.id }}" />
-                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('article_del') }}" />
+                        <form action="{{ path('delete_article', { id: article.id }) }}" method="post" style="width:600px; text-align:left" class="loading">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token('article_delete') }}" />
                             <p>Voulez-vous vraiment supprimer définitivement cet article ? <br />Cette action est irréversible.</p>
                             <input type="button" class="nice2" value="Annuler" onclick="document.getElementById('supprimer-form-{{ article.id }}').style.display='none';" />
                             <input type="submit" class="nice2 red" value="Supprimer mon article" />
@@ -64,10 +62,8 @@
                         Dépublier
                     </a>
                     <div id="depublier-form-{{ article.id }}" style="display:none; margin-bottom: 20px; padding: 20px; background-color: #f0f0f0; border-radius: 4px;">
-                        <form action="{{ path('article_view', {'id': article.id, 'code': article.code}) }}" method="post" style="width:600px; text-align:left">
-                            <input type="hidden" name="operation" value="article_depublier" />
-                            <input type="hidden" name="id_article" value="{{ article.id }}" />
-                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('article_depublier') }}" />
+                        <form action="{{ path('unpublish_article', {'id': article.id}) }}" method="post" style="width:600px; text-align:left" class="loading">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token('article_unpublish') }}" />
                             <p>Voulez-vous vraiment retirer cet article du site ? Il repassera en "Brouillon" et vous devrez à nouveau le faire publier par un responsable si vous désirez le publier à nouveau.</p>
                             <input type="button" class="nice2" value="Annuler" onclick="document.getElementById('depublier-form-{{ article.id }}').style.display='none';" />
                             <input type="submit" class="nice2 orange" value="Dépublier mon article" />

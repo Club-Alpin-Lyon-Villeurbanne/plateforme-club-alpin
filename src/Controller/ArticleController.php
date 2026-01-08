@@ -243,4 +243,62 @@ class ArticleController extends AbstractController
 
         return $this->redirect($articleViewRoute);
     }
+
+    #[Route(path: '/article/{id}/depublier', name: 'unpublish_article', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function unpublish(
+        Request $request,
+        Article $article,
+        EntityManagerInterface $manager,
+    ): RedirectResponse {
+        if (!$this->isGranted('ARTICLE_UNPUBLISH', $article)) {
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
+        }
+
+        if (!$this->isCsrfTokenValid('article_unpublish', $request->request->get('csrf_token'))) {
+            throw new BadRequestException('Jeton de validation invalide.');
+        }
+
+        $article
+            ->setTopubly(false)
+            ->setStatus(Article::STATUS_PENDING)
+            ->setValidationDate(null)
+        ;
+        $manager->persist($article);
+        $manager->flush();
+
+        $this->addFlash('info', 'L\'article est dépublié');
+
+        return $this->redirectToRoute('profil_articles');
+    }
+
+    #[Route(path: '/article/{id}/supprimer', name: 'delete_article', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function delete(
+        Request $request,
+        Article $article,
+        EntityManagerInterface $manager,
+    ): RedirectResponse {
+        if (!$this->isGranted('ARTICLE_DELETE', $article)) {
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
+        }
+
+        if (!$this->isCsrfTokenValid('article_delete', $request->request->get('csrf_token'))) {
+            throw new BadRequestException('Jeton de validation invalide.');
+        }
+
+        if (Article::STATUS_PUBLISHED === $article->getStatus()) {
+            $this->addFlash('error', 'Impossible de supprimer un article publié. Veuillez d\'abord le dépublier.');
+
+            return $this->redirectToRoute('profil_articles');
+        }
+
+        $manager->remove($article);
+        $manager->flush();
+
+        // suppression des medias associés
+        /* @todo à implémenter plus tard */
+
+        $this->addFlash('info', 'L\'article est supprimé');
+
+        return $this->redirectToRoute('profil_articles');
+    }
 }
