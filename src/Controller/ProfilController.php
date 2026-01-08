@@ -21,7 +21,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
@@ -124,10 +123,10 @@ class ProfilController extends AbstractController
      * @throws NonUniqueResultException
      * @throws NoResultException
      */
-    #[Route(path: '/articles', name: 'profil_articles', methods: ['GET', 'POST'])]
+    #[Route(path: '/articles.html', name: 'profil_articles', methods: ['GET', 'POST'], priority: 10)]
     #[IsGranted('ROLE_USER')]
     #[Template('profil/articles.html.twig')]
-    public function articleList(Request $request, ArticleRepository $articleRepository, EntityManagerInterface $em): Response|array
+    public function articleList(Request $request, ArticleRepository $articleRepository): array
     {
         /** @var User $user */
         $user = $this->getUser();
