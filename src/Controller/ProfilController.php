@@ -3,10 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\AlertType;
+use App\Entity\Article;
 use App\Entity\MediaUpload;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Messenger\Message\ArticlePublie;
+use App\Repository\ArticleRepository;
 use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
 use App\Repository\UserRepository;
@@ -19,6 +21,7 @@ use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
@@ -105,13 +108,73 @@ class ProfilController extends AbstractController
     #[Template('profil/sorties.html.twig')]
     public function sortiesSelf(Request $request, EvtRepository $evtRepository): array
     {
-        $total = $evtRepository->getUserCreatedEventsCount($this->getUser());
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $total = $evtRepository->getUserCreatedEventsCount($user);
         $paginationParams = $this->getPaginationParams($request, $total);
 
         return array_merge([
-            'events' => $evtRepository->getUserCreatedEvents($this->getUser(), $paginationParams['first'], $paginationParams['per_page']),
+            'events' => $evtRepository->getUserCreatedEvents($user, $paginationParams['first'], $paginationParams['per_page']),
             'page_url' => $this->generateUrl('profil_sorties_self'),
             'include_name' => 'profil-sorties-self',
+        ], $paginationParams);
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    #[Route(path: '/articles', name: 'profil_articles', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_USER')]
+    #[Template('profil/articles.html.twig')]
+    public function articleList(Request $request, ArticleRepository $articleRepository, EntityManagerInterface $em): Response|array
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        if ($request->isMethod('POST')) {
+            $operation = $request->request->get('operation');
+            $articleId = $request->request->get('id_article');
+
+            if (!$articleId || !$operation) {
+                $this->addFlash('error', 'Opération invalide.');
+                return $this->redirectToRoute('profil_articles');
+            }
+
+            $article = $articleRepository->find($articleId);
+
+            if (!$article || $article->getUser() !== $user) {
+                $this->addFlash('error', 'Article non trouvé ou accès refusé.');
+                return $this->redirectToRoute('profil_articles');
+            }
+
+            if ($operation === 'article_depublier') {
+                // Set article back to draft
+                $article->setStatus(Article::STATUS_PENDING);
+                $article->setTopubly(0);
+                $em->flush();
+                $this->addFlash('success', 'Article dépublié avec succès.');
+
+                return $this->redirectToRoute('profil_articles');
+            } elseif ($operation === 'article_del') {
+                // Delete the article
+                $em->remove($article);
+                $em->flush();
+                $this->addFlash('success', 'Article supprimé avec succès.');
+
+                return $this->redirectToRoute('profil_articles');
+            }
+
+            $this->addFlash('error', 'Opération non reconnue.');
+            return $this->redirectToRoute('profil_articles');
+        }
+
+        $total = $articleRepository->getUserArticlesCount($user);
+        $paginationParams = $this->getPaginationParams($request, $total);
+
+        return array_merge([
+            'articles' => $articleRepository->getUserArticles($user, $paginationParams['first'], $paginationParams['per_page']),
         ], $paginationParams);
     }
 
