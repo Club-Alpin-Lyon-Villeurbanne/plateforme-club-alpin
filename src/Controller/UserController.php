@@ -44,6 +44,7 @@ class UserController extends AbstractController
     /**
      * @throws NonUniqueResultException
      * @throws NoResultException
+     * @throws TransportExceptionInterface
      */
     #[Route(path: '/fiche-profil/{id}', name: 'user_profile', requirements: ['id' => '\d+'], priority: 10)]
     #[Template('user/profile.html.twig')]
@@ -51,6 +52,7 @@ class UserController extends AbstractController
         User $user,
         Request $request,
         EntityManagerInterface $manager,
+        Mailer $mailer,
         EvtRepository $eventRepository,
         ArticleRepository $articleRepository,
     ): array {
@@ -59,6 +61,7 @@ class UserController extends AbstractController
         }
 
         $userData = $this->getUserData($user, $request, $manager);
+        $this->handleUserContactForm($user, $request, $manager, $mailer);
 
         $userArticles = $articleRepository->findBy(
             [
@@ -106,45 +109,7 @@ class UserController extends AbstractController
         }
 
         $userData = $this->getUserData($user, $request, $manager);
-
-        $form = $userData['form'];
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $request->request->all();
-            $formData = $data['user_contact'] ?? [];
-
-            $nom = $this->getUser()->getFullname() . ' (' . $this->getUser()->getNickname() . ')';
-            $shortName = $this->getUser()->getFullname();
-            $email = $this->getUser()->getEmail();
-            $eventLink = $articleLink = '';
-
-            $event = $userData['event'] ?? null;
-            if ($event instanceof Evt) {
-                $eventLink = $this->generateUrl('sortie', ['id' => $event->getId(), 'code' => $event->getCode()], UrlGeneratorInterface::ABSOLUTE_URL);
-            }
-
-            $article = $userData['article'] ?? null;
-            if ($article instanceof Article) {
-                $articleLink = $this->generateUrl('article_view', ['id' => $article->getId(), 'code' => $article->getCode()], UrlGeneratorInterface::ABSOLUTE_URL);
-            }
-
-            $mailer->send($user->getEmail(), 'transactional/contact-form', [
-                'contact_name' => $nom,
-                'contact_shortname' => $shortName,
-                'contact_email' => $email,
-                'contact_url' => $this->generateUrl('user_full', ['id' => $this->getUser()->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-                'contact_objet' => $formData['objet'],
-                'message' => $formData['message'],
-                'eventName' => $event instanceof Evt ? $event->getTitre() : '',
-                'eventLink' => $event instanceof Evt ? $eventLink : '',
-                'commission' => $event instanceof Evt ? $event->getCommission()->getTitle() : '',
-                'articleTitle' => $article instanceof Article ? $article->getTitre() : '',
-                'articleLink' => $article instanceof Article ? $articleLink : '',
-            ], [], null, $email);
-
-            $this->addFlash('success', 'Votre message a bien été envoyé.');
-        }
+        $this->handleUserContactForm($user, $request, $manager, $mailer);
 
         $userArticles = $manager->getRepository(Article::class)->findBy(
             [
@@ -648,6 +613,54 @@ class UserController extends AbstractController
             'recordsFiltered' => $recordsFiltered,
             'data' => $results,
         ]);
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws TransportExceptionInterface
+     */
+    protected function handleUserContactForm(User $user, Request $request, EntityManagerInterface $manager, Mailer $mailer): void
+    {
+        $userData = $this->getUserData($user, $request, $manager);
+
+        $form = $userData['form'];
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $request->request->all();
+            $formData = $data['user_contact'] ?? [];
+
+            $nom = $this->getUser()->getFullname() . ' (' . $this->getUser()->getNickname() . ')';
+            $shortName = $this->getUser()->getFullname();
+            $email = $this->getUser()->getEmail();
+            $eventLink = $articleLink = '';
+
+            $event = $userData['event'] ?? null;
+            if ($event instanceof Evt) {
+                $eventLink = $this->generateUrl('sortie', ['id' => $event->getId(), 'code' => $event->getCode()], UrlGeneratorInterface::ABSOLUTE_URL);
+            }
+
+            $article = $userData['article'] ?? null;
+            if ($article instanceof Article) {
+                $articleLink = $this->generateUrl('article_view', ['id' => $article->getId(), 'code' => $article->getCode()], UrlGeneratorInterface::ABSOLUTE_URL);
+            }
+
+            $mailer->send($user->getEmail(), 'transactional/contact-form', [
+                'contact_name' => $nom,
+                'contact_shortname' => $shortName,
+                'contact_email' => $email,
+                'contact_url' => $this->generateUrl('user_full', ['id' => $this->getUser()->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                'contact_objet' => $formData['objet'],
+                'message' => $formData['message'],
+                'eventName' => $event instanceof Evt ? $event->getTitre() : '',
+                'eventLink' => $event instanceof Evt ? $eventLink : '',
+                'commission' => $event instanceof Evt ? $event->getCommission()->getTitle() : '',
+                'articleTitle' => $article instanceof Article ? $article->getTitre() : '',
+                'articleLink' => $article instanceof Article ? $articleLink : '',
+            ], [], null, $email);
+
+            $this->addFlash('success', 'Votre message a bien été envoyé.');
+        }
     }
 
     /**
