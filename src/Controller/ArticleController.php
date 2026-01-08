@@ -260,7 +260,7 @@ class ArticleController extends AbstractController
         }
 
         $article
-            ->setTopubly(false)
+            ->setTopubly(0)
             ->setStatus(Article::STATUS_PENDING)
             ->setValidationDate(null)
         ;
@@ -295,8 +295,11 @@ class ArticleController extends AbstractController
 
         // suppression des medias associés
         $filesystem->remove($this->getParameter('kernel.project_dir') . '/public/ftp/articles/' . $article->getId());
-        $filesystem->remove($this->getParameter('kernel.project_dir') . '/public/ftp/uploads/files/' . $article->getMediaUpload()->getFilename());
-        $manager->remove($article->getMediaUpload());
+        $media = $article->getMediaUpload();
+        if ($media) {
+            $filesystem->remove($this->getParameter('kernel.project_dir') . '/public/ftp/uploads/files/' . $media->getFilename());
+            $manager->remove($media);
+        }
 
         $manager->remove($article);
         $manager->flush();

@@ -123,7 +123,7 @@ class ProfilController extends AbstractController
      * @throws NonUniqueResultException
      * @throws NoResultException
      */
-    #[Route(path: '/articles.html', name: 'profil_articles', methods: ['GET', 'POST'], priority: 10)]
+    #[Route(path: '/articles.html', name: 'profil_articles', methods: ['GET'], priority: 10)]
     #[IsGranted('ROLE_USER')]
     #[Template('profil/articles.html.twig')]
     public function articleList(Request $request, ArticleRepository $articleRepository): array

@@ -53,7 +53,7 @@
                         <form action="{{ path('delete_article', { id: article.id }) }}" method="post" style="width:600px; text-align:left" class="loading">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token('article_delete') }}" />
                             <p>Voulez-vous vraiment supprimer définitivement cet article ? <br />Cette action est irréversible.</p>
-                            <input type="button" class="nice2" value="Annuler" onclick="document.getElementById('supprimer-form-{{ article.id }}').style.display='none';" />
+                            <input type="button" class="nice2" value="Annuler" onclick="$.fancybox.close();" />
                             <input type="submit" class="nice2 red" value="Supprimer mon article" />
                         </form>
                     </div>
@@ -65,7 +65,7 @@
                         <form action="{{ path('unpublish_article', {'id': article.id}) }}" method="post" style="width:600px; text-align:left" class="loading">
                             <input type="hidden" name="csrf_token" value="{{ csrf_token('article_unpublish') }}" />
                             <p>Voulez-vous vraiment retirer cet article du site ? Il repassera en "Brouillon" et vous devrez à nouveau le faire publier par un responsable si vous désirez le publier à nouveau.</p>
-                            <input type="button" class="nice2" value="Annuler" onclick="document.getElementById('depublier-form-{{ article.id }}').style.display='none';" />
+                            <input type="button" class="nice2" value="Annuler" onclick="$.fancybox.close();" />
                             <input type="submit" class="nice2 orange" value="Dépublier mon article" />
                         </form>
                     </div>
