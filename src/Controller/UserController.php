@@ -38,6 +38,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class UserController extends AbstractController
 {
@@ -61,7 +62,7 @@ class UserController extends AbstractController
         }
 
         $userData = $this->getUserData($user, $request, $manager);
-        $this->handleUserContactForm($user, $request, $manager, $mailer);
+        $this->handleUserContactForm($user, $request, $mailer, $userData);
 
         $userArticles = $articleRepository->findBy(
             [
@@ -88,6 +89,7 @@ class UserController extends AbstractController
      * @throws NoResultException
      */
     #[Route(path: '/user-full/{id}.html', name: 'user_full', requirements: ['id' => '\d+'], priority: 10)]
+    #[IsGranted('ROLE_USER')]
     #[Template('user/full.html.twig')]
     public function full(
         User $user,
@@ -109,7 +111,7 @@ class UserController extends AbstractController
         }
 
         $userData = $this->getUserData($user, $request, $manager);
-        $this->handleUserContactForm($user, $request, $manager, $mailer);
+        $this->handleUserContactForm($user, $request, $mailer, $userData);
 
         $userArticles = $manager->getRepository(Article::class)->findBy(
             [
@@ -619,10 +621,12 @@ class UserController extends AbstractController
      * @throws NonUniqueResultException
      * @throws TransportExceptionInterface
      */
-    protected function handleUserContactForm(User $user, Request $request, EntityManagerInterface $manager, Mailer $mailer): void
-    {
-        $userData = $this->getUserData($user, $request, $manager);
-
+    protected function handleUserContactForm(
+        User $user,
+        Request $request,
+        Mailer $mailer,
+        array $userData,
+    ): void {
         $form = $userData['form'];
         $form->handleRequest($request);
 
