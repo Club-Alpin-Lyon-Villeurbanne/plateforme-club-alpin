@@ -630,7 +630,7 @@ class UserController extends AbstractController
         $form = $userData['form'];
         $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($this->getUser() && $form->isSubmitted() && $form->isValid()) {
             $data = $request->request->all();
             $formData = $data['user_contact'] ?? [];
 
