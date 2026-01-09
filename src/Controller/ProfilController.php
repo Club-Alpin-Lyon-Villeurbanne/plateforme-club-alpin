@@ -79,7 +79,6 @@ class ProfilController extends AbstractController
             'events' => $evtRepository->getUserUpcomingEvents($this->getUser(), $paginationParams['first'], $paginationParams['per_page']),
             'page_url' => $this->generateUrl('profil_sorties_next'),
             'include_name' => 'profil-sorties-next',
-            'display_notes_de_frais' => false,
         ], $paginationParams);
     }
 
@@ -95,7 +94,6 @@ class ProfilController extends AbstractController
             'events' => $evtRepository->getUserPastEvents($this->getUser(), $paginationParams['first'], $paginationParams['per_page']),
             'page_url' => $this->generateUrl('profil_sorties_prev'),
             'include_name' => 'profil-sorties-prev',
-            'display_notes_de_frais' => true,
         ], $paginationParams);
     }
 
@@ -115,7 +113,6 @@ class ProfilController extends AbstractController
             'events' => $evtRepository->getUserCreatedEvents($this->getUser(), $paginationParams['first'], $paginationParams['per_page']),
             'page_url' => $this->generateUrl('profil_sorties_self'),
             'include_name' => 'profil-sorties-self',
-            'display_notes_de_frais' => false,
         ], $paginationParams);
     }
 
