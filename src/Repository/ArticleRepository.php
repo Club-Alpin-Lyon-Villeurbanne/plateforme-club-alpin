@@ -124,4 +124,28 @@ class ArticleRepository extends ServiceEntityRepository
 
         return $qb;
     }
+
+    /**
+     * @return Article[]
+     */
+    public function getPublishedArticlesForRightColumn(?Commission $commission = null, int $limit = 16): array
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->where('a.status = :status')
+            ->andWhere('a.une = false')
+            ->setParameter('status', Article::STATUS_PUBLISHED)
+            ->orderBy('a.updatedAt', 'DESC')
+            ->setMaxResults($limit)
+        ;
+
+        if ($commission instanceof Commission) {
+            $qb
+                ->innerJoin('a.commission', 'c')
+                ->andWhere('a.commission = :commission')
+                ->setParameter('commission', $commission)
+            ;
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }

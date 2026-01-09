@@ -166,7 +166,7 @@ class ArticleController extends AbstractController
 
         return [
             'article' => $article,
-            'current_commission' => $article->getCommission()?->getCode(),
+            'current_commission' => $article->getCommission(),
             'comments' => $commentRepository->findByArticle($article),
             'article_url' => $this->generateUrl('article_view', ['id' => $article->getId(), 'code' => $article->getCode()], UrlGeneratorInterface::ABSOLUTE_URL),
             'event_url' => $article->getEvt() ? $this->generateUrl('sortie', ['id' => $article->getEvt()->getId(), 'code' => $article->getEvt()->getCode()], UrlGeneratorInterface::ABSOLUTE_URL) : '',

@@ -51,6 +51,7 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
             new TwigFilter('temoin_event', [$this, 'getTemoinPlacesSortie']),
             new TwigFilter('temoin_event_title', [$this, 'getTemoinPlacesSortieTitle']),
             new TwigFilter('temoin_event_picto', [$this, 'getPictoTemoinPlacesSortie']),
+            new TwigFilter('decode_html_entities', [$this, 'decodeHtmlEntities']),
         ];
     }
 
@@ -193,5 +194,14 @@ class TwigExtension extends AbstractExtension implements ServiceSubscriberInterf
     public function getUserHasSortiesAlerts(User $user, string $commissionCode)
     {
         return $user->hasAlertEnabledOn(AlertType::Sortie, $commissionCode);
+    }
+
+    /**
+     * Decode HTML entities in a string.
+     * Converts &amp; to &, &nbsp; to space, etc.
+     */
+    public function decodeHtmlEntities(string $text): string
+    {
+        return html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
     }
 }
