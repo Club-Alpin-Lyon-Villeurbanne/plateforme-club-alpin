@@ -181,6 +181,55 @@ class ArticleRepository extends ServiceEntityRepository
     }
 
     /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getUnvalidatedArticlesCount(array $commissions = []): int
+    {
+        $qb = $this->getUnvalidatedArticlesDql($commissions)
+            ->select('count(a)')
+        ;
+
+        return (int) $qb->getQuery()->getSingleScalarResult();
+    }
+
+    /** @return Article[] */
+    public function getUnvalidatedArticles(array $commissions = [], int $first = 0, int $perPage = 10): array
+    {
+        $qb = $this->getUnvalidatedArticlesDql($commissions)
+            ->orderBy('a.topubly', 'DESC')
+            ->addOrderBy('a.createdAt', 'ASC')
+        ;
+
+        return $this->getPaginatedResults($qb, $first, $perPage);
+    }
+
+    protected function getUnvalidatedArticlesDql(array $commissions = []): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->where('a.status = :status')
+            ->andWhere('a.topubly = :topubly')
+            ->setParameter('status', Article::STATUS_PENDING)
+            ->setParameter('topubly', 1)
+        ;
+
+        if (!empty($commissions)) {
+            $commissionIds = array_map(fn (Commission $c) => $c->getId(), $commissions);
+
+            $qb
+                ->innerJoin('a.evt', 'e')
+                ->andWhere($qb->expr()->orX(
+                    $qb->expr()->in('a.commission', ':commissions'),
+                    $qb->expr()->in('e.commission', ':commissions')
+                ))
+                ->setParameter('commissions', $commissionIds)
+            ;
+        }
+
+        return $qb;
+    }
+
+    /**
      * @return Article[]
      */
     public function getPublishedArticlesForRightColumn(?Commission $commission = null, int $limit = 16): array
