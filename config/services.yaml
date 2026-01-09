@@ -56,6 +56,7 @@ parameters:
   metabase_secret_key: '%env(METABASE_SECRET_KEY)%'
   sitename: '%env(string:SITENAME)%'
   max_home_articles: '%env(int:MAX_ARTICLES_ACCUEIL)%'
+  max_user_articles: '%env(int:MAX_ARTICLES_ADHERENT)%'
 
 services:
   # default configuration for services in *this* file
