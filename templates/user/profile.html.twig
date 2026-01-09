@@ -19,12 +19,12 @@
                 <a href="{{ path('user_full', {'id': user.id}) }}" title="Quitter cette page pour voir la fiche complète de cet adhérent" class="nice2" target="_top">
                     <img src="/img/base/user.png" alt="" title="" /> &nbsp; &nbsp; Profil complet
                 </a>
-            {% endif %}
 
-            <!-- contacter -->
-            <a href="javascript:void(0)" title="Utiliser le formulaire de contact pour écrire un message à cet adhérent" class="nice2" onclick="$('#trigger-userinfo, #trigger-usercontact').slideToggle()">
-                <img src="/img/base/email.png" alt="" title="" /> &nbsp; &nbsp; Contacter
-            </a>
+                <!-- contacter -->
+                <a href="javascript:void(0)" title="Utiliser le formulaire de contact pour écrire un message à cet adhérent" class="nice2" onclick="$('#trigger-userinfo, #trigger-usercontact').slideToggle()">
+                    <img src="/img/base/email.png" alt="" title="" /> &nbsp; &nbsp; Contacter
+                </a>
+            {% endif %}
         </div>
 
         <!-- nick -->
