@@ -16,15 +16,15 @@
 
         <table id="agenda">
             {% for item in events %}
-                {% if item is iterable %}
+                {% if item is iterable and item.0 is defined %}
                     {% set event = item.0 %}
-                    {% set exp_status = item.exp_status %}
+                    {% set exp_status = item.exp_status|default(null) %}
                 {% else %}
                     {% set event = item %}
                     {% set exp_status = null %}
                 {% endif %}
 
-                {{ event_macro.event_line(event, app.user, include_name, true, exp_status) }}
+                {{ event_macro.event_line(event, app.user, include_name, true, exp_status, null, true, display_notes_de_frais) }}
             {% endfor %}
         </table>
 

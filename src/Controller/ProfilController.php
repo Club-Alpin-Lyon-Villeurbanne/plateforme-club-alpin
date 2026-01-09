@@ -93,6 +93,7 @@ class ProfilController extends AbstractController
             'events' => $evtRepository->getUserPastEvents($this->getUser(), $paginationParams['first'], $paginationParams['per_page']),
             'page_url' => $this->generateUrl('profil_sorties_prev'),
             'include_name' => 'profil-sorties-prev',
+            'display_notes_de_frais' => true,
         ], $paginationParams);
     }
 

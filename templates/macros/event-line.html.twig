@@ -1,4 +1,4 @@
-{% macro event_line(event, user = null, include_name = '', display_additionnal = true, exp_status = null, action = null, display_participation_status = true) %}
+{% macro event_line(event, user = null, include_name = '', display_additionnal = true, exp_status = null, action = null, display_participation_status = true, display_notes_de_frais = false) %}
     {% if user is same as(null) %}
         {% set user = app.user %}
     {% endif %}
