@@ -15,8 +15,6 @@ parameters:
   legacy_env_MAX_ARTICLES_VALIDATION: "%env(int:MAX_ARTICLES_VALIDATION)%"
   legacy_env_MAX_SORTIES_VALIDATION: "%env(int:MAX_SORTIES_VALIDATION)%"
   legacy_env_MAX_ARTICLES_ADHERENT: "%env(int:MAX_ARTICLES_ADHERENT)%"
-  legacy_env_MAX_ARTICLES_ACCUEIL: "%env(int:MAX_ARTICLES_ACCUEIL)%"
-  legacy_env_SEARCH_RESULTS_PER_PAGE: "%env(int:SEARCH_RESULTS_PER_PAGE)%"
   legacy_env_MAX_IMAGE_SIZE: "%env(int:MAX_IMAGE_SIZE)%"
   legacy_env_DISPLAY_BANNER: "%env(bool:DISPLAY_BANNER)%"
   legacy_env_DISPLAY_NOTES_DE_FRAIS: "%env(bool:DISPLAY_NOTES_DE_FRAIS)%"
@@ -56,6 +54,7 @@ parameters:
   metabase_secret_key: '%env(METABASE_SECRET_KEY)%'
   sitename: '%env(string:SITENAME)%'
   max_home_articles: '%env(int:MAX_ARTICLES_ACCUEIL)%'
+  search_results_per_page: '%env(int:SEARCH_RESULTS_PER_PAGE)%'
 
 services:
   # default configuration for services in *this* file
