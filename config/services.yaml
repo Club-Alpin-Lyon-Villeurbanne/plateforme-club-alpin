@@ -12,10 +12,8 @@ parameters:
   legacy_env_CRON_DATE_BUTOIRES: "%env(json:CRON_DATE_BUTOIRES)%"
   legacy_env_MAX_TIMESTAMP_FOR_LEGAL_VALIDATION: "%env(string:MAX_TIMESTAMP_FOR_LEGAL_VALIDATION)%"
   legacy_env_MAX_ADMINS_SUB_LEVELS: "%env(int:MAX_ADMINS_SUB_LEVELS)%"
-  legacy_env_MAX_ARTICLES_VALIDATION: "%env(int:MAX_ARTICLES_VALIDATION)%"
   legacy_env_MAX_SORTIES_VALIDATION: "%env(int:MAX_SORTIES_VALIDATION)%"
   legacy_env_MAX_ARTICLES_ADHERENT: "%env(int:MAX_ARTICLES_ADHERENT)%"
-  legacy_env_MAX_ARTICLES_ACCUEIL: "%env(int:MAX_ARTICLES_ACCUEIL)%"
   legacy_env_SEARCH_RESULTS_PER_PAGE: "%env(int:SEARCH_RESULTS_PER_PAGE)%"
   legacy_env_MAX_IMAGE_SIZE: "%env(int:MAX_IMAGE_SIZE)%"
   legacy_env_DISPLAY_BANNER: "%env(bool:DISPLAY_BANNER)%"
@@ -57,6 +55,7 @@ parameters:
   sitename: '%env(string:SITENAME)%'
   max_home_articles: '%env(int:MAX_ARTICLES_ACCUEIL)%'
   max_user_articles: '%env(int:MAX_ARTICLES_ADHERENT)%'
+  max_articles_validation: '%env(int:MAX_ARTICLES_VALIDATION)%'
 
 services:
   # default configuration for services in *this* file

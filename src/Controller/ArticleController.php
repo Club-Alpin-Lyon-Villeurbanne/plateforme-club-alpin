@@ -233,11 +233,13 @@ class ArticleController extends AbstractController
             $em->flush();
 
             // prévenir l'auteur de l'article
+            /** @var User $user */
+            $user = $this->getUser();
             $mailer->send($article->getUser(), 'transactional/article-comment', [
                 'article_name' => $article->getTitre(),
                 'article_url' => $articleViewRoute,
                 'message' => $content,
-            ], [], null, $this->getUser()->getEmail());
+            ], [], null, $user->getEmail());
 
             $this->addFlash('info', 'Commentaire déposé');
         }
