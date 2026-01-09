@@ -3,123 +3,37 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block body %}
-    <div id="left1">
-        <div class="main-type">
-            <h1>{{ title }}</h1>
+    {% import 'macros/event-line.html.twig' as event_macro %}
+    <div class="main-type">
+        <h1>{{ title }}</h1>
 
-            {{ easy_include(to_include, '') }}<br>
+        {{ easy_include(to_include, '') }}<br>
 
-            <h2>{{ total }} Sortie{% if total > 1 %}s{% endif %} en attente de {{ action}} :</h2>
+        <h2>{{ total }} Sortie{% if total > 1 %}s{% endif %} en attente de {{ action}} :</h2>
 
-            {% if total <= 0 %}
-                <p class="info">Aucune sortie n'est en attente de {{ action}} pour l'instant.</p>
-            {% else %}
-                <table id="agenda">
-                    {% for item in events %}
-                        {% if item is iterable %}
-                            {% set event = item.0 %}
-                        {% else %}
-                            {% set event = item %}
-                        {% endif %}
-                        <tr>
-                            <td class="agenda-gauche">
-                                {% set start = event.startDate | intldate('eee d MMM yyyy') | capitalize %}
-                                {% set end = event.endDate | intldate('eee d MMM yyyy') | capitalize %}
+        {% if total <= 0 %}
+            <p class="info">Aucune sortie n'est en attente de {{ action}} pour l'instant.</p>
+        {% else %}
+            <table id="agenda">
+                {% for item in events %}
+                    {% if item is iterable %}
+                        {% set event = item.0 %}
+                    {% else %}
+                        {% set event = item %}
+                    {% endif %}
 
-                                {% if start == end %}
-                                    Le {{ start }}<br />
-                                    à {{ event.startDate | intldate('HH:mm') }}
-                                {% else %}
-                                    Du {{ start }}<br/>
-                                    au {{ end }}
-                                {% endif %}
-                            </td>
-                            <td>
-                                <div class="evt-tools">
-                                    <a class="nice2" href="{{ path('sortie', { code: event.code, id: event.id }) }}?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la sortie" target="_blank">
-                                        Aperçu{% if action is same as ('validation') %} / validation de la page{% endif %}
-                                    </a>
+                    {{ event_macro.event_line(event, app.user, to_include, false, null, action, false) }}
+                {% endfor %}
+            </table>
+        {% endif %}
 
-                                    {% if action is same as ('approbation') %}
-                                        <form action="{{ path('sortie_validate', { id: event.id }) }}" method="post" style="display:inline" class="loading">
-                                            <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_validate') }}" />
-                                            <input type="submit" value="Approuver &amp; publier" class="nice2 green" title="Approuve instantanément la sortie et la publie" />
-                                        </form>
-
-                                        <input type="button" value="Refuser" class="nice2 red" onclick="modal.show($(this).next().html())" title="Refuser cette sortie. Vous devrez ajouter un message à l'organisateur de la sortie." />
-                                        <div style="display:none" id="refuser-{{ event.id }}">
-                                            <form action="{{ path('sortie_refus', { id: event.id }) }}" method="post" class="loading">
-                                                <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_refus') }}" />
-
-                                                <p>Laissez un message à l'organisateur pour lui expliquer la raison du refus :</p>
-                                                <input type="text" name="msg" class="type1" placeholder="ex: Mauvais point de RDV" />
-                                                <input type="submit" value="Refuser la sortie" class="nice2 red" />
-                                                <input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
-                                            </form>
-                                        </div>
-                                        {% if is_granted('SORTIE_DELETE', event) %}
-                                        <a class="nice2 noprint red" onclick="modal.show($(this).next().html())" title="Supprimer définitivement cette sortie"><img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer définitivement cette sortie</a>
-                                        <div style="display:none" id="supprimer-{{ event.id }}">
-                                            <h2>Supprimer définitivement la sortie</h2>
-                                            <p>
-                                                Voulez-vous vraiment supprimer définitivement cette sortie ?<br>
-                                                Cette action supprimera définitivement la sortie et les fichiers liés.<br>
-                                                <strong>Attention</strong> : vous ne devriez jamais supprimer une sortie qui a été publiée sur le site car la conserver permet d'établir des statistiques, et l'URL de la page dédiée à cette sortie retournera une erreur 404 si des utilisateurs souhaitent y retourner.
-                                            </p>
-                                            {% if event.publicStatusValide %}
-                                                <p class="alerte">Cette sortie est publiée sur le site. En la supprimant, vous créerez une page introuvable.</p>
-                                            {% else %}
-                                                <p class="info">Cette sortie n'est pas publiée sur le site. Vous pouvez la supprimer sereinement.</p>
-                                            {% endif %}
-                                            <form action="{{ path('delete_event', { id: event.id }) }}" method="post" class="loading">
-                                                <input type="hidden" name="csrf_token" value="{{ csrf_token('delete_event') }}" />
-                                                <input type="submit" value="Supprimer définitivement cette sortie" class="nice2 noprint red" title="Supprimer définitivement cette sortie" />
-                                            </form>
-                                        </div>
-                                        {% endif %}
-                                    {% endif %}
-                                </div>
-
-                                <a class="agenda-evt-debut" target="_top" href="{{ path('sortie', { code: event.code, id: event.id }) }}?commission={{ event.commission.code }}" title="">
-                                    <!-- picto -->
-                                    <div class="picto">
-                                        <img src="{{ commission_picto(event.commission.code) }}" alt="" title="" class="picto-light" />
-                                        <img src="{{ commission_picto(event.commission.code, 'dark') }}" alt="" title="" class="picto-dark" />
-                                    </div>
-
-                                    <div class="droite">
-                                        <span title="{{ event | temoin_event_title }}" style="padding: 10px 10px 5px 5px;float:left;">
-                                            <span class="temoin-places-dispos"> {{ event | temoin_event_picto }}</span>
-                                        </span>
-
-                                        <h2 class="tw-flex tw-items-center tw-gap-2">
-                                            {% if event.cancelled %}<span style="padding:1px 3px; color:red; font-size:11px; font-family:Arial">SORTIE ANNULÉE - </span>{% endif %}
-                                            {{ event.titre }}
-                                        </h2>
-
-                                        <p class="tw-flex tw-justify-between tw-items-center">
-                                            <span>
-                                                <b>{{ event.commission.title }}</b>
-                                            </span>
-                                        </p>
-                                    </div>
-                                    <br style="clear:both" />
-                                </a>
-                            </td>
-                        </tr>
-
-                    {% endfor %}
-                </table>
-            {% endif %}
-
-            {% if total > per_page %}
-                <hr />
-                <nav class="pageSelect">
-                    {% for i in 1..pages %}
-                        <a href="{{ page_url }}?page={{ i }}" title="" class="{{ page == i ? 'up' : '' }}">p{{ i }}</a> {{ i < pages ? ' ' : '' }}
-                    {% endfor %}
-                </nav>
-            {% endif %}
-        </div>
+        {% if total > per_page %}
+            <hr />
+            <nav class="pageSelect">
+                {% for i in 1..pages %}
+                    <a href="{{ page_url }}?page={{ i }}" title="" class="{{ page == i ? 'up' : '' }}">p{{ i }}</a> {{ i < pages ? ' ' : '' }}
+                {% endfor %}
+            </nav>
+        {% endif %}
     </div>
 {% endblock %}
