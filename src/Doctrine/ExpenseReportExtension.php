@@ -7,14 +7,14 @@ use ApiPlatform\Doctrine\Orm\Extension\QueryItemExtensionInterface;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use ApiPlatform\Metadata\Operation;
 use App\Entity\ExpenseReport;
-use App\Security\SecurityConstants;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * Gère le filtrage des notes de frais :
- * - Filtre par utilisateur (sauf pour les admins et gestionnaires de notes de frais)
+ * - Par défaut : filtré par l'utilisateur connecté (sécurité par défaut)
+ * - /admin/notes-de-frais : pas de filtrage (réservé aux admins/gestionnaires via security)
  * - Exclut les brouillons par défaut (sauf si inclure_brouillons=true)
  */
 final class ExpenseReportExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
@@ -35,7 +35,7 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
             return;
         }
 
-        $this->filterExpenseReports($queryBuilder, $context);
+        $this->filterExpenseReports($queryBuilder, $context, $operation);
     }
 
     public function applyToItem(
@@ -50,15 +50,13 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
         // Les permissions sont gérées par les voters
     }
 
-    private function filterExpenseReports(QueryBuilder $queryBuilder, array $context): void
+    private function filterExpenseReports(QueryBuilder $queryBuilder, array $context, ?Operation $operation): void
     {
         $rootAlias = $queryBuilder->getRootAliases()[0];
         $user = $this->security->getUser();
 
-        // 1. Filtrage par utilisateur (sauf admin et gestionnaires de notes de frais)
-        if ($user
-            && !$this->security->isGranted(SecurityConstants::ROLE_ADMIN)
-            && !$this->security->isGranted('manage_expense_reports')) {
+        // 1. Filtrage par utilisateur (sauf sur /admin/notes-de-frais)
+        if ('/admin/notes-de-frais' !== $operation?->getUriTemplate() && $user) {
             $queryBuilder->andWhere(sprintf('%s.user = :current_user', $rootAlias))
                 ->setParameter('current_user', $user);
         }
