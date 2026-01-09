@@ -47,6 +47,7 @@ class ProfilController extends AbstractController
             return $this->redirect($this->generateUrl('profil_alertes'));
         }
 
+        /** @var User $user */
         $user = $this->getUser();
         $params = $request->request->all();
 
@@ -78,6 +79,7 @@ class ProfilController extends AbstractController
             'events' => $evtRepository->getUserUpcomingEvents($this->getUser(), $paginationParams['first'], $paginationParams['per_page']),
             'page_url' => $this->generateUrl('profil_sorties_next'),
             'include_name' => 'profil-sorties-next',
+            'display_notes_de_frais' => false,
         ], $paginationParams);
     }
 
@@ -113,6 +115,7 @@ class ProfilController extends AbstractController
             'events' => $evtRepository->getUserCreatedEvents($this->getUser(), $paginationParams['first'], $paginationParams['per_page']),
             'page_url' => $this->generateUrl('profil_sorties_self'),
             'include_name' => 'profil-sorties-self',
+            'display_notes_de_frais' => false,
         ], $paginationParams);
     }
 
