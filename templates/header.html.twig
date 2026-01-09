@@ -39,9 +39,7 @@
                     </span> Toutes les commissions
                 </a>
                 {% for commission in list_commissions() %}
-                    {% set target = 'accueil' %}
-                    {% if p1 == 'agenda' %}{% set target = p1 %}{% endif %}
-                    <a href="/{{ target }}/{{ commission.code }}.html" title="">
+                    <a href="{{ path('commission_homepage', {'code': commission.code}) }}" title="{{ commission.title }}">
                         <span class="picto" style="background-image:url({{ commission_picto(commission.code, 'light') }})">
                             <img src="{{ commission_picto(commission.code, 'dark') }}" alt="" title="" />
                         </span> {{ commission.title }}
