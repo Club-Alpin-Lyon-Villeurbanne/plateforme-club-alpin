@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% import 'macros/article-link.html.twig' as article_macro %}
+
+{% block title %}Gestion des articles{% endblock %}
+
+{% block body %}
+    <div class="main-type">
+        <h1>Publication des articles</h1>
+
+        {{ easy_include('gestion-des-articles-main', 'vide') }}<br>
+
+        <h2>{{ total }} article{% if total > 1 %}s{% endif %} proposé{% if total > 1 %}s{% endif %} en attente de publication :</h2>
+
+        {% if total <= 0 %}
+            <p class="info">Aucun article n'est en attente de publication pour l'instant.</p>
+        {% else %}
+            {% for article in articles %}
+                <hr />
+                <div class="article-tools-valid">
+                    <a class="nice2" href="{{ path('article_view', { code: article.code, id: article.id }) }}?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la page avant publication" target="_blank">
+                        Aperçu
+                    </a>
+
+                    <form action="{{ path('article_validate', { id: article.id }) }}" method="post" style="display:inline" class="loading">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token('article_validate') }}" />
+                        <input type="submit" value="Autoriser &amp; publier" class="nice2 green" title="Autorise instantanément la publication de l'article" />
+                    </form>
+
+                    <input type="button" value="Refuser" class="nice2 red" onclick="modal.show($(this).next().html())" title="Ne pas autoriser la publication de cet article. Vous devrez ajouter un message au rédacteur de l'article." />
+                    <div style="display:none" id="refuser-{{ article.id }}">
+                        <form action="{{ path('article_refuse', { id: article.id }) }}" method="post" class="loading">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token('article_refuse') }}" />
+
+                            <p>Laissez un message à l'auteur pour lui expliquer la raison du refus :</p>
+                            <input type="text" name="msg" class="type1" placeholder="ex: Contenu à corriger" />
+                            <input type="submit" value="Refuser l'article" class="nice2 red" />
+                            <input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Article content -->
+                {{ article_macro.article_link(article, 'management') }}
+            {% endfor %}
+
+            <!-- Pagination -->
+            {% if pages > 1 %}
+                <nav class="pageSelect"><hr />
+                    {% for i in 1..pages %}
+                        <a href="{{ path('manage_articles') }}?page={{ i }}" title="" class="{{ page == i ? 'up' : '' }}">P{{ i }}</a> {{ i < pages ? ' ' : '' }}
+                    {% endfor %}
+                </nav>
+            {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}

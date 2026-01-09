@@ -34,16 +34,6 @@ if (user()) {
         require $operationsDir . 'operations.groupe_edit.php';
     }
 
-    // ARTICLE : publication OU refus
-    elseif ('article_validate' == $operation) {
-        require $operationsDir . 'operations.article_validate.php';
-    }
-
-    // ARTICLE : SUPPRIMER
-    elseif ('article_del' == $operation) {
-        require $operationsDir . 'operations.article_del.php';
-    }
-
     // ARTICLE : REMONTER EN TETE
     elseif ('renew_date_article' == $operation) {
         require $operationsDir . 'operations.renew_date_article.php';
