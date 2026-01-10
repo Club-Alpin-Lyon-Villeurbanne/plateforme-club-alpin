@@ -70,7 +70,8 @@ class IcsController extends AbstractController
      */
     private function generateIcsContent(array $events, string $calendarName, UrlGeneratorInterface $urlGenerator): string
     {
-        $domain = parse_url($urlGenerator->generate('homepage', [], UrlGeneratorInterface::ABSOLUTE_URL), PHP_URL_HOST) ?? 'club-alpin';
+        $parsedHost = parse_url($urlGenerator->generate('homepage', [], UrlGeneratorInterface::ABSOLUTE_URL), PHP_URL_HOST);
+        $domain = \is_string($parsedHost) && '' !== $parsedHost ? $parsedHost : 'club-alpin';
 
         $lines = [
             'BEGIN:VCALENDAR',
@@ -81,6 +82,9 @@ class IcsController extends AbstractController
             'X-WR-CALNAME:' . $this->escapeIcs($calendarName),
             'X-WR-TIMEZONE:Europe/Paris',
         ];
+
+        // Ajouter le composant VTIMEZONE pour Europe/Paris (RFC 5545)
+        $lines = array_merge($lines, $this->generateVTimezoneEuropeParis());
 
         foreach ($events as $event) {
             $lines = array_merge($lines, $this->generateEventBlock($event, $urlGenerator, $domain));
@@ -155,6 +159,38 @@ class IcsController extends AbstractController
         $lines[] = 'END:VEVENT';
 
         return $lines;
+    }
+
+    /**
+     * Génère le composant VTIMEZONE pour Europe/Paris (RFC 5545).
+     * Inclut les règles de passage heure d'été/hiver de l'UE.
+     *
+     * @return array<string>
+     */
+    private function generateVTimezoneEuropeParis(): array
+    {
+        return [
+            'BEGIN:VTIMEZONE',
+            'TZID:Europe/Paris',
+            'X-LIC-LOCATION:Europe/Paris',
+            // Heure d'été (CEST) : dernier dimanche de mars à 02:00 -> 03:00
+            'BEGIN:DAYLIGHT',
+            'TZOFFSETFROM:+0100',
+            'TZOFFSETTO:+0200',
+            'TZNAME:CEST',
+            'DTSTART:19700329T020000',
+            'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU',
+            'END:DAYLIGHT',
+            // Heure d'hiver (CET) : dernier dimanche d'octobre à 03:00 -> 02:00
+            'BEGIN:STANDARD',
+            'TZOFFSETFROM:+0200',
+            'TZOFFSETTO:+0100',
+            'TZNAME:CET',
+            'DTSTART:19701025T030000',
+            'RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU',
+            'END:STANDARD',
+            'END:VTIMEZONE',
+        ];
     }
 
     /**
