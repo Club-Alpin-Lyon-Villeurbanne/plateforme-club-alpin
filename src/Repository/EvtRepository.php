@@ -126,6 +126,42 @@ class EvtRepository extends ServiceEntityRepository
         ;
     }
 
+    /**
+     * Récupère les sorties futures pour le flux ICS.
+     * - Validées (status = VALIDE)
+     * - Non annulées (cancelled = false)
+     * - Avec une date de début définie.
+     *
+     * @return Evt[]
+     */
+    public function getUpcomingEventsForIcs(?Commission $commission, int $limit = 200): array
+    {
+        $date = new \DateTime('today');
+
+        $qb = $this->createQueryBuilder('e')
+            ->select('e, c')
+            ->leftJoin('e.commission', 'c')
+            ->where('e.status = :status')
+            ->setParameter('status', Evt::STATUS_PUBLISHED_VALIDE)
+            ->andWhere('e.cancelled = :cancelled')
+            ->setParameter('cancelled', false)
+            ->andWhere('e.startDate IS NOT NULL')
+            ->andWhere(':date <= e.startDate OR :date <= e.endDate')
+            ->setParameter('date', $date)
+            ->orderBy('e.startDate', 'ASC')
+            ->setMaxResults($limit)
+        ;
+
+        if ($commission) {
+            $qb
+                ->andWhere('c.id = :commission_id')
+                ->setParameter('commission_id', $commission->getId())
+            ;
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
     /** @return Evt[] */
     public function getUserEvents(User $user, int $first, int $perPage, array $status = [])
     {
