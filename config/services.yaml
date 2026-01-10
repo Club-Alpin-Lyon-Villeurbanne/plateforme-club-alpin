@@ -129,6 +129,10 @@ services:
     arguments:
       $sitename: "%env(SITENAME)%"
 
+  App\Controller\IcsController:
+    arguments:
+      $sitename: "%env(SITENAME)%"
+
   App\EventListener\ForceHttpsListener:
     arguments:
       $appEnv: "%kernel.environment%"
