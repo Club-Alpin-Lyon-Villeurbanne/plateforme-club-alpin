@@ -63,9 +63,9 @@ GET /api/sorties
 - `itemsPerPage` : Nombre d'éléments par page (défaut: 30, max: 30)
 - `commission` : Filtrer par ID de commission
 - `participations.user.id` : Filtrer par ID d'utilisateur participant
-- `dateDebut[gte]` : Sorties après cette date (timestamp)
-- `dateDebut[lte]` : Sorties avant cette date (timestamp)
-- `order[dateDebut]` : Tri par date (`asc` ou `desc`)
+- `startDate[gte]` : Sorties après cette date (format ISO 8601, ex: `2025-11-14T00:00:00`)
+- `startDate[lte]` : Sorties avant cette date (format ISO 8601, ex: `2025-11-17T23:59:59`)
+- `order[startDate]` : Tri par date (`asc` ou `desc`)
 
 **Réponse exemple :**
 ```json
@@ -350,7 +350,7 @@ Les métadonnées de pagination sont toujours incluses dans la réponse (sauf si
 Les filtres sont disponibles selon les endpoints. Format général :
 
 ```http
-GET /api/sorties?commission=1&dateDebut[gte]=1735689600
+GET /api/sorties?commission=1&startDate[gte]=2025-01-01T00:00:00
 ```
 
 ## Tri
@@ -358,7 +358,7 @@ GET /api/sorties?commission=1&dateDebut[gte]=1735689600
 Le tri est disponible sur certains champs :
 
 ```http
-GET /api/sorties?order[dateDebut]=desc
+GET /api/sorties?order[startDate]=desc
 ```
 
 ## Codes d'erreur
