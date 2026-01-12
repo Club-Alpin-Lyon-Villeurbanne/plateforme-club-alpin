@@ -43,14 +43,15 @@ class SearchController extends AbstractController
         }
 
         $searchResultsPerPage = $this->getParameter('search_results_per_page');
+        $searchParam = $request->request->get('str');
 
         // vérification des caractères
-        if (null === $request->request->get('str') || mb_strlen($request->request->get('str')) < 3) {
+        if (null === $searchParam || mb_strlen($searchParam) < 3) {
             $errTab[] = 'Votre recherche doit comporter au moins 3 caractères.';
         }
 
         if (empty($errTab)) {
-            $safeStr = mb_substr($request->request->get('str'), 0, 80);
+            $safeStr = mb_substr($searchParam, 0, 80);
             $commissionCode = $request->request->get('commission');
             if (!empty($commissionCode)) {
                 $commission = $commissionRepository->findOneBy(['code' => $commissionCode]);
@@ -78,6 +79,7 @@ class SearchController extends AbstractController
             'totalArticles' => $totalArticles,
             'totalEvt' => $totalEvt,
             'totalFreePages' => $totalFreePages,
+            'commission' => $commission,
         ]);
     }
 }

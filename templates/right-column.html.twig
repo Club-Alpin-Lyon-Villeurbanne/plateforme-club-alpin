@@ -29,7 +29,7 @@
             <input type="text" class="textfield" name="str" value="{{ app.request.request.get('str') }}" placeholder="ex: {{ ['Refuge du gouter', 'Enneigement', 'Ski de randonnée', 'Mont Blanc', 'Slackline'] | random_item }}">
             <input type="submit" value="OK" class="submit" />
             {% if current_commission and current_commission is instanceof('App\\Entity\\Commission') %}
-                <br><input type="checkbox" checked="checked" name="commission" value="{{ current_commission.code }}" id="search_filter" {{ app.request.request.get('filter') ? 'checked="checked"' }}>
+                <br><input type="checkbox" name="commission" value="{{ current_commission.code }}" id="search_filter" {{ app.request.request.get('commission') ? 'checked="checked"' }}>
                 <label for="search_filter"> commission <span style="color:black">{{ commission_title(current_commission.code) }}</span> uniquement</label>
             {% endif %}
         </form>
