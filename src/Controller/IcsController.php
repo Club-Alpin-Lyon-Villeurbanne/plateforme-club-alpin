@@ -2,8 +2,9 @@
 
 namespace App\Controller;
 
-use App\Repository\CommissionRepository;
+use App\Entity\Commission;
 use App\Repository\EvtRepository;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -32,14 +33,12 @@ class IcsController extends AbstractController
 
     #[Route(name: 'ics_commission', path: '/calendrier/{code}.ics', methods: ['GET'])]
     public function commissionCalendar(
-        string $code,
-        CommissionRepository $commissionRepository,
+        #[MapEntity(mapping: ['code' => 'code'])] ?Commission $commission,
         EvtRepository $evtRepository,
         UrlGeneratorInterface $urlGenerator,
     ): Response {
-        $commission = $commissionRepository->findVisibleCommission($code);
-        if (!$commission) {
-            throw new NotFoundHttpException(sprintf('Commission "%s" introuvable', $code));
+        if (!$commission || !$commission->getVis()) {
+            throw new NotFoundHttpException('Commission introuvable');
         }
 
         $events = $evtRepository->getUpcomingEventsForIcs($commission);
@@ -113,9 +112,6 @@ class IcsController extends AbstractController
         }
         if ($event->getDifficulte()) {
             $descParts[] = 'Difficulté : ' . $this->escapeIcs($event->getDifficulte());
-        }
-        if ($event->getMassif()) {
-            $descParts[] = 'Massif : ' . $this->escapeIcs($event->getMassif());
         }
         if ($event->getTarif()) {
             $descParts[] = sprintf('Tarif : %.2f €', $event->getTarif());

@@ -106,7 +106,6 @@ class IcsControllerTest extends WebTestCase
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
         $event->setStatusWho($user);
         $event->setDifficulte('PD+');
-        $event->setMassif('Chartreuse');
         $event->setTarif(25.0);
         $this->getContainer()->get('doctrine')->getManager()->flush();
 
@@ -116,7 +115,6 @@ class IcsControllerTest extends WebTestCase
         $this->assertStringContainsString('SUMMARY:' . $event->getTitre(), $content);
         $this->assertStringContainsString('LOCATION:', $content);
         $this->assertStringContainsString('PD+', $content);
-        $this->assertStringContainsString('Chartreuse', $content);
         $this->assertStringContainsString('25', $content);
     }
 }
