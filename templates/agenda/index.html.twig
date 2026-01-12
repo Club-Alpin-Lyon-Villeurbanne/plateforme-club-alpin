@@ -1,0 +1,185 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Agenda{% endblock %}
+
+{% set weekdays = ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'] %}
+{% set months = ['', 'janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet', 'août', 'septembre', 'octobre', 'novembre', 'décembre'] %}
+
+{% block body %}
+    <div style="padding:30px 20px 20px 20px">
+
+        <!-- H1 : TITRE PRINCIPAL DE LA PAGE EN FONCTION DE LA COMM COURANTE -->
+        <h1 class="agenda-h1">
+            Agenda
+            {% if current_commission %}
+                : {{ current_commission.title }}
+            {% endif %}
+        </h1>
+
+        <!-- Commission Selection -->
+        <div class="faux-select-wrapper" style="float:left;">
+            <div class="faux-select faux-select-wide">
+                <a href="{{ path('agenda') }}?month={{ month }}&year={{ year }}"
+                   class="{% if not current_commission %}up{% endif %}"
+                   title="Afficher toutes les sorties">
+                    Toutes les sorties
+                </a>
+                {% for commission in commissions|sort((a, b) => a.title <=> b.title) %}
+                    <a href="{{ path('commission_agenda', {'code': commission.code}) }}?month={{ month }}&year={{ year }}"
+                       class="{% if current_commission and current_commission.id == commission.id %}up{% endif %}"
+                       title="{{ commission.title }}">
+                        {{ commission.title }}
+                    </a>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Date Selection -->
+        <div class="faux-select-wrapper" style="float:left;">
+            <div class="faux-select">
+                {% set ampl = 6 %}
+                {% for i in range(month - ampl, month + ampl) %}
+                    {% if i < 1 %}
+                        {% set tmpMonth = 12 + i %}
+                        {% set tmpYear = year - 1 %}
+                    {% elseif i > 12 %}
+                        {% set tmpMonth = i - 12 %}
+                        {% set tmpYear = year + 1 %}
+                    {% else %}
+                        {% set tmpMonth = i %}
+                        {% set tmpYear = year %}
+                    {% endif %}
+
+                    {% if tmpYear >= min_year and tmpYear <= max_year %}
+                        <a href="{{ current_url }}?month={{ tmpMonth }}&year={{ tmpYear }}"
+                           class="{% if month == tmpMonth and year == tmpYear %}up{% endif %}">
+                            {{ months[tmpMonth]|capitalize }} {{ tmpYear }}
+                        </a>
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Date Display -->
+        <p class="agenda-date">{{ months[month]|capitalize }} {{ year }}</p>
+
+        <br style="clear:both" /><br>
+
+        <!-- Navigation Arrows -->
+        {% set prevMonth = month - 1 %}
+        {% set prevYear = year %}
+        {% if prevMonth <= 0 %}
+            {% set prevMonth = 12 %}
+            {% set prevYear = year - 1 %}
+        {% endif %}
+
+        {% set nextMonth = month + 1 %}
+        {% set nextYear = year %}
+        {% if nextMonth > 12 %}
+            {% set nextMonth = 1 %}
+            {% set nextYear = year + 1 %}
+        {% endif %}
+
+        {% if prevYear >= min_year %}
+            <a style="float:left" href="{{ current_url }}?month={{ prevMonth }}&year={{ prevYear }}"
+               title="Mois précédent" class="fader2">
+                <img src="/img/arrow-left.png" alt="&lt;" title="Mois précédent" style="height:30px" />
+            </a>
+        {% endif %}
+
+        {% if nextYear <= max_year %}
+            <a style="float:right" href="{{ current_url }}?month={{ nextMonth }}&year={{ nextYear }}"
+               title="Mois suivant" class="fader2">
+                <img src="/img/arrow-right.png" alt="&gt;" title="Mois suivant" style="height:30px" />
+            </a>
+        {% endif %}
+
+        <!-- Event Count -->
+        <p class="agenda-stat">
+            {{ nb_events }}
+            {% if nb_events > 1 %}sorties{% else %}sortie{% endif %} ce mois-ci :
+        </p>
+
+        <!-- Calendar Table -->
+        <table id="agenda">
+            {% set iWeek = first_day_weekday %}
+
+            {% for day in 1..nb_days %}
+                {% set bgwe = (iWeek == 6 or iWeek == 0) ? 'weekendday' : '' %}
+                {% set hasEvents = agenda[day]['debut']|length > 0 %}
+                {% set rowClass = hasEvents ? 'up' : 'off' %}
+
+                <tr id="{{ '%02d'|format(day) }}" class="{{ rowClass }} {{ bgwe }}">
+                    <td class="agenda-gauche {{ bgwe }}">
+                        {{ weekdays[iWeek] }} {{ day }} {{ months[month] }}
+                    </td>
+                    <td>
+                        {% set first = true %}
+
+                        {# Events starting on this day #}
+                        {% for event_data in agenda[day]['debut'] %}
+                            {% set evt = event_data['event'] %}
+                            {% if not first %}<hr />{% endif %}
+                            {% set first = false %}
+                            <a class="agenda-evt-debut" href="{{ path('sortie', {'id': evt.id, 'code': evt.code}) }}?commission={{ evt.commission.code }}" title="">
+                                {% include 'components/agenda-event-line.html.twig' with {'evt': event_data['event'], 'count': event_data['day_count'], 'ongoing': false} %}
+                            </a>
+                        {% endfor %}
+
+                        {# Events ongoing on this day #}
+                        {% for event_data in agenda[day]['courant'] %}
+                            {% set evt = event_data['event'] %}
+                            {% if not first %}<hr />{% endif %}
+                            {% set first = false %}
+                            <a class="agenda-evt-debut agenda-evt-courant" href="{{ path('sortie', {'id': evt.id, 'code': evt.code}) }}?commission={{ evt.commission.code }}" title="">
+                                {% include 'components/agenda-event-line.html.twig' with {'evt': event_data['event'], 'count': event_data['day_count'], 'ongoing': true} %}
+                            </a>
+                        {% endfor %}
+                    </td>
+                </tr>
+
+                {% set iWeek = (iWeek + 1) % 7 %}
+            {% endfor %}
+        </table>
+
+        <br style="clear:both" />
+
+        <!-- Navigation Arrows (Bottom) -->
+        {% if prevYear >= min_year %}
+            <a style="float:left" href="{{ current_url }}?month={{ prevMonth }}&year={{ prevYear }}"
+               title="Mois précédent" class="fader2">
+                <img src="/img/arrow-left.png" alt="&lt;" title="Mois précédent" />
+            </a>
+        {% endif %}
+
+        {% if nextYear <= max_year %}
+            <a style="float:right" href="{{ current_url }}?month={{ nextMonth }}&year={{ nextYear }}"
+               title="Mois suivant" class="fader2">
+                <img src="/img/arrow-right.png" alt="&gt;" title="Mois suivant" />
+            </a>
+        {% endif %}
+
+        <br style="clear:both" />
+        <br />
+
+        <!-- RSS Feeds -->
+        <a href="{{ path('rss', {'mode': 'sorties'}) }}" title="Flux RSS de toutes les sorties du club" class="nice2">
+            <img src="/img/base/rss.png" alt="RSS" title="" /> &nbsp;
+            sorties du club
+        </a>
+        {% if current_commission %}
+            <a href="{{ path('rss', {'mode': 'sorties-' ~ current_commission.code}) }}"
+               title="Flux RSS des sorties « {{ current_commission.title }} » uniquement" class="nice2">
+                <img src="/img/base/rss.png" alt="RSS" title="" /> &nbsp;
+                sorties « {{ current_commission.title }} »
+            </a>
+        {% endif %}
+
+        <br style="clear:both" />
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script type="text/javascript" src="/js/faux-select.js"></script>
+{% endblock %}

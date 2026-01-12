@@ -260,7 +260,7 @@ class SortieController extends AbstractController
             'commission' => $isUpdate ? $event->getCommission()->getTitle() : '',
             'event' => $event,
             'commissions' => $availableCommissions,
-            'current_commission' => $commission?->getCode() ?? '',
+            'current_commission' => $commission,
         ];
     }
 
