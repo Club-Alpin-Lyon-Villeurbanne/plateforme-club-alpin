@@ -43,7 +43,7 @@ class SearchController extends AbstractController
         }
 
         $searchResultsPerPage = $this->getParameter('search_results_per_page');
-        $searchParam = $request->request->get('str');
+        $searchParam = trim($request->request->get('str'));
 
         // vérification des caractères
         if (null === $searchParam || mb_strlen($searchParam) < 3) {
@@ -53,9 +53,7 @@ class SearchController extends AbstractController
         if (empty($errTab)) {
             $safeStr = mb_substr($searchParam, 0, 80);
             $commissionCode = $request->request->get('commission');
-            if (!empty($commissionCode)) {
-                $commission = $commissionRepository->findOneBy(['code' => $commissionCode]);
-            }
+            $commission = $commissionRepository->findVisibleCommission($commissionCode);
 
             // RECH ARTICLES
             $articlesTab = $articleRepository->searchArticles($safeStr, $searchResultsPerPage, $commission);
