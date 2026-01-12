@@ -13,6 +13,7 @@ $link = LegacyContainer::get('legacy_router')->generate('search_result', [], Url
 
 <form action="<?php echo $link; ?>" id="recherche-form" class="right-light-in" method="post">
 	<p class="big">Recherche :</p>
+            <input type="hidden" name="csrf_token" value="<?php echo LegacyContainer::get('security.csrf.token_manager')->getToken('search')->getValue(); ?>" />
 	<input type="text" class="textfield" name="str" value="<?php echo HtmlHelper::escape($_POST['str'] ?? ''); ?>" placeholder="ex: <?php echo $tmpTab[rand(0, count($tmpTab) - 1)]; ?>">
 	<input type="submit" value="OK" class="submit" />
 	<?php

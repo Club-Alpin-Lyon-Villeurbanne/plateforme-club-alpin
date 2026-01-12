@@ -46,7 +46,7 @@ class SearchController extends AbstractController
         $searchParam = trim($request->request->get('str'));
 
         // vérification des caractères
-        if (null === $searchParam || mb_strlen($searchParam) < 3) {
+        if (empty($searchParam) || mb_strlen($searchParam) < 3) {
             $errTab[] = 'Votre recherche doit comporter au moins 3 caractères.';
         }
 
