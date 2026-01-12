@@ -7,7 +7,7 @@
 {% endif %}
 
 <div id="evt-list">
-    {% set events = list_events() %}
+    {% set events = list_events(null) %}
     {% if current_commission and current_commission is instanceof('App\\Entity\\Commission') %}
         {% set events = list_events(current_commission) %}
     {% endif %}
