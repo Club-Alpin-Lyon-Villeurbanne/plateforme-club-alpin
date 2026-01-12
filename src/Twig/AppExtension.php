@@ -7,6 +7,7 @@ namespace App\Twig;
 use App\Utils\User\UserProfileValidator;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
+use Twig\TwigTest;
 
 class AppExtension extends AbstractExtension
 {
@@ -24,6 +25,13 @@ class AppExtension extends AbstractExtension
         ];
     }
 
+    public function getTests(): array
+    {
+        return [
+            new TwigTest('instanceof', [$this, 'isInstanceof']),
+        ];
+    }
+
     public function validateUserProfile(): array
     {
         return $this->userProfileValidator->validateUserProfile();
@@ -37,5 +45,10 @@ class AppExtension extends AbstractExtension
     public function displayUserProfileWarning(): string
     {
         return $this->validateUserProfile()['message'];
+    }
+
+    public function isInstanceof($var, string $class): bool
+    {
+        return $var instanceof $class;
     }
 }
