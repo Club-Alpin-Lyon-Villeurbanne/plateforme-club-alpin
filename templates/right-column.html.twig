@@ -25,6 +25,7 @@
 
         <form action="{{ path('search_result') }}" id="recherche-form" class="right-light-in" method="post">
             <p class="big">Recherche :</p>
+            <input type="hidden" name="csrf_token" value="{{ csrf_token('search') }}" />
             <input type="text" class="textfield" name="str" value="{{ app.request.request.get('str') }}" placeholder="ex: {{ ['Refuge du gouter', 'Enneigement', 'Ski de randonnée', 'Mont Blanc', 'Slackline'] | random_item }}">
             <input type="submit" value="OK" class="submit" />
             {% if current_commission and current_commission is instanceof('App\\Entity\\Commission') %}

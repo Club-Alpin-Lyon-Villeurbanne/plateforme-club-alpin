@@ -9,6 +9,7 @@ use App\Repository\PageRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -35,6 +36,11 @@ class SearchController extends AbstractController
         $totalArticles = 0;
         $totalEvt = 0;
         $totalFreePages = 0;
+        $commission = null;
+
+        if (!$this->isCsrfTokenValid('search', $request->request->get('csrf_token'))) {
+            throw new BadRequestException('Jeton de validation invalide.');
+        }
 
         $searchResultsPerPage = $this->getParameter('search_results_per_page');
 
@@ -46,7 +52,9 @@ class SearchController extends AbstractController
         if (empty($errTab)) {
             $safeStr = mb_substr($request->request->get('str'), 0, 80);
             $commissionCode = $request->request->get('commission');
-            $commission = $commissionRepository->findOneBy(['code' => $commissionCode]);
+            if (!empty($commissionCode)) {
+                $commission = $commissionRepository->findOneBy(['code' => $commissionCode]);
+            }
 
             // RECH ARTICLES
             $articlesTab = $articleRepository->searchArticles($safeStr, $searchResultsPerPage, $commission);
