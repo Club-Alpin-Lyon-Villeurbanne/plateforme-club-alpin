@@ -294,17 +294,21 @@ class ArticleController extends AbstractController
         }
 
         // suppression des medias associés
-        $filesystem->remove($this->getParameter('kernel.project_dir') . '/public/ftp/articles/' . $article->getId());
-        $media = $article->getMediaUpload();
-        if ($media) {
-            $filesystem->remove($this->getParameter('kernel.project_dir') . '/public/ftp/uploads/files/' . $media->getFilename());
-            $manager->remove($media);
+        try {
+            $filesystem->remove($this->getParameter('kernel.project_dir') . '/public/ftp/articles/' . $article->getId());
+            $media = $article->getMediaUpload();
+            if ($media) {
+                $filesystem->remove($this->getParameter('kernel.project_dir') . '/public/ftp/uploads/files/' . $media->getFilename());
+                $manager->remove($media);
+            }
+
+            $manager->remove($article);
+            $manager->flush();
+
+            $this->addFlash('info', 'L\'article est supprimé');
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Une erreur est survenue lors de la suppression');
         }
-
-        $manager->remove($article);
-        $manager->flush();
-
-        $this->addFlash('info', 'L\'article est supprimé');
 
         return $this->redirectToRoute('profil_articles');
     }
