@@ -729,15 +729,16 @@ class SortieController extends AbstractController
 
         // message aux participants si la sortie est annulée alors qu'elle était publiée
         if ($event->isPublicStatusValide()) {
+            /** @var User */
+            $user = $this->getUser();
             $participants = $event->getParticipations(null, null);
+
             foreach ($participants as $participant) {
                 // désinscription des (pré-)inscrits de la sortie (hors encadrement)
                 if (in_array($participant->getRole(), [EventParticipation::ROLE_MANUEL, EventParticipation::ROLE_INSCRIT, EventParticipation::BENEVOLE], true)) {
                     $event->removeParticipation($participant);
                 }
 
-                /** @var User */
-                $user = $this->getUser();
                 $mailer->send($participant->getUser(), 'transactional/sortie-annulation', [
                     'event_name' => $event->getTitre(),
                     'commission' => $event->getCommission()->getTitle(),
@@ -820,7 +821,7 @@ class SortieController extends AbstractController
             'date_sortie' => $event->getStartDate()?->format('d/m/Y'),
             'message' => $request->request->get('message'),
             'message_author_url' => $this->generateUrl('user_full', ['id' => $user->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
-        ], [], $this->getUser(), $replyToAddresses);
+        ], [], $user, $replyToAddresses);
 
         $this->addFlash('info', 'Votre message a bien été envoyé.');
 
