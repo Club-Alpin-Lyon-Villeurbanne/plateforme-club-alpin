@@ -48,6 +48,7 @@ class EventFormHelper
             ->add('benevoles', ChoiceType::class, [
                 'label' => false,
                 'choices' => array_flip($this->participantService->getBenevoles()),
+                'data' => $this->participantService->getCurrentBenevoles(),
                 'mapped' => false,
                 'multiple' => true,
                 'expanded' => true,

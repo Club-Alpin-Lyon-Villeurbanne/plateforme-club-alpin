@@ -109,7 +109,7 @@ class SortieController extends AbstractController
         }
 
         $originalEntityData = [];
-        $currentEncadrants = $currentCoencadrants = $currentStagiaires = null;
+        $currentEncadrants = $currentCoencadrants = $currentStagiaires = $currentBenevoles = null;
         if ($isUpdate) {
             $originalEntityData['ngensMax'] = $event->getngensMax();
             $originalEntityData['place'] = $event->getPlace();
@@ -120,6 +120,7 @@ class SortieController extends AbstractController
             }
             $currentStagiaires = $event->getEncadrants([EventParticipation::ROLE_STAGIAIRE]);
             $currentCoencadrants = $event->getEncadrants([EventParticipation::ROLE_COENCADRANT]);
+            $currentBenevoles = $event->getEncadrants([EventParticipation::ROLE_BENEVOLE]);
             $originalEntityData['hasPaymentForm'] = $event->hasPaymentForm();
             $originalEntityData['paymentAmount'] = $event->getPaymentAmount();
         }
@@ -151,10 +152,6 @@ class SortieController extends AbstractController
                 EventParticipation::ROLE_COENCADRANT => 'coencadrants',
                 EventParticipation::ROLE_BENEVOLE => 'benevoles',
             ];
-            if ($isUpdate) {
-                // les bénévoles ne sont pas modifiables mais il ne faut pas les "perdre" à l'édition
-                unset($rolesMap[EventParticipation::ROLE_BENEVOLE]);
-            }
             $newEncadrants = [];
             foreach ($rolesMap as $role => $roleName) {
                 if (!empty($formData[$roleName])) {
@@ -192,7 +189,7 @@ class SortieController extends AbstractController
                     }
                 }
             }
-            // retirer les encadrants qui ne sont plus cochés
+            // retirer les coencadrants qui ne sont plus cochés
             if ($isUpdate && !empty($currentCoencadrants)) {
                 if (empty($formData['coencadrants'])) {
                     $formData['coencadrants'] = [];
@@ -200,6 +197,17 @@ class SortieController extends AbstractController
                 foreach ($currentCoencadrants as $currentEncadrant) {
                     if (!in_array($currentEncadrant->getUser()->getId(), $formData['coencadrants'], false)) {
                         $event->removeParticipation($currentEncadrant);
+                    }
+                }
+            }
+            // retirer les bénévoles d'encadrement qui ne sont plus cochés
+            if ($isUpdate && !empty($currentBenevoles)) {
+                if (empty($formData['benevoles'])) {
+                    $formData['benevoles'] = [];
+                }
+                foreach ($currentBenevoles as $currentBenevole) {
+                    if (!in_array($currentBenevole->getUser()->getId(), $formData['benevoles'], false)) {
+                        $event->removeParticipation($currentBenevole);
                     }
                 }
             }
@@ -728,13 +736,15 @@ class SortieController extends AbstractController
                     $event->removeParticipation($participant);
                 }
 
+                /** @var User */
+                $user = $this->getUser();
                 $mailer->send($participant->getUser(), 'transactional/sortie-annulation', [
                     'event_name' => $event->getTitre(),
                     'commission' => $event->getCommission()->getTitle(),
                     'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                     'event_date' => $event->getStartDate()->format('d/m/Y'),
-                    'cancel_user_name' => $this->getUser()->getNickname(),
-                    'cancel_user_url' => $this->generateUrl('user_full', ['id' => $this->getUser()->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'cancel_user_name' => $user->getNickname(),
+                    'cancel_user_url' => $this->generateUrl('user_full', ['id' => $user->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                     'message' => $message,
                 ]);
             }
@@ -789,6 +799,8 @@ class SortieController extends AbstractController
             ->toArray()
         ;
 
+        /** @var User */
+        $user = $this->getUser();
         $replyToMode = $request->request->get('reply_to_option');
         $replyToAddresses = [];
         if ('everyone' === $replyToMode) {
@@ -796,18 +808,18 @@ class SortieController extends AbstractController
                 $replyToAddresses[] = $joined->getUser()->getEmail();
             }
         } elseif ('me_only' === $replyToMode) {
-            $replyToAddresses = $this->getUser()->getEmail();
+            $replyToAddresses = $user->getEmail();
         }
 
         $mailer->send($participations, 'transactional/message-sortie', [
             'objet' => $request->request->get('objet'),
-            'message_author' => sprintf('%s %s', $this->getUser()->getFirstname(), strtoupper($this->getUser()->getLastname())),
+            'message_author' => sprintf('%s %s', $user->getFirstname(), strtoupper($user->getLastname())),
             'url_sortie' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'name_sortie' => $event->getTitre(),
             'commission' => $event->getCommission()->getTitle(),
             'date_sortie' => $event->getStartDate()?->format('d/m/Y'),
             'message' => $request->request->get('message'),
-            'message_author_url' => $this->generateUrl('user_full', ['id' => $this->getUser()->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+            'message_author_url' => $this->generateUrl('user_full', ['id' => $user->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
         ], [], $this->getUser(), $replyToAddresses);
 
         $this->addFlash('info', 'Votre message a bien été envoyé.');
@@ -831,6 +843,7 @@ class SortieController extends AbstractController
         $em->remove($participation);
         $em->flush();
 
+        /** @var User */
         $user = $this->getUser();
 
         if ($participation->isStatusValide() || $participation->isStatusEnAttente()) {
@@ -961,6 +974,7 @@ class SortieController extends AbstractController
         }
 
         $data = $request->request->all();
+        /** @var User */
         $user = $this->getUser();
         $filiations = $userRepository->getFiliations($user);
         $affiliatedUserIds = [];
@@ -1214,7 +1228,7 @@ class SortieController extends AbstractController
 
             if ($isNewEvent) {
                 $mailer->send($participation->getUser(), 'transactional/sortie-publiee-inscrit', [
-                    'author_url' => $this->generateUrl('user_full', ['id' => $this->getUser()->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'author_url' => $this->generateUrl('user_full', ['id' => $event->getUser()->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                     'author_nickname' => $event->getUser()->getNickname(),
                     'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                     'event_name' => $event->getTitre(),

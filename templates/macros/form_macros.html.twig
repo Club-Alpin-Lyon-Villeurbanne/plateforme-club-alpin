@@ -23,11 +23,9 @@
         <br style="clear:both" />
     </div>
 
-    <h2 class="trigger-h2">Bénévoles d'encadrement {% if is_update %}(modifiable dans la gestion des inscrits) {% endif %}:</h2>
+    <h2 class="trigger-h2">Bénévole(s) d'encadrement :</h2>
     <div class="trigger-me check-nice">
-        <div {% if is_update %}class="hidden"{% endif %}>
-            {{ form_row(form.benevoles) }}
-        </div>
+        {{ form_row(form.benevoles) }}
         <br style="clear:both" />
     </div>
 {% endmacro %}
