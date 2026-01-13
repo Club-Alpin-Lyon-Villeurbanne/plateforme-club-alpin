@@ -162,6 +162,32 @@ class ArticleRepository extends ServiceEntityRepository
         ;
     }
 
+    /** @return Article[] */
+    public function getUserArticles(User $user, int $first = 0, int $perPage = 10, array $statuses = [Article::STATUS_PUBLISHED]): array
+    {
+        $qb = $this->getUserArticlesDql($user, $statuses)
+            ->orderBy('a.updatedAt', 'DESC')
+        ;
+
+        return $this->getPaginatedResults($qb, $first, $perPage);
+    }
+
+    protected function getUserArticlesDql(User $user, array $statuses = [Article::STATUS_PUBLISHED]): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->where('a.user = :user')
+            ->setParameter('user', $user)
+        ;
+        if (!empty($statuses)) {
+            $qb
+                ->andWhere('a.status IN (:status)')
+                ->setParameter('status', $statuses)
+            ;
+        }
+
+        return $qb;
+    }
+
     protected function getArticlesByCommissionDql(?Commission $commission = null): QueryBuilder
     {
         $qb = $this->createQueryBuilder('a')
