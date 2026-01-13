@@ -272,7 +272,7 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="/profil/articles.html{{ current_commission and current_commission is instanceof('App\\Entity\\Commission') ? '?commission=' ~ current_commission.code : '' }}" title="">
+                                        <a href="{{ path('profil_articles') }}{{ current_commission and current_commission is instanceof('App\\Entity\\Commission') ? '?commission=' ~ current_commission.code : '' }}" title="">
                                             mes articles
                                         </a>
                                     </li>

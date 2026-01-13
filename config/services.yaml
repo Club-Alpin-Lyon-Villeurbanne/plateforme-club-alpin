@@ -56,6 +56,7 @@ parameters:
   max_home_articles: '%env(int:MAX_ARTICLES_ACCUEIL)%'
   search_results_per_page: '%env(int:SEARCH_RESULTS_PER_PAGE)%'
   club_cafnum_prefix: '%env(string:CLUB_CAFNUM_PREFIX)%'
+  max_user_articles: '%env(int:MAX_ARTICLES_ADHERENT)%'
 
 services:
   # default configuration for services in *this* file
