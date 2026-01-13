@@ -40,7 +40,7 @@
 
         <!-- summup -->
         <p class="summup">
-            {% set text = article.cont|striptags %}
+            {% set text = article.cont|striptags|decode_html_entities %}
             {{ text|raw|slice(0, limit) }}
 
             {% if text|length > limit %}
