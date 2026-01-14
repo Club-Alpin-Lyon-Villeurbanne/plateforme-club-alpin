@@ -554,19 +554,21 @@ class UserController extends AbstractController
             }
 
             // cafnum + infos
-            $cafnum = $user->getCafnum() . '<br />';
-            if ($user->getNomade()) {
-                $cafnum .= '<img src="/img/base/nomade_user.png" alt="NOMADE" title="Utilisateur nomade" />';
-            }
-            if ($user->getManuel()) {
-                $cafnum .= '<img src="/img/base/user_manuel.png" alt="MANUEL" title="Utilisateur créé manuellement" />';
+            $cafnum = $user->getCafnum() . ' ';
+            if (User::PROFILE_DISCOVERY === $user->getProfileType()) {
+                $cafnum .= '<span title="Carte découverte">🧐</span>';
+            } elseif (User::PROFILE_OTHER_CLUB_MEMBER === $user->getProfileType()) {
+                $cafnum .= '<span title="Adhérent d\'un autre club">🌍</span>';
+            } elseif (User::PROFILE_EXTERNAL_PERSON === $user->getProfileType()) {
+                $cafnum .= '<span title="Personne externe">✍️</span>';
             }
 
             // date licence
             $joinDate = $user->getJoinDate();
             $formattedDate = (!empty($joinDate) ? $joinDate->format('d/m/Y') : '');
-            if ($user->getNomade() && $user->getDiscoveryEndDatetime()) {
-                $formattedDate = $user->getDiscoveryEndDatetime()->format('d/m/Y H:i:s');
+            if (User::PROFILE_DISCOVERY === $user->getProfileType()) {
+                $formattedDate = (!empty($joinDate) ? $joinDate->format('d/m/Y H:i:s') : '');
+                $formattedDate .= (!empty($user->getDiscoveryEndDatetime()) ? ' au ' . $user->getDiscoveryEndDatetime()->format('d/m/Y H:i:s') : '');
             }
             if ($user->getDoitRenouveler()) {
                 $renew = '<span  style="color:red" title="' . ($userRights->allowed('user_read_private') ? $formattedDate : '') . '">Licence expirée</span>';
