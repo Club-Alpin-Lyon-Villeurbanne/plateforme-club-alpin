@@ -72,6 +72,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 
     public function findUsersIdWithAlert(string $commissionCode, AlertType $type)
     {
+        $profileType = User::PROFILE_CLUB_MEMBER;
+
         $sql = <<<SQL
             SELECT id FROM
             (
@@ -85,7 +87,7 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                     AND u.doit_renouveler_user = 0
                     AND u.email_user IS NOT NULL
                     AND u.email_user != ''
-                    AND u.nomade_user = 0
+                    AND u.profile_type = $profileType
             ) as sub_query
             WHERE
                 sub_query.res = TRUE
@@ -98,6 +100,7 @@ SQL;
 
     public function getFiliations(UserInterface $user)
     {
+        /** @var User $user */
         if (!$user->getCafnum()) {
             return [];
         }
@@ -296,7 +299,6 @@ SQL;
             case 'all':
                 $qb
                     ->andWhere('u.isDeleted = false')
-                    ->andWhere('u.nomade = false')
                 ;
                 break;
             case 'deleted':
@@ -304,16 +306,25 @@ SQL;
                     ->andWhere('u.isDeleted = true')
                 ;
                 break;
-            case 'manual':
+            case 'discovery':
                 $qb
                     ->andWhere('u.isDeleted = false')
-                    ->andWhere('u.manuelUser = true')
+                    ->andWhere('u.profileType = :type')
+                    ->setParameter('type', User::PROFILE_DISCOVERY)
+                ;
+                break;
+            case 'external':
+                $qb
+                    ->andWhere('u.isDeleted = false')
+                    ->andWhere('u.profileType = :type')
+                    ->setParameter('type', User::PROFILE_EXTERNAL_PERSON)
                 ;
                 break;
             case 'nomade':
                 $qb
                     ->andWhere('u.isDeleted = false')
-                    ->andWhere('u.nomade = true')
+                    ->andWhere('u.profileType = :type')
+                    ->setParameter('type', User::PROFILE_OTHER_CLUB_MEMBER)
                 ;
                 break;
             case 'expired':
@@ -327,8 +338,8 @@ SQL;
                 $qb
                     ->andWhere('u.doitRenouveler = false')
                     ->andWhere('u.isDeleted = false')
-                    ->andWhere('u.nomade = false')
-                    ->andWhere('u.manuelUser = false')
+                    ->andWhere('u.profileType = :type')
+                    ->setParameter('type', User::PROFILE_CLUB_MEMBER)
                 ;
                 break;
         }
