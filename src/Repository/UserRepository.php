@@ -230,27 +230,6 @@ SQL;
         ;
     }
 
-    public function findUsersToRegister(array $participants, string $show = 'valid')
-    {
-        $qb = $this->createQueryBuilder('u')
-            ->where('u NOT IN (:users)')
-            ->andWhere('u.isDeleted = false')
-            ->setParameter('users', $participants)
-        ;
-        if ('valid' === $show) {
-            $qb
-                ->andWhere('u.doitRenouveler = false')
-                ->andWhere('u.nomade = false')
-            ;
-        }
-        $qb
-            ->orderBy('u.lastname', 'asc')
-            ->addOrderBy('u.firstname', 'asc')
-        ;
-
-        return $qb->getQuery()->getResult();
-    }
-
     public function getUsers(string $type, int $first = 1, int $perPage = 100, string $searchText = '', array $order = [])
     {
         $qb = $this->getQueryBuilder($type, $searchText);
