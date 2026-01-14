@@ -83,8 +83,8 @@
                 <th>n° licence FFCAM / Infos</th>
                 <th>Nom</th>
                 <th>Prénom</th>
-                <th>Date {% if show is same as ('discovery') %}de fin de validité{% else %}d'adhésion{% endif %}</th>
                 <th>Pseudo</th>
+                <th>Date{% if show is same as ('discovery') %}s de validité{% else %} d'adhésion{% endif %}</th>
                 <th>Âge</th>
                 <th>Tél{% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %} / Tél secours{% endif %}</th>
                 <th>E-mail</th>
@@ -122,14 +122,14 @@
             $('#pagesLibres').dataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '{{ path('users_data', {'show': show}) }}',
+                ajax: '{{ path('users_data', {'page': 'users-list', 'show': show}) }}',
                 columns: [
                     { data: 'tools' },
                     { data: 'cafnum' },
                     { data: 'lastname' },
                     { data: 'firstname' },
-                    { data: 'renew' },
                     { data: 'nickname' },
+                    { data: 'renew' },
                     { data: 'age' },
                     { data: 'tel' },
                     { data: 'email' },

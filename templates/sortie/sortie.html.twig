@@ -883,6 +883,16 @@
                 {% if is_granted('SORTIE_INSCRIPTIONS_MODIFICATION', event) %}
                     <h2 id="autresoptions">Autres options :</h2>
 
+                    {% if allowed('user_see_all') or allowed('evt_join_notme') or allowed('evt_join_doall') or is_granted('EVENT_NOMAD_JOINING_ADD', event) %}
+                        {% if not event.publicStatusUnseen %}
+                            <a class="nice2 blue fancyframe" data-fancybox data-type="iframe" href="{{ path('event_manual_add_select', {event: event.id}) }}" title="">
+                                Inscrire manuellement des participants
+                            </a>
+                        {% else %}
+                            <i>Vous pourrez ajouter des participants quand la sortie sera approuvée</i>
+                        {% endif %}
+                    {% endif %}
+
                     {% if is_granted('SORTIE_CONTACT_PARTICIPANTS', event) %}
                     <!-- Contact par email des participants (orga uniquement) -->
                     <a class="nice2 blue" href="javascript:void(0)" onclick="$('#contact-inscrits').slideToggle();$('.select-contact').toggle();$('#contact_participants_type').toggle();">
@@ -917,22 +927,6 @@
                         <br /><br />
                         <input id="submit_contact_participants" type="submit" class="nice" value="&gt; Envoyer mon message" onclick="$.fancybox.close()" formaction="{{ path('contact_participants', { id: event.id }) }}" />
                     </div>
-                    {% endif %}
-
-                    {% if allowed('user_see_all') or allowed('evt_join_notme') or allowed('evt_join_doall') or is_granted('EVENT_NOMAD_JOINING_ADD', event) %}
-                        {% if not event.publicStatusUnseen %}
-                            <a class="nice2 blue fancyframe" href="{{ path('event_manual_add_select', {event: event.id}) }}" title="">
-                                Inscrire manuellement des adhérents du club
-                            </a>
-
-                            {% if is_granted('EVENT_NOMAD_JOINING_ADD', event) %}
-                                <a class="nice2 blue fancyframe" href="{{ path('event_nomad_add', {event: event.id}) }}" title="">
-                                    Inscrire un non-adhérent
-                                </a>
-                            {% endif %}
-                        {% else %}
-                        <i>Vous pourrez ajouter des participants quand la sortie sera approuvée</i>
-                        {% endif %}
                     {% endif %}
                 {% endif %}
             <br style="clear:both"  />
