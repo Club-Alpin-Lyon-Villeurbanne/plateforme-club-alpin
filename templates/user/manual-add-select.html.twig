@@ -1,6 +1,6 @@
 {% extends 'base-light.html.twig' %}
 
-{% block title %}Inscrire manuellement des adhérents à la sortie{% endblock %}
+{% block title %}Inscrire manuellement des participants à la sortie{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -21,17 +21,64 @@
 
 {% block scripts %}
     {{ parent() }}
-    <script type="text/javascript" src="/tools/datatables/media/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             $('.datatables').dataTable({
-                "iDisplayLength": 9000,
-                "aLengthMenu": [[-1], ["Tout"]],
+                processing: true,
+                serverSide: true,
+                ajax: '{{ path('users_data', {'page': 'manual-add', 'show': show}) }}',
+                columns: [
+                    { data: 'check' },
+                    { data: 'cafnum' },
+                    { data: 'lastname' },
+                    { data: 'firstname' },
+                    { data: 'nickname' },
+                    { data: 'renew' },
+                    { data: 'age' },
+                    { data: 'email_info' },
+                ],
+                createdRow: function(row, data, dataIndex) {
+                    $(row).attr('id', 'tr-' + data.id);
+                    $(row).addClass('vis-on');
+                },
+                columnDefs: [
+                    {
+                        targets: 0,
+                        createdCell: function(td, cellData, rowData, row, col) {
+                            $(td)
+                                .attr('style', 'white-space:nowrap;')
+                            ;
+                        }
+                    }
+                ],
+                language: {
+                    processing:     "Chargement en cours...",
+                    search:         "Rechercher&nbsp;:&nbsp;",
+                    lengthMenu:     "Afficher _MENU_ adhérents par page",
+                    info:           "Affichage de _START_ à _END_ sur _TOTAL_ adhérents",
+                    infoEmpty:      "Affichage de 0 à 0 sur 0 adhérent",
+                    infoFiltered:   "(filtré de _MAX_ adhérents au total)",
+                    loadingRecords: "Chargement en cours...",
+                    zeroRecords:    "Aucun adhérent à afficher",
+                    emptyTable:     "Aucune donnée disponible dans le tableau",
+                    paginate: {
+                        first:      "Premier",
+                        previous:   "Précédent",
+                        next:       "Suivant",
+                        last:       "Dernier"
+                    },
+                    aria: {
+                        sortAscending:  ": activer pour trier la colonne par ordre croissant",
+                        sortDescending: ": activer pour trier la colonne par ordre décroissant"
+                    }
+                },
+                pageLength: 100,
+                "iDisplayLength": 100,
                 "aaSorting": [
                     [2, "asc"],
                     [3, "asc"]
                 ],
-                "sDom": 'T<"clear">lfrtip'
             });
 
             $(document).on('click', 'tr', function(){
@@ -48,19 +95,37 @@
 
 {% block body %}
     <div id="includer-stuff">
-        <h1>Inscrire manuellement des adhérents à cette sortie</h1>
+        <h1>Inscrire manuellement des participants à cette sortie</h1>
 
         <p>
-            <a href="{{ path('event_manual_add_select', {event: event.id, show: 'valid'}) }}"
+            <a href="{{ path('event_manual_add_select', {event: event.id, show: 'allvalid'}) }}"
                class="boutonFancy"
-               {% if show is same as ('valid') %}style="background:#d3d6ff"{% endif %}>
-            ✔️ Licence valide
+               {% if show is same as ('allvalid') %}style="background:#d3d6ff"{% endif %}>
+            ✔️ Adhérents club (lic. valide)
+            </a>&nbsp;
+
+            <a href="{{ path('event_manual_add_select', {event: event.id, 'show': 'discovery'}) }}"
+                class="boutonFancy"
+                {% if show is same as ('discovery') %}style="background:#d3d6ff"{% endif %}>
+            🧐 Cartes découverte
+            </a>&nbsp;
+
+            <a href="{{ path('event_manual_add_select', {event: event.id, 'show': 'nomade'}) }}"
+                class="boutonFancy"
+                {% if show is same as ('nomade') %}style="background:#d3d6ff"{% endif %}>
+            🌍 Adhérents autres clubs
+            </a>&nbsp;
+
+            <a href="{{ path('event_manual_add_select', {event: event.id, 'show': 'external'}) }}"
+                class="boutonFancy"
+                {% if show is same as ('external') %}style="background:#d3d6ff"{% endif %}>
+            ✍️ Personnes externes
             </a>&nbsp;
 
             <a href="{{ path('event_manual_add_select', {event: event.id, show: 'all'}) }}"
                class="boutonFancy"
                {% if show is same as ('all') %}style="background:#d3d6ff"{% endif %}>
-            📋 Tous les adhérents
+            📋 Tous
             </a>
         </p>
         <br />
@@ -71,45 +136,16 @@
                 <thead>
                 <tr>
                     <th></th>
-                    <th>n° licence FFCAM</th>
+                    <th>n° licence FFCAM / Infos</th>
                     <th>Nom</th>
                     <th>Prénom</th>
                     <th>Pseudo</th>
-                    <th>Age</th>
+                    <th>Date{% if show is same as ('discovery') %}s de validité{% else %} d'adhésion{% endif %}</th>
+                    <th>Âge</th>
                     <th>E-mail renseigné ?</th>
                 </tr>
                 </thead>
                 <tbody>
-                {% for user in users %}
-                    {% set class = 'vis-on' %}
-                    <tr id="tr-{{ user.id }}" class="{{ class }}">
-                    <td>
-                        <img src="/img/label-up.png" class="tick" alt="CHECKED" title="" />
-                        <img src="/img/label-down.png" class="cross" alt="OFF" title="" />
-                        <input type="checkbox" name="id_user[]" value="{{ user.id }}" />
-                        <input type="hidden" disabled="disabled" name="civ_user[]" value="{{ user.civ }}" />
-                        <input type="hidden" disabled="disabled" name="lastname_user[]" value="{{ user.lastname }}" />
-                        <input type="hidden" disabled="disabled" name="firstname_user[]" value="{{ user.firstname }}" />
-                        <input type="hidden" disabled="disabled" name="nickname_user[]" value="{{ user.nickname }}" />
-                    </td>
-                    <td>{{ user.cafnum}} </td>
-                    <td>{{ user.lastname|upper }}</td>
-                    <td>{{ user.firstname }}</td>
-                    <td>
-                        <a class="fancyframe" href="{{ path('user_profile', {'id': user.id}) }}" title="Voir la fiche">
-                            {{ user.nickname }}
-                        </a>
-                    </td>
-                    <td>{{ age_user(user) }}</td>
-                    <td>
-                        {% if user.email %}
-                            oui
-                        {% else %}
-                            <span style="color: darkorange;" title="Ce compte ne peut pas recevoir les e-mails">non</span>
-                        {% endif %}
-                    </td>
-                    </tr>
-                {% endfor %}
                 </tbody>
             </table>
             <br style="clear:both" />
