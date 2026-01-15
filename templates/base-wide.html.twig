@@ -1,3 +1,7 @@
+{% set wide_content = true %}
+{% if not_wide_content is defined and not_wide_content %}
+    {% set wide_content = false %}
+{% endif %}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -67,7 +71,7 @@
     <div id="siteHeight">
         {% include 'header.html.twig' %}
         <div id="bigfond"></div>
-        <div id="main" class="wide-site" role="main">
+        <div id="main"{% if wide_content %} class="wide-site"{% endif %} role="main">
             <div id="full">
                 {% block body %}{% endblock %}
             </div>

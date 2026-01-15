@@ -1,0 +1,66 @@
+{% set not_wide_content = true %}
+{% extends 'base-wide.html.twig' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        #user_form label, #user_form .mini {
+            display: block;
+        }
+        #user_form label {
+            margin-top: 10px;
+        }
+        .no-border {
+            background: none;
+            border: none;
+            font-size: 1rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+	<div style="padding:20px 10px;">
+        <h1>{{ title }}</h1>
+
+        {% if is_update %}
+            {{ easy_include('user_update', '') }}
+        {% else %}
+            {{ easy_include('user_create', '') }}
+        {% endif %}
+        <hr />
+
+        {{ form_start(form, {
+                attr: { 'id': 'user_form'}
+            }) }}
+            {{ form_row(form.firstname) }}
+            {{ form_row(form.lastname) }}
+            {{ form_row(form.email) }}
+            {{ form_row(form.cafnum) }}
+            {{ form_row(form.birthdate) }}
+
+            {{ form_row(form.tel) }}
+            {{ form_row(form.tel2) }}
+
+            
+            <label for="user_full_adresse">Adresse</label>
+            {{ form_row(form.adresse) }}
+
+            {{ form_errors(form.cp) }}
+            {{ form_errors(form.ville) }}
+            {{ form_widget(form.cp) }}
+            {{ form_widget(form.ville) }}
+
+            {{ form_row(form.pays) }}
+
+            <br>
+            <button type="submit" class="bold no-border">
+                <img src="/img/base/save.png" alt="Enregistrer" title="Enregistrer" style="height:35px; vertical-align: middle" />
+                Enregistrer
+            </button>
+        {{ form_end(form) }}
+
+        <br style="clear:both" />
+    </div>
+{% endblock %}

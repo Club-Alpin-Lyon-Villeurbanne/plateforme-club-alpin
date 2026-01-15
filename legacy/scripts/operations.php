@@ -67,11 +67,6 @@ if (user()) {
     }
 }
 
-// USER : CREATE (manuel)
-if ('user_create' == $operation) {
-    require $operationsDir . 'operations.user_create.php';
-}
-
 // USER : EDIT (manuel)
 elseif ('user_edit' == $operation) {
     require $operationsDir . 'operations.user_edit.php';
