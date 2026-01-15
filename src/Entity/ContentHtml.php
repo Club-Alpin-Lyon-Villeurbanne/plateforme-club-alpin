@@ -8,7 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
  * ContentHtml.
  */
 #[ORM\Table(name: 'caf_content_html')]
-#[ORM\Index(name: 'contenu_content_html', columns: ['contenu_content_html'])]
+#[ORM\Index(columns: ['code_content_html'], name: 'code_content_html')]
+#[ORM\Index(columns: ['contenu_content_html'], name: 'contenu_content_html')]
 #[ORM\Entity]
 class ContentHtml
 {
