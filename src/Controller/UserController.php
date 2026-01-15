@@ -656,7 +656,7 @@ class UserController extends AbstractController
         $form->handleRequest($request);
         $hasErrors = false;
         if ($form->isSubmitted() && $form->isValid()) {
-            // dd($form->getData());
+            $routeTarget = 'external';
             /** @var User $user */
             $user = $form->getData();
 
@@ -685,7 +685,6 @@ class UserController extends AbstractController
                 $routeTarget = 'nomade';
                 $user->setProfileType(User::PROFILE_OTHER_CLUB_MEMBER);
             } else {
-                $routeTarget = 'external';
                 $user->setProfileType(User::PROFILE_EXTERNAL_PERSON);
             }
 
