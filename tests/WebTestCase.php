@@ -54,6 +54,7 @@ abstract class WebTestCase extends BaseWebTestCase
         $user->setMoreinfo('');
         $user->setCookietoken('');
         $user->setNomadeParent(0);
+        $user->setProfileType(User::PROFILE_CLUB_MEMBER);
 
         $em->persist($user);
         $em->flush();

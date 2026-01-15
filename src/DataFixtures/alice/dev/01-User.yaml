@@ -6,6 +6,7 @@ App\Entity\User:
         email: 'admin@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
         nickname: 'Admin'
+        profileType: <(constant('App\\Entity\\User::PROFILE_CLUB_MEMBER'))>
     user_resp_comm:
         firstname: 'Responsable'
         lastname: 'Commission'
@@ -13,6 +14,7 @@ App\Entity\User:
         email: 'resp.comm@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
         nickname: 'RespComm'
+        profileType: <(constant('App\\Entity\\User::PROFILE_CLUB_MEMBER'))>
     user_encadrant:
         firstname: 'Jean'
         lastname: 'Cadre'
@@ -20,6 +22,7 @@ App\Entity\User:
         email: 'encadrant@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
         nickname: 'Encadrant'
+        profileType: <(constant('App\\Entity\\User::PROFILE_CLUB_MEMBER'))>
     user_redacteur:
         firstname: 'Ray'
         lastname: 'Dacteur'
@@ -27,6 +30,7 @@ App\Entity\User:
         email: 'redacteur@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
         nickname: 'Rédacteur'
+        profileType: <(constant('App\\Entity\\User::PROFILE_CLUB_MEMBER'))>
     user_coencadrant:
         firstname: 'Ko'
         lastname: 'Kadre'
@@ -34,6 +38,7 @@ App\Entity\User:
         email: 'coencadrant@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
         nickname: 'Coencadrant'
+        profileType: <(constant('App\\Entity\\User::PROFILE_CLUB_MEMBER'))>
     user_benevole:
         firstname: 'Benny'
         lastname: 'Volle'
@@ -41,6 +46,7 @@ App\Entity\User:
         email: 'benevole.encadrement@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
         nickname: 'BénévEncadr'
+        profileType: <(constant('App\\Entity\\User::PROFILE_CLUB_MEMBER'))>
     user_president:
         firstname: 'Machin'
         lastname: 'Truc'
@@ -48,6 +54,7 @@ App\Entity\User:
         email: 'president@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
         nickname: 'Président'
+        profileType: <(constant('App\\Entity\\User::PROFILE_CLUB_MEMBER'))>
     user_president_suppleant:
         firstname: 'Jean Michel'
         lastname: 'Vépais'
@@ -55,6 +62,7 @@ App\Entity\User:
         email: 'vp@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
         nickname: 'PrésSuppl'
+        profileType: <(constant('App\\Entity\\User::PROFILE_CLUB_MEMBER'))>
     user_accueil:
         firstname: 'Carmen'
         lastname: 'Hoffman'
@@ -62,6 +70,7 @@ App\Entity\User:
         email: 'accueil@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
         nickname: 'Salariée'
+        profileType: <(constant('App\\Entity\\User::PROFILE_CLUB_MEMBER'))>
     user_stagiaire:
         firstname: 'Initiateur'
         lastname: 'Stagiaire'
@@ -69,6 +78,7 @@ App\Entity\User:
         email: 'stagiaire@test-clubalpinlyon.fr'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
         nickname: 'IniStag'
+        profileType: <(constant('App\\Entity\\User::PROFILE_CLUB_MEMBER'))>
     user_{11..20}:
         firstname: '<firstname()>'
         lastname: '<lastname()>'
@@ -76,3 +86,4 @@ App\Entity\User:
         email: '<email()>'
         mdp: '098f6bcd4621d373cade4e832627b4f6'
         nickname: '<username()>'
+        profileType: <(constant('App\\Entity\\User::PROFILE_CLUB_MEMBER'))>

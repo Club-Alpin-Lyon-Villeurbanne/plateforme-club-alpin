@@ -23,7 +23,7 @@ class UserLicenseHelper
         $year = ($adhesionDate->format('m') >= self::LICENSE_TOLERANCY_PERIOD_END_MONTH) ? (int) $adhesionDate->format('Y') + 1 : $adhesionDate->format('Y');
 
         $endAdhesionDate = (clone $adhesionDate)->setTimestamp(strtotime("$year-" . self::LICENSE_TOLERANCY_PERIOD_END));
-        if ($user->getNomade() && $user->getDiscoveryEndDatetime()) {
+        if (User::PROFILE_DISCOVERY === $user->getProfileType() && $user->getDiscoveryEndDatetime()) {
             $endAdhesionDate = $user->getDiscoveryEndDatetime();
         }
 
@@ -34,7 +34,7 @@ class UserLicenseHelper
         }
 
         // les cartes découvertes peuvent être prises en avance
-        if ($user->getNomade() && $user->getJoinDate() > $event->getStartDate()) {
+        if (User::PROFILE_DISCOVERY === $user->getProfileType() && $user->getJoinDate() > $event->getStartDate()) {
             $isLicenseValid = false;
         }
 

@@ -29,25 +29,31 @@
                 <a href="{{ path('user_list', {'show': 'allvalid'}) }}"
                    class="boutonFancy"
                    {% if show is same as ('allvalid') or show is same as ('valid') %}style="background:#d3d6ff"{% endif %}>
-                ✔️ Licence valide
+                ✔️ Adhérents du club (licence valide)
                 </a>&nbsp;
 
-                <a href="{{ path('user_list', {'show': 'expired'}) }}"
+                <a href="{{ path('user_list', {'show': 'discovery'}) }}"
                    class="boutonFancy"
-                   {% if show is same as ('expired') %}style="background:#d3d6ff"{% endif %}>
-                📅 Licence expirée
+                   {% if show is same as ('discovery') %}style="background:#d3d6ff"{% endif %}>
+                🧐 Cartes découverte
                 </a>&nbsp;
 
                 <a href="{{ path('user_list', {'show': 'nomade'}) }}"
                    class="boutonFancy"
                    {% if show is same as ('nomade') %}style="background:#d3d6ff"{% endif %}>
-                🌍 Non-adhérents
+                🌍 Adhérents d'autres clubs
                 </a>&nbsp;
 
-                <a href="{{ path('user_list', {'show': 'manual'}) }}"
+                <a href="{{ path('user_list', {'show': 'external'}) }}"
                    class="boutonFancy"
-                   {% if show is same as ('manual') %}style="background:#d3d6ff"{% endif %}>
-                ✍️ Créés manuellement
+                   {% if show is same as ('external') %}style="background:#d3d6ff"{% endif %}>
+                ✍️ Personnes externes
+                </a>&nbsp;
+
+                <a href="{{ path('user_list', {'show': 'expired'}) }}"
+                   class="boutonFancy"
+                   {% if show is same as ('expired') %}style="background:#d3d6ff"{% endif %}>
+                📅 Licences expirées
                 </a>&nbsp;
 
                 {% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %}
@@ -61,7 +67,7 @@
                 <a href="{{ path('user_list', {'show': 'all'}) }}"
                    class="boutonFancy"
                    {% if show is same as ('all') %}style="background:#d3d6ff"{% endif %}>
-                📋 Tous les adhérents
+                📋 Tous les utilisateurs
                 </a>
             </div>
         </div>
@@ -77,7 +83,7 @@
                 <th>n° licence FFCAM / Infos</th>
                 <th>Nom</th>
                 <th>Prénom</th>
-                <th>Date {% if show is same as ('nomade') %}de fin de validité{% else %}d'adhésion{% endif %}</th>
+                <th>Date {% if show is same as ('discovery') %}de fin de validité{% else %}d'adhésion{% endif %}</th>
                 <th>Pseudo</th>
                 <th>Âge</th>
                 <th>Tél{% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) %} / Tél secours{% endif %}</th>
