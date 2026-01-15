@@ -19,7 +19,6 @@ final readonly class UserProfileValidator
     public function __construct(
         private Security $security,
         private UrlGeneratorInterface $urlGenerator,
-        private string $legacyFtpPath
     ) {
     }
 
@@ -110,6 +109,10 @@ final readonly class UserProfileValidator
      */
     private function photoExists(UserInterface $user): bool
     {
+        if (!$user instanceof User) {
+            return false;
+        }
+
         return !empty($user->getProfilePicture());
     }
 }
