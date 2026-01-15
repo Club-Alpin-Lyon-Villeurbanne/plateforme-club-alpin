@@ -13,6 +13,7 @@ use App\Entity\UserAttr;
 use App\Entity\Usertype;
 use App\Form\NomadeType;
 use App\Form\UserContactType;
+use App\Form\UserFullType;
 use App\Mailer\Mailer;
 use App\Repository\ArticleRepository;
 use App\Repository\EvtRepository;
@@ -23,14 +24,18 @@ use App\Repository\FormationValidationNiveauPratiqueRepository;
 use App\Repository\UserAttrRepository;
 use App\Repository\UserRepository;
 use App\Security\SecurityConstants;
+use App\Service\EmailMarketingSyncService;
 use App\UserRights;
+use App\Utils\NicknameGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -617,6 +622,109 @@ class UserController extends AbstractController
             'recordsFiltered' => $recordsFiltered,
             'data' => $results,
         ]);
+    }
+
+    #[Route(path: '/adherents/creer.html', name: 'user_create', priority: 10)]
+    #[Route(path: '/adherents/modifier/{id}.html', name: 'user_update')]
+    #[Template('user/form.html.twig')]
+    public function update(
+        Request $request,
+        UserRights $userRights,
+        EntityManagerInterface $manager,
+        EmailMarketingSyncService $emailMarketingService,
+        ?User $user = null,
+    ): array|RedirectResponse {
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+        $isUpdate = true;
+
+        if (!$user instanceof User) {
+            $user = new User();
+            $user->setNomadeParent($currentUser->getId());
+            $isUpdate = false;
+        }
+
+        if (
+            !$isUpdate && !$userRights->allowed('user_create_manually')
+            || $isUpdate && !$this->isGranted(SecurityConstants::ROLE_ADMIN) && !$userRights->allowed('user_edit_notme')
+        ) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page');
+        }
+
+        $form = $this->createForm(UserFullType::class, $user, ['is_edit' => $isUpdate]);
+
+        $form->handleRequest($request);
+        $hasErrors = false;
+        if ($form->isSubmitted() && $form->isValid()) {
+            // dd($form->getData());
+            /** @var User $user */
+            $user = $form->getData();
+
+            // vérification anti doublon de licence
+            $requestedCafnum = $user->getCafnum();
+            $existingUserWithCafnum = $manager->getRepository(User::class)->findOneBy(['cafnum' => $requestedCafnum]);
+            if ($existingUserWithCafnum instanceof User && ($existingUserWithCafnum->getId() !== $user->getId() || !$isUpdate)) {
+                $form->get('cafnum')->addError(new FormError('Un compte existe déjà avec ce numéro de licence.'));
+                $hasErrors = true;
+            }
+
+            // vérification anti doublon d'email
+            $requestedEmail = $user->getEmail();
+            $existingUserWithEmail = $manager->getRepository(User::class)->findOneBy(['email' => $requestedEmail]);
+            if ($existingUserWithEmail instanceof User && ($existingUserWithEmail->getId() !== $user->getId() || !$isUpdate)) {
+                $form->get('email')->addError(new FormError('Un compte existe déjà avec cette adresse e-mail.'));
+                $hasErrors = true;
+            }
+
+            // détection type de profil
+            $clubPrefix = $this->getParameter('club_cafnum_prefix');
+            if (str_starts_with($user->getCafnum(), 'D') || str_starts_with($user->getCafnum(), 'd') || str_starts_with($user->getCafnum(), $clubPrefix)) {
+                $form->get('cafnum')->addError(new FormError('Vous ne devez pas ajouter d\'adhérent du club ou de carte découverte par ce formulaire.'));
+                $hasErrors = true;
+            } elseif (is_numeric($user->getCafnum())) {
+                $routeTarget = 'nomade';
+                $user->setProfileType(User::PROFILE_OTHER_CLUB_MEMBER);
+            } else {
+                $routeTarget = 'external';
+                $user->setProfileType(User::PROFILE_EXTERNAL_PERSON);
+            }
+
+            if (!$hasErrors) {
+                // tout est bon
+                if (!$isUpdate) {
+                    $user->setCreatedAt(new \DateTime());
+                    $nickname = NicknameGenerator::generateNickname($user->getFirstname(), $user->getLastname(), $user->getCafnum());
+                    $user->setNickname($nickname);
+                    $user->setManuel(true);
+                    $user->setNomade(true);
+                    $user->setDoitRenouveler(true);     // sécurité pour éviter trop d'accès
+                    $user->setBirthdate(\DateTimeImmutable::createFromMutable($user->getBirthdate()));
+                }
+                $user->setUpdatedAt(new \DateTime());
+
+                $manager->persist($user);
+                $manager->flush();
+
+                // Synchroniser avec MailerLite après création manuelle
+                try {
+                    $emailMarketingService->syncUsers($user);
+                } catch (\Exception $exception) {
+                    // Log l'erreur mais ne pas bloquer la création
+                    // Les logs seront automatiquement gérés par le service EmailMarketingSyncService
+                }
+
+                $this->addFlash('success', $isUpdate ? 'L\'utilisateur a bien été modifié.' : 'L\'utilisateur a bien été créé.');
+
+                return $this->redirectToRoute('user_list', ['show' => $routeTarget]);
+            }
+        }
+
+        return [
+            'user' => $user,
+            'is_update' => $isUpdate,
+            'form' => $form,
+            'title' => $isUpdate ? 'Modifier un utilisateur' : 'Créer un utilisateur',
+        ];
     }
 
     /**
