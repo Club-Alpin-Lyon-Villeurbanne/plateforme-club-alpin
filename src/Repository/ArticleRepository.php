@@ -217,7 +217,7 @@ class ArticleRepository extends ServiceEntityRepository
             $commissionIds = array_map(fn (Commission $c) => $c->getId(), $commissions);
 
             $qb
-                ->innerJoin('a.evt', 'e')
+                ->leftJoin('a.evt', 'e')
                 ->andWhere($qb->expr()->orX(
                     $qb->expr()->in('a.commission', ':commissions'),
                     $qb->expr()->in('e.commission', ':commissions')

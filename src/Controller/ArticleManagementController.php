@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Article;
+use App\Entity\Commission;
 use App\Mailer\Mailer;
 use App\Repository\ArticleRepository;
 use App\Repository\CommissionRepository;
@@ -17,6 +18,7 @@ use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -62,6 +64,9 @@ class ArticleManagementController extends AbstractController
         ], $paginationParams);
     }
 
+    /**
+     * @throws TransportExceptionInterface
+     */
     #[Route(path: '/article/{id}/publier', name: 'article_validate', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
     public function approve(Request $request, Article $article, EntityManagerInterface $em, Mailer $mailer): RedirectResponse
     {
@@ -69,8 +74,12 @@ class ArticleManagementController extends AbstractController
             throw new BadRequestException('Jeton de validation invalide.');
         }
 
+        $validate = false;
         $validateAll = $this->userRights->allowed('article_validate_all');
-        $validate = $this->userRights->allowed('article_validate');
+        $commission = $this->getArticleCommission($article);
+        if ($commission instanceof Commission) {
+            $validate = $this->userRights->allowedOnCommission('article_validate', $commission);
+        }
 
         if (!$validate && !$validateAll) {
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
@@ -93,15 +102,22 @@ class ArticleManagementController extends AbstractController
         return $this->redirectToRoute('manage_articles');
     }
 
-    #[Route(path: '/article/{id}/refuser', name: 'article_refuse', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
+    /**
+     * @throws TransportExceptionInterface
+     */
+    #[Route(path: '/article/{id}/refuser', name: 'article_refuse', requirements: ['id' => '\d+'], methods: ['POST'], priority: 10)]
     public function refuse(Request $request, Article $article, EntityManagerInterface $em, Mailer $mailer): RedirectResponse
     {
         if (!$this->isCsrfTokenValid('article_refuse', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
         }
 
+        $validate = false;
         $validateAll = $this->userRights->allowed('article_validate_all');
-        $validate = $this->userRights->allowed('article_validate');
+        $commission = $this->getArticleCommission($article);
+        if ($commission instanceof Commission) {
+            $validate = $this->userRights->allowedOnCommission('article_validate', $commission);
+        }
 
         if (!$validate && !$validateAll) {
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
@@ -123,5 +139,15 @@ class ArticleManagementController extends AbstractController
         $this->addFlash('info', 'L\'article est refusé');
 
         return $this->redirectToRoute('manage_articles');
+    }
+
+    protected function getArticleCommission(Article $article): ?Commission
+    {
+        $commission = $article->getCommission();
+        if (!$commission instanceof Commission) {
+            $commission = $article->getEvt()->getCommission();
+        }
+
+        return $commission;
     }
 }
