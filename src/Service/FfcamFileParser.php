@@ -83,6 +83,7 @@ class FfcamFileParser
             ->setValidityDuration(null)
             ->setDiscoveryEndDatetime(null)
             ->setNomade(false)
+            ->setProfileType(User::PROFILE_CLUB_MEMBER)
         ;
 
         return $user;
@@ -141,7 +142,8 @@ class FfcamFileParser
             ->setEmail($email)
             ->setValidityDuration($duration)
             ->setDiscoveryEndDatetime($endDate)
-            ->setNomade(true)
+            ->setNomade(false)
+            ->setProfileType(User::PROFILE_DISCOVERY)
         ;
 
         return $user;

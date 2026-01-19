@@ -40,6 +40,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
 {
     use TimestampableEntity;
 
+    public const int PROFILE_UNKNOWN = 0;
+    public const int PROFILE_CLUB_MEMBER = 1;
+    public const int PROFILE_DISCOVERY = 2;
+    public const int PROFILE_OTHER_CLUB_MEMBER = 3;
+    public const int PROFILE_EXTERNAL_PERSON = 4;
+
     /**
      * @var int
      */
@@ -48,6 +54,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[Groups(['user:read'])]
     private $id;
+
+    #[ORM\Column(name: 'profile_type', type: Types::SMALLINT, nullable: false, options: ['default' => self::PROFILE_UNKNOWN])]
+    private int $profileType;
 
     #[ORM\OneToMany(targetEntity: 'UserAttr', mappedBy: 'user', cascade: ['persist'])]
     private $attrs;
@@ -246,6 +255,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         if ($id) {
             $this->id = $id;
         }
+        $this->profileType = self::PROFILE_UNKNOWN;
     }
 
     public function __toString()
@@ -278,6 +288,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
             'updatedAt' => $this->getUpdatedAt()->format('Y-m-d H:i:s'),
             'joinDate' => $this->getJoinDate()?->format('Y-m-d H:i:s'),
             'birthdate' => $this->getBirthdate()?->format('Y-m-d'),
+            'profileType' => $this->getProfileType(),
         ];
     }
 
@@ -882,5 +893,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function hasDiscoveryLicenseExpired(): bool
     {
         return null === $this->discoveryEndDatetime || $this->discoveryEndDatetime < new \DateTimeImmutable();
+    }
+
+    public function getProfileType(): int
+    {
+        return $this->profileType;
+    }
+
+    public function setProfileType(int $profileType): self
+    {
+        $this->profileType = $profileType;
+
+        return $this;
     }
 }
