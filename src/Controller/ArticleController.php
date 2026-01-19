@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Article;
 use App\Entity\Comment;
 use App\Entity\MediaUpload;
+use App\Entity\User;
 use App\Form\ArticleType;
 use App\Helper\SlugHelper;
 use App\Mailer\Mailer;

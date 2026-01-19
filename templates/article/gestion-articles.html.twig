@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+c{% extends 'base.html.twig' %}
 
 {% import 'macros/article-link.html.twig' as article_macro %}
 
@@ -48,7 +48,7 @@
             {% if pages > 1 %}
                 <nav class="pageSelect"><hr />
                     {% for i in 1..pages %}
-                        <a href="{{ path('manage_articles') }}?page={{ i }}" title="" class="{{ page == i ? 'up' : '' }}">P{{ i }}</a> {{ i < pages ? ' ' : '' }}
+                        <a href="{{ path('manage_articles', app.request.query.all|merge({page: i}))) }}" title="" class="{{ page == i ? 'up' : '' }}">P{{ i }}</a> {{ i < pages ? ' ' : '' }}
                     {% endfor %}
                 </nav>
             {% endif %}
