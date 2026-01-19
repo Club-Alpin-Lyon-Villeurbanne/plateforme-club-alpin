@@ -74,14 +74,7 @@ class ArticleManagementController extends AbstractController
             throw new BadRequestException('Jeton de validation invalide.');
         }
 
-        $validate = false;
-        $validateAll = $this->userRights->allowed('article_validate_all');
-        $commission = $this->getArticleCommission($article);
-        if ($commission instanceof Commission) {
-            $validate = $this->userRights->allowedOnCommission('article_validate', $commission);
-        }
-
-        if (!$validate && !$validateAll) {
+        if (!$this->isGranted('ARTICLE_MANAGE', $article)) {
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
@@ -112,14 +105,7 @@ class ArticleManagementController extends AbstractController
             throw new BadRequestException('Jeton de validation invalide.');
         }
 
-        $validate = false;
-        $validateAll = $this->userRights->allowed('article_validate_all');
-        $commission = $this->getArticleCommission($article);
-        if ($commission instanceof Commission) {
-            $validate = $this->userRights->allowedOnCommission('article_validate', $commission);
-        }
-
-        if (!$validate && !$validateAll) {
+        if (!$this->isGranted('ARTICLE_MANAGE', $article)) {
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
