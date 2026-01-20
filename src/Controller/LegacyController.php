@@ -26,6 +26,20 @@ class LegacyController extends AbstractController
         });
     }
 
+    #[Route(path: '/ajax/{file}', name: 'legacy_ajax', requirements: ['p1' => '[a-zA-Z0-9-]+'], methods: ['GET', 'POST'])]
+    public function ajaxAction($file): StreamedResponse
+    {
+        return new StreamedResponse(function () use ($file) {
+            $legacyDir = __DIR__ . '/../../legacy/';
+            $path = 'index.php';
+            $_GET['ajx'] = $file;
+
+            ob_start();
+            require $legacyDir . $path;
+            ob_end_flush();
+        });
+    }
+
     #[Route(path: '/{p1}.html', name: 'legacy_p1', requirements: ['p1' => '[a-zA-Z0-9-]+'], methods: ['GET', 'POST'])]
     public function p1Action($p1): StreamedResponse
     {

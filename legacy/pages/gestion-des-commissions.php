@@ -118,7 +118,7 @@ use App\Legacy\LegacyContainer;
 			stop:function(i){
 				$.ajax({
 					type: "POST",
-					url: "/?ajx=operations",
+					url: "/ajax/operations",
 					dataType : "json",
 					data: "operation=commission_reorder&"+getDatas(),
 					complete: function(jsonMsg){

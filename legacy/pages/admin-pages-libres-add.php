@@ -85,7 +85,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 			type: "POST",
 			async: false,
 			dataType: 'json',
-			url: "/?ajx=formater",
+			url: "/ajax/formater",
 			data: "type=3&str="+ $.URLEncode(val),
 			success: function(jsonMsg){
 				// variable retour

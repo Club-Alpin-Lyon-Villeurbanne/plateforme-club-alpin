@@ -104,7 +104,7 @@ $().ready(function() {
 			type: "POST",
 			async: false,
 			dataType: 'json',
-			url: "?ajx=get_content_html",
+			url: "ajax/get_content_html",
 			data: "code="+code,
 			success: function(jsonMsg){
 				// variable retour
@@ -144,7 +144,7 @@ $().ready(function() {
 				type: "POST",
 				async: false,
 				dataType: 'json',
-				url: "?ajx=content_html_updatevis",
+				url: "ajax/content_html_updatevis",
 				data: "code_content_html="+code_content_html+"&vis_content_html="+vis_content_html,
 				success: function(jsonMsg){
 					// variable retour

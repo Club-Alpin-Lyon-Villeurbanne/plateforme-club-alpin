@@ -195,7 +195,7 @@
             $.ajax({
                 type: "POST",
                 dataType : "json",
-                url: "/?ajx=operations",
+                url: "/ajax/operations",
                 data: { operation: "renew_date_article", id_article: articleId },
                 success: function(jsonMsg){
                     if(jsonMsg.success){

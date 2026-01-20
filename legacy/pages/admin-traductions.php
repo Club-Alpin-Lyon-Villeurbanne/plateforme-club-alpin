@@ -186,7 +186,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
 			type: "POST",
 			async: false,
 			dataType: 'json',
-			url: "/?ajx=traductions_save",
+			url: "/ajax/traductions_save",
 			data: datas,
 			success: function(jsonMsg){
 				if(anim){
