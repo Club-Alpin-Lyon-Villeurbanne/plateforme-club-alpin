@@ -255,7 +255,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 			type: "POST",
 			async: false,
 			dataType: 'json',
-			url: "/?ajx=contenus_save",
+			url: "/ajax/contenus_save",
 			data: "id="+id+"&val="+ $.URLEncode(valAscii),
 			success: function(jsonMsg){
 				if(anim){

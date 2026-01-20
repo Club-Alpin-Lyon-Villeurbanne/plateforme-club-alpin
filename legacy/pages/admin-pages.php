@@ -145,7 +145,7 @@ if (isset($currentPage['admin_page']) && $currentPage['admin_page'] && !isGrante
 				stop:function(i){
 					$.ajax({
 						type: "GET",
-						url: "/?ajx=pages_reorder",
+						url: "/ajax/pages_reorder",
 						data: getDatas()
 					})
 				}

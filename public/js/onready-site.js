@@ -224,7 +224,7 @@ $().ready(function() {
 			$.ajax({
 				type: "POST",
 				dataType : "json",
-				url: "/?ajx=operations",
+				url: "/ajax/operations",
 				data: datas,
 				beforeSend: function(jsonMsg){ 
 					form.addClass('running');

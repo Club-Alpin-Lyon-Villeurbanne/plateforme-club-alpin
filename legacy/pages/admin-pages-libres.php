@@ -199,7 +199,7 @@ if (!isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
             $.ajax({
                 type: "POST",
                 dataType : "json",
-                url: "/?ajx=operations",
+                url: "/ajax/operations",
                 data: datas,
                 success: function(jsonMsg){
                     if(jsonMsg.success){
