@@ -26,7 +26,7 @@ class LegacyController extends AbstractController
         });
     }
 
-    #[Route(path: '/ajax/{file}', name: 'legacy_ajax', requirements: ['p1' => '[a-zA-Z0-9-]+'], methods: ['GET', 'POST'])]
+    #[Route(path: '/ajax/{file}', name: 'legacy_ajax', requirements: ['file' => '[a-zA-Z0-9-]+'], methods: ['GET', 'POST'])]
     public function ajaxAction($file): StreamedResponse
     {
         return new StreamedResponse(function () use ($file) {
