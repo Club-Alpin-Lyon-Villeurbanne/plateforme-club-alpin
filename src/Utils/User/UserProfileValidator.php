@@ -19,7 +19,6 @@ final readonly class UserProfileValidator
     public function __construct(
         private Security $security,
         private UrlGeneratorInterface $urlGenerator,
-        private string $legacyFtpPath
     ) {
     }
 
@@ -110,10 +109,10 @@ final readonly class UserProfileValidator
      */
     private function photoExists(UserInterface $user): bool
     {
-        /* $legacyFtpPath = "%kernel.project_dir%/public/ftp/" */
-        /** @var User $user */
-        $photoPath = $this->legacyFtpPath . 'user/' . $user->getId() . '/min-profil.jpg';
+        if (!$user instanceof User) {
+            return false;
+        }
 
-        return file_exists($photoPath);
+        return !empty($user->getProfilePicture());
     }
 }
