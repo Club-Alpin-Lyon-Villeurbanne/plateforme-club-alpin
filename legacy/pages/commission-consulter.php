@@ -16,15 +16,15 @@ use App\Security\SecurityConstants;
             $id_commission = (int) $_GET['id_commission'];
 
 $commissionTmp = false;
-$req = 'SELECT * FROM caf_commission WHERE ';
 if ($id_commission) {
+	$req = 'SELECT * FROM caf_commission WHERE ';
     $req .= " id_commission = $id_commission ";
-}
-$req .= ' LIMIT 1';
+	$req .= ' LIMIT 1';
 
-$handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-    $commissionTmp = $handle;
+	$handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+	while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+		$commissionTmp = $handle;
+	}
 }
 
 if (!$commissionTmp) {
