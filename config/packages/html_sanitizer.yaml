@@ -6,6 +6,7 @@ framework:
                 allow_safe_elements: true
                 allow_elements:
                     a: ['href', 'title', 'target', 'rel']
+                    p: ['style']
                     img: ['src', 'alt', 'title', 'width', 'height', 'class', 'style']
                     figure: ['class', 'style']
                     iframe: ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen', 'title']
