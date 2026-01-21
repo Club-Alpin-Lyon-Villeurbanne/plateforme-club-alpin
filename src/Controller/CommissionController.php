@@ -168,18 +168,21 @@ class CommissionController extends AbstractController
 
             $this->addFlash('success', 'Les champs obligatoires ont bien été enregistrés pour ' . $commission->getTitle() . '.');
 
+            /** @var User $user */
+            $user = $this->getUser();
+
             // prévenir les resp. de comm
             $responsables = $userAttrRepository->getResponsablesByCommission($commission);
             /** @var UserAttr $responsable */
             foreach ($responsables as $responsable) {
-                if ($this->getUser() !== $responsable->getUser()) {
+                if ($user !== $responsable->getUser()) {
                     $mailer->send(
                         $responsable->getUser(),
                         'transactional/commission-champs-obligatoires-modifies',
                         [
                             'commission' => $commission->getTitle(),
-                            'user' => $this->getUser()->getFullName(),
-                            'profile_url' => $this->generateUrl('user_full', ['id' => $this->getUser()->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                            'user' => $user->getFullName(),
+                            'profile_url' => $this->generateUrl('user_full', ['id' => $user->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                         ]
                     );
                 }
@@ -231,6 +234,44 @@ class CommissionController extends AbstractController
             'niveaux' => $niveaux,
             'formations' => $formations,
             'users' => $users,
+        ];
+    }
+
+    #[Route('/responsables.html', name: 'responsables', priority: 10)]
+    #[Template('commission/responsables.html.twig')]
+    public function responsables(
+        CommissionRepository $commissionRepository,
+        UserAttrRepository $userAttrRepository,
+    ): array {
+        $commissions = $commissionRepository->findBy(['vis' => true], ['title' => 'ASC']);
+
+        $commissionsData = [];
+        foreach ($commissions as $commission) {
+            $encadrants = [];
+            $seenUsers = [];
+
+            foreach ($userAttrRepository->listAllEncadrants($commission) as $userAttr) {
+                $userId = $userAttr->getUser()->getId();
+                if (!in_array($userId, $seenUsers, true)) {
+                    $encadrants[] = [
+                        'userAttr' => $userAttr,
+                        'user' => $userAttr->getUser(),
+                        'role' => $userAttr->getUserType()->getTitle(),
+                    ];
+                    $seenUsers[] = $userId;
+                }
+            }
+
+            if (!empty($encadrants)) {
+                $commissionsData[] = [
+                    'commission' => $commission,
+                    'encadrants' => $encadrants,
+                ];
+            }
+        }
+
+        return [
+            'commissionsData' => $commissionsData,
         ];
     }
 }
