@@ -13,7 +13,7 @@ use App\Security\SecurityConstants;
 		<div class="main-type">
 			<?php
             // vérification de l'ID de commission
-            $id_commission = (int) $_GET['id_commission'];
+            $id_commission = filter_input(INPUT_GET, 'id_commission', FILTER_VALIDATE_INT) ?: 0;
 
 $commissionTmp = false;
 if ($id_commission) {
