@@ -14,7 +14,6 @@ use App\Security\SecurityConstants;
 			<?php
             // vérification de l'ID de commission
             $id_commission = (int) $_GET['id_commission'];
-$code_commission = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_GET['code_commission']);
 
 if (!(isGranted(SecurityConstants::ROLE_CONTENT_MANAGER) || allowed('comm_edit') || (user() && getUser()->hasAttribute(UserAttr::RESPONSABLE_COMMISSION, $code_commission)))) {
     echo '<p class="erreur">Vous n\'avez pas les droits nécessaires pour afficher cette page</p>';
@@ -23,8 +22,6 @@ if (!(isGranted(SecurityConstants::ROLE_CONTENT_MANAGER) || allowed('comm_edit')
     $req = 'SELECT * FROM caf_commission WHERE ';
     if ($id_commission) {
         $req .= " id_commission = $id_commission ";
-    } elseif ($code_commission) {
-        $req .= " code_commission = '$code_commission' ";
     }
     $req .= ' LIMIT 1';
 
@@ -54,6 +51,7 @@ if (!(isGranted(SecurityConstants::ROLE_CONTENT_MANAGER) || allowed('comm_edit')
 								|| code_usertype LIKE 'encadrant'
 								|| code_usertype LIKE 'stagiaire'
 								|| code_usertype LIKE 'coencadrant'
+								|| code_usertype LIKE 'benevole_encadrement'
 							)
 						AND usertype_user_attr = id_usertype
 						AND user_user_attr = id_user
@@ -62,7 +60,7 @@ if (!(isGranted(SecurityConstants::ROLE_CONTENT_MANAGER) || allowed('comm_edit')
 						";
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $benvoles_emails = [];
-        echo '<h1>BÉNÉVOLES D\'ENCADREMENT</h1>';
+        echo '<h1>ENCADREMENT</h1>';
         echo '<table class="big-lines-table"><tbody>';
         while ($row = $result->fetch_assoc()) {
             echo '<tr>
