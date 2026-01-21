@@ -8,10 +8,12 @@
     {% import 'macros/contact-form.html.twig' as contact_macro %}
     {% import 'macros/taux-presence.html.twig' as taux_macro %}
     {% import 'macros/user-content.html.twig' as content_macro %}
+    {% import 'macros/user-image.html.twig' as user_image %}
 <div style="padding:20px">
     {% if app.user %}
         <!-- AVATAR-->
-        <img src="{{ media_thumbnail(user.profilePicture, 'pic_profile_thumbnail') }}" alt="Photo de profil" title="{{ user.nickname }}" style="float:left; width:35%; box-shadow: 0 0 12px -5px gray; border: 1px solid white;" />
+        {{ user_image.user_img(user, '', '', 'float:left; width:35%; box-shadow: 0 0 12px -5px gray; border: 1px solid white;') }}
+
         <div style="float:right; width:62%">
 
             <!-- contacter -->

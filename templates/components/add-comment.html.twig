@@ -1,11 +1,11 @@
+{% import 'macros/user-image.html.twig' as user_image %}
+
 <form action="{{ path('article_comment', {'id': article.id}) }}" method="post" id="comment-form" class="loading">
     <input type="hidden" name="csrf_token" value="{{ csrf_token('article_comment') }}" />
     <input type="hidden" name="unlock1" value="0" />
 
     <div style="float:left; width:75px; padding-top:3px;">
-        {% if app.user.profilePicture is defined %}
-            <img src="{{ media_thumbnail(app.user.profilePicture, 'min_profile_thumbnail') }}" alt="Profil" title="{{ app.user.nickname }}" />
-        {% endif %}
+        {{ user_image.user_img(app.user, 'pic') }}
     </div>
     <div style="float:left; width:530px;">
         <textarea name="cont_comment" class="type2" style="width:460px; height:90px;" placeholder="Laisser un commentaire" ></textarea>
