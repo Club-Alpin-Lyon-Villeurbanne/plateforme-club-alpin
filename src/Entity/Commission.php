@@ -90,7 +90,7 @@ class Commission
     private Collection $formations;
 
     /** @var Collection<int, FormationReferentielGroupeCompetence> */
-    #[ORM\ManyToMany(targetEntity: FormationReferentielGroupeCompetence::class)]
+    #[ORM\ManyToMany(targetEntity: FormationReferentielGroupeCompetence::class, inversedBy: 'commissions')]
     #[ORM\JoinTable(name: 'formation_commission_groupe_competence')]
     #[ORM\JoinColumn(name: 'commission_id', referencedColumnName: 'id_commission', onDelete: 'CASCADE')]
     #[ORM\InverseJoinColumn(name: 'groupe_competence_id', referencedColumnName: 'id', onDelete: 'CASCADE')]

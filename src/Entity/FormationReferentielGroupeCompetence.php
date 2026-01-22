@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\FormationReferentielGroupeCompetenceRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
@@ -28,6 +30,15 @@ class FormationReferentielGroupeCompetence
 
     #[ORM\Column(type: Types::STRING, length: 100, nullable: true)]
     private ?string $activite = null;
+
+    /** @var Collection<int, Commission> */
+    #[ORM\ManyToMany(targetEntity: Commission::class, mappedBy: 'groupesCompetences')]
+    private Collection $commissions;
+
+    public function __construct()
+    {
+        $this->commissions = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -68,5 +79,11 @@ class FormationReferentielGroupeCompetence
         $this->activite = $activite;
 
         return $this;
+    }
+
+    /** @return Collection<int, Commission> */
+    public function getCommissions(): Collection
+    {
+        return $this->commissions;
     }
 }
