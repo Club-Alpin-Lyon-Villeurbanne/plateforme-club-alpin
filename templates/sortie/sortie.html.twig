@@ -243,7 +243,7 @@
 
         <div class="tw-flex tw-gap-4">
             {% if is_granted('SORTIE_DUPLICATE', event) %}
-            <form action="{{ path('sortie_duplicate', { id: event.id, mode: 'full' }) }}" method="post" class="loading">
+            <form action="{{ path('sortie_duplicate', { event: event.id, mode: 'full' }) }}" method="post" class="loading">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
 
                 <a href="javascript:void(0)" onclick="$(this).parents('form').submit()" title="Créer une sortie avec les mêmes participants et les mêmes paramètres" class="nice2">
@@ -251,7 +251,7 @@
                     Dupliquer cette sortie avec ce groupe
                 </a>
             </form>
-                <form action="{{ path('sortie_duplicate', { id: event.id, mode: 'empty' }) }}" method="post" class="loading">
+                <form action="{{ path('sortie_duplicate', { event: event.id, mode: 'empty' }) }}" method="post" class="loading">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
 
                     <a href="javascript:void(0)" onclick="$(this).parents('form').submit()" title="Créer une sortie avec les mêmes paramètres (sans participant)" class="nice2">

@@ -68,6 +68,7 @@ class SortieController extends AbstractController
 
     #[Route(path: '/creer-une-sortie', name: 'creer_sortie', methods: ['GET', 'POST'])]
     #[Route(path: '/modifier-une-sortie/{event}', name: 'modifier_sortie', requirements: ['event' => '\d+'], methods: ['GET', 'POST'])]
+    #[Route(path: '/sortie/{event}/duplicate/{mode}', name: 'sortie_duplicate', requirements: ['event' => '\d+', 'mode' => 'full|empty'], methods: ['POST'], priority: '10')]
     #[Template('sortie/formulaire.html.twig')]
     public function create(
         Request $request,
@@ -76,7 +77,9 @@ class SortieController extends AbstractController
         UserRights $userRights,
         Mailer $mailer,
         ?Evt $event = null,
+        ?string $mode = null,
     ): array|RedirectResponse {
+        /** @var User $user */
         $user = $this->getUser();
         $isUpdate = true;
         $commission = $commissionRepository->findOneBy(['code' => $request->query->get('commission')]);
@@ -98,6 +101,9 @@ class SortieController extends AbstractController
                 new \DateTimeImmutable()
             );
             $event->setJoinStartDate(new \DateTimeImmutable());
+            $isUpdate = false;
+        } elseif (!empty($mode)) {
+            $event = $this->duplicate($request, $event, $mode);
             $isUpdate = false;
         }
 
@@ -870,8 +876,7 @@ class SortieController extends AbstractController
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
 
-    #[Route(path: '/sortie/{id}/duplicate/{mode}', name: 'sortie_duplicate', requirements: ['id' => '\d+', 'mode' => 'full|empty'], methods: ['POST'], priority: '10')]
-    public function sortieDuplicate(Request $request, Evt $event, EntityManagerInterface $em, string $mode = 'empty'): RedirectResponse
+    protected function duplicate(Request $request, Evt $event, string $mode = 'empty'): Evt
     {
         if (!$this->isGranted('SORTIE_DUPLICATE', $event)) {
             throw new AccessDeniedHttpException('Not allowed');
@@ -915,14 +920,11 @@ class SortieController extends AbstractController
         // dupliquer les participants ?
         if ('full' === $mode) {
             foreach ($event->getParticipations() as $participation) {
-                $join = $newEvent->addParticipation($participation->getUser(), $participation->getRole(), $participation->getStatus());
-                $em->persist($join);
+                $newEvent->addParticipation($participation->getUser(), $participation->getRole(), $participation->getStatus());
             }
         }
-        $em->persist($newEvent);
-        $em->flush();
 
-        return $this->redirectToRoute('modifier_sortie', ['event' => $newEvent->getId()]);
+        return $newEvent;
     }
 
     /**
