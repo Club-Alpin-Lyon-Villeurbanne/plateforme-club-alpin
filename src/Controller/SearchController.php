@@ -43,7 +43,7 @@ class SearchController extends AbstractController
         }
 
         $searchResultsPerPage = $this->getParameter('search_results_per_page');
-        $searchParam = trim($request->request->get('str'));
+        $searchParam = trim((string) $request->request->get('str', ''));
 
         // vérification des caractères
         if (empty($searchParam) || mb_strlen($searchParam) < 3) {
