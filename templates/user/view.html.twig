@@ -104,12 +104,32 @@
             {% endset %}
             {{ view_macro.field_row('Articles :', articles_content) }}
 
+            {% set role_counts = {} %}
+            {% for event in user_events %}
+                {% for participation in event.participations %}
+                    {% if participation.user.id == user.id %}
+                        {% set role = participation.role %}
+                        {% set role_counts = role_counts|merge({(role): (role_counts[role]|default(0) + 1)}) %}
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+
+            {% set events_label %}
+                Sorties :
+                {% if role_counts|length > 0 %}
+                    <br>
+                    {% for role, count in role_counts|sort|reverse %}
+                        &nbsp;&nbsp;&nbsp;- {{ role }} : {{ count }}<br />
+                    {% endfor %}
+                {% endif %}
+            {% endset %}
+
             {% set events_content %}
                 {% for event in user_events %}
                     <a target="_blank" href="{{ path('sortie', {'code': event.code, 'id': event.id, 'forceshow': true}) }}">{{ event.startDate|date('d/m/Y') }} - {{ event.commission.title }} - {{ event.titre }}</a><br>
                 {% endfor %}
             {% endset %}
-            {{ view_macro.field_row('Sorties :', events_content) }}
+            {{ view_macro.field_row(events_label, events_content) }}
 
             {{ view_macro.field_row('Rôles spécifiques :', right_macro.user_rights(club_roles, comm_roles)) }}
 
