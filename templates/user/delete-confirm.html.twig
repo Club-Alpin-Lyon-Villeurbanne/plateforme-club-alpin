@@ -1,0 +1,25 @@
+{% extends 'base-light.html.twig' %}
+
+{% block title %}Supprimer un utilisateur{% endblock %}
+
+{% block body %}
+    <div id="includer-stuff">
+        <h1>Supprimer le compte de l'utilisateur : {{ user.fullname }}</h1>
+        <br />
+
+        <p>
+        <h2>
+            Voulez-vous vraiment supprimer ce compte utilisateur ?<br />
+            Cette personne ne pourra plus se connecter au site ni être ajoutée aux sorties.
+        </h2>
+        <br />
+        </p>
+
+        <form action="{{ path('user_disable', {'id': user.id}) }}" method="post">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token('delete_user') }}" />
+
+            <button type="submit" class="nice2 orange">Supprimer</button>
+            <a href="javascript:window.parent.jQuery.fancybox.close();" class="nice2">Annuler</a>
+        </form>
+    </div>
+{% endblock %}
