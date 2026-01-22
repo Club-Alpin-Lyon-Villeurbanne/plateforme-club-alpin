@@ -1,0 +1,106 @@
+{% set not_wide_content = true %}
+{% extends template %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        #user_form label, #user_form .mini {
+            display: block;
+        }
+        #user_form label {
+            margin-top: 10px;
+        }
+        .no-border {
+            background: none;
+            border: none;
+            font-size: 1rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    {% import 'macros/user-image.html.twig' as user_image %}
+
+	<div style="padding:20px 10px; text-align:left;">
+        <h1>{{ title }}</h1>
+
+        {% if is_update %}
+            {{ easy_include('user_update', '') }}
+        {% else %}
+            {{ easy_include('user_create', '') }}
+        {% endif %}
+        <hr />
+
+        {% if is_update %}
+            <table>
+                <tr>
+                    <td style="width:100px">
+                        {{ user_image.user_img(user, 'pic', '', 'max-width:100%') }}
+                    </td>
+                    <td>
+                        <h1>
+                            {{ user.fullName }}<br/>
+                            (<a href="{{ path('user_full', {'id': user.id}) }}" title="Fiche profil" target="_top">{{ user.nickname }}</a>)
+                        </h1>
+                    </td>
+                </tr>
+            </table>
+            <br />
+
+        Date d'adhésion ou de renouvellement : <b>
+            {% if user.doitRenouveler or user.alerteRenouveler %}
+                <span class="alerte">
+            {% endif %}
+
+            {% if user.joinDate %}
+                {{ user.joinDate|date('d/m/Y') }}
+            {% else %}
+                aucune date connue.
+            {% endif %}
+
+            {% if user.doitRenouveler or user.alerteRenouveler %}
+                </span>
+            {% endif %}
+        </b>
+        <br /><br />
+        {% endif %}
+
+        {{ form_start(form, {
+                attr: { 'id': 'user_form'}
+            }) }}
+            {% if is_update is same as (false) %}
+                {{ form_row(form.firstname) }}
+                {{ form_row(form.lastname) }}
+            {% endif %}
+
+            {{ form_row(form.email) }}
+
+            {% if is_update is same as (false) %}
+                {{ form_row(form.cafnum) }}
+                {{ form_row(form.birthdate) }}
+
+                {{ form_row(form.tel) }}
+                {{ form_row(form.tel2) }}
+
+                <label for="user_full_adresse">Adresse</label>
+                {{ form_row(form.adresse) }}
+
+                {{ form_errors(form.cp) }}
+                {{ form_errors(form.ville) }}
+                {{ form_widget(form.cp) }}
+                {{ form_widget(form.ville) }}
+
+                {{ form_row(form.pays) }}
+            {% endif %}
+            <br>
+            <button type="submit" class="bold no-border">
+                <img src="/img/base/save.png" alt="Enregistrer" title="Enregistrer" style="height:35px; vertical-align: middle" />
+                Enregistrer
+            </button>
+        {{ form_end(form) }}
+
+        <br style="clear:both" />
+    </div>
+{% endblock %}
