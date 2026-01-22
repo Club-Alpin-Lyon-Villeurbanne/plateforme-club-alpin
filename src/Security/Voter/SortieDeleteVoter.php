@@ -42,7 +42,8 @@ class SortieDeleteVoter extends Voter
             return false;
         }
 
-        if ($subject->getExpenseReports()->count() > 0) {
+        $expenseReports = $subject->getExpenseReports();
+        if (null !== $expenseReports && $expenseReports->count() > 0) {
             return false;
         }
 
