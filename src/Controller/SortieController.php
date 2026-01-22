@@ -103,6 +103,7 @@ class SortieController extends AbstractController
             $event->setJoinStartDate(new \DateTimeImmutable());
             $isUpdate = false;
         } elseif (!empty($mode)) {
+            $commission = $event->getCommission();
             $event = $this->duplicate($request, $event, $mode);
             $isUpdate = false;
         }
