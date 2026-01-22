@@ -475,6 +475,7 @@ class UserController extends AbstractController
         Request $request,
         UserRights $userRights,
         UserRepository $userRepository,
+        EvtRepository $eventRepository,
         string $page = 'users-list',
         ?string $show = null
     ): JsonResponse {
@@ -489,10 +490,12 @@ class UserController extends AbstractController
         $length = $request->query->getInt('length', 100);
         $searchText = $request->query->all()['search']['value'] ?? null;
         $order = $request->query->all()['order'] ?? null;
+        $eventId = $request->query->getInt('event', 0);
+        $usersToIgnore = $this->getEventParticipants($eventId, $eventRepository);
 
         $recordsFiltered = $userRepository->getUsersCount($show, $searchText);
         $recordsTotal = $userRepository->getUsersCount($show);
-        $data = $userRepository->getUsers($show, $start, $length, $searchText, $order);
+        $data = $userRepository->getUsers($show, $start, $length, $searchText, $order, $usersToIgnore);
 
         $img_lock = '<img src="/img/base/lock_gray.png" alt="caché"  title="Vous devez disposer de droits supérieurs pour afficher cette information" />';
 
@@ -639,6 +642,22 @@ class UserController extends AbstractController
             'recordsFiltered' => $recordsFiltered,
             'data' => $results,
         ]);
+    }
+
+    protected function getEventParticipants(int $eventId, EvtRepository $eventRepository): array
+    {
+        if (empty($eventId)) {
+            return [];
+        }
+
+        $event = $eventRepository->find($eventId);
+        $eventParticipants = [];
+        $participations = $event->getParticipations(null, null);
+        foreach ($participations as $participation) {
+            $eventParticipants[] = $participation->getUser();
+        }
+
+        return $eventParticipants;
     }
 
     /**

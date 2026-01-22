@@ -230,9 +230,15 @@ SQL;
         ;
     }
 
-    public function getUsers(string $type, int $first = 1, int $perPage = 100, string $searchText = '', array $order = [])
+    public function getUsers(string $type, int $first = 1, int $perPage = 100, string $searchText = '', array $order = [], array $usersToIgnore = [])
     {
         $qb = $this->getQueryBuilder($type, $searchText);
+        if (!empty($usersToIgnore)) {
+            $qb
+                ->andWhere('u NOT IN (:usersToIgnore)')
+                ->setParameter('usersToIgnore', $usersToIgnore)
+            ;
+        }
         if (!empty($order)) {
             foreach ($order as $field) {
                 $dir = $field['dir'];

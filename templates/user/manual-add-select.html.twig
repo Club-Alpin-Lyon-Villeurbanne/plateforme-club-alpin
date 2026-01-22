@@ -27,7 +27,10 @@
             $('.datatables').dataTable({
                 processing: true,
                 serverSide: true,
-                ajax: '{{ path('users_data', {'page': 'manual-add', 'show': show}) }}',
+                ajax: {
+                    url: '{{ path('users_data', {'page': 'manual-add', 'show': show}) }}',
+                    data: { event: {{ event.id }} }
+                },
                 columns: [
                     { data: 'check' },
                     { data: 'cafnum' },
