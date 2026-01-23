@@ -276,6 +276,7 @@ class SortieController extends AbstractController
             'event' => $event,
             'commissions' => $availableCommissions,
             'current_commission' => $commission,
+            'form_action' => $isUpdate ? $this->generateUrl('modifier_sortie', ['event' => $event->getId()]) : $this->generateUrl('creer_sortie'),
         ];
     }
 

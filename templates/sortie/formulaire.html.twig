@@ -10,6 +10,7 @@
         {% form_theme form with ['form/encadrants_checkbox_theme.html.twig', 'form/field_error.html.twig'] %}
 
         {{ form_start(form, {
+            action: form_action,
             attr: {class: 'padded-form', 'id': 'event_form'}
         }) }}
 
