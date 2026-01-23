@@ -3,6 +3,7 @@
 {% block title %}Mon compte{% endblock %}
 
 {% block body %}
+    {% import 'macros/user-image.html.twig' as user_image %}
 <div id="left1">
     <div class="main-type">
         <h1>Mon profil - Gestion de mon compte</h1>
@@ -87,15 +88,14 @@
         <br />
         <div id="edit_profil_image">
             <!-- suppression de l'image -->
-            {% if user.profilePicture is defined %}
+            {% if user.profilePicture %}
                 <span class="delete">
                     <a href="{{ path('remove_my_profile_picture') }}" onclick="return confirm('Voulez-vous vraiment supprimer cette photo de profil ?')">
                     <img src="/img/base/delete.png" alt="DELETE" title="Supprimer cette image" />
                     </a>
                 </span>
-
-                <img class="imgprofil" src="{{ media_thumbnail(user.profilePicture, 'profile_thumbnail') }}" alt="Photo de profil" title="{{ user.nickname }}" />
             {% endif %}
+            {{ user_image.user_img(user, 'min', 'imgprofil', '') }}
         </div>
 
         <b>Votre pseudonyme :</b>

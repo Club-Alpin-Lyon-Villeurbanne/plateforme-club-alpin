@@ -1,0 +1,15 @@
+{% macro user_img(user, type = 'min', class = '', style = '') %}
+    {% set thumb_type = type %}
+    {% set legacy_type = type %}
+
+    {% if type is same as('min') or type is same as('pic') %}
+        {% set thumb_type = type ~ '_' %}
+        {% set legacy_type = type ~ '-' %}
+    {% endif %}
+
+    {% if user.profilePicture %}
+        <img class="{{ class }}" style="{{ style }}" src="{{ media_thumbnail(user.profilePicture, thumb_type ~ 'profile_thumbnail') }}" alt="Photo de profil" title="{{ user.nickname }}" />
+    {% else %}
+        <img class="{{ class }}" style="{{ style }}" src="/ftp/user/0/{{ legacy_type }}profil.jpg" alt="Photo de profil" title="{{ user.nickname }}" />
+    {% endif %}
+{% endmacro %}

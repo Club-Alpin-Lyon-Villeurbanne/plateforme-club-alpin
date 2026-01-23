@@ -1,6 +1,7 @@
 {% set current_commission = current_commission | default(null) %}
 {% set current_commission_code = current_commission.code | default('') %}
 {% set impersonification_style = is_granted('IS_IMPERSONATOR') ? "background-color:#df4949;" : "" %}
+{% import 'macros/user-image.html.twig' as user_image %}
 
 {% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_CONTENT_MANAGER')) %}
     {% include 'admin/menu.html.twig' %}
@@ -83,9 +84,7 @@
                     {% if notifications > 0 %}
                         <div class="notification-user"><span>{{ notifications }}</span></div>
                     {% endif %}
-                    {% if app.user.profilePicture is defined %}
-                        <img src="{{ media_thumbnail(app.user.profilePicture, 'min_profile_thumbnail') }}" alt="Profil" title="{{ app.user.nickname }}" />
-                    {% endif %}
+                    {{ user_image.user_img(app.user, 'pic') }}
                     <p>
                         Bonjour <br />
                         <b>{{ app.user.getFirstname() }},</b>
@@ -363,9 +362,7 @@
 
                     <div style="width:290px; float:right; padding:0px 10px 0 0; ">
 
-                        {% if app.user.profilePicture is defined %}
-                            <img src="{{ media_thumbnail(app.user.profilePicture, 'min_profile_thumbnail') }}" alt="Profil" title="{{ app.user.nickname }}" style="float:left; padding:0 10px 0 0;" />
-                        {% endif %}
+                        {{ user_image.user_img(app.user, 'pic', '', 'float:left; padding:0 10px 0 0;') }}
 
                         {% if is_granted('IS_IMPERSONATOR') %}
                             <p style="border: 2px solid red; border-radius: 5px; font-size: 0.9rem; padding:10px;">
