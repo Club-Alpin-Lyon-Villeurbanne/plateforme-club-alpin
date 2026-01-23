@@ -13,32 +13,28 @@ use App\Security\SecurityConstants;
 		<div class="main-type">
 			<?php
             // vérification de l'ID de commission
-            $id_commission = (int) $_GET['id_commission'];
-$code_commission = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_GET['code_commission']);
+            $id_commission = filter_input(INPUT_GET, 'id_commission', FILTER_VALIDATE_INT) ?: 0;
 
-if (!(isGranted(SecurityConstants::ROLE_CONTENT_MANAGER) || allowed('comm_edit') || (user() && getUser()->hasAttribute(UserAttr::RESPONSABLE_COMMISSION, $code_commission)))) {
-    echo '<p class="erreur">Vous n\'avez pas les droits nécessaires pour afficher cette page</p>';
+$commissionTmp = false;
+if ($id_commission) {
+	$req = 'SELECT * FROM caf_commission WHERE ';
+    $req .= " id_commission = $id_commission ";
+	$req .= ' LIMIT 1';
+
+	$handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
+	while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
+		$commissionTmp = $handle;
+	}
+}
+
+if (!$commissionTmp) {
+    echo '<p class="erreur"> ID invalide</p>';
 } else {
-    $commissionTmp = false;
-    $req = 'SELECT * FROM caf_commission WHERE ';
-    if ($id_commission) {
-        $req .= " id_commission = $id_commission ";
-    } elseif ($code_commission) {
-        $req .= " code_commission = '$code_commission' ";
-    }
-    $req .= ' LIMIT 1';
-
-    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-    while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-        $commissionTmp = $handle;
-    }
-
-    if (!$commissionTmp) {
-        echo '<p class="erreur"> ID invalide</p>';
+    $code_commission = $commissionTmp['code_commission'];
+    if (!(isGranted(SecurityConstants::ROLE_CONTENT_MANAGER) || allowed('comm_edit') || (user() && getUser()->hasAttribute(UserAttr::RESPONSABLE_COMMISSION, $code_commission)))) {
+        echo '<p class="erreur">Vous n\'avez pas les droits nécessaires pour afficher cette page</p>';
     } else {
         echo "<h1>Fiche de la commission '" . $commissionTmp['title_commission'] . "'</h1><hr />";
-
-        // print_r ($commissionTmp);
 
         // ENCADRANTS
         $req = " SELECT
@@ -54,6 +50,7 @@ if (!(isGranted(SecurityConstants::ROLE_CONTENT_MANAGER) || allowed('comm_edit')
 								|| code_usertype LIKE 'encadrant'
 								|| code_usertype LIKE 'stagiaire'
 								|| code_usertype LIKE 'coencadrant'
+								|| code_usertype LIKE 'benevole_encadrement'
 							)
 						AND usertype_user_attr = id_usertype
 						AND user_user_attr = id_user
@@ -62,7 +59,7 @@ if (!(isGranted(SecurityConstants::ROLE_CONTENT_MANAGER) || allowed('comm_edit')
 						";
         $result = LegacyContainer::get('legacy_mysqli_handler')->query($req);
         $benvoles_emails = [];
-        echo '<h1>BÉNÉVOLES D\'ENCADREMENT</h1>';
+        echo '<h1>ENCADREMENT</h1>';
         echo '<table class="big-lines-table"><tbody>';
         while ($row = $result->fetch_assoc()) {
             echo '<tr>
