@@ -470,6 +470,10 @@ class UserController extends AbstractController
         ];
     }
 
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
     #[Route('/users/data/{page}/{show}', name: 'users_data')]
     public function data(
         Request $request,
@@ -493,8 +497,8 @@ class UserController extends AbstractController
         $eventId = $request->query->getInt('event', 0);
         $usersToIgnore = $this->getEventParticipants($eventId, $eventRepository);
 
-        $recordsFiltered = $userRepository->getUsersCount($show, $searchText);
-        $recordsTotal = $userRepository->getUsersCount($show);
+        $recordsFiltered = $userRepository->getUsersCount($show, $searchText, $usersToIgnore);
+        $recordsTotal = $userRepository->getUsersCount($show, '', $usersToIgnore);
         $data = $userRepository->getUsers($show, $start, $length, $searchText, $order, $usersToIgnore);
 
         $img_lock = '<img src="/img/base/lock_gray.png" alt="caché"  title="Vous devez disposer de droits supérieurs pour afficher cette information" />';
@@ -651,6 +655,10 @@ class UserController extends AbstractController
         }
 
         $event = $eventRepository->find($eventId);
+        if (!$event instanceof Evt) {
+            return [];
+        }
+
         $eventParticipants = [];
         $participations = $event->getParticipations(null, null);
         foreach ($participations as $participation) {
