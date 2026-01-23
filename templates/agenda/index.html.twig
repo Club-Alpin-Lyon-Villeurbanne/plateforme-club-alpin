@@ -175,6 +175,22 @@
             </a>
         {% endif %}
 
+        <br style="clear:both" /><br />
+
+        <!-- ICS Calendar Subscription -->
+        <a href="{{ url('ics_global')|replace({'https://': 'webcal://', 'http://': 'webcal://'}) }}"
+           title="S'abonner au calendrier de toutes les sorties du club (format iCal)" class="nice2">
+            <img src="/img/base/calendar_link.png" alt="iCal" title="" /> &nbsp;
+            S'abonner au calendrier du club
+        </a>
+        {% if current_commission %}
+            <a href="{{ url('ics_commission', {'code': current_commission.code})|replace({'https://': 'webcal://', 'http://': 'webcal://'}) }}"
+               title="S'abonner au calendrier « {{ current_commission.title }} » uniquement (format iCal)" class="nice2">
+                <img src="/img/base/calendar_link.png" alt="iCal" title="" /> &nbsp;
+                S'abonner à « {{ current_commission.title }} »
+            </a>
+        {% endif %}
+
         <br style="clear:both" />
     </div>
 {% endblock %}
