@@ -1,0 +1,95 @@
+{#
+    Composant pour s'abonner à un calendrier ICS
+
+    Paramètres:
+    - ics_url: URL absolue du flux ICS (https://...)
+    - title: Titre du calendrier (pour l'affichage)
+    - button_label: Label personnalisé du bouton (optionnel)
+#}
+{% set webcal_url = ics_url|replace({'https://': 'webcal://', 'http://': 'webcal://'}) %}
+{% set encoded_webcal = webcal_url|url_encode %}
+{% set button_id = 'subscribe-cal-' ~ random() %}
+{% set display_label = button_label|default(title ? 'S\\'abonner à « ' ~ title ~ ' »' : 'S\\'abonner au calendrier') %}
+
+<div class="subscribe-calendar-wrapper" style="display:inline-block;position:relative;">
+    <button type="button" class="nice2" id="{{ button_id }}" title="S'abonner au calendrier {{ title }}">
+        <img src="/img/base/calendar_link.png" alt="iCal" style="vertical-align:middle;" /> &nbsp;
+        {{ display_label }}
+    </button>
+    <div class="subscribe-calendar-menu" id="{{ button_id }}-menu" style="display:none;position:absolute;left:0;top:100%;z-index:1000;background:#fff;border:1px solid #ccc;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.15);min-width:250px;margin-top:4px;">
+        <a href="https://calendar.google.com/calendar/render?cid={{ encoded_webcal }}" target="_blank" rel="noopener" class="subscribe-calendar-option">
+            <span class="subscribe-icon">📅</span> Google Calendar
+        </a>
+        <a href="https://outlook.live.com/calendar/0/addfromweb?url={{ encoded_webcal }}&name={{ title|default('Calendrier')|url_encode }}" target="_blank" rel="noopener" class="subscribe-calendar-option">
+            <span class="subscribe-icon">📬</span> Outlook.com
+        </a>
+        <a href="https://outlook.office.com/calendar/0/addfromweb?url={{ encoded_webcal }}&name={{ title|default('Calendrier')|url_encode }}" target="_blank" rel="noopener" class="subscribe-calendar-option">
+            <span class="subscribe-icon">💼</span> Microsoft 365
+        </a>
+        <a href="{{ webcal_url }}" class="subscribe-calendar-option">
+            <span class="subscribe-icon">🍎</span> Apple Calendar / Autre
+        </a>
+        <div class="subscribe-calendar-copy">
+            <span>Ou copier l'URL :</span>
+            <input type="text" value="{{ ics_url }}" readonly onclick="this.select();">
+        </div>
+    </div>
+</div>
+
+<style>
+.subscribe-calendar-option {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s;
+}
+.subscribe-calendar-option:hover {
+    background-color: #f5f5f5;
+    color: #333;
+}
+.subscribe-icon {
+    display: inline-block;
+    width: 24px;
+    text-align: center;
+    margin-right: 8px;
+}
+.subscribe-calendar-copy {
+    padding: 10px 15px;
+    font-size: 12px;
+    color: #666;
+}
+.subscribe-calendar-copy input {
+    width: 100%;
+    margin-top: 5px;
+    padding: 5px;
+    font-size: 11px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background: #f9f9f9;
+}
+</style>
+
+<script>
+(function() {
+    const btn = document.getElementById('{{ button_id }}');
+    const menu = document.getElementById('{{ button_id }}-menu');
+
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isVisible = menu.style.display !== 'none';
+        // Fermer tous les autres menus
+        document.querySelectorAll('.subscribe-calendar-menu').forEach(m => m.style.display = 'none');
+        menu.style.display = isVisible ? 'none' : 'block';
+    });
+
+    document.addEventListener('click', function() {
+        menu.style.display = 'none';
+    });
+
+    menu.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+})();
+</script>

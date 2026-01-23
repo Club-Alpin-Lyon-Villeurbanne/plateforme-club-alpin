@@ -178,17 +178,16 @@
         <br style="clear:both" /><br />
 
         <!-- ICS Calendar Subscription -->
-        <a href="{{ url('ics_global')|replace({'https://': 'webcal://', 'http://': 'webcal://'}) }}"
-           title="S'abonner au calendrier de toutes les sorties du club (format iCal)" class="nice2">
-            <img src="/img/base/calendar_link.png" alt="iCal" title="" /> &nbsp;
-            S'abonner au calendrier du club
-        </a>
+        {% include 'components/subscribe-calendar-button.html.twig' with {
+            ics_url: url('ics_global'),
+            title: 'Toutes les sorties',
+            button_label: 'S\\'abonner au calendrier du club'
+        } %}
         {% if current_commission %}
-            <a href="{{ url('ics_commission', {'code': current_commission.code})|replace({'https://': 'webcal://', 'http://': 'webcal://'}) }}"
-               title="S'abonner au calendrier « {{ current_commission.title }} » uniquement (format iCal)" class="nice2">
-                <img src="/img/base/calendar_link.png" alt="iCal" title="" /> &nbsp;
-                S'abonner à « {{ current_commission.title }} »
-            </a>
+            {% include 'components/subscribe-calendar-button.html.twig' with {
+                ics_url: url('ics_commission', {'code': current_commission.code}),
+                title: current_commission.title
+            } %}
         {% endif %}
 
         <br style="clear:both" />
