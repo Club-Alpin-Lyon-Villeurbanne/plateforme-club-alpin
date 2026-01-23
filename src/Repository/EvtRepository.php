@@ -353,6 +353,57 @@ class EvtRepository extends ServiceEntityRepository
         ;
     }
 
+    public function searchEvents(string $searchText, int $limit, ?Commission $commission = null): array
+    {
+        return $this->getSearchQueryBuilder($searchText, $commission)
+            ->setMaxResults($limit)
+            ->orderBy('e.startDate', 'DESC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getSearchEventsCount(string $searchText, ?Commission $commission = null): int
+    {
+        return (int) $this
+            ->getSearchQueryBuilder($searchText, $commission)
+            ->select('count(e)')
+            ->getQuery()
+            ->getSingleScalarResult()
+        ;
+    }
+
+    protected function getSearchQueryBuilder(string $searchText, ?Commission $commission = null): QueryBuilder
+    {
+        return $this->getEventsByCommissionDql($commission)
+            ->innerJoin('e.user', 'u')
+            ->andWhere('e.titre LIKE :search OR e.description LIKE :search OR e.place LIKE :search OR e.rdv LIKE :search OR e.massif LIKE :search OR u.nickname LIKE :search')
+            ->setParameter('search', '%' . $searchText . '%')
+        ;
+    }
+
+    protected function getEventsByCommissionDql(?Commission $commission = null): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('e')
+            ->select('e')
+            ->where('e.status = :status')
+            ->setParameter('status', Evt::STATUS_PUBLISHED_VALIDE)
+        ;
+
+        if ($commission instanceof Commission) {
+            $qb = $qb
+                ->andWhere('e.commission = :commission')
+                ->setParameter('commission', $commission)
+            ;
+        }
+
+        return $qb;
+    }
+
     protected function getEventsToPublishQueryBuilder(array $commissions): QueryBuilder
     {
         $qb = $this->createQueryBuilder('e')
