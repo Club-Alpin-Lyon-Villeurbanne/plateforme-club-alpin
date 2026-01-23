@@ -7,7 +7,6 @@
     - button_label: Label personnalisé du bouton (optionnel)
 #}
 {% set webcal_url = ics_url|replace({'https://': 'webcal://', 'http://': 'webcal://'}) %}
-{% set encoded_webcal = webcal_url|url_encode %}
 {% set button_id = 'subscribe-cal-' ~ random() %}
 {% set display_label = button_label|default(title ? "S'abonner à « " ~ title ~ " »" : "S'abonner au calendrier") %}
 
@@ -17,13 +16,13 @@
         {{ display_label }}
     </button>
     <div class="subscribe-calendar-menu" id="{{ button_id }}-menu" style="display:none;position:absolute;left:0;top:100%;z-index:1000;background:#fff;border:1px solid #ccc;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.15);min-width:250px;margin-top:4px;">
-        <a href="https://calendar.google.com/calendar/render?cid={{ encoded_webcal }}" target="_blank" rel="noopener" class="subscribe-calendar-option">
+        <a href="https://calendar.google.com/calendar/r?cid={{ webcal_url }}" target="_blank" rel="noopener" class="subscribe-calendar-option">
             <span class="subscribe-icon">📅</span> Google Calendar
         </a>
-        <a href="https://outlook.live.com/calendar/0/addfromweb?url={{ encoded_webcal }}&name={{ title|default('Calendrier')|url_encode }}" target="_blank" rel="noopener" class="subscribe-calendar-option">
+        <a href="https://outlook.live.com/calendar/0/addfromweb?url={{ webcal_url }}&name={{ title|default('Calendrier')|url_encode }}" target="_blank" rel="noopener" class="subscribe-calendar-option">
             <span class="subscribe-icon">📬</span> Outlook.com
         </a>
-        <a href="https://outlook.office.com/calendar/0/addfromweb?url={{ encoded_webcal }}&name={{ title|default('Calendrier')|url_encode }}" target="_blank" rel="noopener" class="subscribe-calendar-option">
+        <a href="https://outlook.office.com/calendar/0/addfromweb?url={{ webcal_url }}&name={{ title|default('Calendrier')|url_encode }}" target="_blank" rel="noopener" class="subscribe-calendar-option">
             <span class="subscribe-icon">💼</span> Microsoft 365
         </a>
         <a href="{{ webcal_url }}" class="subscribe-calendar-option">
