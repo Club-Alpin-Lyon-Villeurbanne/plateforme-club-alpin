@@ -230,30 +230,9 @@ SQL;
         ;
     }
 
-    public function findUsersToRegister(array $participants, string $show = 'valid')
+    public function getUsers(string $type, int $first = 1, int $perPage = 100, string $searchText = '', array $order = [], array $usersToIgnore = []): array
     {
-        $qb = $this->createQueryBuilder('u')
-            ->where('u NOT IN (:users)')
-            ->andWhere('u.isDeleted = false')
-            ->setParameter('users', $participants)
-        ;
-        if ('valid' === $show) {
-            $qb
-                ->andWhere('u.doitRenouveler = false')
-                ->andWhere('u.nomade = false')
-            ;
-        }
-        $qb
-            ->orderBy('u.lastname', 'asc')
-            ->addOrderBy('u.firstname', 'asc')
-        ;
-
-        return $qb->getQuery()->getResult();
-    }
-
-    public function getUsers(string $type, int $first = 1, int $perPage = 100, string $searchText = '', array $order = [])
-    {
-        $qb = $this->getQueryBuilder($type, $searchText);
+        $qb = $this->getQueryBuilder($type, $searchText, $usersToIgnore);
         if (!empty($order)) {
             foreach ($order as $field) {
                 $dir = $field['dir'];
@@ -281,17 +260,17 @@ SQL;
      * @throws NonUniqueResultException
      * @throws NoResultException
      */
-    public function getUsersCount(string $type, string $searchText = ''): int
+    public function getUsersCount(string $type, string $searchText = '', array $usersToIgnore = []): int
     {
         return (int) $this
-            ->getQueryBuilder($type, $searchText)
+            ->getQueryBuilder($type, $searchText, $usersToIgnore)
             ->select('count(u)')
             ->getQuery()
             ->getSingleScalarResult()
         ;
     }
 
-    protected function getQueryBuilder(string $type, string $searchText = ''): QueryBuilder
+    protected function getQueryBuilder(string $type, string $searchText = '', array $usersToIgnore = []): QueryBuilder
     {
         $qb = $this->createQueryBuilder('u');
 
@@ -355,6 +334,12 @@ SQL;
                     OR u.cafnum LIKE :search'
                 )
                 ->setParameter('search', '%' . $searchText . '%')
+            ;
+        }
+        if (!empty($usersToIgnore)) {
+            $qb
+                ->andWhere('u NOT IN (:usersToIgnore)')
+                ->setParameter('usersToIgnore', $usersToIgnore)
             ;
         }
 

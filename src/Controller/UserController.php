@@ -216,16 +216,10 @@ class UserController extends AbstractController
             throw new BadRequestException('Jeton de validation invalide.');
         }
 
-        $eventParticipants = [];
-        $participations = $event->getParticipations(null, null);
-        foreach ($participations as $participation) {
-            $eventParticipants[] = $participation->getUser();
-        }
-        $show = $request->query->get('show') ?: 'valid';
+        $show = $request->query->get('show') ?: 'allvalid';
 
         return [
             'event' => $event,
-            'users' => $userRepository->findUsersToRegister($eventParticipants, $show),
             'show' => $show,
         ];
     }
@@ -476,11 +470,17 @@ class UserController extends AbstractController
         ];
     }
 
-    #[Route('/users/data/{show}', name: 'users_data')]
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    #[Route('/users/data/{page}/{show}', name: 'users_data')]
     public function data(
         Request $request,
         UserRights $userRights,
         UserRepository $userRepository,
+        EvtRepository $eventRepository,
+        string $page = 'users-list',
         ?string $show = null
     ): JsonResponse {
         if (!$userRights->allowed('user_see_all')) {
@@ -494,10 +494,12 @@ class UserController extends AbstractController
         $length = $request->query->getInt('length', 100);
         $searchText = $request->query->all()['search']['value'] ?? null;
         $order = $request->query->all()['order'] ?? null;
+        $eventId = $request->query->getInt('event', 0);
+        $usersToIgnore = $this->getEventParticipants($eventId, $eventRepository);
 
-        $recordsFiltered = $userRepository->getUsersCount($show, $searchText);
-        $recordsTotal = $userRepository->getUsersCount($show);
-        $data = $userRepository->getUsers($show, $start, $length, $searchText, $order);
+        $recordsFiltered = $userRepository->getUsersCount($show, $searchText, $usersToIgnore);
+        $recordsTotal = $userRepository->getUsersCount($show, '', $usersToIgnore);
+        $data = $userRepository->getUsers($show, $start, $length, $searchText, $order, $usersToIgnore);
 
         $img_lock = '<img src="/img/base/lock_gray.png" alt="caché"  title="Vous devez disposer de droits supérieurs pour afficher cette information" />';
 
@@ -593,22 +595,49 @@ class UserController extends AbstractController
                 $deleted = 'non';
             }
 
-            $results[] = [
+            // case à cocher
+            $check = '<img src="/img/label-up.png" class="tick" alt="CHECKED" title="" />
+                        <img src="/img/label-down.png" class="cross" alt="OFF" title="" />
+                        <input type="checkbox" name="id_user[]" value="' . $user->getId() . '" />
+                        <input type="hidden" disabled="disabled" name="civ_user[]" value="' . $user->getCiv() . '" />
+                        <input type="hidden" disabled="disabled" name="lastname_user[]" value="' . $user->getLastname() . '" />
+                        <input type="hidden" disabled="disabled" name="firstname_user[]" value="' . $user->getFirstname() . '" />
+                        <input type="hidden" disabled="disabled" name="nickname_user[]" value="' . $user->getNickname() . '" />';
+            // email renseigné ?
+            $emailInfo = '';
+            if (!empty($user->getEmail())) {
+                $emailInfo = 'oui';
+            } else {
+                $emailInfo = '<span style="color: darkorange;" title="Ce compte ne peut pas recevoir les e-mails">non</span>';
+            }
+
+            $resultLine = [
                 'id' => $user->getId(),
-                'tools' => $tools,
                 'cafnum' => $cafnum,
                 'lastname' => strtoupper($user->getLastname()),
                 'firstname' => ucfirst($user->getFirstname()),
                 'renew' => $renew,
-                'nickname' => '<a href="' . $this->generateUrl('user_profile', ['id' => $user->getId()]) . '" class="fancyframe userlink">' . $user->getNickname() . '</a>',
+                'nickname' => '<a href="' . $this->generateUrl('user_profile', ['id' => $user->getId()]) . '" class="fancyframe userlink" title="Voir la fiche">' . $user->getNickname() . '</a>',
                 'age' => $age,
                 'tel' => $tel,
                 'email' => $email,
-                'cp' => $user->getCp(),
-                'ville' => $user->getVille(),
-                'license' => $license,
-                'deleted' => $deleted,
             ];
+            if ('users-list' === $page) {
+                $resultLine = array_merge($resultLine, [
+                    'tools' => $tools,
+                    'cp' => $user->getCp(),
+                    'ville' => $user->getVille(),
+                    'license' => $license,
+                    'deleted' => $deleted,
+                ]);
+            } elseif ('manual-add' === $page) {
+                $resultLine = array_merge($resultLine, [
+                    'check' => $check,
+                    'email_info' => $emailInfo,
+                ]);
+            }
+
+            $results[] = $resultLine;
         }
 
         return new JsonResponse([
@@ -617,6 +646,26 @@ class UserController extends AbstractController
             'recordsFiltered' => $recordsFiltered,
             'data' => $results,
         ]);
+    }
+
+    protected function getEventParticipants(int $eventId, EvtRepository $eventRepository): array
+    {
+        if (empty($eventId)) {
+            return [];
+        }
+
+        $event = $eventRepository->find($eventId);
+        if (!$event instanceof Evt) {
+            return [];
+        }
+
+        $eventParticipants = [];
+        $participations = $event->getParticipations(null, null);
+        foreach ($participations as $participation) {
+            $eventParticipants[] = $participation->getUser();
+        }
+
+        return $eventParticipants;
     }
 
     /**
