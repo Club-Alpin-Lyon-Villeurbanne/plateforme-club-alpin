@@ -24,7 +24,7 @@
                     {% set exp_status = null %}
                 {% endif %}
 
-                {{ event_macro.event_line(event, app.user, include_name, true, exp_status, null, true, display_notes_de_frais) }}
+                {{ event_macro.event_line(event, app.user, include_name, true, exp_status, null, true) }}
             {% endfor %}
         </table>
 
