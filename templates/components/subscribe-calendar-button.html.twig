@@ -9,7 +9,7 @@
 {% set webcal_url = ics_url|replace({'https://': 'webcal://', 'http://': 'webcal://'}) %}
 {% set encoded_webcal = webcal_url|url_encode %}
 {% set button_id = 'subscribe-cal-' ~ random() %}
-{% set display_label = button_label|default(title ? 'S\\'abonner à « ' ~ title ~ ' »' : 'S\\'abonner au calendrier') %}
+{% set display_label = button_label|default(title ? "S'abonner à « " ~ title ~ " »" : "S'abonner au calendrier") %}
 
 <div class="subscribe-calendar-wrapper" style="display:inline-block;position:relative;">
     <button type="button" class="nice2" id="{{ button_id }}" title="S'abonner au calendrier {{ title }}">
