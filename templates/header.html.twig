@@ -374,7 +374,11 @@
                         {% endif %}
                         <p style="font-family:DIN; font-size: 1.1rem; line-height:20px; white-space:nowrap; padding-top:10px;">
                             Mon pseudonyme : <br />
-                            <span style="font-family:DINBold; font-size: 1.2rem;">{{ app.user.getNickname() }}</span>
+                            <span style="font-family:DINBold; font-size: 1.2rem;">
+                                <a href="{{ path('user_full', {'id': app.user.id}) }}">
+                                    {{ app.user.getNickname() }}
+                                </a>
+                            </span>
                         </p>
 
                         {# deconn #}
