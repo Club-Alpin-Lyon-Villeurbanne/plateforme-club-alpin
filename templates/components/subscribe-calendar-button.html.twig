@@ -1,0 +1,106 @@
+{#
+    Composant pour s'abonner à un calendrier ICS
+
+    Paramètres:
+    - ics_url: URL absolue du flux ICS (https://...)
+    - title: Titre du calendrier (pour l'affichage)
+    - button_label: Label personnalisé du bouton (optionnel)
+#}
+{% set webcal_url = ics_url|replace({'https://': 'webcal://', 'http://': 'webcal://'}) %}
+{% set button_id = 'subscribe-cal-' ~ random() %}
+{% set display_label = button_label|default(title ? "S'abonner à « " ~ title ~ " »" : "S'abonner au calendrier") %}
+
+<div class="subscribe-calendar-wrapper" style="display:inline-block;position:relative;">
+    <button type="button" class="nice2" id="{{ button_id }}" title="S'abonner au calendrier {{ title }}"
+            aria-haspopup="true" aria-expanded="false" aria-controls="{{ button_id }}-menu">
+        <img src="/img/base/calendar_link.png" alt="" style="vertical-align:middle;" /> &nbsp;
+        {{ display_label }}
+    </button>
+    <div class="subscribe-calendar-menu" id="{{ button_id }}-menu" role="menu" aria-label="Options d'abonnement"
+         style="display:none;position:absolute;left:0;top:100%;z-index:1000;background:#fff;border:1px solid #ccc;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.15);min-width:250px;margin-top:4px;">
+        <a href="https://calendar.google.com/calendar/r?cid={{ webcal_url }}" target="_blank" rel="noopener" class="subscribe-calendar-option" role="menuitem">
+            <span class="subscribe-icon" aria-hidden="true">📅</span> Google Calendar
+        </a>
+        <a href="https://outlook.live.com/calendar/0/addfromweb?url={{ webcal_url }}&name={{ title|default('Calendrier')|url_encode }}" target="_blank" rel="noopener" class="subscribe-calendar-option" role="menuitem">
+            <span class="subscribe-icon" aria-hidden="true">📬</span> Outlook.com
+        </a>
+        <a href="https://outlook.office.com/calendar/0/addfromweb?url={{ webcal_url }}&name={{ title|default('Calendrier')|url_encode }}" target="_blank" rel="noopener" class="subscribe-calendar-option" role="menuitem">
+            <span class="subscribe-icon" aria-hidden="true">💼</span> Microsoft 365
+        </a>
+        <a href="{{ webcal_url }}" class="subscribe-calendar-option" role="menuitem">
+            <span class="subscribe-icon" aria-hidden="true">🍎</span> Apple Calendar / Autre
+        </a>
+        <div class="subscribe-calendar-copy">
+            <label for="{{ button_id }}-url">Ou copier l'URL :</label>
+            <input type="text" id="{{ button_id }}-url" value="{{ ics_url }}" readonly onclick="this.select();">
+        </div>
+    </div>
+</div>
+
+<style>
+.subscribe-calendar-option {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    transition: background-color 0.2s;
+}
+.subscribe-calendar-option:hover {
+    background-color: #f5f5f5;
+    color: #333;
+}
+.subscribe-icon {
+    display: inline-block;
+    width: 24px;
+    text-align: center;
+    margin-right: 8px;
+}
+.subscribe-calendar-copy {
+    padding: 10px 15px;
+    font-size: 12px;
+    color: #666;
+}
+.subscribe-calendar-copy input {
+    width: 100%;
+    margin-top: 5px;
+    padding: 5px;
+    font-size: 11px;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+    background: #f9f9f9;
+}
+</style>
+
+<script>
+(function() {
+    const btn = document.getElementById('{{ button_id }}');
+    const menu = document.getElementById('{{ button_id }}-menu');
+
+    function closeAllMenus() {
+        document.querySelectorAll('.subscribe-calendar-menu').forEach(m => {
+            m.style.display = 'none';
+            const parentBtn = document.querySelector('[aria-controls="' + m.id + '"]');
+            if (parentBtn) parentBtn.setAttribute('aria-expanded', 'false');
+        });
+    }
+
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const isVisible = menu.style.display !== 'none';
+        closeAllMenus();
+        if (!isVisible) {
+            menu.style.display = 'block';
+            btn.setAttribute('aria-expanded', 'true');
+        }
+    });
+
+    document.addEventListener('click', function() {
+        closeAllMenus();
+    });
+
+    menu.addEventListener('click', function(e) {
+        e.stopPropagation();
+    });
+})();
+</script>
