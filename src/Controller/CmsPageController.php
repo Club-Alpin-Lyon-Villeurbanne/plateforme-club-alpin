@@ -12,7 +12,7 @@ use Symfony\Component\Routing\Attribute\Route;
 
 class CmsPageController extends AbstractController
 {
-    #[Route(path: '/pages/{code}.html', name: 'page_view', requirements: ['code' => '[a-z0-9-]+'], methods: ['GET'], priority: '10')]
+    #[Route(path: '/pages/{code}.html', name: 'page_view', requirements: ['code' => '[a-z0-9-]+'], methods: ['GET'], priority: 10)]
     #[Template('cms/page.html.twig')]
     public function view(Page $page, CmsContentService $contentService): array
     {
