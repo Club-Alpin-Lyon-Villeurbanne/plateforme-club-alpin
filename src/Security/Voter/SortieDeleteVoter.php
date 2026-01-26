@@ -34,15 +34,16 @@ class SortieDeleteVoter extends Voter
             throw new \InvalidArgumentException(sprintf('The voter "%s" requires an event subject', __CLASS__));
         }
 
-        if ($subject->isFinished()) {
+        if (!$subject->isDraft()) {
             return false;
         }
 
-        if ($subject->isPublicStatusValide() && !$subject->getCancelled()) {
+        if ($subject->isPublicStatusValide()) {
             return false;
         }
 
-        if (!empty($subject->getExpenseReports())) {
+        $expenseReports = $subject->getExpenseReports();
+        if (null !== $expenseReports && $expenseReports->count() > 0) {
             return false;
         }
 
