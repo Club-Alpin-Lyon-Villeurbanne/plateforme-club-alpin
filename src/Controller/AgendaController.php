@@ -128,7 +128,7 @@ class AgendaController extends AbstractController
 
                 while ($i <= $nDays) {
                     $currentDay = new \DateTimeImmutable("$year-$month-$i");
-                    $dayCount = (int) $eventStart->diff($currentDay)->days + 1;
+                    $dayCount = (int) $eventStart->diff($currentDay)->days + 2;
 
                     // Stop if we've passed the end date
                     if ($tmpEndM === $month && $tmpEndY === $year && $i > $tmpEndD) {

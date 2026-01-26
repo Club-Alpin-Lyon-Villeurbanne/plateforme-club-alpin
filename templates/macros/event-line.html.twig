@@ -83,10 +83,11 @@
                     <img src="{{ commission_picto(event.commission.code, 'dark') }}" alt="" title="" class="picto-dark" />
                 </div>
 
+                <div class="temoin" title="{{ event | temoin_event_title }}">
+                    <span class="temoin-places-dispos"> {{ event | temoin_event_picto }}</span>
+                </div>
+
                 <div class="droite">
-                    <span title="{{ event | temoin_event_title }}" style="padding: 10px 10px 5px 5px;float:left;">
-                        <span class="temoin-places-dispos"> {{ event | temoin_event_picto }}</span>
-                    </span>
 
                     <h2 class="tw-flex tw-items-center tw-gap-2">
                         {% if event.cancelled %}<span style="padding:1px 3px; color:red; font-family:Arial;white-space: nowrap;">ANNULÉE - </span>{% endif %}
