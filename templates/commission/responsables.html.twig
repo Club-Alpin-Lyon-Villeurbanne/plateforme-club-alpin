@@ -10,7 +10,7 @@
 
         <p>
             {% for data in commissionsData %}
-                <a class="lien-big" style="color:black;" href="#{{ data.commission.code }}">
+                <a class="lien-big" style="color:black;" href="{{ path('responsables') }}#{{ data.commission.code }}">
                     {{ data.commission.title }}
                 </a>&nbsp;
             {% endfor %}
