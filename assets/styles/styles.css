@@ -285,8 +285,9 @@ table#agenda td hr{margin:0 0px 0 5px; padding:0; height:1px; border:none; backg
 .agenda-date{float:right; font-family:DIN; color:#B9BFC1; font-size: 1.6rem; position:relative; bottom:44px; font-weight:100}
 .agenda-stat{padding:10px 0 0 133px; color:gray;}
 a.agenda-evt-debut{display:block; clear:both; padding:8px 10px 10px 0;}
-a.agenda-evt-debut .droite{float:right; width:425px;}
+a.agenda-evt-debut .droite, a.agenda-evt-courant .droite{float:right; width:390px;}
 a.agenda-evt-debut .picto{display:block; float:left; border-right:1px solid #dde1e4;}
+a.agenda-evt-debut .temoin, a.agenda-evt-courant .temoin{display:block; float:left; padding: 10px;}
 a.agenda-evt-debut .picto .picto-light{display:none;}
 a.agenda-evt-debut .picto .picto-dark{opacity:0.3;}
 a.agenda-evt-debut h2{font-size: 1rem; padding:0;}
@@ -298,7 +299,6 @@ a.agenda-evt-debut:hover b, a.agenda-evt-debut:focus b{color:#00191E;}
 a.agenda-evt-debut:hover .picto .picto-light, a.agenda-evt-debut:focus .picto .picto-light{display:inline;}
 a.agenda-evt-debut:hover .picto .picto-dark, a.agenda-evt-debut:focus .picto .picto-dark{display:none;}
 a.agenda-evt-courant{display:block; clear:both; padding:8px 10px 10px 0;}
-a.agenda-evt-courant .droite{float:right; width:425px;}
 a.agenda-evt-courant .picto{display:block; float:left; border-right:1px solid #dde1e4;}
 a.agenda-evt-courant .picto .picto-light{display:none;}
 a.agenda-evt-courant .picto .picto-dark{opacity:0.3;}

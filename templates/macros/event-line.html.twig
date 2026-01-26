@@ -1,37 +1,81 @@
-{% macro event_line(event, user = null, include_name = '', display_additionnal = true) %}
+{% macro event_line(event, user = null, include_name = '', display_additionnal = true, exp_status = null, action = null, display_participation_status = true) %}
     {% if user is same as(null) %}
         {% set user = app.user %}
     {% endif %}
     <tr>
-    <td class="agenda-gauche">
-        {% set start = event.startDate | date('d/m/Y') | capitalize %}
-        {% set end = event.endDate | date('d/m/Y') | capitalize %}
+        <td class="agenda-gauche">
+            {% set start = event.startDate | date('d/m/Y') | capitalize %}
+            {% set end = event.endDate | date('d/m/Y') | capitalize %}
 
-        {% if start == end %}
-            Le {{ start }}<br />
-            à {{ event.startDate | intldate('HH:mm') }}
-        {% else %}
-            Du {{ start }}<br/>
-            au {{ end }}
-        {% endif %}
-
-        {% if app.user == event.user and display_additionnal %}
-            {% if event.isDraft %}
-                <p class="draft">Brouillon (non publiée)</p>
-            {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_UNSEEN') %}
-                <p class="alerte">En attente d'approbation</p>
-            {% elseif event.statusLegal == constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
-                <p class="info">Publiée et validée par le président</p>
-            {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE') %}
-                <p class="alerte">Publiée non validée par le président</p>
-            {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_REFUSE') %}
-                <p class="erreur">Sortie refusée (non publiée)</p>
+            {% if start == end %}
+                Le {{ start }}<br />
+                à {{ event.startDate | intldate('HH:mm') }}
+            {% else %}
+                Du {{ start }}<br/>
+                au {{ end }}
             {% endif %}
-        {% endif %}
-    </td>
-    <td>
-        <div>
-            <a class="agenda-evt-debut" href="{{ path('sortie', { code: event.code, id: event.id }) }}?commission={{ event.commission.code }}" title="">
+
+            {% if app.user == event.user and display_additionnal %}
+                {% if event.isDraft %}
+                    <p class="draft">Brouillon (non publiée)</p>
+                {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_UNSEEN') %}
+                    <p class="waiting">En attente d'approbation</p>
+                {% elseif event.statusLegal == constant('App\\Entity\\Evt::STATUS_LEGAL_VALIDE') %}
+                    <p class="info">Publiée et validée par le président</p>
+                {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_VALIDE') %}
+                    <p class="alerte">Publiée non validée par le président</p>
+                {% elseif event.status == constant('App\\Entity\\Evt::STATUS_PUBLISHED_REFUSE') %}
+                    <p class="erreur">Sortie refusée (non publiée)</p>
+                {% endif %}
+            {% endif %}
+        </td>
+        <td>
+            <div class="evt-tools">
+                <a class="nice2" href="{{ path('sortie', { code: event.code, id: event.id }) }}?forceshow=true" title="Ouvre une nouvelle fenêtre de votre navigateur pour jeter un oeil à la sortie" target="_blank">
+                    Aperçu{% if action is same as ('validation') %} / validation de la page{% endif %}
+                </a>
+
+                {% if action is same as ('approbation') %}
+                    <form action="{{ path('sortie_validate', { id: event.id }) }}" method="post" style="display:inline" class="loading">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_validate') }}" />
+                        <input type="submit" value="Approuver &amp; publier" class="nice2 green" title="Approuve instantanément la sortie et la publie" />
+                    </form>
+
+                    <input type="button" value="Refuser" class="nice2 red" onclick="modal.show($(this).next().html())" title="Refuser cette sortie. Vous devrez ajouter un message à l'organisateur de la sortie." />
+                    <div style="display:none" id="refuser-{{ event.id }}">
+                        <form action="{{ path('sortie_refus', { id: event.id }) }}" method="post" class="loading">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_refus') }}" />
+
+                            <p>Laissez un message à l'organisateur pour lui expliquer la raison du refus :</p>
+                            <input type="text" name="msg" class="type1" placeholder="ex: Mauvais point de RDV" />
+                            <input type="submit" value="Refuser la sortie" class="nice2 red" />
+                            <input type="button" value="Annuler" class="nice2" onclick="$.fancybox.close()" />
+                        </form>
+                    </div>
+                    {% if is_granted('SORTIE_DELETE', event) %}
+                        <a class="nice2 noprint red" onclick="modal.show($(this).next().html())" title="Supprimer définitivement cette sortie"><img src="/img/base/x2.png" alt="" title="" style="" />&nbsp;&nbsp;Supprimer définitivement cette sortie</a>
+                        <div style="display:none" id="supprimer-{{ event.id }}">
+                            <h2>Supprimer définitivement la sortie</h2>
+                            <p>
+                                Voulez-vous vraiment supprimer définitivement cette sortie ?<br>
+                                Cette action supprimera définitivement la sortie et les fichiers liés.<br>
+                                <strong>Attention</strong> : vous ne devriez jamais supprimer une sortie qui a été publiée sur le site car la conserver permet d'établir des statistiques, et l'URL de la page dédiée à cette sortie retournera une erreur 404 si des utilisateurs souhaitent y retourner.
+                            </p>
+                            {% if event.publicStatusValide %}
+                                <p class="alerte">Cette sortie est publiée sur le site. En la supprimant, vous créerez une page introuvable.</p>
+                            {% else %}
+                                <p class="info">Cette sortie n'est pas publiée sur le site. Vous pouvez la supprimer sereinement.</p>
+                            {% endif %}
+                            <form action="{{ path('delete_event', { id: event.id }) }}" method="post" class="loading">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token('delete_event') }}" />
+                                <input type="submit" value="Supprimer définitivement cette sortie" class="nice2 noprint red" title="Supprimer définitivement cette sortie" />
+                            </form>
+                        </div>
+                    {% endif %}
+                {% endif %}
+            </div>
+
+            <a class="agenda-evt-debut" target="_top" href="{{ path('sortie', { code: event.code, id: event.id }) }}?commission={{ event.commission.code }}" title="">
 
                 <!-- picto -->
                 <div class="picto">
@@ -39,17 +83,18 @@
                     <img src="{{ commission_picto(event.commission.code, 'dark') }}" alt="" title="" class="picto-dark" />
                 </div>
 
+                <div class="temoin" title="{{ event | temoin_event_title }}">
+                    <span class="temoin-places-dispos"> {{ event | temoin_event_picto }}</span>
+                </div>
+
                 <div class="droite">
-                    <span title="{{ event | temoin_event_title }}" style="padding: 10px 10px 5px 5px;float:left;">
-                        <span class="temoin-places-dispos"> {{ event | temoin_event_picto }}</span>
-                    </span>
 
                     <h2 class="tw-flex tw-items-center tw-gap-2">
                         {% if event.cancelled %}<span style="padding:1px 3px; color:red; font-family:Arial;white-space: nowrap;">ANNULÉE - </span>{% endif %}
                         {{ event.titre }}
 
                         {% set participation = event.participation(user) %}
-                        {% if participation %}
+                        {% if participation and display_participation_status %}
                             <div class="tw-flex tw-flex-col tw-items-end tw-ml-auto">
                                 {% set is_orga = false %}
                                 {% if app.user == event.user %}
@@ -58,41 +103,41 @@
 
                                 {% if participation.status == constant('App\\Entity\\EventParticipation::STATUS_REFUSE') %}
                                     <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
-                                                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                                        </svg>
-                                                        Refusé
-                                                    </span>
+                                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                        </svg>
+                                        Refusé
+                                    </span>
                                 {% elseif participation.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') %}
                                     {% if participation.role and participation.role in constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT') %}
                                         <span class="tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
-                                                            {% if is_orga %}
-                                                                ✍️
-                                                            {% endif %}
+                                            {% if is_orga %}
+                                                ✍️
+                                            {% endif %}
                                             {{ participation.role|trans }}
-                                                        </span>
+                                        </span>
                                     {% else %}
                                         <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
-                                                            <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                                            </svg>
-                                                            Accepté
-                                                        </span>
+                                            <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                            Accepté
+                                        </span>
                                     {% endif %}
                                 {% elseif participation.status == constant('App\\Entity\\EventParticipation::STATUS_ABSENT') %}
                                     <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
-                                                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                        </svg>
-                                                        Absent
-                                                    </span>
+                                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        Absent
+                                    </span>
                                 {% else %}
                                     <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-orange-600 tw-whitespace-nowrap">
-                                                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                                        </svg>
-                                                        En attente
-                                                    </span>
+                                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                        </svg>
+                                        En attente
+                                    </span>
                                 {% endif %}
                             </div>
                         {% endif %}
@@ -107,34 +152,34 @@
                             and (participation.role in constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT')) %}
                             {% if exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_DRAFT') %}
                                 <span class="text-din tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-text-xs tw-font-medium tw-text-orange-600 tw-whitespace-nowrap">
-                                                    🧾 ✍
-                                                    NdF brouillon
-                                                </span>
+                                    🧾 ✍
+                                    NdF brouillon
+                                </span>
                             {% elseif exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_SUBMITTED') %}
                                 <span class="text-din tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-text-xs tw-font-medium tw-text-orange-600 tw-whitespace-nowrap">
-                                                    🧾⏳
-                                                    NdF en vérif.
-                                                </span>
+                                    🧾⏳
+                                    NdF en vérif.
+                                </span>
                             {% elseif exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_APPROUVED') %}
                                 <span class="text-din tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
-                                                    🧾 🆗
-                                                    NdF acceptée
-                                                </span>
+                                    🧾 🆗
+                                    NdF acceptée
+                                </span>
                             {% elseif exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_ACCOUNTED') %}
                                 <span class="text-din tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
-                                                    🧾 ✅
-                                                    NdF comptabilisée
-                                                </span>
+                                    🧾 ✅
+                                    NdF comptabilisée
+                                </span>
                             {% elseif exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_REJECTED') %}
                                 <span class="text-din tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
-                                                    🧾 ❌
-                                                    NdF refusée
-                                                </span>
+                                    🧾 ❌
+                                    NdF refusée
+                                </span>
                             {% else %}
                                 <span class="text-din tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
-                                                    🧾❓
-                                                    NdF possible
-                                                </span>
+                                    🧾❓
+                                    NdF possible
+                                </span>
                             {% endif %}
                         {% endif %}
                     </p>
@@ -144,7 +189,7 @@
             </a>
 
             {% if participation and participation.status != constant('App\\Entity\\EventParticipation::STATUS_REFUSE') %}
-                {% set empietements = empietements(event, app.user) %}
+                {% set empietements = empietements(event, user) %}
                 {% if empietements | length > 0 and display_additionnal %}
                     <div class="empietements">
                         <b style="margin-left: 20px">Attention au timing :</b>
@@ -159,7 +204,6 @@
                     </div>
                 {% endif %}
             {% endif %}
-        </div>
-    </td>
-</tr>
+        </td>
+    </tr>
 {% endmacro %}

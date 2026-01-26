@@ -47,6 +47,7 @@ class ProfilController extends AbstractController
             return $this->redirect($this->generateUrl('profil_alertes'));
         }
 
+        /** @var User $user */
         $user = $this->getUser();
         $params = $request->request->all();
 

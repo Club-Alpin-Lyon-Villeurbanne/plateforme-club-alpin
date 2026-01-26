@@ -5,13 +5,13 @@
     {% endif %}
 </div>
 
-<div class="droite">
-    <div title="{{ evt | temoin_event_title }}" style="padding: 10px 10px 5px 5px;float:left;">
+<div title="{{ evt | temoin_event_title }}" class="temoin">
         <span class="temoin-places-dispos">
             {{ evt | temoin_event_picto }}
         </span>
-    </div>
+</div>
 
+<div class="droite">
     <h2 class="tw-flex tw-items-center tw-gap-2">
         {% if evt.cancelled %}
             <span style="padding:1px 3px; color:red; font-family:Arial;white-space: nowrap">ANNULÉE - </span>
