@@ -181,12 +181,13 @@
         {% include 'components/subscribe-calendar-button.html.twig' with {
             ics_url: url('ics_global'),
             title: 'Toutes les sorties',
-            button_label: "S'abonner au calendrier du club"
+            button_label: "Recevoir les sorties dans mon agenda"
         } %}
         {% if current_commission %}
             {% include 'components/subscribe-calendar-button.html.twig' with {
                 ics_url: url('ics_commission', {'code': current_commission.code}),
-                title: current_commission.title
+                title: current_commission.title,
+                button_label: "Recevoir « " ~ current_commission.title ~ " » dans mon agenda"
             } %}
         {% endif %}
 

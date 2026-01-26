@@ -10,10 +10,10 @@
 {% set button_id = 'subscribe-cal-' ~ random() %}
 {% set display_label = button_label|default(title ? "S'abonner à « " ~ title ~ " »" : "S'abonner au calendrier") %}
 
-<div class="subscribe-calendar-wrapper" style="display:inline-block;position:relative;">
-    <button type="button" class="nice2" id="{{ button_id }}" title="S'abonner au calendrier {{ title }}"
+<div class="subscribe-calendar-wrapper" style="display:inline-block;position:relative;margin:5px 0;">
+    <button type="button" class="subscribe-calendar-btn" id="{{ button_id }}" title="Ajouter cet agenda à votre calendrier personnel"
             aria-haspopup="true" aria-expanded="false" aria-controls="{{ button_id }}-menu">
-        <img src="/img/base/calendar_link.png" alt="" style="vertical-align:middle;" /> &nbsp;
+        <span class="subscribe-calendar-btn-icon">📅</span>
         {{ display_label }}
     </button>
     <div class="subscribe-calendar-menu" id="{{ button_id }}-menu" role="menu" aria-label="Options d'abonnement"
@@ -38,16 +38,39 @@
 </div>
 
 <style>
+.subscribe-calendar-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    font-size: 15px;
+    font-weight: 500;
+    color: #fff;
+    background: linear-gradient(135deg, #4a90a4 0%, #357a8c 100%);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+    transition: all 0.2s ease;
+}
+.subscribe-calendar-btn:hover {
+    background: linear-gradient(135deg, #357a8c 0%, #2a6070 100%);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    transform: translateY(-1px);
+}
+.subscribe-calendar-btn-icon {
+    font-size: 18px;
+}
 .subscribe-calendar-option {
     display: block;
-    padding: 10px 15px;
+    padding: 12px 15px;
     text-decoration: none;
     color: #333;
     border-bottom: 1px solid #eee;
     transition: background-color 0.2s;
 }
 .subscribe-calendar-option:hover {
-    background-color: #f5f5f5;
+    background-color: #f0f7fa;
     color: #333;
 }
 .subscribe-icon {
@@ -57,18 +80,19 @@
     margin-right: 8px;
 }
 .subscribe-calendar-copy {
-    padding: 10px 15px;
+    padding: 12px 15px;
     font-size: 12px;
     color: #666;
+    background: #f9f9f9;
 }
 .subscribe-calendar-copy input {
     width: 100%;
     margin-top: 5px;
-    padding: 5px;
-    font-size: 11px;
+    padding: 8px;
+    font-size: 12px;
     border: 1px solid #ddd;
-    border-radius: 3px;
-    background: #f9f9f9;
+    border-radius: 4px;
+    background: #fff;
 }
 </style>
 
