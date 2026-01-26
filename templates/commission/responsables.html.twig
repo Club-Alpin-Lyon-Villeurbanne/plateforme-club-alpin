@@ -1,0 +1,43 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Responsables des commissions{% endblock %}
+
+{% block body %}
+    {% import 'macros/user-image.html.twig' as user_image %}
+
+    <div class="main-type">
+        <h1>Responsables du Club Alpin par commission</h1>
+
+        <p>
+            {% for data in commissionsData %}
+                <a class="lien-big" style="color:black;" href="#{{ data.commission.code }}">
+                    {{ data.commission.title }}
+                </a>&nbsp;
+            {% endfor %}
+        </p>
+
+        {% for data in commissionsData %}
+            <h2>
+                <a id="{{ data.commission.code }}">&gt; {{ data.commission.title }}</a>
+            </h2>
+
+            <table class="big-lines-table">
+                <tbody>
+                    {% for encadrant in data.encadrants %}
+                        <tr>
+                            {% if app.user %}
+                                <td style="text-align:center; width:60px;">
+                                    {{ user_image.user_img(encadrant.user, 'pic', '', 'max-height:40px; max-width:60px;') }}
+                                </td>
+                            {% endif %}
+                            <td><a href="{{ path('user_profile', {'id': encadrant.user.id}) }}" class="fancyframe userlink">{{ encadrant.user.nickname }}</a></td>
+                            <td>{{ encadrant.role }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <hr />
+            <br />
+        {% endfor %}
+    </div>
+{% endblock %}
