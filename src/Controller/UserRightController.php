@@ -6,7 +6,10 @@ use App\Entity\Commission;
 use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Entity\Usertype;
+use App\Form\UserRightMatrixType;
 use App\Repository\UserAttrRepository;
+use App\Repository\UserRightRepository;
+use App\Repository\UsertypeAttrRepository;
 use App\Repository\UsertypeRepository;
 use App\Security\SecurityConstants;
 use App\Service\UserRightService;
@@ -145,6 +148,44 @@ class UserRightController extends AbstractController
         }
 
         return $this->redirectToRoute('my_profile');
+    }
+
+    #[Route('/admin-matrice-droits', name: 'admin_user_right_matrix', methods: ['GET', 'POST'])]
+    #[Template('admin/user_right_matrix.html.twig')]
+    public function matrix(
+        Request $request,
+        UsertypeRepository $usertypeRepository,
+        UserRightRepository $userRightRepository,
+        UsertypeAttrRepository $usertypeAttrRepository,
+    ): array|RedirectResponse {
+        $this->denyAccessUnlessGranted(SecurityConstants::ROLE_ADMIN);
+
+        $usertypes = $usertypeRepository->findAllOrdered();
+        $userrights = $userRightRepository->findAllOrdered();
+        $attributions = $usertypeAttrRepository->findAllPairs();
+
+        $form = $this->createForm(UserRightMatrixType::class, [
+            'attributions' => $attributions,
+            'usertypes' => $usertypes,
+            'userrights' => $userrights,
+        ]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->get('attributions')->getData();
+            $usertypeAttrRepository->replaceAll($data);
+
+            $this->addFlash('success', 'Matrice des droits mise à jour.');
+
+            return $this->redirectToRoute('admin_user_right_matrix');
+        }
+
+        return [
+            'form' => $form->createView(),
+            'usertypes' => $usertypes,
+            'userrights' => $userrights,
+            'attributions' => $attributions,
+        ];
     }
 
     private function removeRight(User $user, Usertype $type, ?Commission $commission = null): bool

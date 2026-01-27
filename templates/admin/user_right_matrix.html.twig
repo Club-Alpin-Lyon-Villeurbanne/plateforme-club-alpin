@@ -1,0 +1,92 @@
+{% extends 'base-wide.html.twig' %}
+
+{% set is_dev = false %}
+{% if app.user.hasAttribute(constant('App\\Entity\\UserAttr::DEVELOPPEUR')) %}
+    {% set is_dev = true %}
+{% endif %}
+
+{% block title %}Matrice des droits{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        code {
+            background-color: #f9f2f4;
+            border-radius: 4px;
+            color: #c7254e;
+            padding: 2px 4px;
+            font-family: Menlo,Monaco,Consolas,Lucida Console,monospace;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <h1>Matrice des droits</h1>
+    <p>
+        Définit quel type d'adhérent est autorisé à quelles actions.
+    </p>
+    <br />
+    <div style="background:white; padding:10px;">
+        {{ form_start(form) }}
+        <table class="user-right-edit-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    {% for type in usertypes %}
+                        <th>
+                            {{ type.title }}
+                            {% if is_dev %}
+                                <br/><code>{{ type.code }}</code>
+                            {% endif %}
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for right in userrights %}
+                    <tr>
+                        <td>
+                            {{ right.title }}
+                            {% if is_dev %}
+                                <br/><code>{{ right.code }}</code>
+                            {% endif %}
+                        </td>
+                        {% for type in usertypes %}
+                            <td>
+                                {% set key = type.id ~ '-' ~ right.id %}
+                                {{ form_widget(form.attributions[key]) }}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        <br />
+        <button class="btn btn-primary">Enregistrer la matrice dans cet état</button>
+        {{ form_end(form) }}
+        <br /><br /><br /><br />
+    </div>
+{% endblock %}
+
+{% block scripts %}
+    {{ parent() }}
+    <script type="text/javascript">
+        $().ready(function(){
+            // afficher/selectionner le code d'un droit
+            // $('.user-right-edit-table td.left').click(function(){
+            //     $(this).addClass('selected').find('input:visible').focus().bind('blur', function(){
+            //         $(this).parents('td').removeClass('selected');
+            //     });
+            // });
+            // change attribution
+            $('.user-right-edit-table td.toggle').click(function(){
+                $(this)	.toggleClass('edited')
+                    .toggleClass('false')
+                    .toggleClass('true');
+
+                if($(this).hasClass('true'))	$(this).find('input').removeAttr('disabled');
+                else							$(this).find('input').attr('disabled', 'disabled');
+            });
+        }});
+    </script>
+{% endblock %}
