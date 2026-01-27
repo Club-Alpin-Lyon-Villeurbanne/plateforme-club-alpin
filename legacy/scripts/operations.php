@@ -46,29 +46,8 @@ if (user()) {
 }
 
 if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
-    // ADMIN : écrasement et renouvellement de la matrice des droits
-    if ('usertype_attr_edit' == $operation) {
-        /* ◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊[ BACKUP EXISTANT A FAIRE - ou pas ]◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊◊ */
-
-        // supression des valeurs existantes
-        if (!LegacyContainer::get('legacy_mysqli_handler')->query('TRUNCATE caf_usertype_attr')) {
-            $errTab[] = 'Erreur à la réinitialisation de la table';
-        }
-        if (0 === count($errTab)) {
-            foreach ($_POST['usertype_attr'] as $pair) {
-                $tab = explode('-', $pair);
-                $type_usertype_attr = (int) $tab[0];
-                $right_usertype_attr = (int) $tab[1];
-                if (!LegacyContainer::get('legacy_mysqli_handler')->query("INSERT INTO caf_usertype_attr (type_usertype_attr, right_usertype_attr, details_usertype_attr)
-                                                                VALUES ('$type_usertype_attr', '$right_usertype_attr', '" . time() . "');")) {
-                    $errTab[] = "Erreur de setting ($type_usertype_attr - $right_usertype_attr)";
-                }
-            }
-        }
-    }
-
     // ADMIN: modification de page libre // NOTE : PAS DE MULTILANGUE POUR LE MOMENT
-    elseif ('pagelibre_edit' == $operation) {
+    if ('pagelibre_edit' == $operation) {
         require $operationsDir . 'operations.pagelibre_edit.php';
     }
 

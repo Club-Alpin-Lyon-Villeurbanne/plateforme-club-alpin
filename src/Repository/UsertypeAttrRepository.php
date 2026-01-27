@@ -41,14 +41,17 @@ class UsertypeAttrRepository extends ServiceEntityRepository
     public function replaceAll(array $pairs): void
     {
         $em = $this->getEntityManager();
+        // purge
         $em->createQuery('DELETE FROM App\\Entity\\UsertypeAttr a')->execute();
+
+        // insertion des valeurs
         foreach ($pairs as $pair) {
             [$typeId, $rightId] = explode('-', $pair);
 
             $attr = new UsertypeAttr();
             $attr->setType((int) $typeId);
             $attr->setRight((int) $rightId);
-            $attr->setDetails(''); // ou valeur par défaut
+            $attr->setDetails(time());
             $em->persist($attr);
         }
         $em->flush();
