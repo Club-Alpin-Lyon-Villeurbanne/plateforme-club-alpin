@@ -17,6 +17,7 @@
             padding: 2px 4px;
             font-family: Menlo,Monaco,Consolas,Lucida Console,monospace;
         }
+        body {font-size: 0.8rem !important;}
     </style>
 {% endblock %}
 
@@ -26,8 +27,9 @@
         Définit quel type d'adhérent est autorisé à quelles actions.
     </p>
     <br />
-    <div style="background:white; padding:10px;">
-        {{ form_start(form) }}
+
+    <form style="background:white; padding:10px;" action="{{ path('admin_user_right_matrix') }}" method="post" onsubmit="return(confirm('Ces valeurs vont remplacer les valeurs existantes, OK ?'))">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token('right_matrix_update') }}" />
         <table class="user-right-edit-table">
             <thead>
                 <tr>
@@ -43,41 +45,43 @@
                 </tr>
             </thead>
             <tbody>
-                {% for right in userrights %}
-                    <tr>
-                        <td>
-                            {{ right.title }}
-                            {% if is_dev %}
-                                <br/><code>{{ right.code }}</code>
-                            {% endif %}
-                        </td>
-                        {% for type in usertypes %}
-                            <td>
-                                {% set key = type.id ~ '-' ~ right.id %}
-                                {{ form_widget(form.attributions[key]) }}
+                {% for group, rights in grouped_rights %}
+                    <tr><td colspan="{{ usertypes|length + 1 }}"><b>{{ group }}</b></td></tr>
+                    {% for right in rights %}
+                        <tr class="rightline">
+                            <td class="left">
+                                <span>{{ right.title }}</span>
+                                {% if is_dev %}
+                                    <br/><code>{{ right.code }}</code>
+                                {% endif %}
+                                <input type="text" value="{{ right.code }}" />
                             </td>
-                        {% endfor %}
-                    </tr>
+                            {% for type in usertypes %}
+                                {% set key = type.id ~ '-' ~ right.id %}
+                                {% set is_on = false %}
+                                {% if key in attributions %}
+                                    {% set is_on = true %}
+                                {% endif %}
+                                <td class="toggle {{ is_on ? 'true' : 'false' }}">
+                                    <input {{ is_on ? '' : 'disabled="disabled"' }} type="hidden" name="usertype_attr[]" value="{{ type.id }}-{{ right.id }}" />
+                                    <span class="clair">{{ type.title }}</span>
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
                 {% endfor %}
             </tbody>
         </table>
         <br />
-        <button class="btn btn-primary">Enregistrer la matrice dans cet état</button>
-        {{ form_end(form) }}
-        <br /><br /><br /><br />
-    </div>
+        <input type="submit" value="Enregistrer la matrice dans cet état" class="nice" />
+    </form>
+    <br /><br /><br /><br />
 {% endblock %}
 
 {% block scripts %}
     {{ parent() }}
     <script type="text/javascript">
         $().ready(function(){
-            // afficher/selectionner le code d'un droit
-            // $('.user-right-edit-table td.left').click(function(){
-            //     $(this).addClass('selected').find('input:visible').focus().bind('blur', function(){
-            //         $(this).parents('td').removeClass('selected');
-            //     });
-            // });
             // change attribution
             $('.user-right-edit-table td.toggle').click(function(){
                 $(this)	.toggleClass('edited')
@@ -87,6 +91,6 @@
                 if($(this).hasClass('true'))	$(this).find('input').removeAttr('disabled');
                 else							$(this).find('input').attr('disabled', 'disabled');
             });
-        }});
+        });
     </script>
 {% endblock %}

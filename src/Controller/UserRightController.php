@@ -6,7 +6,6 @@ use App\Entity\Commission;
 use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Entity\Usertype;
-use App\Form\UserRightMatrixType;
 use App\Repository\UserAttrRepository;
 use App\Repository\UserRightRepository;
 use App\Repository\UsertypeAttrRepository;
@@ -164,27 +163,33 @@ class UserRightController extends AbstractController
         $userrights = $userRightRepository->findAllOrdered();
         $attributions = $usertypeAttrRepository->findAllPairs();
 
-        $form = $this->createForm(UserRightMatrixType::class, [
-            'attributions' => $attributions,
-            'usertypes' => $usertypes,
-            'userrights' => $userrights,
-        ]);
-        $form->handleRequest($request);
+        // Groupement des droits par parent
+        $grouped_rights = [];
+        foreach ($userrights as $right) {
+            $parent = $right->getParent();
+            $grouped_rights[$parent][] = $right;
+        }
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->get('attributions')->getData();
-            $usertypeAttrRepository->replaceAll($data);
+        if ('POST' === $request->getMethod()) {
+            if (!$this->isCsrfTokenValid('right_matrix_update', $request->request->get('csrf_token'))) {
+                throw new BadRequestException('Jeton de validation invalide.');
+            }
 
-            $this->addFlash('success', 'Matrice des droits mise à jour.');
+            $data = $request->request->all();
+            $usertypeAttrRepository->replaceAll($data['usertype_attr']);
+
+            $this->addFlash('success', 'La matrice des droits a bien été sauvegardée.');
 
             return $this->redirectToRoute('admin_user_right_matrix');
         }
 
         return [
-            'form' => $form->createView(),
             'usertypes' => $usertypes,
             'userrights' => $userrights,
             'attributions' => $attributions,
+            'grouped_rights' => $grouped_rights,
+            'is_admin' => true,
+            'admin_page' => 'admin_user_right_matrix',
         ];
     }
 
