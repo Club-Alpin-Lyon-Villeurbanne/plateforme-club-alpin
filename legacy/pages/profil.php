@@ -40,52 +40,6 @@ if ('infos' == $p2 && getUser()) {
 
         $tmpUser = $handle;
     }
-} elseif ('articles' == $p2 && getUser()) {
-    // pagination
-    $limite = $MAX_ARTICLES_ADHERENT; // nombre d'elements affiches
-    $pagenum = (int) ($_GET['pagenum'] ?? 0);
-    if ($pagenum < 1) {
-        $pagenum = 1;
-    } // les pages commencent à 1
-
-    $articleTab = [];
-    $req = 'SELECT SQL_CALC_FOUND_ROWS * FROM caf_article
-            LEFT JOIN media_upload m ON caf_article.media_upload_id = m.id
-			WHERE user_article = ' . getUser()->getId() . '
-			ORDER BY updated_at DESC LIMIT ' . ($limite * ($pagenum - 1)) . ", $limite";
-    $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-
-    // calcul du total grâce à SQL_CALC_FOUND_ROWS
-    $totalSql = LegacyContainer::get('legacy_mysqli_handler')->query('SELECT FOUND_ROWS()');
-    $total = getArrayFirstValue($totalSql->fetch_array(\MYSQLI_NUM));
-    $nbrPages = ceil($total / $limite);
-
-    // boucle
-    while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
-        // info de la commission liée
-        if ($handle['commission_article'] > 0) {
-            $req = 'SELECT * FROM caf_commission
-				WHERE id_commission = ' . (int) $handle['commission_article'] . '
-				LIMIT 1';
-            $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-            while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-                $handle['commission'] = $handle2;
-            }
-        }
-
-        // info de la sortie liée
-        if ($handle['evt_article'] > 0) {
-            $req = 'SELECT code_evt, id_evt, titre_evt FROM caf_evt
-				WHERE id_evt = ' . (int) $handle['evt_article'] . '
-				LIMIT 1';
-            $handleSql2 = LegacyContainer::get('legacy_mysqli_handler')->query($req);
-            while ($handle2 = $handleSql2->fetch_array(\MYSQLI_ASSOC)) {
-                $handle['evt'] = $handle2;
-            }
-        }
-
-        $articleTab[] = $handle;
-    }
 }
 
 ?>
