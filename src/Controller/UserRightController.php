@@ -149,7 +149,7 @@ class UserRightController extends AbstractController
         return $this->redirectToRoute('my_profile');
     }
 
-    #[Route('/admin-matrice-droits.html', name: 'admin_user_right_matrix', methods: ['GET', 'POST'])]
+    #[Route('/admin-matrice-droits.html', name: 'admin_user_right_matrix', methods: ['GET', 'POST'], priority: 10)]
     #[Template('admin/user_right_matrix.html.twig')]
     public function matrix(
         Request $request,
