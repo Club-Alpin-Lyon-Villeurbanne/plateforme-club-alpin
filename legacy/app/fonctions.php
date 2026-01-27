@@ -220,7 +220,6 @@ function mylog($code, $desc, $connectme = true)
     }
 }
 
-
 // ma fonction d'insertion élément inline
 function cont($code = false, $html = false)
 {
@@ -306,6 +305,7 @@ function mois($mois)
 
     return isset($tab[(int) $mois - 1]) ? $tab[(int) $mois - 1] : '';
 }
+
 function jour($n, $mode = 'full')
 {
     $tab = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
@@ -348,6 +348,7 @@ function wd_remove_accents($str, $charset = 'UTF-8')
 
     return preg_replace('#&[^;]+;#', '', $str); // supprime les autres caractères
 }
+
 function formater($retourner, $type = 1)
 {
     // Type 1 : sans espace ni tirets, en minuscule
