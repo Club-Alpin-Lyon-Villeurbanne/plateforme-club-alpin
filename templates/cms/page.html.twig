@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ meta_title }}{% endblock %}
+{% block meta_description %}{{ meta_desc }}{% endblock %}
+
+{% block body %}
+    {% if page.vis is same as (false) %}
+        <p class="info" style="position:relative; top:35px;">
+            Cette page n'est pas accessible aux visiteurs du site. Pour la rendre visible, prenez le temps de modifier les contenus ci-dessous, puis rendez-vous dans <a href="/admin-pages-libres.html" title="">l'espace d'administration des pages</a>.
+        </p>
+        <br />
+    {% endif %}
+
+    <h1 class="page-h1">{{ meta_title }}</h1>
+
+    {{ easy_include('main-pagelibre-' ~ page.id, 'main-type')}}
+{% endblock %}
