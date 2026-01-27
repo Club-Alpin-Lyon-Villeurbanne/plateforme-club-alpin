@@ -187,11 +187,25 @@
                         <div class="nav-user">
                             <p class="menutitle">Outils</p>
                             <ul>
-                            {% if caf_id == 'lyon' %}
-                                {% if allowed('user_read_private') %} {# utilisation d'une permission existante données uniquement aux co-encadrants, encadrants et stagiaires #}
+                            {% if app.user and caf_id == 'lyon' %}
+                                {% if app.user.hasAttribute(constant('App\\Entity\\UserAttr::ENCADRANT'))
+                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::COENCADRANT'))
+                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::STAGIAIRE'))
+                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::BENEVOLE'))
+                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::SALARIE')) %}
                                 <li>
-                                    <a href="/pages/boite-outils-des-encadrants.html" title="">
-                                        boite à outils encadrant
+                                    <a href="/pages/guide-encadrement.html" title="">
+                                        Guide de l'encadrement
+                                    </a>
+                                </li>
+                                {% endif %}
+                                {% if app.user.hasAttribute(constant('App\\Entity\\UserAttr::RESPONSABLE_COMMISSION'))
+                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::PRESIDENT'))
+                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::VICE_PRESIDENT'))
+                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::SALARIE')) %}
+                                <li>
+                                    <a href="/pages/guide-responsable-commission.html" title="">
+                                        Guide des responsables de commission
                                     </a>
                                 </li>
                                 {% endif %}
