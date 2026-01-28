@@ -1,10 +1,19 @@
 import { Page } from '@playwright/test';
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:8000';
+
 export const login = async (page: Page, email: string, password: string) => {
-  await page.goto('http://127.0.0.1:8000/');
-  await page.locator('#toolbar-user').hover();
-  await page.getByRole('textbox', { name: 'Votre e-mail' }).fill(email);
-  await page.getByRole('textbox', { name: 'Votre mot de passe' }).fill(password);
-  await page.getByRole('button', { name: 'Connexion' }).click();
-  await page.waitForTimeout(1000);
+  // Aller à la page de login
+  await page.goto(`${BASE_URL}/login`);
+  await page.waitForLoadState('networkidle');
+  
+  // Remplir email et password avec les bons noms de champs
+  await page.fill('input[name="_username"]', email);
+  await page.fill('input[name="_password"]', password);
+  
+  // Soumettre le formulaire
+  await page.click('input[name="connect-button"]');
+  
+  // Attendre la redirection et le chargement de la page
+  await page.waitForLoadState('networkidle');
 }; 
