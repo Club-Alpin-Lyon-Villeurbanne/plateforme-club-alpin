@@ -68,4 +68,16 @@ class UsertypeRepository extends ServiceEntityRepository implements PasswordUpgr
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * @return Usertype[]
+     */
+    public function findAllOrdered(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->orderBy('u.hierarchie', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
 }
