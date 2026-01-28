@@ -54,7 +54,6 @@
                                 {% if is_dev %}
                                     <br/><code>{{ right.code }}</code>
                                 {% endif %}
-                                <input type="text" value="{{ right.code }}" />
                             </td>
                             {% for type in usertypes %}
                                 {% set key = type.id ~ '-' ~ right.id %}
