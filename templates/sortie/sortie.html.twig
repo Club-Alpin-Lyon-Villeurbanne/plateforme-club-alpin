@@ -2,7 +2,7 @@
 
 {% block title %}{{ event.titre }}{% endblock %}
 
-{% macro user_inscription_button(event, filiations, my_status, nInscritsTotal) %}
+{% macro user_inscription_button(event, filiations, my_status, nInscritsTotal, free_seat_left, waiting_seat_left) %}
 
     {% if event.joinMax > 0 %}
         {% set style = '' %}
@@ -14,7 +14,7 @@
             <a class="biglink" href="javascript:void(0)" onclick="$('#inscription').slideToggle(200)" title="" style="{{ style }}">
             <span class="bleucaf">&gt;</span>
             {% if not my_status %}
-                JE SOUHAITE ME PRÉ-INSCRIRE À CETTE SORTIE
+                JE SOUHAITE {% if free_seat_left > 0 %}ME PRÉ-INSCRIRE À CETTE SORTIE{% elseif waiting_seat_left > 0 %}REJOINDRE LA LISTE D'ATTENTE{% endif %}
             {% elseif my_status.isCovoiturage %}
             {% else %}
             JE METS À JOUR MES PREFERENCES {% if style %}<img src="/img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;{% endif %}
@@ -575,13 +575,13 @@
                                             <p style="color:red">&#9888;&#65039; Licence expirée</p>
                                         {% elseif is_license_valid_for_event(participation.user, event) is same as (false) %}
                                             <p style="color:orange"
-                                            {% if participation.user.nomade %}
+                                            {% if participation.user.profileType is same as (constant('App\\Entity\\User::PROFILE_DISCOVERY')) %}
                                                title="A la date de la sortie, la carte découverte de ce non-adhérent ne sera pas valide">🧐 Carte découverte NOK
                                             {% else %}
                                                 title="A la date de la sortie, la licence de cet adhérent sera expirée s'il ne renouvelle pas d'ici là">Licence à renouveler (exp. 30/09)
                                             {% endif %}
                                             </p>
-                                        {% elseif participation.user.nomade %}
+                                        {% elseif participation.user.profileType is same as (constant('App\\Entity\\User::PROFILE_DISCOVERY')) %}
                                             <p style="color:green" title="A la date de la sortie, la carte découverte de ce non-adhérent sera valide">🧐 Carte découverte OK</p>
                                         {% endif %}
                                     </td>
@@ -1132,11 +1132,17 @@
         {% if not event.cancelled %}
             {% set nPlacesRestantesOnline = max(0, event.joinMax - nInscritsTotal) %}
             {% set nEnAttente = event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')) | length %}
+            {% set nbAccepted = event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_VALIDE')) | length %}
+            {% set waiting_seat_left = 0 %}
 
             <hr />
             <ul class="nice-list">
                 <li class="wide"><b>NOMBRE MAXIMUM DE PLACES :</b> {{ event.ngensMax }}</li>
                 <li class="wide"><b>DISPONIBLES VIA INTERNET :</b> {{ nPlacesRestantesOnline }}</li>
+                {% if event.waitingSeat and event.waitingSeat > 0 %}
+                    {% set waiting_seat_left = event.waitingSeat - nEnAttente  %}
+                    <li class="wide"><b>DISPONIBLES EN LISTE D'ATTENTE :</b> {{ waiting_seat_left }}</li>
+                {% endif %}
             </ul>
 
             <br style="clear:both" /><hr />
@@ -1196,7 +1202,7 @@
             {% endif %}
 
             {# si utilisateur est inscrit, il a accès #}
-            {% if nPlacesRestantesOnline > 0 or event.participation(app.user) %}
+            {% if nPlacesRestantesOnline > 0 or waiting_seat_left > 0 or event.participation(app.user) %}
 
                 {% if allowed('evt_join') %}
 
@@ -1204,7 +1210,7 @@
                         {% if not event.hasStarted %}
                             {% if event.joinHasStarted %}
                                 {% if is_granted('JOIN_SORTIE', event) %}
-                                    {{ _self.user_inscription_button(event, filiations, my_status, nInscritsTotal) }}
+                                    {{ _self.user_inscription_button(event, filiations, my_status, nInscritsTotal, nPlacesRestantesOnline, waiting_seat_left) }}
 
                                     <div id="inscription" style="display:none">
 

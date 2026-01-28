@@ -256,6 +256,9 @@ class SortieController extends AbstractController
             if (null === $event->getJoinMax() || $event->getJoinMax() < 0) {
                 $event->setJoinMax($event->getNgensMax());
             }
+            //            if (null === $event->getWaitingSeat() || $event->getWaitingSeat() < 0) {
+            //                $event->setWaitingSeat(null);
+            //            }
 
             $entityManager->persist($event);
             $entityManager->flush();

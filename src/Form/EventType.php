@@ -249,13 +249,17 @@ class EventType extends AbstractType
                     new GreaterThan(0),
                 ],
             ])
-            ->add('joinMax', NumberType::class, [
-                'label' => 'Inscriptions maximum via internet',
+            ->add('waitingSeat', NumberType::class, [
+                'label' => 'Nombre de places en liste d\'attente',
                 'required' => false,
                 'html5' => true,
                 'attr' => [
-                    'placeholder' => 'ex : 8',
+                    'placeholder' => 'ex : 10',
                     'class' => 'type2',
+                ],
+                'help' => 'Laissez vide pour ne pas gérer de liste d\'attente',
+                'help_attr' => [
+                    'class' => 'mini',
                 ],
                 'scale' => 0,
                 'constraints' => [
