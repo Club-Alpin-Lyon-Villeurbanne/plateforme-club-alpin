@@ -10,6 +10,7 @@ use App\Entity\FormationValidationNiveauPratique;
 use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Form\EventType;
+use App\Helper\CarbonCostHelper;
 use App\Helper\RoleHelper;
 use App\Helper\SlugHelper;
 use App\Legacy\LegacyContainer;
@@ -76,6 +77,7 @@ class SortieController extends AbstractController
         CommissionRepository $commissionRepository,
         UserRights $userRights,
         Mailer $mailer,
+        CarbonCostHelper $carbonCostHelper,
         ?Evt $event = null,
         ?string $mode = null,
     ): array|RedirectResponse {
@@ -256,6 +258,16 @@ class SortieController extends AbstractController
             if (null === $event->getJoinMax() || $event->getJoinMax() < 0) {
                 $event->setJoinMax($event->getNgensMax());
             }
+
+            // bilan carbone
+            // @todo calculer distance
+            $nbKm = 274;
+            $carbonCost = $carbonCostHelper->calculate(
+                $nbKm,
+                $event->getMainTransportMode(),
+            );
+            $event->setNbKm($nbKm);
+            $event->setCarbonCost($carbonCost);
 
             $entityManager->persist($event);
             $entityManager->flush();
