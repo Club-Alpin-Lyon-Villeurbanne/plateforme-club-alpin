@@ -163,9 +163,9 @@ class EvtRepository extends ServiceEntityRepository
     }
 
     /** @return Evt[] */
-    public function getUserEvents(User $user, int $first, int $perPage, array $status = [])
+    public function getUserEvents(User $user, int $first, int $perPage, array $status = [], array $participationStatus = []): array
     {
-        $qb = $this->getUserEventsDql($user, $status)
+        $qb = $this->getUserEventsDql($user, $status, $participationStatus)
             ->orderBy('e.startDate', 'desc');
 
         return $this->getPaginatedResults($qb, $first, $perPage);
@@ -201,18 +201,18 @@ class EvtRepository extends ServiceEntityRepository
      * @throws NonUniqueResultException
      * @throws NoResultException
      */
-    public function getUserEventsCount(User $user, array $status = []): int
+    public function getUserEventsCount(User $user, array $status = [], array $participationStatus = []): int
     {
         return (int) $this
-            ->getUserEventsDql($user, $status)
+            ->getUserEventsDql($user, $status, $participationStatus)
             ->select('count(e)')
             ->getQuery()
             ->getSingleScalarResult();
     }
 
-    private function getUserEventsDql(User $user, array $status = []): QueryBuilder
+    private function getUserEventsDql(User $user, array $status = [], array $participationStatus = []): QueryBuilder
     {
-        return $this->getEventsByUserDql($user, $status);
+        return $this->getEventsByUserDql($user, $status, $participationStatus);
     }
 
     /** @return Evt[] */
@@ -447,7 +447,7 @@ class EvtRepository extends ServiceEntityRepository
         ;
     }
 
-    private function getEventsByUserDql(User $user, array $status = []): QueryBuilder
+    private function getEventsByUserDql(User $user, array $status = [], array $participationStatus = []): QueryBuilder
     {
         $qb = $this->createQueryBuilder('e')
             ->select('e, p')
@@ -464,6 +464,12 @@ class EvtRepository extends ServiceEntityRepository
             $qb = $qb
                 ->andWhere('e.status IN (:status)')
                 ->setParameter('status', $status)
+            ;
+        }
+        if (!empty($participationStatus)) {
+            $qb
+                ->andWhere('p.status IN (:participationStatus)')
+                ->setParameter('participationStatus', $participationStatus)
             ;
         }
 
