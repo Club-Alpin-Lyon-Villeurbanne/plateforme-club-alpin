@@ -15,6 +15,7 @@ use App\UserRights;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -43,13 +44,13 @@ class ArticleController extends AbstractController
         if (!$article && !$this->isGranted('ARTICLE_CREATE')) {
             $this->addFlash('error', 'Vous n\'êtes pas autorisé à créer un article');
 
-            return $this->redirect('/profil/articles.html');
+            return $this->redirectToRoute('profil_articles');
         }
 
         if ($article && !$this->isGranted('ARTICLE_UPDATE', $article)) {
             $this->addFlash('error', 'Vous n\'êtes pas autorisé à modifier cet article');
 
-            return $this->redirect('/profil/articles.html');
+            return $this->redirectToRoute('profil_articles');
         }
 
         if (!$article) {
@@ -134,7 +135,7 @@ class ArticleController extends AbstractController
 
                     $this->addFlash('success', $isNew ? 'Article créé avec succès' : 'Article modifié avec succès');
 
-                    return $this->redirect('/profil/articles.html');
+                    return $this->redirectToRoute('profil_articles');
                 }
             } else {
                 foreach ($form->getErrors(true) as $error) {
@@ -242,5 +243,73 @@ class ArticleController extends AbstractController
         }
 
         return $this->redirect($articleViewRoute);
+    }
+
+    #[Route(path: '/article/{id}/depublier', name: 'unpublish_article', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function unpublish(
+        Request $request,
+        Article $article,
+        EntityManagerInterface $manager,
+    ): RedirectResponse {
+        if (!$this->isGranted('ARTICLE_UNPUBLISH', $article)) {
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
+        }
+
+        if (!$this->isCsrfTokenValid('article_unpublish', $request->request->get('csrf_token'))) {
+            throw new BadRequestException('Jeton de validation invalide.');
+        }
+
+        $article
+            ->setTopubly(0)
+            ->setStatus(Article::STATUS_PENDING)
+            ->setValidationDate(null)
+        ;
+        $manager->persist($article);
+        $manager->flush();
+
+        $this->addFlash('info', 'L\'article est dépublié');
+
+        return $this->redirectToRoute('profil_articles');
+    }
+
+    #[Route(path: '/article/{id}/supprimer', name: 'delete_article', requirements: ['id' => '\d+'], methods: ['POST'])]
+    public function delete(
+        Request $request,
+        Article $article,
+        EntityManagerInterface $manager,
+        Filesystem $filesystem,
+    ): RedirectResponse {
+        if (!$this->isGranted('ARTICLE_DELETE', $article)) {
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
+        }
+
+        if (!$this->isCsrfTokenValid('article_delete', $request->request->get('csrf_token'))) {
+            throw new BadRequestException('Jeton de validation invalide.');
+        }
+
+        if (Article::STATUS_PUBLISHED === $article->getStatus()) {
+            $this->addFlash('error', 'Impossible de supprimer un article publié. Veuillez d\'abord le dépublier.');
+
+            return $this->redirectToRoute('profil_articles');
+        }
+
+        // suppression des medias associés
+        try {
+            $filesystem->remove($this->getParameter('kernel.project_dir') . '/public/ftp/articles/' . $article->getId());
+            $media = $article->getMediaUpload();
+            if ($media) {
+                $filesystem->remove($this->getParameter('kernel.project_dir') . '/public/ftp/uploads/files/' . $media->getFilename());
+                $manager->remove($media);
+            }
+
+            $manager->remove($article);
+            $manager->flush();
+
+            $this->addFlash('info', 'L\'article est supprimé');
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Une erreur est survenue lors de la suppression');
+        }
+
+        return $this->redirectToRoute('profil_articles');
     }
 }
