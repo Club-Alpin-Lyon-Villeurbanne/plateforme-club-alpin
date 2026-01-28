@@ -98,83 +98,9 @@ if ('infos' == $p2 && getUser()) {
 
         <?php
         // **************** **************************************
-        // **************** Non connecté
-        // **************** **************************************
-        if (!user()) {
-            ?>
-            <div style="padding:20px;">
-                <h1>Activer votre compte</h1>
-                <?php
-                // ************************
-                // FORMULAIRE D'INSCRIPTION
-
-                // texte explicatif
-                inclure('activer-profil', 'vide');
-
-            // error
-            if (isset($_POST['operation']) && 'user_subscribe' == $_POST['operation'] && isset($errTab) && count($errTab) > 0) {
-                echo '<div class="erreur">Erreur : <ul><li>' . implode('</li><li>', $errTab) . '</li></ul></div>';
-            }
-            // success
-            if (isset($_POST['operation']) && 'user_subscribe' == $_POST['operation'] && (!isset($errTab) || 0 === count($errTab))) {
-                echo "
-					<h3>Compte créé avec succès</h3>
-					<p class='info'>
-						Votre compte a été créé, <b>mais vous devez le valider</b> en cliquant sur le lien
-						contenu dans l'e-mail que nous venons d'envoyer à " . HtmlHelper::escape(stripslashes($email_user)) . '
-					</p>';
-            }
-
-            // affichage
-            if ('user_subscribe' != ($_POST['operation'] ?? null) || ('user_subscribe' == $_POST['operation'] && isset($errTab) && count($errTab) > 0)) {
-                ?>
-                    <br />
-                    <form action="<?php echo $versCettePage; ?>" method="post">
-                        <input type="hidden" name="operation" value="user_subscribe" />
-
-                        <div style="float:left; width:45%; padding:5px 20px 5px 0;">
-                            <b>Votre nom de famille</b><br />
-                            <p class="mini">Le même que donné lors de votre inscription</p>
-                            <input type="text" name="lastname_user" class="type1" value="<?php echo inputVal('lastname_user', ''); ?>" placeholder="" /><br />
-                        </div>
-
-                        <div style="float:left; width:45%; padding:5px 20px 5px 0;">
-                            <b>Votre numéro de licence FFCAM</b>
-                            <p class="mini">Numéro reçu par mail lors de votre adhésion</p>
-                            <input type="text" name="cafnum_user" class="type1" value="<?php echo inputVal('cafnum_user', ''); ?>" placeholder="" maxlength="12" /><br />
-                        </div>
-
-                        <div style="float:left; width:45%; padding:5px 20px 5px 0;">
-                            <b>Votre e-mail</b>
-                            <p class="mini">Utilisé comme identifiant pour vous connecter</p>
-                            <input type="text" name="email_user" class="type1" value="<?php echo inputVal('email_user', ''); ?>" placeholder="" /><br />
-                        </div>
-
-                        <div style="float:left; width:45%; padding:5px 20px 5px 0;">
-                            <b>Choisissez un mot de passe</b>
-                            <p class="mini">8 à 40 caractères sans espace</p>
-                            <input type="password" name="mdp_user" class="type1" value="<?php echo inputVal('mdp_user', ''); ?>" placeholder="" /><br />
-                        </div>
-
-                        <br style="clear:both" />
-                        <br />
-                        <div style="padding:10px 0">
-                            <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
-                                <span class="bleucaf">&gt;</span>
-                                ACTIVER MON COMPTE
-                            </a>
-                        </div>
-                    </form>
-                    <?php
-            } ?>
-            </div>
-            <?php
-        }
-
-        // **************** **************************************
         // **************** CONNECTÉ
         // **************** **************************************
-        else {
+        if (user()) {
             if (file_exists(__DIR__ . '/profil-' . $p2 . '.php')) {
                 require __DIR__ . '/profil-' . $p2 . '.php';
             } else {
