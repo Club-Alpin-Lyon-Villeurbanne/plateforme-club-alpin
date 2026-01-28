@@ -68,7 +68,7 @@ class UserAnonymizationCronCommand extends Command
 
             // image de profil
             if (null !== $user->getProfilePicture()) {
-                $imagePath = $this->params->get('kernel.public_dir') . '/ftp/uploads/files/' . $user->getProfilePicture()->getFilename();
+                $imagePath = $this->params->get('public_dir') . '/ftp/uploads/files/' . $user->getProfilePicture()->getFilename();
                 $filesystem->remove($imagePath);
             }
 
