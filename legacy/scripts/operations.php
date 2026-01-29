@@ -44,11 +44,6 @@ if (user()) {
         require $operationsDir . 'operations.article_del.php';
     }
 
-    // ARTICLE : DÉPUBLIER
-    elseif ('article_depublier' == $operation) {
-        require $operationsDir . 'operations.article_depublier.php';
-    }
-
     // ARTICLE : REMONTER EN TETE
     elseif ('renew_date_article' == $operation) {
         require $operationsDir . 'operations.renew_date_article.php';

@@ -318,25 +318,6 @@ function jour($n, $mode = 'full')
     return $return;
 }
 
-// limitateur de texte au niveau des espace. Longueur en lettres
-function limiterTexte($text, $length, $html = false)
-{
-    if (!$html) {
-        $text = str_replace('<br />', ' ', $text);
-        $text = str_replace('<br>', ' ', $text);
-        $text = strip_tags($text);
-    }
-    if (strlen($text) > $length) {
-        $pos = strpos($text, ' ', $length);
-        if (!$pos) {
-            $pos = strlen($text);
-        }
-        $text = substr($text, 0, $pos);
-    }
-
-    return $text;
-}
-
 // convention de nommage automatique
 function wd_remove_accents($str, $charset = 'UTF-8')
 {

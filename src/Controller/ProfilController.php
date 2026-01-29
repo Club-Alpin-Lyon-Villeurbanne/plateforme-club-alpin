@@ -7,6 +7,7 @@ use App\Entity\MediaUpload;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Messenger\Message\ArticlePublie;
+use App\Repository\ArticleRepository;
 use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
 use App\Repository\UserRepository;
@@ -106,13 +107,39 @@ class ProfilController extends AbstractController
     #[Template('profil/sorties.html.twig')]
     public function sortiesSelf(Request $request, EvtRepository $evtRepository): array
     {
-        $total = $evtRepository->getUserCreatedEventsCount($this->getUser());
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $total = $evtRepository->getUserCreatedEventsCount($user);
         $paginationParams = $this->getPaginationParams($request, $total);
 
         return array_merge([
-            'events' => $evtRepository->getUserCreatedEvents($this->getUser(), $paginationParams['first'], $paginationParams['per_page']),
+            'events' => $evtRepository->getUserCreatedEvents($user, $paginationParams['first'], $paginationParams['per_page']),
             'page_url' => $this->generateUrl('profil_sorties_self'),
             'include_name' => 'profil-sorties-self',
+        ], $paginationParams);
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    #[Route(path: '/articles.html', name: 'profil_articles', methods: ['GET'], priority: 10)]
+    #[IsGranted('ROLE_USER')]
+    #[Template('profil/articles.html.twig')]
+    public function articleList(Request $request, ArticleRepository $articleRepository): array
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        $limit = $this->getParameter('max_user_articles');
+
+        // compte tous les articles de l'utilisateur, quel que soit leur statut
+        $total = $articleRepository->getUserArticlesCount($user, []);
+        $paginationParams = $this->getPaginationParams($request, $total, $limit);
+
+        return array_merge([
+            'articles' => $articleRepository->getUserArticles($user, $paginationParams['first'], $paginationParams['per_page'], []),
         ], $paginationParams);
     }
 

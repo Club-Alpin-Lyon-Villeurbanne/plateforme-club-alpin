@@ -272,7 +272,7 @@
                                         </a>
                                     </li>
                                     <li>
-                                        <a href="/profil/articles.html{{ current_commission and current_commission is instanceof('App\\Entity\\Commission') ? '?commission=' ~ current_commission.code : '' }}" title="">
+                                        <a href="{{ path('profil_articles') }}{{ current_commission and current_commission is instanceof('App\\Entity\\Commission') ? '?commission=' ~ current_commission.code : '' }}" title="">
                                             mes articles
                                         </a>
                                     </li>
@@ -376,7 +376,7 @@
 
                     <div style="width:290px; float:right; padding:0px 10px 0 0; ">
 
-                        {{ user_image.user_img(app.user, 'pic', '', 'float:left; padding:0 10px 0 0;') }}
+                        {{ user_image.user_img(app.user, 'pic', '', 'float:left; max-width: 55px; padding:0 10px 0 0;') }}
 
                         {% if is_granted('IS_IMPERSONATOR') %}
                             <p style="border: 2px solid red; border-radius: 5px; font-size: 0.9rem; padding:10px;">
