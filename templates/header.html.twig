@@ -307,8 +307,8 @@
 
                                 {% if allowed('user_create_manually') %}
                                     <li>
-                                        <a href="/adherents-creer.html" title="">
-                                        créer un adhérent/salarié
+                                        <a href="{{ path('user_create') }}" title="">
+                                        créer un utilisateur
                                         </a>
                                     </li>
                                 {% endif %}

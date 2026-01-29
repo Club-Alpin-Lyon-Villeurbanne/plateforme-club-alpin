@@ -13,6 +13,7 @@ use App\Entity\UserAttr;
 use App\Entity\Usertype;
 use App\Form\NomadeType;
 use App\Form\UserContactType;
+use App\Form\UserFullType;
 use App\Mailer\Mailer;
 use App\Repository\ArticleRepository;
 use App\Repository\EvtRepository;
@@ -21,14 +22,19 @@ use App\Repository\FormationReferentielNiveauPratiqueRepository;
 use App\Repository\FormationValidationGroupeCompetenceRepository;
 use App\Repository\FormationValidationNiveauPratiqueRepository;
 use App\Repository\UserAttrRepository;
+use App\Repository\UserNotificationRepository;
 use App\Repository\UserRepository;
 use App\Security\SecurityConstants;
+use App\Service\EmailMarketingSyncService;
 use App\UserRights;
+use App\Utils\NicknameGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -49,7 +55,7 @@ class UserController extends AbstractController
      */
     #[Route(path: '/fiche-profil/{id}', name: 'user_profile', requirements: ['id' => '\d+'], priority: 10)]
     #[Template('user/profile.html.twig')]
-    public function view(
+    public function profile(
         User $user,
         Request $request,
         EntityManagerInterface $manager,
@@ -80,6 +86,45 @@ class UserController extends AbstractController
             'user_events' => $userEvents,
             'nb_events' => $eventRepository->getUserEventsCount($user, [Evt::STATUS_PUBLISHED_VALIDE]),
             'nb_articles' => $articleRepository->getUserArticlesCount($user),
+        ]);
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     */
+    #[Route(path: '/adherents/consulter/{id}', name: 'user_view', requirements: ['id' => '\d+'])]
+    #[Template('user/view.html.twig')]
+    public function view(
+        Request $request,
+        User $user,
+        UserRights $userRights,
+        UserRepository $userRepository,
+        EvtRepository $eventRepository,
+        EntityManagerInterface $manager,
+    ): array {
+        if (!$this->isGranted(SecurityConstants::ROLE_ADMIN) && !$userRights->allowed('user_read_private')) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page');
+        }
+
+        $userData = $this->getUserData($user, $request, $manager);
+        $parent = $userRepository->findOneBy(['cafnum' => $user->getCafnumParent()]);
+        $filiations = $userRepository->findBy(['cafnumParent' => $user->getCafnum()]);
+
+        $userArticles = $manager->getRepository(Article::class)->findBy(
+            [
+                'user' => $user,
+                'status' => Article::STATUS_PUBLISHED,
+            ],
+            ['updatedAt' => 'DESC'],
+        );
+        $userEvents = $eventRepository->getUserEvents($user, 0, 200, [Evt::STATUS_PUBLISHED_VALIDE], [EventParticipation::STATUS_VALIDE]);
+
+        return array_merge($userData, [
+            'user' => $user,
+            'filiations' => $filiations,
+            'parent' => $parent,
+            'user_articles' => $userArticles,
+            'user_events' => $userEvents,
         ]);
     }
 
@@ -508,8 +553,8 @@ class UserController extends AbstractController
         foreach ($data as $user) {
             $tools = '';
             // view user
-            if ($this->isGranted(SecurityConstants::ROLE_ADMIN)) {
-                $tools .= '<a href="/includer.php?p=pages/adherents-consulter.php&amp;id_user=' . $user->getId() . '" class="fancyframe" title="Consulter cet adhérent"><img src="/img/base/report.png" alt="consulter" /></a> ';
+            if ($this->isGranted(SecurityConstants::ROLE_ADMIN) || $userRights->allowed('user_read_private')) {
+                $tools .= '<a href="' . $this->generateUrl('user_view', ['id' => $user->getId()]) . '" class="fancyframe" title="Consulter cet utilisateur"><img src="/img/base/report.png" alt="consulter" /></a> ';
             }
             // gestion des droits
             if (
@@ -526,11 +571,11 @@ class UserController extends AbstractController
             }
             // edit user
             if ($userRights->allowed('user_edit_notme')) {
-                $tools .= '<a href="/includer.php?p=pages/adherents-modifier.php&amp;id_user=' . $user->getId() . '" class="fancyframe" title="Modifier cet adhérent"><img src="/img/base/user_edit.png" alt="modifier" /></a> ';
+                $tools .= '<a href="' . $this->generateUrl('user_update', ['id' => $user->getId()]) . '" class="fancyframe" title="Modifier cet utilisateur"><img src="/img/base/user_edit.png" alt="modifier" /></a> ';
             }
             // impersonate user
             if ($this->isGranted('ROLE_ALLOWED_TO_SWITCH')) {
-                $tools .= (!empty($user->getEmail())) ? ' <a href="' . $this->generateUrl('my_profile') . '?_switch_user=' . urlencode($user->getEmail()) . '" title="Impersonifier l\'utilisateur"><img src="/img/base/user_go.png" alt="impersonifier" /></a> ' : '';
+                $tools .= (!empty($user->getEmail())) ? ' <a href="' . $this->generateUrl('my_profile') . '?_switch_user=' . urlencode($user->getEmail()) . '" title="Impersonifier cet utilisateur"><img src="/img/base/user_go.png" alt="impersonifier" /></a> ' : '';
             }
 
             // âge
@@ -646,6 +691,176 @@ class UserController extends AbstractController
             'recordsFiltered' => $recordsFiltered,
             'data' => $results,
         ]);
+    }
+
+    #[Route(path: '/adherents-creer.html', name: 'user_create', priority: 10)]
+    #[Route(path: '/adherents/modifier/{id}.html', name: 'user_update', requirements: ['id' => '\d+'], priority: 10)]
+    #[Template('user/form.html.twig')]
+    public function update(
+        Request $request,
+        UserRights $userRights,
+        EntityManagerInterface $manager,
+        EmailMarketingSyncService $emailMarketingService,
+        ?User $user = null,
+    ): array|Response {
+        /** @var User $currentUser */
+        $currentUser = $this->getUser();
+        $isUpdate = true;
+
+        if (!$user instanceof User) {
+            $user = new User();
+            $user->setNomadeParent($currentUser->getId());
+            $isUpdate = false;
+        }
+
+        if (
+            !$isUpdate && !$userRights->allowed('user_create_manually')
+            || $isUpdate && !$this->isGranted(SecurityConstants::ROLE_ADMIN) && !$userRights->allowed('user_edit_notme')
+        ) {
+            throw $this->createAccessDeniedException('Vous n\'avez pas les droits nécessaires pour accéder à cette page');
+        }
+
+        $form = $this->createForm(UserFullType::class, $user, ['is_edit' => $isUpdate]);
+
+        $form->handleRequest($request);
+        $hasErrors = false;
+        if ($form->isSubmitted() && $form->isValid()) {
+            $routeTarget = 'external';
+            /** @var User $user */
+            $user = $form->getData();
+
+            if (!$isUpdate) {
+                // vérification anti doublon de licence
+                $requestedCafnum = $user->getCafnum();
+                $existingUserWithCafnum = $manager->getRepository(User::class)->findOneBy(['cafnum' => $requestedCafnum]);
+                if ($existingUserWithCafnum instanceof User && ($existingUserWithCafnum->getId() !== $user->getId() || !$isUpdate)) {
+                    $form->get('cafnum')->addError(new FormError('Un compte existe déjà avec ce numéro de licence.'));
+                    $hasErrors = true;
+                }
+
+                // vérification anti doublon d'email
+                $requestedEmail = $user->getEmail();
+                $existingUserWithEmail = $manager->getRepository(User::class)->findOneBy(['email' => $requestedEmail]);
+                if ($existingUserWithEmail instanceof User && ($existingUserWithEmail->getId() !== $user->getId() || !$isUpdate)) {
+                    $form->get('email')->addError(new FormError('Un compte existe déjà avec cette adresse e-mail.'));
+                    $hasErrors = true;
+                }
+
+                // détection type de profil
+                $clubPrefix = $this->getParameter('club_cafnum_prefix');
+                if (str_starts_with($user->getCafnum(), 'D') || str_starts_with($user->getCafnum(), 'd') || str_starts_with($user->getCafnum(), $clubPrefix)) {
+                    $form->get('cafnum')->addError(new FormError('Vous ne devez pas ajouter d\'adhérent du club ou de carte découverte par ce formulaire.'));
+                    $hasErrors = true;
+                } elseif (is_numeric($user->getCafnum())) {
+                    $routeTarget = 'nomade';
+                    $user->setProfileType(User::PROFILE_OTHER_CLUB_MEMBER);
+                } else {
+                    $user->setProfileType(User::PROFILE_EXTERNAL_PERSON);
+                }
+            }
+
+            if (!$hasErrors) {
+                // tout est bon
+                if (!$isUpdate) {
+                    $user->setCreatedAt(new \DateTime());
+                    $nickname = NicknameGenerator::generateNickname($user->getFirstname(), $user->getLastname(), $user->getCafnum());
+                    $user->setNickname($nickname);
+                    $user->setManuel(true);
+                    $user->setNomade(true);
+                    $user->setDoitRenouveler(true);     // sécurité pour éviter trop d'accès
+                    $user->setBirthdate(\DateTimeImmutable::createFromMutable($user->getBirthdate()));
+                }
+                $user->setUpdatedAt(new \DateTime());
+
+                $manager->persist($user);
+                $manager->flush();
+
+                if (!$isUpdate) {
+                    // Synchroniser avec MailerLite après création manuelle
+                    try {
+                        $emailMarketingService->syncUsers($user);
+                    } catch (\Exception $exception) {
+                        // Les logs seront automatiquement gérés par le service EmailMarketingSyncService
+                    }
+                }
+
+                $this->addFlash('success', $isUpdate ? 'L\'utilisateur a bien été modifié.' : 'L\'utilisateur a bien été créé.');
+
+                if ($isUpdate) {
+                    return new Response(
+                        '<script>
+                            window.parent.location.reload();
+                        </script>'
+                    );
+                }
+
+                return $this->redirectToRoute('user_list', ['show' => $routeTarget]);
+            }
+        }
+
+        return [
+            'user' => $user,
+            'is_update' => $isUpdate,
+            'form' => $form,
+            'title' => $isUpdate ? 'Modifier un utilisateur' : 'Créer un utilisateur',
+            'template' => $isUpdate ? 'base-light.html.twig' : 'base-wide.html.twig',
+        ];
+    }
+
+    #[Route(path: '/adherents/supprimer/{id}', name: 'user_delete_confirm', requirements: ['id' => '\d+'], methods: ['GET'], priority: 10)]
+    #[Template('user/delete-confirm.html.twig')]
+    public function deleteConfirm(
+        User $user,
+        UserRights $userRights,
+    ): array {
+        if (!$this->isGranted(SecurityConstants::ROLE_ADMIN) || !$userRights->allowed('user_delete')) {
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
+        }
+
+        return [
+            'user' => $user,
+        ];
+    }
+
+    #[Route(path: '/adherents/desactiver/{id}', name: 'user_disable', requirements: ['id' => '\d+'], methods: ['POST'], priority: 10)]
+    public function disable(
+        Request $request,
+        User $user,
+        UserRights $userRights,
+        EntityManagerInterface $manager,
+        UserNotificationRepository $userNotificationRepository,
+        UserAttrRepository $userAttrRepository,
+    ): Response {
+        if (!$this->isGranted(SecurityConstants::ROLE_ADMIN) || !$userRights->allowed('user_delete')) {
+            throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
+        }
+
+        if (!$this->isCsrfTokenValid('delete_user', $request->request->get('csrf_token'))) {
+            throw new BadRequestException('Jeton de validation invalide.');
+        }
+
+        // nettoyage des tables liées
+        $userNotificationRepository->deleteByUser($user);
+        $userAttrRepository->deleteByUser($user);
+
+        // nettoyage image de profil
+        if (null !== $user->getProfilePicture()) {
+            $filesystem = new Filesystem();
+            $imagePath = $this->getParameter('public_dir') . '/ftp/uploads/files/' . $user->getProfilePicture()->getFilename();
+            $filesystem->remove($imagePath);
+        }
+
+        $user->setIsDeleted(true);
+        $manager->persist($user);
+        $manager->flush();
+
+        $this->addFlash('success', 'L\'utilisateur a bien été supprimé.');
+
+        return new Response(
+            '<script>
+                window.parent.location.reload();
+            </script>'
+        );
     }
 
     protected function getEventParticipants(int $eventId, EvtRepository $eventRepository): array

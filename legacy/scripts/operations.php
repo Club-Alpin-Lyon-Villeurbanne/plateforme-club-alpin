@@ -60,52 +60,6 @@ if (user()) {
     }
 }
 
-// USER : CREATE (manuel)
-if ('user_create' == $operation) {
-    require $operationsDir . 'operations.user_create.php';
-}
-
-// USER : EDIT (manuel)
-elseif ('user_edit' == $operation) {
-    require $operationsDir . 'operations.user_edit.php';
-}
-
-// USER : SUPPRIMER
-elseif ('user_delete' == $operation) {
-    $id_user = (int) $_POST['id_user'];
-    if (!$id_user) {
-        $errTab[] = 'No id';
-    } elseif (!isGranted(SecurityConstants::ROLE_ADMIN) || !allowed('user_delete')) {
-        $errTab[] = "Vous n'avez pas les droits necessaires";
-    } else {
-        // suppression participations aux sorties
-        $req = "DELETE FROM caf_evt_join WHERE caf_evt_join.user_evt_join=$id_user";
-        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-            $errTab[] = 'Erreur SQL';
-        }
-
-        // modification des articles de ce user (articles orphelins...)
-        $req = "UPDATE caf_article SET user_article=0 WHERE caf_article.user_article=$id_user";
-        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-            $errTab[] = 'Erreur SQL';
-        }
-
-        // suppression des droits
-        $req = "DELETE FROM caf_user_attr WHERE caf_user_attr.user_user_attr=$id_user";
-        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-            $errTab[] = 'Erreur SQL';
-        }
-
-        // suppression du user
-        $req = "DELETE FROM `caf_user` WHERE  `caf_user`.`id_user`=$id_user";
-        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-            $errTab[] = 'Erreur SQL';
-        }
-
-        mylog('user_delete', "Suppression definitive user $id_user", false);
-    }
-}
-
 if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     // ADMIN : écrasement et renouvellement de la matrice des droits
     if ('usertype_attr_edit' == $operation) {
