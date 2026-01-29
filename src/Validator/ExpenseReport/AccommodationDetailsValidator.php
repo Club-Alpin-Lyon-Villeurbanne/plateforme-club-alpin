@@ -36,7 +36,7 @@ class AccommodationDetailsValidator
                     ->addViolation();
             }
 
-            if (isset($accommodation['expenseId'])) {
+            if (isset($accommodation['expenseId']) && in_array('price', $accommodation, true) && $accommodation['price'] > 0) {
                 $requiredAttachments[] = $accommodation['expenseId'];
             }
         }
