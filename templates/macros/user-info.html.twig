@@ -6,7 +6,7 @@
             <li>NUMÉRO DE LICENCE FFCAM : {{ user.cafnum }}</li>
             {% if user.doitRenouveler %}
                 <li class="red">LICENCE EXPIRÉE</li>
-            {% elseif user.nomade %}
+            {% elseif user.profileType is same as (constant('App\\Entity\\User::PROFILE_DISCOVERY')) %}
                 <li>CARTE DÉCOUVERTE : valide du {{ user.joinDate|date('d/m/Y H:i') }} au {{ user.discoveryEndDatetime|date('d/m/Y H:i') }}</li>
             {% else %}
                 <li>DATE D'ADHÉSION :

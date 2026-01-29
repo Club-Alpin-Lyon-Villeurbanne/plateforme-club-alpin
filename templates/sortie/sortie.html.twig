@@ -575,13 +575,13 @@
                                             <p style="color:red">&#9888;&#65039; Licence expirée</p>
                                         {% elseif is_license_valid_for_event(participation.user, event) is same as (false) %}
                                             <p style="color:orange"
-                                            {% if participation.user.nomade %}
+                                            {% if participation.user.profileType is same as (constant('App\\Entity\\User::PROFILE_DISCOVERY')) %}
                                                title="A la date de la sortie, la carte découverte de ce non-adhérent ne sera pas valide">🧐 Carte découverte NOK
                                             {% else %}
                                                 title="A la date de la sortie, la licence de cet adhérent sera expirée s'il ne renouvelle pas d'ici là">Licence à renouveler (exp. 30/09)
                                             {% endif %}
                                             </p>
-                                        {% elseif participation.user.nomade %}
+                                        {% elseif participation.user.profileType is same as (constant('App\\Entity\\User::PROFILE_DISCOVERY')) %}
                                             <p style="color:green" title="A la date de la sortie, la carte découverte de ce non-adhérent sera valide">🧐 Carte découverte OK</p>
                                         {% endif %}
                                     </td>
@@ -712,18 +712,7 @@
                                     </td>
 
                                     <td class="mini event-manage-user">
-                                        {% if participation.user.nomade %}
-                                            {{ participation | participation_role_name }}<br />
-                                            {% if not participation.user.email %}
-                                                <img
-                                                    src="/img/base/bullet_error.png"
-                                                    alt="!"
-                                                    title="Attention. Ne reçoit pas d'e-mail"
-                                                    style="vertical-align:top"
-                                                />
-                                            {% endif %}
-                                            <br />
-                                        {% elseif participation.isRoleManuel or participation.isRoleInscrit or participation.isBenevole %}
+                                        {% if participation.isRoleManuel or participation.isRoleInscrit or participation.isBenevole %}
                                             {% if participation.isRoleManuel %}
                                                 <label style="display:block; white-space:nowrap;" for="role_join_{{ participation.id }}_m">
                                                     <input
@@ -758,7 +747,16 @@
                                                 Participant<br />bénévole
                                             </label>
                                         {% else %}
-                                            {{ participation | participation_role_name }}<br />
+                                            {{ participation | participation_role_name }}
+                                            {% if not participation.user.email %}
+                                                <img
+                                                    src="/img/base/bullet_error.png"
+                                                    alt="!"
+                                                    title="Attention. Ne reçoit pas d'e-mail"
+                                                    style="vertical-align:top"
+                                                />
+                                            {% endif %}
+                                            <br />
                                         {% endif %}
                                         {% if participation.user is same as event.user %}
                                             (organisateur)
