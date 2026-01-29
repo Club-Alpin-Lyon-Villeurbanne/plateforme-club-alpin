@@ -748,20 +748,20 @@
                                             </label>
                                         {% else %}
                                             {{ participation | participation_role_name }}<br />
-                                            {% if not participation.user.email %}
-                                                <img
-                                                    src="/img/base/bullet_error.png"
-                                                    alt="!"
-                                                    title="Attention. Ne reçoit pas d'e-mail"
-                                                    style="vertical-align:top"
-                                                />
-                                                <br />
-                                            {% endif %}
                                         {% endif %}
+
                                         {% if participation.user is same as event.user %}
                                             (organisateur)
                                         {% endif %}
-
+                                        {% if not participation.user.email %}
+                                            <br />
+                                            <img
+                                                src="/img/base/bullet_error.png"
+                                                alt="!"
+                                                title="Attention. Ne reçoit pas d'e-mail"
+                                                style="vertical-align:top"
+                                            />
+                                        {% endif %}
                                     </td>
 
                                     <td class="event-manage-user" style="white-space:nowrap">
