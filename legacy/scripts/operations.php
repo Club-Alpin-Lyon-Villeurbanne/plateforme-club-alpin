@@ -12,13 +12,6 @@ $operationsDir = __DIR__ . '/operations/';
 
 $operation = $_POST['operation'] ?? null;
 
-// Protection : whitelist des opérations publiques autorisées
-$publicOperations = ['user_subscribe'];
-if ($operation && !in_array($operation, $publicOperations, true) && !user()) {
-    http_response_code(403);
-    exit('Forbidden');
-}
-
 if (user()) {
     // COMMISSIONS : ACTIVER / DESACTIVER
     if ('commission_majvis' == $operation) {
@@ -113,42 +106,6 @@ elseif ('user_delete' == $operation) {
     }
 }
 
-// USER (OU PAS) : CONTACT
-elseif ('user_contact' == $operation) {
-    require $operationsDir . 'operations.user_contact.php';
-}
-
-// MISE À JOUR DES FICHIERS ADHÉRENTS
-elseif ('fichier_adherents_maj' == $operation) {
-    if (!allowed('user_updatefiles')) {
-        $errTab[] = 'Il semble que vous ne disposez pas des droits nécessaires';
-    }
-
-    $length = 0;
-    if (0 === count($errTab)) {
-        $length = count($_FILES['file']['name']);
-        if ($length < 1) {
-            $errTab[] = 'Aucunes données reçues';
-        }
-    }
-
-    if (0 === count($errTab)) {
-        $oneGood = false;
-        for ($i = 0; $i < $length; ++$i) {
-            if ('7300.txt' == $_FILES['file']['name'][$i] || '7480.txt' == $_FILES['file']['name'][$i]) {
-                $oneGood = true;
-                if (!move_uploaded_file($_FILES['file']['tmp_name'][$i], __DIR__ . '/../../public/ftp/fichiers-proteges/' . $_FILES['file']['name'][$i])) {
-                    $errTab[] = 'Erreur de déplacement du fichier ' . $_FILES['file']['name'][$i];
-                }
-            }
-        }
-
-        if (!$oneGood) {
-            $errTab[] = 'Aucun fichier reçu ne correspond, opération ignorée';
-        }
-    }
-}
-
 if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     // ADMIN : écrasement et renouvellement de la matrice des droits
     if ('usertype_attr_edit' == $operation) {
@@ -195,7 +152,8 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     elseif ('addContentInline' == $operation) {
         require $operationsDir . 'operations.addContentInline.php';
     }
-    // GENERIQUE: maj
+
+    // GENERIQUE: maj page libre
     elseif ('majBd' == $operation) {
         $table = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_POST['table']);
         $champ = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_POST['champ']);
@@ -218,51 +176,6 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
                 $erreur = 'Erreur BDD<br />' . $req;
             }
         }
-    }
-
-    // GENERIQUE: sup
-    elseif ('supBd' == $operation) {
-        $table = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_POST['table']);
-        $id = (int) $_POST['id'];
-
-        $req = 'DELETE FROM `caf_' . $table . '` WHERE `caf_' . $table . '`.`id_' . $table . "` = $id LIMIT 1;";
-        if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
-            $erreur = 'Erreur BDD<br />' . $req;
-        }
-    }
-
-    // ADMIN : MISE A JOUR DES CONTENUS
-    elseif ('majConts' == $operation) {
-        $langueCont = $_POST['langueCont'];
-        if (!file_exists("contenus/$langueCont.txt")) {
-            $erreur = 'Fichier de langue introuvable';
-        } else {
-            $contenu = '';
-            // pour chaque var de contenu
-            foreach ($_POST as $key => $val) {
-                if ('contenu-' == substr($key, 0, 8)) {
-                    $contenu .= '
-    #' . substr($key, 8) . '
-    ' . stripslashes($val);
-                }
-            }
-
-            if (!$contenu) {
-                $erreur = 'Aucun contenu reçu';
-            } else {
-                // echo $contenu;
-                if ($handle = fopen('contenus/' . $langueCont . '.txt', 'w')) {
-                    fwrite($handle, $contenu);
-                    fclose($handle);
-                } else {
-                    $erreur = 'Ecriture impossible';
-                }
-            }
-        }
-    }
-    // ADMIN : NOUVELLE PAGE
-    elseif ('page_new' == $operation) {
-        require $operationsDir . 'operations.page_new.php';
     }
 }
 

@@ -134,55 +134,6 @@ function allowed($code_userright, $param = '')
     return LegacyContainer::get('legacy_user_rights')->allowed($code_userright, $param);
 }
 
-/*
-Fonction pour calcuer l'âge
-http://shanelabs.com/blog/2008/03/26/calculating-age-from-unix-timestamps-in-php/
-Modifiée pour prendre directement un timestamp en variable
-*/
-function getYearsSinceDate($then)
-{
-    // return $then;
-    // $then = intval($then);
-    $then = bigintval($then);
-
-    // get difference between years
-    $years = date('Y', time()) - date('Y', $then);
-
-    // get months of dates
-    $mthen = date('n', $then);
-    $mnow = date('n', time());
-    // get days of dates
-    $dthen = date('j', $then);
-    $dnow = date('j', time());
-
-    // if date not reached yet this year, we need to remove one year.
-    if ($mnow < $mthen || ($mnow == $mthen && $dnow < $dthen)) {
-        --$years;
-    }
-
-    // gestion des dates NULL
-    if (null == $then) {
-        return 'inconnu';
-    }
-
-    return $years;
-}
-
-// utile ci dessus
-function bigintval($value)
-{
-    $value = trim((string) $value);
-    if (ctype_digit($value)) {
-        return $value;
-    }
-    $value = preg_replace('/[^-0-9](.*)$/', '', $value);
-    if (is_numeric($value)) {
-        return $value;
-    }
-
-    return 0;
-}
-
 // ----------------------------------------------------------------------------------------------------------------
 // -------------------------------------------- // FIN des fonctions specifiques
 // ----------------------------------------------------------------------------------------------------------------
@@ -237,10 +188,12 @@ function getUser(): ?User
 
     return null;
 };
+
 function generateRoute(string $path, array $parameters = []): ?string
 {
     return LegacyContainer::get('legacy_router')->generate($path, $parameters);
 }
+
 function twigRender(string $path, array $params = []): ?string
 {
     $params['app'] = new AppVariable();
@@ -265,17 +218,6 @@ function mylog($code, $desc, $connectme = true)
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL lors du log';
     }
-}
-
-// assurer un lien http
-function linker($link)
-{
-    $link = trim($link);
-    if ('http://' != substr($link, 0, 7) && 'https://' != substr($link, 0, 8)) {
-        $link = 'https://' . $link;
-    }
-
-    return $link;
 }
 
 // ma fonction d'insertion élément inline
@@ -363,6 +305,7 @@ function mois($mois)
 
     return isset($tab[(int) $mois - 1]) ? $tab[(int) $mois - 1] : '';
 }
+
 function jour($n, $mode = 'full')
 {
     $tab = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
@@ -405,6 +348,7 @@ function wd_remove_accents($str, $charset = 'UTF-8')
 
     return preg_replace('#&[^;]+;#', '', $str); // supprime les autres caractères
 }
+
 function formater($retourner, $type = 1)
 {
     // Type 1 : sans espace ni tirets, en minuscule
