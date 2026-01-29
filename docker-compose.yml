@@ -20,6 +20,8 @@ services:
   cafdb:
     # The MySQL version must be updated at multiple places (docker-compose, gitlab-ci)
     image: mysql:8.0.33
+    ports:
+      - "3306:3306"
     container_name: db_pca
     profiles: ["dev", "ci"]
     environment:
