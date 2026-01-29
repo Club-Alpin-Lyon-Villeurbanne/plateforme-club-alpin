@@ -54,6 +54,19 @@ class UserRightRepository extends ServiceEntityRepository
         return $statement->executeQuery()->fetchAllAssociative();
     }
 
+    /**
+     * @return UserRight[]
+     */
+    public function findAllOrdered(): array
+    {
+        return $this->createQueryBuilder('u')
+            ->orderBy('u.parent', 'ASC')
+            ->addOrderBy('u.ordre', 'ASC')
+            ->getQuery()
+            ->getResult()
+        ;
+    }
+
     private function processRightsResults(array $results): array
     {
         $userRights = [];
