@@ -747,7 +747,7 @@
                                                 Participant<br />bénévole
                                             </label>
                                         {% else %}
-                                            {{ participation | participation_role_name }}
+                                            {{ participation | participation_role_name }}<br />
                                             {% if not participation.user.email %}
                                                 <img
                                                     src="/img/base/bullet_error.png"
@@ -755,8 +755,8 @@
                                                     title="Attention. Ne reçoit pas d'e-mail"
                                                     style="vertical-align:top"
                                                 />
+                                                <br />
                                             {% endif %}
-                                            <br />
                                         {% endif %}
                                         {% if participation.user is same as event.user %}
                                             (organisateur)
