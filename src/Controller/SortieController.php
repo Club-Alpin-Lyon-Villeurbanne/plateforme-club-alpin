@@ -544,7 +544,7 @@ class SortieController extends AbstractController
                 continue;
             }
 
-            if (User::PROFILE_DISCOVERY === $participation->getUser()->getProfileType() && !$participation->getUser()->getEmail()) {
+            if (!$participation->getUser()->getEmail()) {
                 $statusName = '';
                 if (EventParticipation::STATUS_NON_CONFIRME === $status) {
                     $statusName = 'En attente';
