@@ -780,7 +780,6 @@ class UserController extends AbstractController
                     try {
                         $emailMarketingService->syncUsers($user);
                     } catch (\Exception $exception) {
-                        // Log l'erreur mais ne pas bloquer la création
                         // Les logs seront automatiquement gérés par le service EmailMarketingSyncService
                     }
                 }
