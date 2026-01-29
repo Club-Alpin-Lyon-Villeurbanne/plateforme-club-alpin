@@ -35,7 +35,7 @@ class OtherDetailsValidator
                     ->atPath("details.others[{$index}].amount")
                     ->addViolation();
             }
-            if (isset($expense['expenseId'])) {
+            if (isset($expense['expenseId']) && in_array('price', $expense, true) && $expense['price'] > 0) {
                 $requiredAttachments[] = $expense['expenseId'];
             }
         }
