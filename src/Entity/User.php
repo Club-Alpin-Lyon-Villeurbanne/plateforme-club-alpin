@@ -368,7 +368,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
 
     public function getFirstname(): ?string
     {
-        return ucfirst($this->firstname);
+        return null !== $this->firstname ? ucfirst($this->firstname) : null;
     }
 
     public function setFirstname(string $firstname): self
@@ -380,7 +380,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
 
     public function getLastname(): ?string
     {
-        return strtoupper($this->lastname);
+        return null !== $this->lastname ? strtoupper($this->lastname) : null;
     }
 
     public function setLastname(string $lastname): self
@@ -539,7 +539,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this->nomadeParent;
     }
 
-    public function setNomadeParent(int $nomadeParent): self
+    public function setNomadeParent(?int $nomadeParent): self
     {
         $this->nomadeParent = $nomadeParent;
 
@@ -667,11 +667,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
 
     public function hasAlertEnabledOn(AlertType $type, string $commissionCode): bool
     {
+        if (empty($this->alerts)) {
+            return false;
+        }
+
         return $this->alerts[$commissionCode][$type->name] ?? false;
     }
 
     public function setAlertStatus(AlertType $type, string $commissionCode, bool $status): self
     {
+        $this->alerts ??= [];
         $this->alerts[$commissionCode][$type->name] = $status;
 
         return $this;

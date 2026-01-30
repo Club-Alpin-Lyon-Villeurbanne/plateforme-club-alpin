@@ -10,7 +10,6 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 
@@ -77,7 +76,7 @@ class EventParticipation implements \JsonSerializable
     #[ORM\JoinColumn(name: 'user_evt_join', referencedColumnName: 'id_user', nullable: false, onDelete: 'CASCADE', options: ['comment' => 'ID utilisateur'])]
     #[Groups('eventParticipation:read')]
     #[SerializedName('utilisateur')]
-    private User|UserInterface $user;
+    private User $user;
 
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'affiliant_user_join', referencedColumnName: 'id_user', nullable: true, options: ['comment' => 'plus utilisé ?'])]
@@ -98,7 +97,7 @@ class EventParticipation implements \JsonSerializable
     #[ORM\Column(name: 'has_paid', type: Types::BOOLEAN, nullable: false, options: ['default' => false, 'comment' => 'a payé sur HelloAsso (si applicable et que l\'email était OK)'])]
     private bool $hasPaid = false;
 
-    public function __construct(Evt $event, UserInterface $user, string $role, int $status)
+    public function __construct(Evt $event, User $user, string $role, int $status)
     {
         $this->evt = $event;
         $this->user = $user;
