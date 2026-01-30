@@ -10,13 +10,9 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Timestampable\Traits\TimestampableEntity;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 
-/**
- * EventParticipation.
- */
 #[ORM\Table(name: 'caf_evt_join')]
 #[ORM\Entity(repositoryClass: EventParticipationRepository::class)]
 #[UniqueEntity(fields: ['evt', 'user'], message: 'Cette participation existe déjà')]
@@ -33,24 +29,24 @@ class EventParticipation implements \JsonSerializable
 {
     use TimestampableEntity;
 
-    public const STATUS_NON_CONFIRME = 0;
-    public const STATUS_VALIDE = 1;
-    public const STATUS_REFUSE = 2;
-    public const STATUS_ABSENT = 3;
+    public const int STATUS_NON_CONFIRME = 0;
+    public const int STATUS_VALIDE = 1;
+    public const int STATUS_REFUSE = 2;
+    public const int STATUS_ABSENT = 3;
 
-    public const ROLE_MANUEL = 'manuel';
-    public const ROLE_INSCRIT = 'inscrit';
-    public const BENEVOLE = 'benevole';
-    public const ROLE_ENCADRANT = 'encadrant';
-    public const ROLE_STAGIAIRE = 'stagiaire';
-    public const ROLE_COENCADRANT = 'coencadrant';
-    public const ROLE_BENEVOLE = 'benevole_encadrement';
-    public const ROLES_ENCADREMENT = [
+    public const string ROLE_MANUEL = 'manuel';
+    public const string ROLE_INSCRIT = 'inscrit';
+    public const string BENEVOLE = 'benevole';
+    public const string ROLE_ENCADRANT = 'encadrant';
+    public const string ROLE_STAGIAIRE = 'stagiaire';
+    public const string ROLE_COENCADRANT = 'coencadrant';
+    public const string ROLE_BENEVOLE = 'benevole_encadrement';
+    public const array ROLES_ENCADREMENT = [
         self::ROLE_ENCADRANT,
         self::ROLE_STAGIAIRE,
         self::ROLE_COENCADRANT,
     ];
-    public const ROLES_ENCADREMENT_ETENDU = [
+    public const array ROLES_ENCADREMENT_ETENDU = [
         self::ROLE_ENCADRANT,
         self::ROLE_STAGIAIRE,
         self::ROLE_COENCADRANT,
@@ -61,68 +57,47 @@ class EventParticipation implements \JsonSerializable
         self::ROLE_MANUEL,
     ];
 
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'id_evt_join', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[Groups(['eventParticipation:read', 'user:read'])]
-    private $id;
+    private ?int $id;
 
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'status_evt_join', type: 'smallint', nullable: false, options: ['comment' => '0=non confirmé - 1=validé - 2=refusé'])]
     #[Groups(['eventParticipation:read', 'user:read'])]
     #[SerializedName('statut')]
-    private $status = self::STATUS_NON_CONFIRME;
+    private int $status = self::STATUS_NON_CONFIRME;
 
-    #[ORM\ManyToOne(targetEntity: 'Evt', inversedBy: 'participations', fetch: 'EAGER')]
-    #[ORM\JoinColumn(name: 'evt_evt_join', nullable: false, referencedColumnName: 'id_evt', onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: 'Evt', fetch: 'EAGER', inversedBy: 'participations')]
+    #[ORM\JoinColumn(name: 'evt_evt_join', referencedColumnName: 'id_evt', nullable: false, onDelete: 'CASCADE', options: ['comment' => 'ID sortie'])]
     private ?Evt $evt;
 
-    /**
-     * @var User
-     */
     #[ORM\ManyToOne(targetEntity: 'User', fetch: 'EAGER')]
-    #[ORM\JoinColumn(name: 'user_evt_join', nullable: false, referencedColumnName: 'id_user', onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'user_evt_join', referencedColumnName: 'id_user', nullable: false, onDelete: 'CASCADE', options: ['comment' => 'ID utilisateur'])]
     #[Groups('eventParticipation:read')]
     #[SerializedName('utilisateur')]
-    private $user;
+    private User $user;
 
-    /**
-     * @var User
-     */
     #[ORM\ManyToOne(targetEntity: 'User')]
-    #[ORM\JoinColumn(name: 'affiliant_user_join', referencedColumnName: 'id_user', nullable: true)]
-    private $affiliantUserJoin;
+    #[ORM\JoinColumn(name: 'affiliant_user_join', referencedColumnName: 'id_user', nullable: true, options: ['comment' => 'plus utilisé ?'])]
+    private ?User $affiliantUserJoin = null;
 
-    /**
-     * @var string
-     */
-    #[ORM\Column(name: 'role_evt_join', type: 'string', length: 20, nullable: false)]
+    #[ORM\Column(name: 'role_evt_join', type: 'string', length: 20, nullable: false, options: ['comment' => 'rôle utilisateur'])]
     #[Groups('eventParticipation:read')]
-    private $role;
+    private string $role;
 
-    /**
-     * @var User
-     */
     #[ORM\ManyToOne(targetEntity: 'User')]
-    #[ORM\JoinColumn(name: 'lastchange_who_evt_join', referencedColumnName: 'id_user', nullable: true)]
-    private $lastchangeWho;
+    #[ORM\JoinColumn(name: 'lastchange_who_evt_join', referencedColumnName: 'id_user', nullable: true, options: ['comment' => "ID de l'utilisateur qui a accepté ou refusé la participation"])]
+    private ?User $lastchangeWho;
 
-    /**
-     * @var bool|null
-     */
-    #[ORM\Column(name: 'is_covoiturage', type: 'boolean', nullable: true)]
+    #[ORM\Column(name: 'is_covoiturage', type: 'boolean', nullable: true, options: ['comment' => 'plus utilisé'])]
     #[SerializedName('proposeCovoiturage')]
-    private $isCovoiturage;
+    private ?bool $isCovoiturage = false;
 
-    #[ORM\Column(name: 'has_paid', type: Types::BOOLEAN, nullable: false, options: ['default' => false])]
+    #[ORM\Column(name: 'has_paid', type: Types::BOOLEAN, nullable: false, options: ['default' => false, 'comment' => 'a payé sur HelloAsso (si applicable et que l\'email était OK)'])]
     private bool $hasPaid = false;
 
-    public function __construct(Evt $event, UserInterface $user, string $role, int $status)
+    public function __construct(Evt $event, User $user, string $role, int $status)
     {
         $this->evt = $event;
         $this->user = $user;
@@ -150,57 +125,57 @@ class EventParticipation implements \JsonSerializable
         return $this;
     }
 
-    public function isStatusEnAttente()
+    public function isStatusEnAttente(): bool
     {
         return self::STATUS_NON_CONFIRME === $this->status;
     }
 
-    public function isStatusValide()
+    public function isStatusValide(): bool
     {
         return self::STATUS_VALIDE === $this->status;
     }
 
-    public function isStatusRefuse()
+    public function isStatusRefuse(): bool
     {
         return self::STATUS_REFUSE === $this->status;
     }
 
-    public function isStatusAbsent()
+    public function isStatusAbsent(): bool
     {
         return self::STATUS_ABSENT === $this->status;
     }
 
-    public function isRoleManuel()
+    public function isRoleManuel(): bool
     {
         return self::ROLE_MANUEL === $this->role;
     }
 
-    public function isRoleInscrit()
+    public function isRoleInscrit(): bool
     {
         return self::ROLE_INSCRIT === $this->role;
     }
 
-    public function isRoleEncadrant()
+    public function isRoleEncadrant(): bool
     {
         return self::ROLE_ENCADRANT === $this->role;
     }
 
-    public function isRoleStagiaire()
+    public function isRoleStagiaire(): bool
     {
         return self::ROLE_STAGIAIRE === $this->role;
     }
 
-    public function isRoleCoencadrant()
+    public function isRoleCoencadrant(): bool
     {
         return self::ROLE_COENCADRANT === $this->role;
     }
 
-    public function isRoleBenevole()
+    public function isRoleBenevole(): bool
     {
         return self::ROLE_BENEVOLE === $this->role;
     }
 
-    public function isBenevole()
+    public function isBenevole(): bool
     {
         return self::BENEVOLE === $this->role;
     }

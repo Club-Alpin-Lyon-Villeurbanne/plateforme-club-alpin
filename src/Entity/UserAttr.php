@@ -4,26 +4,23 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * UserAttr.
- */
-#[ORM\Table(name: 'caf_user_attr')]
+#[ORM\Table(name: 'caf_user_attr', options: ['comment' => 'table de lien entre les utilisateurs et les niveaux de droit'])]
 #[ORM\Entity]
 class UserAttr
 {
-    public const VISITEUR = 'visiteur';
-    public const DEVELOPPEUR = 'developpeur';
-    public const ADHERENT = 'adherent';
-    public const REDACTEUR = 'redacteur';
-    public const ENCADRANT = 'encadrant';
-    public const STAGIAIRE = 'stagiaire';
-    public const RESPONSABLE_COMMISSION = 'responsable-commission';
-    public const PRESIDENT = 'president';
-    public const VICE_PRESIDENT = 'vice-president';
-    public const ADMINISTRATEUR = 'administrateur';
-    public const SALARIE = 'salarie';
-    public const BENEVOLE = 'benevole_encadrement';
-    public const COENCADRANT = 'coencadrant';
+    public const string VISITEUR = 'visiteur';
+    public const string DEVELOPPEUR = 'developpeur';
+    public const string ADHERENT = 'adherent';
+    public const string REDACTEUR = 'redacteur';
+    public const string ENCADRANT = 'encadrant';
+    public const string STAGIAIRE = 'stagiaire';
+    public const string RESPONSABLE_COMMISSION = 'responsable-commission';
+    public const string PRESIDENT = 'president';
+    public const string VICE_PRESIDENT = 'vice-president';
+    public const string ADMINISTRATEUR = 'administrateur';
+    public const string SALARIE = 'salarie';
+    public const string BENEVOLE = 'benevole_encadrement';
+    public const string COENCADRANT = 'coencadrant';
     public const array COMMISSION_RELATED = [
         self::RESPONSABLE_COMMISSION,
         self::BENEVOLE,
@@ -40,43 +37,34 @@ class UserAttr
         self::COENCADRANT,
     ];
 
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'id_user_attr', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    private $id;
+    private ?int $id;
 
-    #[ORM\ManyToOne(targetEntity: 'User', inversedBy: 'attrs', fetch: 'EAGER')]
-    #[ORM\JoinColumn(name: 'user_user_attr', referencedColumnName: 'id_user', nullable: false, onDelete: 'CASCADE')]
-    private $user;
+    #[ORM\ManyToOne(targetEntity: 'User', fetch: 'EAGER', inversedBy: 'attrs')]
+    #[ORM\JoinColumn(name: 'user_user_attr', referencedColumnName: 'id_user', nullable: false, onDelete: 'CASCADE', options: ['comment' => 'ID utilisateur'])]
+    private User $user;
 
     #[ORM\ManyToOne(targetEntity: 'Usertype')]
-    #[ORM\JoinColumn(name: 'usertype_user_attr', referencedColumnName: 'id_usertype')]
-    private $userType;
+    #[ORM\JoinColumn(name: 'usertype_user_attr', referencedColumnName: 'id_usertype', options: ['comment' => 'ID niveau de droit'])]
+    private ?Usertype $userType;
 
-    /**
-     * @var string
-     */
-    #[ORM\Column(name: 'params_user_attr', type: 'string', length: 200, nullable: true)]
-    private $params;
+    #[ORM\Column(name: 'params_user_attr', type: 'string', length: 200, nullable: true, options: ['comment' => 'commission sur laquelle ça s\'applique'])]
+    private ?string $params;
 
-    /**
-     * @var string
-     */
-    #[ORM\Column(name: 'details_user_attr', type: 'string', length: 100, nullable: false, options: ['comment' => 'date - de qui... ?'])]
-    private $details;
+    #[ORM\Column(name: 'details_user_attr', type: 'string', length: 100, nullable: false, options: ['comment' => 'timestamp ?'])]
+    private ?string $details;
 
-    #[ORM\Column(name: 'description_user_attr', type: 'string', length: 255, nullable: true)]
-    private $description;
+    #[ORM\Column(name: 'description_user_attr', type: 'string', length: 255, nullable: true, options: ['comment' => 'commentaire'])]
+    private ?string $description;
 
     public function __construct(User $user, Usertype $userType, $params = null)
     {
         $this->user = $user;
         $this->userType = $userType;
         $this->params = $params;
-        $this->details = time();
+        $this->details = time() . '';
     }
 
     public function getId(): ?int
@@ -123,22 +111,22 @@ class UserAttr
         return $this;
     }
 
-    public function getCode()
+    public function getCode(): ?string
     {
         return $this->getUserType()->getCode();
     }
 
-    public function getTitle()
+    public function getTitle(): ?string
     {
         return $this->getUserType()->getTitle();
     }
 
-    public function getPriority()
+    public function getPriority(): ?int
     {
         return $this->getUserType()->getHierarchie();
     }
 
-    public function getCommission()
+    public function getCommission(): string
     {
         return \array_slice(explode(':', $this->getParams()), -1)[0];
     }

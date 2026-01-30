@@ -19,9 +19,6 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 
-/**
- * Evt.
- */
 #[ORM\Table(name: 'caf_evt')]
 #[ORM\Entity]
 #[ApiResource(
@@ -41,13 +38,13 @@ class Evt
 {
     use TimestampableEntity;
 
-    public const STATUS_PUBLISHED_UNSEEN = 0;
-    public const STATUS_PUBLISHED_VALIDE = 1;
-    public const STATUS_PUBLISHED_REFUSE = 2;
+    public const int STATUS_PUBLISHED_UNSEEN = 0;
+    public const int STATUS_PUBLISHED_VALIDE = 1;
+    public const int STATUS_PUBLISHED_REFUSE = 2;
 
-    public const STATUS_LEGAL_UNSEEN = 0;
-    public const STATUS_LEGAL_VALIDE = 1;
-    public const STATUS_LEGAL_REFUSE = 2;
+    public const int STATUS_LEGAL_UNSEEN = 0;
+    public const int STATUS_LEGAL_VALIDE = 1;
+    public const int STATUS_LEGAL_REFUSE = 2;
 
     #[ORM\Column(name: 'id_evt', type: 'integer', nullable: false)]
     #[ORM\Id]
@@ -99,11 +96,12 @@ class Evt
     private ?Commission $commission;
 
     #[ORM\ManyToOne(targetEntity: 'Groupe', fetch: 'EAGER')]
-    #[ORM\JoinColumn(name: 'id_groupe', referencedColumnName: 'id', nullable: true)]
+    #[ORM\JoinColumn(name: 'id_groupe', referencedColumnName: 'id', nullable: true, options: ['comment' => 'plus utilisé'])]
     private ?Groupe $groupe;
 
     #[ORM\Column(name: 'place_evt', type: 'string', length: 255, nullable: false, options: ['comment' => 'Lieu de départ activité'])]
     #[Groups('event:details')]
+    #[SerializedName('lieuDepartActivite')]
     private ?string $place;
 
     #[ORM\Column(name: 'titre_evt', type: 'string', length: 100, nullable: false)]
@@ -114,7 +112,7 @@ class Evt
     #[Groups('event:read')]
     private ?string $code;
 
-    #[ORM\Column(name: 'massif_evt', type: 'string', length: 100, nullable: true)]
+    #[ORM\Column(name: 'massif_evt', type: 'string', length: 100, nullable: true, options: ['comment' => 'plus utilisé'])]
     #[Groups('event:details')]
     private ?string $massif;
 
@@ -166,7 +164,7 @@ class Evt
     #[Groups('event:read')]
     private ?string $description;
 
-    #[ORM\Column(name: 'need_benevoles_evt', type: 'boolean', nullable: false)]
+    #[ORM\Column(name: 'need_benevoles_evt', type: 'boolean', nullable: false, options: ['comment' => 'plus utilisé'])]
     #[Groups('event:details')]
     private bool $needBenevoles = false;
 

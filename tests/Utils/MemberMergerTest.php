@@ -42,7 +42,8 @@ class MemberMergerTest extends WebTestCase
             ->setFirstname('prenom')
             ->setLastname('nom')
             ->setDoitRenouveler(false)
-            ->setAlerteRenouveler(false);
+            ->setAlerteRenouveler(false)
+        ;
 
         $oldLicense = $user1->getCafnum();
 

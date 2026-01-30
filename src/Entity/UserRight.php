@@ -4,44 +4,26 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * Userright.
- */
-#[ORM\Table(name: 'caf_userright')]
+#[ORM\Table(name: 'caf_userright', options: ['comment' => 'stockage des actions possibles (matrice des droits)'])]
 #[ORM\Entity]
 class UserRight
 {
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'id_userright', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    private $id;
+    private ?int $id;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'code_userright', type: 'string', length: 40, nullable: false)]
-    private $code;
+    private ?string $code;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'title_userright', type: 'string', length: 100, nullable: false)]
-    private $title;
+    private ?string $title;
 
-    /**
-     * @var int
-     */
     #[ORM\Column(name: 'ordre_userright', type: 'integer', nullable: false)]
-    private $ordre;
+    private ?int $ordre;
 
-    /**
-     * @var string
-     */
-    #[ORM\Column(name: 'parent_userright', type: 'string', length: 40, nullable: false)]
-    private $parent;
+    #[ORM\Column(name: 'parent_userright', type: 'string', length: 40, nullable: false, options: ['comment' => 'regroupement dans la matrice des droits'])]
+    private ?string $parent;
 
     public function getId(): ?int
     {
