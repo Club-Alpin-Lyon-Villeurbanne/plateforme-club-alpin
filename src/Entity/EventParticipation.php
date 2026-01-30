@@ -62,7 +62,7 @@ class EventParticipation implements \JsonSerializable
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[Groups(['eventParticipation:read', 'user:read'])]
-    private int $id;
+    private ?int $id;
 
     #[ORM\Column(name: 'status_evt_join', type: 'smallint', nullable: false, options: ['comment' => '0=non confirmé - 1=validé - 2=refusé'])]
     #[Groups(['eventParticipation:read', 'user:read'])]

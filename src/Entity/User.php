@@ -47,13 +47,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'id_user', type: 'bigint', nullable: false)]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[Groups(['user:read'])]
-    private int $id;
+    private ?int $id;
 
     #[ORM\Column(name: 'profile_type', type: Types::SMALLINT, nullable: false, options: ['default' => self::PROFILE_UNKNOWN, 'comment' => '1 licencié annuel du club, 2 carte découverte du club, 3 licencié autre club, 4 personne extérieure (ex formateur)'])]
     private int $profileType;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: 'UserAttr', cascade: ['persist'])]
-    private ArrayCollection $attrs;
+    private Collection $attrs;
 
     #[ORM\Column(name: 'email_user', type: 'string', length: 200, unique: true, nullable: true)]
     #[Groups('user:read')]
@@ -92,34 +92,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'tel_user', type: 'string', length: 100, nullable: true)]
     #[Groups('user:details')]
     #[SerializedName('telephone')]
-    private string $tel;
+    private ?string $tel;
 
     #[ORM\Column(name: 'tel2_user', type: 'string', length: 100, nullable: true)]
     #[Groups('user:details')]
     #[SerializedName('telephoneSecours')]
-    private string $tel2;
+    private ?string $tel2;
 
     #[ORM\Column(name: 'adresse_user', type: 'string', length: 100, nullable: true)]
     #[Groups('user:details')]
-    private string $adresse;
+    private ?string $adresse;
 
     #[ORM\Column(name: 'cp_user', type: 'string', length: 10, nullable: true)]
     #[Groups('user:details')]
     #[SerializedName('codePostal')]
-    private string $cp;
+    private ?string $cp;
 
     #[ORM\Column(name: 'ville_user', type: 'string', length: 30, nullable: true)]
     #[Groups('user:details')]
-    private string $ville;
+    private ?string $ville;
 
     #[ORM\Column(name: 'pays_user', type: 'string', length: 50, nullable: true)]
     #[Groups('user:details')]
-    private string $pays;
+    private ?string $pays;
 
     #[ORM\Column(name: 'civ_user', type: 'string', length: 10, nullable: true)]
     #[Groups('user:details')]
     #[SerializedName('civilite')]
-    private string $civ;
+    private ?string $civ;
 
     #[ORM\Column(name: 'moreinfo_user', type: 'string', length: 500, nullable: true, options: ['comment' => 'FORMATIONS ?'])]
     #[Groups('user:details')]
@@ -137,7 +137,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     private bool $nomade = false;
 
     #[ORM\Column(name: 'nomade_parent_user', type: 'integer', nullable: true, options: ['comment' => "Dans le cas d'un user ajouté manuellement (profils 3 et 4), l'ID de son créateur"])]
-    private int $nomadeParent;
+    private ?int $nomadeParent;
 
     #[ORM\Column(name: 'doit_renouveler_user', type: 'boolean', nullable: false, options: ['comment' => 'vaut 1 si licence expirée'])]
     private bool $doitRenouveler = false;

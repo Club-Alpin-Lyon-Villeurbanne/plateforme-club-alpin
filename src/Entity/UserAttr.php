@@ -64,7 +64,7 @@ class UserAttr
         $this->user = $user;
         $this->userType = $userType;
         $this->params = $params;
-        $this->details = time();
+        $this->details = time() . '';
     }
 
     public function getId(): ?int
