@@ -193,13 +193,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'discovery_end_datetime', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'Date de fin de validité carte découverte'])]
     private ?\DateTimeInterface $discoveryEndDatetime = null;
 
-    public function __construct(?int $id = null)
+    public function __construct(string|int|null $id = null)
     {
         $this->attrs = new ArrayCollection();
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
         if ($id) {
-            $this->id = $id;
+            $this->id = (int) $id;
         }
         $this->profileType = self::PROFILE_UNKNOWN;
     }
