@@ -630,7 +630,7 @@ class SortieController extends AbstractController
             $mailer->send($toMail, $template, $context, replyTo: $replyTo);
         }
 
-        // bilan carbone mis à jour selon nb de particpants
+        // bilan carbone mis à jour selon nb de participants
         $carbonCost = $carbonCostHelper->calculate(
             $event->getNbKm(),
             $event->getParticipationsCount(),
@@ -900,7 +900,7 @@ class SortieController extends AbstractController
 
         $em->remove($participation);
 
-        // bilan carbone mis à jour selon nb de particpants
+        // bilan carbone mis à jour selon nb de participants
         $carbonCost = $carbonCostHelper->calculate(
             $event->getNbKm(),
             $event->getParticipationsCount(),
@@ -1181,7 +1181,7 @@ class SortieController extends AbstractController
                     }
                 }
 
-                // bilan carbone mis à jour selon nb de particpants
+                // bilan carbone mis à jour selon nb de participants
                 $carbonCost = $carbonCostHelper->calculate(
                     $event->getNbKm(),
                     $current_participants,

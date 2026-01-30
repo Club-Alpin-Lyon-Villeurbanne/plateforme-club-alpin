@@ -1019,7 +1019,7 @@
             {% endif %}
 
             <ul class="nice-list">
-                {% if event.mainTransportMode %}
+                {% if event.mainTransportMode and event.carbonCost and nInscritsTotal and nInscritsTotal > 0 %}
                     <li class="wide"><b>IMPACT CARBONE TRANSPORT :</b> {{ event.mainTransportMode|trans }} x {{ event.carbonCost / nInscritsTotal }} gCO2e / personne</li>
                 {% endif %}
             </ul>
