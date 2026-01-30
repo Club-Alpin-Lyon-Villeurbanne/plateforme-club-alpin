@@ -72,17 +72,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     private string $cafnum;
 
     #[ORM\Column(name: 'cafnum_parent_user', type: 'string', length: 20, nullable: true, options: ['comment' => 'Filiation : numéro CAF du parent'])]
-    private ?string $cafnumParent;
+    private ?string $cafnumParent = null;
 
     #[ORM\Column(name: 'firstname_user', type: 'string', length: 50, nullable: false)]
     #[Groups('user:read')]
     #[SerializedName('prenom')]
-    private string $firstname;
+    private ?string $firstname = null;
 
     #[ORM\Column(name: 'lastname_user', type: 'string', length: 50, nullable: false)]
     #[Groups('user:read')]
     #[SerializedName('nom')]
-    private string $lastname;
+    private ?string $lastname = null;
 
     #[ORM\Column(name: 'nickname_user', type: 'string', length: 20, nullable: false)]
     #[Groups('user:read')]
@@ -92,34 +92,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'tel_user', type: 'string', length: 100, nullable: true)]
     #[Groups('user:details')]
     #[SerializedName('telephone')]
-    private ?string $tel;
+    private ?string $tel = null;
 
     #[ORM\Column(name: 'tel2_user', type: 'string', length: 100, nullable: true)]
     #[Groups('user:details')]
     #[SerializedName('telephoneSecours')]
-    private ?string $tel2;
+    private ?string $tel2 = null;
 
     #[ORM\Column(name: 'adresse_user', type: 'string', length: 100, nullable: true)]
     #[Groups('user:details')]
-    private ?string $adresse;
+    private ?string $adresse = null;
 
     #[ORM\Column(name: 'cp_user', type: 'string', length: 10, nullable: true)]
     #[Groups('user:details')]
     #[SerializedName('codePostal')]
-    private ?string $cp;
+    private ?string $cp = null;
 
     #[ORM\Column(name: 'ville_user', type: 'string', length: 30, nullable: true)]
     #[Groups('user:details')]
-    private ?string $ville;
+    private ?string $ville = null;
 
     #[ORM\Column(name: 'pays_user', type: 'string', length: 50, nullable: true)]
     #[Groups('user:details')]
-    private ?string $pays;
+    private ?string $pays = null;
 
     #[ORM\Column(name: 'civ_user', type: 'string', length: 10, nullable: true)]
     #[Groups('user:details')]
     #[SerializedName('civilite')]
-    private ?string $civ;
+    private ?string $civ = null;
 
     #[ORM\Column(name: 'moreinfo_user', type: 'string', length: 500, nullable: true, options: ['comment' => 'FORMATIONS ?'])]
     #[Groups('user:details')]

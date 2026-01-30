@@ -81,7 +81,7 @@ class EventParticipation implements \JsonSerializable
 
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'affiliant_user_join', referencedColumnName: 'id_user', nullable: true, options: ['comment' => 'plus utilisé ?'])]
-    private ?User $affiliantUserJoin;
+    private ?User $affiliantUserJoin = null;
 
     #[ORM\Column(name: 'role_evt_join', type: 'string', length: 20, nullable: false, options: ['comment' => 'rôle utilisateur'])]
     #[Groups('eventParticipation:read')]
@@ -93,7 +93,7 @@ class EventParticipation implements \JsonSerializable
 
     #[ORM\Column(name: 'is_covoiturage', type: 'boolean', nullable: true, options: ['comment' => 'plus utilisé'])]
     #[SerializedName('proposeCovoiturage')]
-    private ?bool $isCovoiturage;
+    private ?bool $isCovoiturage = false;
 
     #[ORM\Column(name: 'has_paid', type: Types::BOOLEAN, nullable: false, options: ['default' => false, 'comment' => 'a payé sur HelloAsso (si applicable et que l\'email était OK)'])]
     private bool $hasPaid = false;
@@ -126,57 +126,57 @@ class EventParticipation implements \JsonSerializable
         return $this;
     }
 
-    public function isStatusEnAttente()
+    public function isStatusEnAttente(): bool
     {
         return self::STATUS_NON_CONFIRME === $this->status;
     }
 
-    public function isStatusValide()
+    public function isStatusValide(): bool
     {
         return self::STATUS_VALIDE === $this->status;
     }
 
-    public function isStatusRefuse()
+    public function isStatusRefuse(): bool
     {
         return self::STATUS_REFUSE === $this->status;
     }
 
-    public function isStatusAbsent()
+    public function isStatusAbsent(): bool
     {
         return self::STATUS_ABSENT === $this->status;
     }
 
-    public function isRoleManuel()
+    public function isRoleManuel(): bool
     {
         return self::ROLE_MANUEL === $this->role;
     }
 
-    public function isRoleInscrit()
+    public function isRoleInscrit(): bool
     {
         return self::ROLE_INSCRIT === $this->role;
     }
 
-    public function isRoleEncadrant()
+    public function isRoleEncadrant(): bool
     {
         return self::ROLE_ENCADRANT === $this->role;
     }
 
-    public function isRoleStagiaire()
+    public function isRoleStagiaire(): bool
     {
         return self::ROLE_STAGIAIRE === $this->role;
     }
 
-    public function isRoleCoencadrant()
+    public function isRoleCoencadrant(): bool
     {
         return self::ROLE_COENCADRANT === $this->role;
     }
 
-    public function isRoleBenevole()
+    public function isRoleBenevole(): bool
     {
         return self::ROLE_BENEVOLE === $this->role;
     }
 
-    public function isBenevole()
+    public function isBenevole(): bool
     {
         return self::BENEVOLE === $this->role;
     }
