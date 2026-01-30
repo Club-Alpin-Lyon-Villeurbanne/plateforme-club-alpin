@@ -21,6 +21,6 @@ final class Version20250911073424 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE caf_evt DROP main_transport_mode, nb_vehicle, nb_km, DROP carbon_cost');
+        $this->addSql('ALTER TABLE caf_evt DROP main_transport_mode, DROP nb_vehicle, DROP nb_km, DROP carbon_cost');
     }
 }
