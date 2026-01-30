@@ -236,6 +236,22 @@ class Evt
     #[SerializedName('waitingSeat')]
     private ?int $waitingSeat = null;
 
+    #[ORM\Column(name: 'main_transport_mode', type: Types::STRING, length: 50, nullable: true, enumType: TransportModeEnum::class)]
+    #[Groups('event:read')]
+    private ?TransportModeEnum $mainTransportMode = null;
+
+    #[ORM\Column(name: 'nb_vehicle', type: Types::INTEGER, nullable: true)]
+    #[Groups('event:read')]
+    private ?int $nbVehicle = null;
+
+    #[ORM\Column(name: 'nb_km', type: Types::FLOAT, nullable: true)]
+    #[Groups('event:read')]
+    private ?float $nbKm = null;
+
+    #[ORM\Column(name: 'carbon_cost', type: Types::FLOAT, nullable: true)]
+    #[Groups('event:read')]
+    private ?float $carbonCost = null;
+
     public function __construct(
         ?User $user,
         ?Commission $commission,
@@ -909,6 +925,54 @@ class Evt
     public function setLegalStatusChangeDate(?\DateTimeImmutable $legalStatusChangeDate): self
     {
         $this->legalStatusChangeDate = $legalStatusChangeDate;
+
+        return $this;
+    }
+
+    public function getMainTransportMode(): ?TransportModeEnum
+    {
+        return $this->mainTransportMode;
+    }
+
+    public function setMainTransportMode(?TransportModeEnum $mainTransportMode): self
+    {
+        $this->mainTransportMode = $mainTransportMode;
+
+        return $this;
+    }
+
+    public function getNbVehicle(): ?int
+    {
+        return $this->nbVehicle;
+    }
+
+    public function setNbVehicle(?int $nbVehicle): self
+    {
+        $this->nbVehicle = $nbVehicle;
+
+        return $this;
+    }
+
+    public function getNbKm(): ?float
+    {
+        return $this->nbKm;
+    }
+
+    public function setNbKm(?float $nbKm): self
+    {
+        $this->nbKm = $nbKm;
+
+        return $this;
+    }
+
+    public function getCarbonCost(): ?float
+    {
+        return $this->carbonCost;
+    }
+
+    public function setCarbonCost(?float $carbonCost): self
+    {
+        $this->carbonCost = $carbonCost;
 
         return $this;
     }
