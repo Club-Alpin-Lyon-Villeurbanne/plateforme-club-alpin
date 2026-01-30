@@ -10,6 +10,8 @@ use App\Entity\FormationValidationNiveauPratique;
 use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Form\EventType;
+use App\Helper\CarbonCostHelper;
+use App\Helper\DistanceHelper;
 use App\Helper\RoleHelper;
 use App\Helper\SlugHelper;
 use App\Legacy\LegacyContainer;
@@ -76,6 +78,8 @@ class SortieController extends AbstractController
         CommissionRepository $commissionRepository,
         UserRights $userRights,
         Mailer $mailer,
+        CarbonCostHelper $carbonCostHelper,
+        DistanceHelper $distanceHelper,
         ?Evt $event = null,
         ?string $mode = null,
     ): array|RedirectResponse {
@@ -101,6 +105,7 @@ class SortieController extends AbstractController
                 new \DateTimeImmutable()
             );
             $event->setJoinStartDate(new \DateTimeImmutable());
+            $event->setNbVehicle(1);
             $isUpdate = false;
         } elseif (!empty($mode)) {
             $commission = $event->getCommission();
@@ -256,6 +261,18 @@ class SortieController extends AbstractController
             if (null === $event->getJoinMax() || $event->getJoinMax() < 0) {
                 $event->setJoinMax($event->getNgensMax());
             }
+
+            // bilan carbone
+            $nbKm = $distanceHelper->calculate($event);
+            $nbPerson = $event->getParticipationsCount();
+            $carbonCost = $carbonCostHelper->calculate(
+                $nbKm,
+                $nbPerson,
+                $event->getNbVehicle(),
+                $event->getMainTransportMode(),
+            );
+            $event->setNbKm($nbKm);
+            $event->setCarbonCost($carbonCost);
 
             $entityManager->persist($event);
             $entityManager->flush();
@@ -464,6 +481,7 @@ class SortieController extends AbstractController
         EntityManagerInterface $em,
         Mailer $mailer,
         RoleHelper $roleHelper,
+        CarbonCostHelper $carbonCostHelper,
     ): RedirectResponse {
         if (!$this->isCsrfTokenValid('sortie_update_inscriptions', $request->request->get('csrf_token_inscriptions'))) {
             $this->addFlash('error', 'Jeton de validation invalide.');
@@ -485,7 +503,6 @@ class SortieController extends AbstractController
             $availableSpotNb = 0;
         }
 
-        $flush = true;
         foreach ($request->request->all('id_evt_join', []) as $participationId) {
             $status = $request->request->get('status_evt_join_' . $participationId);
             $role = $request->request->get('role_evt_join_' . $participationId);
@@ -530,7 +547,6 @@ class SortieController extends AbstractController
             // reste-t-il assez de place ?
             if ($currentParticipantNb > $nbPeopleMax && EventParticipation::STATUS_VALIDE === $status) {
                 $this->addFlash('error', 'Vous ne pouvez pas valider plus de participants que de places disponibles (' . $availableSpotNb . '). Vous pouvez augmenter le nombre maximum de places pour ensuite rajouter des personnes.');
-                $flush = false;
 
                 // s'il n'y a plus de place, inutile de parcourir le reste, on sort de la boucle
                 break;
@@ -591,9 +607,16 @@ class SortieController extends AbstractController
             $mailer->send($toMail, $template, $context, replyTo: $replyTo);
         }
 
-        if ($flush) {
-            $em->flush();
-        }
+        // bilan carbone mis à jour selon nb de participants
+        $carbonCost = $carbonCostHelper->calculate(
+            $event->getNbKm() ?: 0,
+            $event->getParticipationsCount(),
+            $event->getNbVehicle() ?: 1,
+            $event->getMainTransportMode(),
+        );
+        $event->setCarbonCost($carbonCost);
+        $em->persist($event);
+        $em->flush();
 
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
@@ -835,8 +858,13 @@ class SortieController extends AbstractController
     }
 
     #[Route(path: '/sortie/remove-participant/{id}', name: 'sortie_remove_participant', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
-    public function removeParticipant(Request $request, EventParticipation $participation, EntityManagerInterface $em, Mailer $mailer): RedirectResponse
-    {
+    public function removeParticipant(
+        Request $request,
+        EventParticipation $participation,
+        EntityManagerInterface $em,
+        Mailer $mailer,
+        CarbonCostHelper $carbonCostHelper,
+    ): RedirectResponse {
         $event = $participation->getEvt();
 
         if (!$this->isCsrfTokenValid('remove_participant', $request->request->get('csrf_token'))) {
@@ -848,6 +876,16 @@ class SortieController extends AbstractController
         }
 
         $em->remove($participation);
+
+        // bilan carbone mis à jour selon nb de participants
+        $carbonCost = $carbonCostHelper->calculate(
+            $event->getNbKm(),
+            $event->getParticipationsCount(),
+            $event->getNbVehicle(),
+            $event->getMainTransportMode(),
+        );
+        $event->setCarbonCost($carbonCost);
+        $em->persist($event);
         $em->flush();
 
         /** @var User */
@@ -967,6 +1005,7 @@ class SortieController extends AbstractController
         EntityManagerInterface $em,
         Mailer $mailer,
         UserRepository $userRepository,
+        CarbonCostHelper $carbonCostHelper,
     ): RedirectResponse {
         if (!$this->isCsrfTokenValid('join_event', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
@@ -1118,6 +1157,16 @@ class SortieController extends AbstractController
                         }
                     }
                 }
+
+                // bilan carbone mis à jour selon nb de participants
+                $carbonCost = $carbonCostHelper->calculate(
+                    $event->getNbKm(),
+                    $current_participants,
+                    $event->getNbVehicle(),
+                    $event->getMainTransportMode(),
+                );
+                $event->setCarbonCost($carbonCost);
+                $em->persist($event);
                 $em->flush();
 
                 // E-MAIL À L'ORGANISATEUR ET AUX ENCADRANTS
