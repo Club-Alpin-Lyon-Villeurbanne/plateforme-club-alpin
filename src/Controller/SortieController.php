@@ -632,9 +632,9 @@ class SortieController extends AbstractController
 
         // bilan carbone mis à jour selon nb de participants
         $carbonCost = $carbonCostHelper->calculate(
-            $event->getNbKm(),
+            $event->getNbKm() ?: 0,
             $event->getParticipationsCount(),
-            $event->getNbVehicle(),
+            $event->getNbVehicle() ?: 1,
             $event->getMainTransportMode(),
         );
         $event->setCarbonCost($carbonCost);
