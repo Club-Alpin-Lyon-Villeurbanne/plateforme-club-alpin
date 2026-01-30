@@ -1019,6 +1019,13 @@
             {% endif %}
 
             <ul class="nice-list">
+                {% if event.mainTransportMode %}
+                    <li class="wide"><b>IMPACT CARBONE TRANSPORT :</b> {{ event.mainTransportMode|trans }} x {{ event.carbonCost / nInscritsTotal }} gCO2e / personne</li>
+                {% endif %}
+            </ul>
+            <hr />
+
+            <ul class="nice-list">
                 <li class="wide">
                     <b>DÉPART :</b> Le {{ event.startDate | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.startDate|date('H:i') }}{% endif %}
                 </li>

@@ -362,3 +362,14 @@ services:
     arguments:
       $cleanInferiorRights: '%inferior_rights_clean%'
     tags: ['controller.service_arguments']
+
+  App\Helper\CarbonCostHelper:
+    arguments:
+      $publicTrainRate: '%env(PUBLIC_TRAIN_CARBON_COST_RATE)%'
+      $publicCoachRate: '%env(PUBLIC_COACH_CARBON_COST_RATE)%'
+      $dedicatedCoachRate: '%env(DEDICATED_COACH_CARBON_COST_RATE)%'
+      $minivanRate: '%env(MINIVAN_CARBON_COST_RATE)%'
+      $bikeWalkRate: '%env(BIKE_OR_WALK_CARBON_COST_RATE)%'
+      $thermicCarpoolingRate: '%env(THERMIC_CARPOOLING_CARBON_COST_RATE)%'
+      $electricCarpoolingRate: '%env(ELECTRIC_CARPOOLING_CARBON_COST_RATE)%'
+      $planeRate: '%env(PLANE_CARBON_COST_RATE)%'

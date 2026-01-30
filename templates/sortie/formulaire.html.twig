@@ -152,6 +152,19 @@
             </div><br />
         </div>
 
+        <h2 class="trigger-h2">Mode de transport :</h2>
+        <div class="trigger-me">
+            {{ form_row(form.mainTransportMode) }}<br>
+
+            <div>
+                {{ form_label(form.nbVehicle) }}
+                {{ form_errors(form.nbVehicle) }}
+                {{ form_widget(form.nbVehicle) }}
+                <br>
+                {{ form_help(form.nbVehicle) }}
+            </div>
+        </div>
+
         <h2 class="trigger-h2">Difficulté / matériel :</h2>
         <div class="trigger-me">
             <div id="commission-specific-fields">
