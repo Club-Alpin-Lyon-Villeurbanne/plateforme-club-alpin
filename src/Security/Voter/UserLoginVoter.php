@@ -20,7 +20,7 @@ class UserLoginVoter extends Voter
         /** @var User $user */
         $user = $subject;
 
-        if ($user->isDeleted()) {
+        if ($user->isDeleted() || $user->isLocked()) {
             return false;
         }
 
