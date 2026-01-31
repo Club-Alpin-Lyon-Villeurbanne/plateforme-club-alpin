@@ -74,7 +74,7 @@ class LoginController extends AbstractController
             // empêcher les non-adhérents d'utiliser cette fonctionnalité qui leur permet "d'activer" un compte
             // alors qu'ils ne sont pas censés en avoir
             // (et le conservent quand ils prennent une licence annuelle, ce qui pose des problèmes)
-            if (User::PROFILE_CLUB_MEMBER !== $user->getProfileType() || $user->isDeleted()) {
+            if (User::PROFILE_CLUB_MEMBER !== $user->getProfileType() || $user->isDeleted() || $user->isLocked()) {
                 $this->addFlash('error', 'Vous ne pouvez pas utiliser cette fonctionnalité car vous n\'avez pas de licence annuelle du club.');
 
                 return [

@@ -151,6 +151,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'is_deleted', type: 'boolean', nullable: false, options: ['default' => 0])]
     private bool $isDeleted = false;
 
+    #[ORM\Column(name: 'is_locked', type: 'boolean', nullable: false, options: ['default' => 0])]
+    private bool $isLocked = false;
+
     #[ORM\Column(type: 'json', nullable: true, options: ['comment' => 'liste des alertes email activées'])]
     #[Groups(['user:details', 'user:write'])]
     private ?array $alerts = EmailAlerts::DEFAULT_ALERTS;
@@ -651,6 +654,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setIsDeleted(bool $isDeleted)
     {
         $this->isDeleted = $isDeleted;
+
+        return $this;
+    }
+
+    public function isLocked(): bool
+    {
+        return $this->isLocked;
+    }
+
+    public function setIsLocked(bool $isLocked)
+    {
+        $this->isLocked = $isLocked;
 
         return $this;
     }
