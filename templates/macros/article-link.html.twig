@@ -9,46 +9,70 @@
         <a title="Voir cet article" href="{{ url }}" class="illustration fader" style="background-image:url({{ img }})"></a>
 
         <!-- titre + lien article -->
-        <h2>
+        <h2{% if display_style is same as ('management') %} class="bold"{% endif %}>
             <a href="{{ url }}" title="Voir cet article">
-                {{article.titre}}
+                {{ article.titre }}
             </a>
         </h2>
 
         {% if display_style is same as ('home') %}
-        <!-- lien commission -->
-        <p class="commission-title">
-            {% if article.validationDate is not null %}
-                {{ article.validationDate|date('d/m/Y') }} -
-            {% endif %}
+            <!-- lien commission -->
+            <p class="commission-title">
+                {% if article.validationDate is not null %}
+                    {{ article.validationDate|date('d/m/Y') }} -
+                {% endif %}
 
-            {% if article.commission %}
-                <a href="{{ path('commission_homepage', {'code': article.commission.code}) }}#home-articles" title="Toutes les actus de cette commission">
-                    {{ article.commission.title }}
-                </a>
-            {% elseif article.evt %}
-                <a href="{{ path('sortie', {'code': article.evt.code, 'id': article.evt.id}) }}" title="Voir la sortie liée à cet article : &laquo; {{ article.evt.titre }} &raquo;">
-                    compte rendu de sortie
-                </a>
-            {% else %}
-                <a href="{{ path('homepage') }}#home-articles" title="Toutes les actus du club">
-                    CLUB
-                </a>
-            {% endif %}
-        </p>
+                {% if article.commission %}
+                    <a href="{{ path('commission_homepage', {'code': article.commission.code}) }}#home-articles" title="Toutes les actus de cette commission">
+                        {{ article.commission.title }}
+                    </a>
+                {% elseif article.evt %}
+                    <a href="{{ path('sortie', {'code': article.evt.code, 'id': article.evt.id}) }}" title="Voir la sortie liée à cet article : &laquo; {{ article.evt.titre }} &raquo;">
+                        compte rendu de sortie
+                    </a>
+                {% else %}
+                    <a href="{{ path('homepage') }}#home-articles" title="Toutes les actus du club">
+                        CLUB
+                    </a>
+                {% endif %}
+            </p>
+        {% elseif display_style is same as ('management') %}
+            <p class="management-info">
+                <b>Type d'article :</b>
+                {% if article.commission %}
+                    Actualité « {{ article.commission.title }} »
+                {% elseif article.evt %}
+                    Compte rendu de sortie
+                {% endif %}
+                <br>
+                <span class="mini">
+                    Par <a href="{{ path('user_profile', {'id': article.user.id, 'id_article': article.id}) }}" class="fancyframe userlink">{{ article.user.nickname }}</a>
+                </span> -
+                <span class="mini">
+                    Le {{ article.createdAt|date('d/m/Y à H:i') }}
+                </span>
+                <br>
+                {% if article.une %}
+                    <span class="mini"><b><img src="/img/base/star.png" style="vertical-align:bottom; height:13px;" /> Article à la UNE</b> : cet article sera placé dans le slider de la page d'accueil !</span>
+                {% endif %}
+            </p>
         {% endif %}
 
-        <!-- summup -->
-        <p class="summup">
-            {% set text = article.cont|striptags|decode_html_entities %}
-            {{ text|slice(0, limit) }}
+        {% if display_style is not same as ('management') %}
+            <!-- summup -->
+            <p class="summup">
+                {% set limit = 150 %}
+                {% set text = article.cont|striptags %}
+                {{ text|raw|slice(0, limit) }}
 
-            {% if text|length > limit %}
-                <a href="{{ url }}" title="Voir cet article">
-                    [...]
-                </a>
-            {% endif %}
-        </p>
+                {% if text|length > limit %}
+                    <a href="{{ url }}" title="Voir cet article">
+                        [...]
+                    </a>
+                {% endif %}
+            </p>
+        {% endif %}
+
         <br style="clear:both" />
     </div>
 {% endmacro %}

@@ -280,7 +280,7 @@
 
                                 {% if allowed('article_validate') or allowed('article_validate_all') %}
                                     <li>
-                                        <a href="/gestion-des-articles.html{{ current_commission and current_commission is instanceof('App\\Entity\\Commission') ? '?commission=' ~ current_commission.code : '' }}" title="">
+                                        <a href="{{ path('manage_articles') }}{{ current_commission and current_commission is instanceof('App\\Entity\\Commission') ? '?commission=' ~ current_commission.code : '' }}" title="">
                                             {% set notif_article = notifications_counter_articles() %}
                                             {% if notif_article > 0 %}<span class="notification">{{ notif_article }}</span>{% endif %}
                                             validation / gestion des articles
