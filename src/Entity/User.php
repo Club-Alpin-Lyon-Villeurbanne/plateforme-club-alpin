@@ -57,14 +57,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
 
     #[ORM\Column(name: 'email_user', type: 'string', length: 200, unique: true, nullable: true)]
     #[Groups('user:read')]
-    private ?string $email;
+    private ?string $email = null;
 
     #[ORM\Column(name: 'gdrive_email', type: 'string', length: 200, unique: true, nullable: true)]
     private ?string $gdriveEmail = null;
 
     #[ORM\Column(name: 'mdp_user', type: 'string', length: 1024, nullable: true)]
     #[Ignore]
-    private ?string $mdp;
+    private ?string $mdp = null;
 
     #[ORM\Column(name: 'cafnum_user', type: 'string', length: 20, unique: true, nullable: false, options: ['comment' => 'Numéro de licence'])]
     #[Groups('user:details')]
@@ -124,11 +124,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'moreinfo_user', type: 'string', length: 500, nullable: true, options: ['comment' => 'FORMATIONS ?'])]
     #[Groups('user:details')]
     #[SerializedName('informationsSupplementaires')]
-    private ?string $moreinfo;
+    private ?string $moreinfo = null;
 
     #[ORM\Column(name: 'cookietoken_user', type: 'string', length: 32, nullable: true)]
     #[Ignore]
-    private ?string $cookietoken;
+    private ?string $cookietoken = null;
 
     #[ORM\Column(name: 'manuel_user', type: 'boolean', nullable: false, options: ['comment' => 'plus utilisé'])]
     private bool $manuelUser = false;
@@ -137,7 +137,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     private bool $nomade = false;
 
     #[ORM\Column(name: 'nomade_parent_user', type: 'integer', nullable: true, options: ['comment' => "Dans le cas d'un user ajouté manuellement (profils 3 et 4), l'ID de son créateur"])]
-    private ?int $nomadeParent;
+    private ?int $nomadeParent = null;
 
     #[ORM\Column(name: 'doit_renouveler_user', type: 'boolean', nullable: false, options: ['comment' => 'vaut 1 si licence expirée'])]
     private bool $doitRenouveler = false;
