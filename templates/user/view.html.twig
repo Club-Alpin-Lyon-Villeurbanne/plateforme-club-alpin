@@ -1,0 +1,139 @@
+{% extends 'base-light.html.twig' %}
+
+{% block title %}Consulter un utilisateur{% endblock %}
+
+{% block body %}
+    {% import 'macros/user-rights.html.twig' as right_macro %}
+    {% import 'macros/user-image.html.twig' as user_image %}
+
+    {% macro field_row(label, content) %}
+        <tr>
+            <td style="width:35%; vertical-align: top">{{ label }}</td>
+            <td>{{ content|raw }}</td>
+        </tr>
+        <tr>
+            <td colspan="2"><hr /></td>
+        </tr>
+    {% endmacro %}
+
+    {% import _self as view_macro %}
+
+    <div id="includer-stuff">
+        <h1>Fiche utilisateur : {{ user.fullname }}</h1>
+
+        <hr />
+        <br />
+
+        <table class="table" style="width:100%">
+            {{ view_macro.field_row(user_image.user_img(user, 'pic', '', 'max-width:100%'), user.fullname) }}
+
+            {% set nickname_content %}
+                <a href="{{ path('user_full', {'id': user.id}) }}" title="Fiche profil" target="_top">{{ user.nickname }}</a>
+                {% if is_granted(constant('App\\Security\\SecurityConstants::ROLE_ADMIN')) and allowed('user_delete') and user_articles|length <= 0 and user_events|length <= 0 %}
+                    &nbsp;&nbsp;&nbsp;<a href="{{ path('user_delete_confirm', {'id': user.id}) }}" class="fancyframe" title="Désactiver le compte de cet utilisateur"><img src="/img/base/user_delete.png" alt="Désactiver" title=""></a>
+                {% endif %}
+            {% endset %}
+            {{ view_macro.field_row('Pseudo :', nickname_content) }}
+
+            {{ view_macro.field_row('Numéro de licence :', user.cafnum) }}
+
+            {% if parent %}
+                {% set parent_content %}
+                    <a href="{{ path('user_view', {'id': parent.id}) }}" class="userlink" title="Voir le profil">{{ parent.fullName }}</a>
+                {% endset %}
+                {{ view_macro.field_row('Parent (chef de famille) :', parent_content) }}
+            {% endif %}
+
+            {% if filiations|length > 0 %}
+                {% set filiations_content %}
+                    <ul class="nice-list">
+                        {% for child in filiations %}
+                            <li><a href="{{ path('user_view', {'id': child.id}) }}" class="userlink" title="Voir le profil">{{ child.fullName }}</a></li>
+                        {% endfor %}
+                    </ul>
+                {% endset %}
+                {{ view_macro.field_row('Adhérents affiliés :', filiations_content) }}
+            {% endif %}
+
+            {% set join_date_content %}
+                {% if user.joinDate %}
+                    {{ user.joinDate|date('d/m/Y') }}&nbsp;&nbsp;&nbsp;<img src="/img/base/tick2.png" />
+                {% elseif user.doitRenouveler %}
+                    &nbsp;&nbsp;&nbsp;<img src="/img/base/delete.png" />
+                {% endif %}
+            {% endset %}
+            {{ view_macro.field_row('Date d\'adhésion (renouvellement) :', join_date_content) }}
+
+            {% set birthdate_content %}
+                {% if user.birthdate %}{{ user.birthdate|date('d/m/Y') }}{% endif %} {% if age_user(user) %}({{ age_user(user) }} ans){% else %}(?){% endif %}
+            {% endset %}
+            {{ view_macro.field_row('Date de naissance :', birthdate_content) }}
+
+            {{ view_macro.field_row('E-mail :', '<a href="mailto:' ~ user.email ~ '">' ~ user.email ~ '</a>') }}
+
+            {{ view_macro.field_row('Numéro de téléphone personnel :', user.tel) }}
+
+            {{ view_macro.field_row('Numéro de téléphone de secours :', user.tel2) }}
+
+            {% set address_content %}
+                {{ user.adresse }}<br>{{ user.cp }} {{ user.ville }}<br>{{ user.pays }}
+            {% endset %}
+            {{ view_macro.field_row('Adresse :', address_content) }}
+
+            {% set profile_type_content %}
+                {% if user.profileType is same as (constant('App\\Entity\\User::PROFILE_DISCOVERY')) %}
+                    Carte découverte <span title="Carte découverte">🧐</span>
+                {% elseif user.profileType is same as (constant('App\\Entity\\User::PROFILE_OTHER_CLUB_MEMBER')) %}
+                    Adhérent d'un autre club <span title="Adhérent d'un autre club">🌍</span>
+                {% elseif user.profileType is same as (constant('App\\Entity\\User::PROFILE_EXTERNAL_PERSON')) %}
+                    Personne externe <span title="Personne externe">✍️</span>
+                {% else %}
+                    Adhérent du club
+                {% endif %}
+            {% endset %}
+            {{ view_macro.field_row('Type de profil :', profile_type_content) }}
+
+            {{ view_macro.field_row('Insertion en base :', user.createdAt|date('d/m/Y H:i')) }}
+
+            {{ view_macro.field_row('Mise à jour en base :', user.updatedAt|date('d/m/Y H:i')) }}
+
+            {% set articles_content %}
+                {% for article in user_articles %}
+                    <a href="{{ path('article_view', {'code': article.code, 'id': article.id, 'forceshow': true}) }}" target="_blank">{{ article.createdAt|date('d/m/Y') }} - {{ article.titre }}</a><br>
+                {% endfor %}
+            {% endset %}
+            {{ view_macro.field_row('Articles :', articles_content) }}
+
+            {% set role_counts = {} %}
+            {% for event in user_events %}
+                {% for participation in event.participations %}
+                    {% if participation.user.id == user.id %}
+                        {% set role = participation.role %}
+                        {% set role_counts = role_counts|merge({(role): (role_counts[role]|default(0) + 1)}) %}
+                    {% endif %}
+                {% endfor %}
+            {% endfor %}
+
+            {% set events_label %}
+                Sorties :
+                {% if role_counts|length > 0 %}
+                    <br>
+                    {% for role, count in role_counts|sort|reverse %}
+                        &nbsp;&nbsp;&nbsp;- {{ role }} : {{ count }}<br />
+                    {% endfor %}
+                {% endif %}
+            {% endset %}
+
+            {% set events_content %}
+                {% for event in user_events %}
+                    <a target="_blank" href="{{ path('sortie', {'code': event.code, 'id': event.id, 'forceshow': true}) }}">{{ event.startDate|date('d/m/Y') }} - {{ event.commission.title }} - {{ event.titre }}</a><br>
+                {% endfor %}
+            {% endset %}
+            {{ view_macro.field_row(events_label, events_content) }}
+
+            {{ view_macro.field_row('Rôles spécifiques :', right_macro.user_rights(club_roles, comm_roles)) }}
+
+            {{ view_macro.field_row('ID en base :', user.id) }}
+        </table>
+    </div>
+{% endblock %}
