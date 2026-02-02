@@ -1,0 +1,91 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mes articles{% endblock %}
+
+{% block body %}
+    {% import 'macros/article-link.html.twig' as article_macro %}
+    <div class="main-type">
+        <h1>Profil : mes articles</h1>
+
+        {{ easy_include('profil-sorties-', 'vide')}}
+
+        {% if articles | length == 0 %}
+            <p class="info" style="margin-top: 15px;">Vous n'avez pas encore d'article à afficher ici.</p>
+        {% else %}
+            <p class="mini" style="margin-top: 15px;">{{ total }} article{{ total > 1 ? 's' : '' }}</p>
+        {% endif %}
+
+        {% for article in articles %}
+            <div class="article-tools">
+                {# Article status #}
+                {% if article.status == constant('App\\Entity\\Article::STATUS_PUBLISHED') %}
+                    <p class="info">Publié : cet article est en ligne</p>
+                {% elseif article.status == constant('App\\Entity\\Article::STATUS_REFUSED') %}
+                    <p class="erreur">Désactivé : cet article a été refusé par les responsables de commission</p>
+                {% elseif article.topubly is not same as (1) %}
+                    <p class="draft">Brouillon (non publié)</p>
+                {% elseif article.status == constant('App\\Entity\\Article::STATUS_PENDING') and article.topubly is same as (1) %}
+                    <p class="alerte">En attente : cet article n'a pas encore été publié par les responsables de commission</p>
+                {% endif %}
+
+                {# Action buttons #}
+                {% if article.status == constant('App\\Entity\\Article::STATUS_PUBLISHED') %}
+                    <a href="{{ path('article_view', {'id': article.id, 'code': article.code}) }}" title="Voir l'article" class="nice2">
+                        Voir
+                    </a>
+                {% else %}
+                    <a href="{{ path('article_view', {'id': article.id, 'code': article.code}) }}?forceshow=true" title="Aperçu de l'article" class="nice2">
+                        Aperçu
+                    </a>
+                {% endif %}
+
+                {% if allowed('article_edit') %}
+                    <a href="{{ path('article_edit', {'id': article.id}) }}" title="Modifier l'article" class="nice2 orange">
+                        Modifier
+                    </a>
+                {% endif %}
+
+                {% if article.status is not same as (constant('App\\Entity\\Article::STATUS_PUBLISHED')) and allowed('article_delete') %}
+                    <a href="javascript:$.fancybox($('#supprimer-form-{{ article.id }}').html());" title="Supprimer l'article" class="nice2 red">
+                        Supprimer
+                    </a>
+                    <div id="supprimer-form-{{ article.id }}" style="display:none; margin-bottom: 20px; padding: 20px; background-color: #f0f0f0; border-radius: 4px;">
+                        <form action="{{ path('delete_article', { id: article.id }) }}" method="post" style="width:600px; text-align:left" class="loading">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token('article_delete') }}" />
+                            <p>Voulez-vous vraiment supprimer définitivement cet article ? <br />Cette action est irréversible.</p>
+                            <input type="button" class="nice2" value="Annuler" onclick="$.fancybox.close();" />
+                            <input type="submit" class="nice2 red" value="Supprimer mon article" />
+                        </form>
+                    </div>
+                {% elseif allowed('article_edit') %}
+                    <a href="javascript:$.fancybox($('#depublier-form-{{ article.id }}').html());" title="Dépublier l'article" class="nice2 red" id="button-depublier-{{ article.id }}">
+                        Dépublier
+                    </a>
+                    <div id="depublier-form-{{ article.id }}" style="display:none; margin-bottom: 20px; padding: 20px; background-color: #f0f0f0; border-radius: 4px;">
+                        <form action="{{ path('unpublish_article', {'id': article.id}) }}" method="post" style="width:600px; text-align:left" class="loading">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token('article_unpublish') }}" />
+                            <p>Voulez-vous vraiment retirer cet article du site ? Il repassera en "Brouillon" et vous devrez à nouveau le faire publier par un responsable si vous désirez le publier à nouveau.</p>
+                            <input type="button" class="nice2" value="Annuler" onclick="$.fancybox.close();" />
+                            <input type="submit" class="nice2 orange" value="Dépublier mon article" />
+                        </form>
+                    </div>
+                {% endif %}
+
+                <br style="clear:both" />
+            </div>
+
+            {{ article_macro.article_link(article, 'home', 'encart_article') }}
+            <br /><br />
+        {% endfor %}
+
+        {# Pagination #}
+        {% if total > per_page %}
+            <hr />
+            <nav class="pageSelect">
+            {% for i in 1..pages %}
+                <a href="{{ path('profil_articles') }}?page={{ i }}" title="" class="{{ page == i ? 'up' : '' }}">p{{ i }}</a> {{ i < pages ? ' ' : '' }}
+            {% endfor %}
+            </nav>
+        {% endif %}
+    </div>
+{% endblock %}
