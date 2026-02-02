@@ -43,7 +43,7 @@ class UsertypeAttrRepository extends ServiceEntityRepository
         $em = $this->getEntityManager();
         $em->wrapInTransaction(function () use ($em, $pairs) {
             // purge
-            $em->createQuery('TRUNCATE TABLE App\\Entity\\UsertypeAttr a')->execute();
+            $em->createQuery('DELETE FROM App\\Entity\\UsertypeAttr a')->execute();
 
             // insertion des valeurs
             foreach ($pairs as $pair) {
