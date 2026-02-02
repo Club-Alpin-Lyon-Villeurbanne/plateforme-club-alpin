@@ -76,6 +76,8 @@ class EventType extends AbstractType
         $appointment = $event->getRdv();
         $lat = $event->getLat();
         $long = $event->getLong();
+        $startLat = $event->getStartLat();
+        $startLong = $event->getStartLong();
 
         $nbVehicle = $event->getNbVehicle();
 
@@ -394,6 +396,26 @@ class EventType extends AbstractType
                     'class' => 'mini',
                 ],
                 'help_html' => true,
+            ])
+            ->add('startLat', HiddenType::class, [
+                'label' => false,
+                'required' => true,
+                'data' => $startLat,
+                'constraints' => [
+                    new NotBlank(null, 'La latitude de départ est obligatoire. Avez-vous bien choisi le lieu dans la liste déroulante ?'),
+                    new Type(['type' => 'numeric', 'message' => 'La latitude de départ doit être un nombre valide.']),
+                    new GreaterThan(0),
+                ],
+            ])
+            ->add('startLong', HiddenType::class, [
+                'label' => false,
+                'required' => true,
+                'data' => $startLong,
+                'constraints' => [
+                    new NotBlank(null, 'La longitude de départ est obligatoire. Avez-vous bien choisi le lieu dans la liste déroulante ?'),
+                    new Type(['type' => 'numeric', 'message' => 'La longitude de départ doit être un nombre valide.']),
+                    new GreaterThan(0),
+                ],
             ])
         ;
         if ($displayHelloAssoFields && $isUserAuthorizeToUseHelloAsso) {

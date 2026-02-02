@@ -139,13 +139,23 @@ class Evt
 
     #[ORM\Column(name: 'lat_evt', type: 'decimal', precision: 11, scale: 8, nullable: false)]
     #[Groups('event:details')]
-    #[SerializedName('latitude')]
+    #[SerializedName('latitudeRDV')]
     private string|float|null $lat;
 
     #[ORM\Column(name: 'long_evt', type: 'decimal', precision: 11, scale: 8, nullable: false)]
     #[Groups('event:details')]
-    #[SerializedName('longitude')]
+    #[SerializedName('longitudeRDV')]
     private string|float|null $long;
+
+    #[ORM\Column(name: 'start_lat', type: 'decimal', precision: 11, scale: 8, nullable: false)]
+    #[Groups('event:details')]
+    #[SerializedName('latitudeDepart')]
+    private string|float|null $startLat;
+
+    #[ORM\Column(name: 'start_long', type: 'decimal', precision: 11, scale: 8, nullable: false)]
+    #[Groups('event:details')]
+    #[SerializedName('longitudeDepart')]
+    private string|float|null $startLong;
 
     #[ORM\Column(name: 'matos_evt', type: 'text', nullable: true)]
     #[Groups('event:details')]
@@ -274,6 +284,8 @@ class Evt
         $this->rdv = $rdv;
         $this->lat = $rdvLat;
         $this->long = $rdvLong;
+        $this->startLat = 0;
+        $this->startLong = 0;
         $this->description = $description;
         $this->joinMax = $maxInscriptions;
         $this->ngensMax = $maxParticipants;
@@ -1074,6 +1086,30 @@ class Evt
     public function setWaitingSeat(?int $waitingSeat): self
     {
         $this->waitingSeat = $waitingSeat;
+
+        return $this;
+    }
+
+    public function getStartLat(): float|string|null
+    {
+        return $this->startLat;
+    }
+
+    public function setStartLat(float|string|null $startLat): self
+    {
+        $this->startLat = $startLat;
+
+        return $this;
+    }
+
+    public function getStartLong(): float|string|null
+    {
+        return $this->startLong;
+    }
+
+    public function setStartLong(float|string|null $startLong): self
+    {
+        $this->startLong = $startLong;
 
         return $this;
     }
