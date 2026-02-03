@@ -20,9 +20,6 @@ use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Serializer\Annotation\Ignore;
 use Symfony\Component\Serializer\Annotation\SerializedName;
 
-/**
- * User.
- */
 #[ORM\Table(name: 'caf_user')]
 #[ORM\Index(columns: ['id_user'], name: 'id_user')]
 #[ORM\Index(columns: ['is_deleted', 'doit_renouveler_user', 'nomade_user', 'lastname_user'], name: 'idx_user_admin_listing')]
@@ -46,157 +43,106 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public const int PROFILE_OTHER_CLUB_MEMBER = 3;
     public const int PROFILE_EXTERNAL_PERSON = 4;
 
-    /**
-     * @var int
-     */
     #[ORM\Id]
     #[ORM\Column(name: 'id_user', type: 'bigint', nullable: false)]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[Groups(['user:read'])]
-    private $id;
+    private ?int $id;
 
-    #[ORM\Column(name: 'profile_type', type: Types::SMALLINT, nullable: false, options: ['default' => self::PROFILE_UNKNOWN])]
+    #[ORM\Column(name: 'profile_type', type: Types::SMALLINT, nullable: false, options: ['default' => self::PROFILE_UNKNOWN, 'comment' => '1 licencié annuel du club, 2 carte découverte du club, 3 licencié autre club, 4 personne extérieure (ex formateur)'])]
     private int $profileType;
 
-    #[ORM\OneToMany(targetEntity: 'UserAttr', mappedBy: 'user', cascade: ['persist'])]
-    private $attrs;
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: 'UserAttr', cascade: ['persist'])]
+    private Collection $attrs;
 
-    /**
-     * @var string
-     */
-    #[ORM\Column(name: 'email_user', type: 'string', length: 200, nullable: true, unique: true)]
+    #[ORM\Column(name: 'email_user', type: 'string', length: 200, unique: true, nullable: true)]
     #[Groups('user:read')]
-    private $email;
+    private ?string $email = null;
 
     #[ORM\Column(name: 'gdrive_email', type: 'string', length: 200, unique: true, nullable: true)]
     private ?string $gdriveEmail = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'mdp_user', type: 'string', length: 1024, nullable: true)]
     #[Ignore]
-    private $mdp;
+    private ?string $mdp = null;
 
     #[ORM\Column(name: 'cafnum_user', type: 'string', length: 20, unique: true, nullable: false, options: ['comment' => 'Numéro de licence'])]
     #[Groups('user:details')]
     #[SerializedName('numeroLicence')]
     private string $cafnum;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'cafnum_parent_user', type: 'string', length: 20, nullable: true, options: ['comment' => 'Filiation : numéro CAF du parent'])]
-    private $cafnumParent;
+    private ?string $cafnumParent = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'firstname_user', type: 'string', length: 50, nullable: false)]
     #[Groups('user:read')]
     #[SerializedName('prenom')]
-    private $firstname;
+    private ?string $firstname = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'lastname_user', type: 'string', length: 50, nullable: false)]
     #[Groups('user:read')]
     #[SerializedName('nom')]
-    private $lastname;
+    private ?string $lastname = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'nickname_user', type: 'string', length: 20, nullable: false)]
     #[Groups('user:read')]
     #[SerializedName('pseudonyme')]
-    private $nickname;
+    private string $nickname;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'tel_user', type: 'string', length: 100, nullable: true)]
     #[Groups('user:details')]
     #[SerializedName('telephone')]
-    private $tel;
+    private ?string $tel = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'tel2_user', type: 'string', length: 100, nullable: true)]
     #[Groups('user:details')]
     #[SerializedName('telephoneSecours')]
-    private $tel2;
+    private ?string $tel2 = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'adresse_user', type: 'string', length: 100, nullable: true)]
     #[Groups('user:details')]
-    private $adresse;
+    private ?string $adresse = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'cp_user', type: 'string', length: 10, nullable: true)]
     #[Groups('user:details')]
     #[SerializedName('codePostal')]
-    private $cp;
+    private ?string $cp = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'ville_user', type: 'string', length: 30, nullable: true)]
     #[Groups('user:details')]
-    private $ville;
+    private ?string $ville = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'pays_user', type: 'string', length: 50, nullable: true)]
     #[Groups('user:details')]
-    private $pays;
+    private ?string $pays = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'civ_user', type: 'string', length: 10, nullable: true)]
     #[Groups('user:details')]
     #[SerializedName('civilite')]
-    private $civ;
+    private ?string $civ = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'moreinfo_user', type: 'string', length: 500, nullable: true, options: ['comment' => 'FORMATIONS ?'])]
     #[Groups('user:details')]
     #[SerializedName('informationsSupplementaires')]
-    private $moreinfo;
+    private ?string $moreinfo = null;
 
-    /**
-     * @var string
-     */
     #[ORM\Column(name: 'cookietoken_user', type: 'string', length: 32, nullable: true)]
     #[Ignore]
-    private $cookietoken;
+    private ?string $cookietoken = null;
 
-    #[ORM\Column(name: 'manuel_user', type: 'boolean', nullable: false, options: ['comment' => 'User créé à la mano sur le site ?'])]
+    #[ORM\Column(name: 'manuel_user', type: 'boolean', nullable: false, options: ['comment' => 'plus utilisé'])]
     private bool $manuelUser = false;
 
-    #[ORM\Column(name: 'nomade_user', type: 'boolean', nullable: false)]
+    #[ORM\Column(name: 'nomade_user', type: 'boolean', nullable: false, options: ['comment' => 'plus utilisé'])]
     private bool $nomade = false;
 
-    /**
-     * @var int
-     */
-    #[ORM\Column(name: 'nomade_parent_user', type: 'integer', nullable: true, options: ['comment' => "Dans le cas d'un user NOMADE, l'ID de son créateur"])]
-    private $nomadeParent;
+    #[ORM\Column(name: 'nomade_parent_user', type: 'integer', nullable: true, options: ['comment' => "Dans le cas d'un user ajouté manuellement (profils 3 et 4), l'ID de son créateur"])]
+    private ?int $nomadeParent = null;
 
-    #[ORM\Column(name: 'doit_renouveler_user', type: 'boolean', nullable: false)]
+    #[ORM\Column(name: 'doit_renouveler_user', type: 'boolean', nullable: false, options: ['comment' => 'vaut 1 si licence expirée'])]
     private bool $doitRenouveler = false;
 
-    #[ORM\Column(name: 'alerte_renouveler_user', type: 'boolean', nullable: false, options: ['comment' => "Si sur 1 : une alerte s'affiche pour annoncer que l'adhérent doit renouveler sa licence"])]
+    #[ORM\Column(name: 'alerte_renouveler_user', type: 'boolean', nullable: false, options: ['comment' => "Si vaut 1 : un message d'alerte s'affiche dans le menu pour prévenir l'adhérent qu'il doit renouveler sa licence"])]
     private bool $alerteRenouveler = false;
 
     #[ORM\OneToMany(mappedBy: 'user', targetEntity: ExpenseReport::class, orphanRemoval: false)]
@@ -205,7 +151,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'is_deleted', type: 'boolean', nullable: false, options: ['default' => 0])]
     private bool $isDeleted = false;
 
-    #[ORM\Column(type: 'json', nullable: true)]
+    #[ORM\Column(type: 'json', nullable: true, options: ['comment' => 'liste des alertes email activées'])]
     #[Groups(['user:details', 'user:write'])]
     private ?array $alerts = EmailAlerts::DEFAULT_ALERTS;
 
@@ -226,7 +172,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[SerializedName('dateNaissance')]
     private ?\DateTimeInterface $birthdate = null;
 
-    #[ORM\Column(name: 'join_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'Date adhésion'])]
+    #[ORM\Column(name: 'join_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'Date de dernière prise de licence annuelle ou date de début de validité carte découverte'])]
     #[Groups('user:details')]
     private ?\DateTimeInterface $joinDate = null;
 
@@ -237,23 +183,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     private ?string $radiationReason = null;
 
     #[ORM\ManyToOne(targetEntity: MediaUpload::class)]
-    #[ORM\JoinColumn(name: 'media_upload_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
+    #[ORM\JoinColumn(name: 'media_upload_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL', options: ['comment' => 'Photo de profil'])]
     #[Groups('media:read')]
     private ?MediaUpload $profilePicture = null;
 
     #[ORM\Column(type: Types::INTEGER, nullable: true, options: ['comment' => 'Durée de validité (en h) de la licence découverte'])]
     private ?int $validityDuration = null;
 
-    #[ORM\Column(name: 'discovery_end_datetime', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'Date de fin de validité licence découverte'])]
+    #[ORM\Column(name: 'discovery_end_datetime', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'Date de fin de validité carte découverte'])]
     private ?\DateTimeInterface $discoveryEndDatetime = null;
 
-    public function __construct(?int $id = null)
+    public function __construct(string|int|null $id = null)
     {
         $this->attrs = new ArrayCollection();
         $this->createdAt = new \DateTime();
         $this->updatedAt = new \DateTime();
         if ($id) {
-            $this->id = $id;
+            $this->id = (int) $id;
         }
         $this->profileType = self::PROFILE_UNKNOWN;
     }
@@ -422,7 +368,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
 
     public function getFirstname(): ?string
     {
-        return ucfirst($this->firstname);
+        return null !== $this->firstname ? ucfirst($this->firstname) : null;
     }
 
     public function setFirstname(string $firstname): self
@@ -434,7 +380,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
 
     public function getLastname(): ?string
     {
-        return strtoupper($this->lastname);
+        return null !== $this->lastname ? strtoupper($this->lastname) : null;
     }
 
     public function setLastname(string $lastname): self
@@ -593,7 +539,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this->nomadeParent;
     }
 
-    public function setNomadeParent(int $nomadeParent): self
+    public function setNomadeParent(?int $nomadeParent): self
     {
         $this->nomadeParent = $nomadeParent;
 
@@ -721,11 +667,16 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
 
     public function hasAlertEnabledOn(AlertType $type, string $commissionCode): bool
     {
+        if (empty($this->alerts)) {
+            return false;
+        }
+
         return $this->alerts[$commissionCode][$type->name] ?? false;
     }
 
     public function setAlertStatus(AlertType $type, string $commissionCode, bool $status): self
     {
+        $this->alerts ??= [];
         $this->alerts[$commissionCode][$type->name] = $status;
 
         return $this;
