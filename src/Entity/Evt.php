@@ -231,6 +231,11 @@ class Evt
     #[Groups('event:read')]
     private ?\DateTimeImmutable $legalStatusChangeDate = null;
 
+    #[ORM\Column(name: 'waiting_seat', type: 'integer', nullable: true, options: ['comment' => "Nombre de place en liste d'attente"])]
+    #[Groups('event:read')]
+    #[SerializedName('waitingSeat')]
+    private ?int $waitingSeat = null;
+
     public function __construct(
         ?User $user,
         ?Commission $commission,
@@ -995,5 +1000,17 @@ class Evt
     public function getExpenseReports(): ?Collection
     {
         return $this->expenseReports;
+    }
+
+    public function getWaitingSeat(): ?int
+    {
+        return $this->waitingSeat;
+    }
+
+    public function setWaitingSeat(?int $waitingSeat): self
+    {
+        $this->waitingSeat = $waitingSeat;
+
+        return $this;
     }
 }

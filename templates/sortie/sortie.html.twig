@@ -2,7 +2,7 @@
 
 {% block title %}{{ event.titre }}{% endblock %}
 
-{% macro user_inscription_button(event, filiations, my_status, nInscritsTotal) %}
+{% macro user_inscription_button(event, filiations, my_status, nInscritsTotal, free_seat_left, waiting_seat_left) %}
 
     {% if event.joinMax > 0 %}
         {% set style = '' %}
@@ -14,7 +14,7 @@
             <a class="biglink" href="javascript:void(0)" onclick="$('#inscription').slideToggle(200)" title="" style="{{ style }}">
             <span class="bleucaf">&gt;</span>
             {% if not my_status %}
-                JE SOUHAITE ME PRÉ-INSCRIRE À CETTE SORTIE
+                JE SOUHAITE {% if free_seat_left > 0 %}ME PRÉ-INSCRIRE À CETTE SORTIE{% elseif waiting_seat_left > 0 %}REJOINDRE LA LISTE D'ATTENTE{% endif %}
             {% elseif my_status.isCovoiturage %}
             {% else %}
             JE METS À JOUR MES PREFERENCES {% if style %}<img src="/img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;{% endif %}
@@ -1130,11 +1130,16 @@
         {% if not event.cancelled %}
             {% set nPlacesRestantesOnline = max(0, event.joinMax - nInscritsTotal) %}
             {% set nEnAttente = event.participations(null, constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')) | length %}
+            {% set waiting_seat_left = 0 %}
 
             <hr />
             <ul class="nice-list">
                 <li class="wide"><b>NOMBRE MAXIMUM DE PLACES :</b> {{ event.ngensMax }}</li>
                 <li class="wide"><b>DISPONIBLES VIA INTERNET :</b> {{ nPlacesRestantesOnline }}</li>
+                {% if event.waitingSeat and event.waitingSeat > 0 %}
+                    {% set waiting_seat_left = event.waitingSeat - nEnAttente  %}
+                    <li class="wide"><b>DISPONIBLES EN LISTE D'ATTENTE :</b> {{ waiting_seat_left }}</li>
+                {% endif %}
             </ul>
 
             <br style="clear:both" /><hr />
@@ -1194,7 +1199,7 @@
             {% endif %}
 
             {# si utilisateur est inscrit, il a accès #}
-            {% if nPlacesRestantesOnline > 0 or event.participation(app.user) %}
+            {% if nPlacesRestantesOnline > 0 or waiting_seat_left > 0 or event.participation(app.user) %}
 
                 {% if allowed('evt_join') %}
 
@@ -1202,7 +1207,7 @@
                         {% if not event.hasStarted %}
                             {% if event.joinHasStarted %}
                                 {% if is_granted('JOIN_SORTIE', event) %}
-                                    {{ _self.user_inscription_button(event, filiations, my_status, nInscritsTotal) }}
+                                    {{ _self.user_inscription_button(event, filiations, my_status, nInscritsTotal, nPlacesRestantesOnline, waiting_seat_left) }}
 
                                     <div id="inscription" style="display:none">
 
@@ -1296,7 +1301,7 @@
                                         })
                                     </script>
 
-                                </div>
+                                    </div>
                                 {% endif %}
                             {% else %}
                                 <hr />

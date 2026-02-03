@@ -127,20 +127,12 @@
 
         <h2 class="trigger-h2">Inscriptions :</h2>
         <div class="trigger-me">
-            <div style="width:48%; padding-right:3%; float:left">
-                <div>
-                    {{ form_label(form.ngensMax) }}
-                    {{ form_errors(form.ngensMax) }}
-                    {{ form_widget(form.ngensMax) }} {{ form_help(form.ngensMax) }}
-                </div><br />
-            </div>
-            <div style="width:49%; float:left">
-                {{ form_row(form.joinMax) }}
-            </div>
-            <br style="clear:both" /><br>
+            {{ form_row(form.ngensMax) }}
+            <br style="clear:both" />
 
             {{ form_row(form.joinStartDate) }}
             <br style="clear:both" />
+
             <div>
                 <label for="{{ form.autoAccept.vars.id }}" class="{% if form.autoAccept.vars.data %}up{% else %}down{% endif %}">
                     {{ form_widget(form.autoAccept) }}
@@ -148,6 +140,16 @@
                 </label>
                 {{ form_help(form.autoAccept) }}
             </div>
+        </div>
+
+        <h2 class="trigger-h2">Liste d'attente :</h2>
+        <div class="trigger-me">
+            <div>
+                {{ form_label(form.waitingSeat) }}
+                {{ form_errors(form.waitingSeat) }}
+                {{ form_widget(form.waitingSeat) }}<br />
+                {{ form_help(form.waitingSeat) }}
+            </div><br />
         </div>
 
         <h2 class="trigger-h2">Difficulté / matériel :</h2>
