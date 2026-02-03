@@ -34,6 +34,16 @@ function searchCommunes(context) {
                             li.onclick = () => {
                                 field.value = liContentText;
                                 list.innerHTML = '';
+
+                                // Remplir les champs cachés startLat et startLong
+                                const startLatField = document.getElementById('event_startLat');
+                                const startLongField = document.getElementById('event_startLong');
+                                if (startLatField && item.latitude) {
+                                    startLatField.value = item.latitude;
+                                }
+                                if (startLongField && item.longitude) {
+                                    startLongField.value = item.longitude;
+                                }
                             };
                             list.appendChild(li);
                         });
