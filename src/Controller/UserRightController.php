@@ -7,6 +7,8 @@ use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Entity\Usertype;
 use App\Repository\UserAttrRepository;
+use App\Repository\UserRightRepository;
+use App\Repository\UsertypeAttrRepository;
 use App\Repository\UsertypeRepository;
 use App\Security\SecurityConstants;
 use App\Service\UserRightService;
@@ -145,6 +147,50 @@ class UserRightController extends AbstractController
         }
 
         return $this->redirectToRoute('my_profile');
+    }
+
+    #[Route('/admin-matrice-droits.html', name: 'admin_user_right_matrix', methods: ['GET', 'POST'], priority: 10)]
+    #[Template('admin/user_right_matrix.html.twig')]
+    public function matrix(
+        Request $request,
+        UsertypeRepository $usertypeRepository,
+        UserRightRepository $userRightRepository,
+        UsertypeAttrRepository $usertypeAttrRepository,
+    ): array|RedirectResponse {
+        $this->denyAccessUnlessGranted(SecurityConstants::ROLE_ADMIN);
+
+        $usertypes = $usertypeRepository->findAllOrdered();
+        $userrights = $userRightRepository->findAllOrdered();
+        $attributions = $usertypeAttrRepository->findAllPairs();
+
+        // Groupement des droits par parent
+        $grouped_rights = [];
+        foreach ($userrights as $right) {
+            $parent = $right->getParent();
+            $grouped_rights[$parent][] = $right;
+        }
+
+        if ('POST' === $request->getMethod()) {
+            if (!$this->isCsrfTokenValid('right_matrix_update', $request->request->get('csrf_token'))) {
+                throw new BadRequestException('Jeton de validation invalide.');
+            }
+
+            $data = $request->request->all();
+            $usertypeAttrRepository->replaceAll($data['usertype_attr']);
+
+            $this->addFlash('success', 'La matrice des droits a bien été sauvegardée.');
+
+            return $this->redirectToRoute('admin_user_right_matrix');
+        }
+
+        return [
+            'usertypes' => $usertypes,
+            'userrights' => $userrights,
+            'attributions' => $attributions,
+            'grouped_rights' => $grouped_rights,
+            'is_admin' => true,
+            'admin_page' => 'admin_user_right_matrix',
+        ];
     }
 
     private function removeRight(User $user, Usertype $type, ?Commission $commission = null): bool

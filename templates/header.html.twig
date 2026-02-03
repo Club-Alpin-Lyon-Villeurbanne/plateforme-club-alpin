@@ -1,5 +1,6 @@
 {% set current_commission = current_commission | default(null) %}
 {% set current_commission_code = current_commission.code | default('') %}
+{% set is_admin = is_admin | default(false) %}
 {% set impersonification_style = is_granted('IS_IMPERSONATOR') ? "background-color:#df4949;" : "" %}
 {% import 'macros/user-image.html.twig' as user_image %}
 
@@ -7,347 +8,284 @@
     {% include 'admin/menu.html.twig' %}
 {% endif %}
 
-<header id="mainHeader" style="{{ impersonification_style }}">
-    <div class="sitewidth">
+{% if is_admin is same as (false) %}
+    <header id="mainHeader" style="{{ impersonification_style }}">
+        <div class="sitewidth">
 
-        {# LOGO COMMUN TTES PAGES #}
-        <a id="logo" href="/" title="{{ db_content('logo-title') }}">
-            <img src="{{ db_content('logo-img-src') }}" alt="{{ db_content('logo-title') }}" title="{{ db_content('logo-title') }}" />
-        </a>
+            {# LOGO COMMUN TTES PAGES #}
+            <a id="logo" href="/" title="{{ db_content('logo-title') }}">
+                <img src="{{ db_content('logo-img-src') }}" alt="{{ db_content('logo-title') }}" title="{{ db_content('logo-title') }}" />
+            </a>
 
-        {# COMMISSION #}
-        <a id="toolbar-commission" href="javascript:void(0)" title="{{ commission_title(current_commission_code) }}" class="toptrigger" style="{{ impersonification_style }}">
-            <div style="position:absolute;"><span id="shadowcache-commission" class="shadowcache"></span></div>
-            {% if current_commission and current_commission is instanceof('App\\Entity\\Commission') %}
-                <span class="picto">
-                    <img src="{{ commission_picto(current_commission.code) }}" alt="" title="" class="light" />
-                    <img src="{{ commission_picto(current_commission.code, 'dark') }}" alt="" title="" class="dark" />
-                </span> Commission - Activité<br /><b>{{ commission_title(current_commission.code) }}</b>
-            {% else %}
-                <span class="picto">
-                    <img src="/img/comm-please.png" alt="" title="" class="light" />
-                    <img src="/img/comm-please-up.png" alt="" title="" class="dark" />
-                </span> Commissions - Activités<br /><b>choisissez...</b>
-            {% endif %}
-        </a>
-
-        {# PARTIE CACHEE #}
-        <nav id="toolbar-commission-hidden" style="display: none; opacity: 0;">
-            <div class="sitewidth">
-                <a href="/" title="">
-                    <span class="picto" style="background-image:url({{ commission_picto(null, 'light') }})">
-                        <img src="{{ commission_picto(null, 'dark') }}" alt="" title="" />
-                    </span> Toutes les commissions
-                </a>
-                {% for commission in list_commissions() %}
-                    <a href="{{ path('commission_homepage', {'code': commission.code}) }}" title="{{ commission.title }}">
-                        <span class="picto" style="background-image:url({{ commission_picto(commission.code, 'light') }})">
-                            <img src="{{ commission_picto(commission.code, 'dark') }}" alt="" title="" />
-                        </span> {{ commission.title }}
-                    </a>
-                {% endfor %}
-            </div>
-        </nav>
-
-        {# NAVIGATION #}
-        <a id="toolbar-navigation" href="javascript:void(0)" title="" class="toptrigger" style="{{ impersonification_style }}">
-            <span class="picto"><img src="/img/boussole.png" alt="" title="" class="light" />
-                <img src="/img/boussole-up.png" alt="" title="" class="dark" />
-            </span>
-            La carte du site<br /><b>Navigation</b>
-            <span id="shadowcache-navigation" class="shadowcache"></span>
-        </a>
-
-        {# PARTIE CACHEE #}
-        <nav id="toolbar-navigation-hidden" style="display: none; opacity: 0;">
-            <div class="sitewidth">
-                {{ easy_include('nav-menu-1', 'nav-menu') }}
-                {{ easy_include('nav-menu-2', 'nav-menu') }}
-                {{ easy_include('nav-menu-3', 'nav-menu') }}
-                {{ easy_include('nav-menu-4', 'nav-menu') }}
-            </div>
-        </nav>
-
-        <a id="toolbar-user" href="javascript:void(0)" title="" class="toptrigger" style="{{ impersonification_style }}">
-            {% if not app.user %}
-                <span class="picto"><img src="/img/toolbox.png" alt="" title="" class="light" /><img src="/img/toolbox-up.png" alt="" title="" class="dark" /></span> Espace<br /><b>Adhérents</b>
-                <span id="shadowcache-user" class="shadowcache"></span>
-            {% else %}
-                <div class="connected-name">
-
-                    {% if app.user.getDoitRenouveler or app.user.getAlerteRenouveler or is_user_profile_incomplete() %}
-                        <div class="notification-user-alerte"><span>!</span></div>
-                    {% endif %}
-
-                    {% set notifications = notifications_counter() %}
-
-                    {% if notifications > 0 %}
-                        <div class="notification-user"><span>{{ notifications }}</span></div>
-                    {% endif %}
-                    {{ user_image.user_img(app.user, 'pic') }}
-                    <p>
-                        Bonjour <br />
-                        <b>{{ app.user.getFirstname() }},</b>
-                        <span id="shadowcache-user" class="shadowcache" style="top:8px;"></span>
-                    </p>
-                </div>
-            {% endif %}
-        </a>
-
-        {# navigation adherent #}
-        <nav id="toolbar-user-hidden" style="display: none; opacity: 0;">
-            <div class="sitewidth">
-                {% if not app.user %}
-                    {# creer un compte (vers page profil) #}
-                    <div style="width:640px; float:left; border-right:1px solid #c6e39f; min-height:120px; padding:0px 5px 0 0">
-                        {{ easy_include('mainmenu-creer-mon-compte', 'menucontent')}}
-                    </div>
-
-                    <div style="width:290px; padding-right:10px; float:right">
-                        {% if not app.request or app.request.attributes.get('_route') != "login" %}
-                            {% include 'login_form.html.twig' with { class: 'menucontent' } %}
-                        {% endif %}
-                    </div>
-
+            {# COMMISSION #}
+            <a id="toolbar-commission" href="javascript:void(0)" title="{{ commission_title(current_commission_code) }}" class="toptrigger" style="{{ impersonification_style }}">
+                <div style="position:absolute;"><span id="shadowcache-commission" class="shadowcache"></span></div>
+                {% if current_commission and current_commission is instanceof('App\\Entity\\Commission') %}
+                    <span class="picto">
+                        <img src="{{ commission_picto(current_commission.code) }}" alt="" title="" class="light" />
+                        <img src="{{ commission_picto(current_commission.code, 'dark') }}" alt="" title="" class="dark" />
+                    </span> Commission - Activité<br /><b>{{ commission_title(current_commission.code) }}</b>
                 {% else %}
-                    {% if app.user.getDoitRenouveler %}
-                        {# MESSAGE D'ALERTE SI CET USER EST VERROUILLE POUR LICENCE EXPIREE #}
-                        <div style="padding:5px 0 30px 0">
-                            {{ easy_include('alerte-licence-obsolete', 'alerte')}}
+                    <span class="picto">
+                        <img src="/img/comm-please.png" alt="" title="" class="light" />
+                        <img src="/img/comm-please-up.png" alt="" title="" class="dark" />
+                    </span> Commissions - Activités<br /><b>choisissez...</b>
+                {% endif %}
+            </a>
+
+            {# PARTIE CACHEE #}
+            <nav id="toolbar-commission-hidden" style="display: none; opacity: 0;">
+                <div class="sitewidth">
+                    <a href="/" title="">
+                        <span class="picto" style="background-image:url({{ commission_picto(null, 'light') }})">
+                            <img src="{{ commission_picto(null, 'dark') }}" alt="" title="" />
+                        </span> Toutes les commissions
+                    </a>
+                    {% for commission in list_commissions() %}
+                        <a href="{{ path('commission_homepage', {'code': commission.code}) }}" title="{{ commission.title }}">
+                            <span class="picto" style="background-image:url({{ commission_picto(commission.code, 'light') }})">
+                                <img src="{{ commission_picto(commission.code, 'dark') }}" alt="" title="" />
+                            </span> {{ commission.title }}
+                        </a>
+                    {% endfor %}
+                </div>
+            </nav>
+
+            {# NAVIGATION #}
+            <a id="toolbar-navigation" href="javascript:void(0)" title="" class="toptrigger" style="{{ impersonification_style }}">
+                <span class="picto"><img src="/img/boussole.png" alt="" title="" class="light" />
+                    <img src="/img/boussole-up.png" alt="" title="" class="dark" />
+                </span>
+                La carte du site<br /><b>Navigation</b>
+                <span id="shadowcache-navigation" class="shadowcache"></span>
+            </a>
+
+            {# PARTIE CACHEE #}
+            <nav id="toolbar-navigation-hidden" style="display: none; opacity: 0;">
+                <div class="sitewidth">
+                    {{ easy_include('nav-menu-1', 'nav-menu') }}
+                    {{ easy_include('nav-menu-2', 'nav-menu') }}
+                    {{ easy_include('nav-menu-3', 'nav-menu') }}
+                    {{ easy_include('nav-menu-4', 'nav-menu') }}
+                </div>
+            </nav>
+
+            <a id="toolbar-user" href="javascript:void(0)" title="" class="toptrigger" style="{{ impersonification_style }}">
+                {% if not app.user %}
+                    <span class="picto"><img src="/img/toolbox.png" alt="" title="" class="light" /><img src="/img/toolbox-up.png" alt="" title="" class="dark" /></span> Espace<br /><b>Adhérents</b>
+                    <span id="shadowcache-user" class="shadowcache"></span>
+                {% else %}
+                    <div class="connected-name">
+
+                        {% if app.user.getDoitRenouveler or app.user.getAlerteRenouveler or is_user_profile_incomplete() %}
+                            <div class="notification-user-alerte"><span>!</span></div>
+                        {% endif %}
+
+                        {% set notifications = notifications_counter() %}
+
+                        {% if notifications > 0 %}
+                            <div class="notification-user"><span>{{ notifications }}</span></div>
+                        {% endif %}
+                        {{ user_image.user_img(app.user, 'pic') }}
+                        <p>
+                            Bonjour <br />
+                            <b>{{ app.user.getFirstname() }},</b>
+                            <span id="shadowcache-user" class="shadowcache" style="top:8px;"></span>
+                        </p>
+                    </div>
+                {% endif %}
+            </a>
+
+            {# navigation adherent #}
+            <nav id="toolbar-user-hidden" style="display: none; opacity: 0;">
+                <div class="sitewidth">
+                    {% if not app.user %}
+                        {# creer un compte (vers page profil) #}
+                        <div style="width:640px; float:left; border-right:1px solid #c6e39f; min-height:120px; padding:0px 5px 0 0">
+                            {{ easy_include('mainmenu-creer-mon-compte', 'menucontent')}}
                         </div>
-                    {% elseif app.user.getAlerteRenouveler %}
-                        {# MESSAGE D'ALERTE SI CET USER DOIT RENOUVELER SA LICENCE AVANT BIENTOT #}
-                        <div style="padding:5px 0 30px 0">
-                            {{ easy_include('alerte-licence-renouveler', 'alerte')}}
+
+                        <div style="width:290px; padding-right:10px; float:right">
+                            {% if not app.request or app.request.attributes.get('_route') != "login" %}
+                                {% include 'login_form.html.twig' with { class: 'menucontent' } %}
+                            {% endif %}
                         </div>
-                    {% elseif is_user_profile_incomplete() %}
-                        <div style="padding:5px 0 30px 0">
-                            <div id="incomplete-profile-warning" class="alerte">
-                                <h1>Attention, votre compte est incomplet.</h1>
-                                <p class="mt20">{{ display_user_profile_warning() }}</p>
+
+                    {% else %}
+                        {% if app.user.getDoitRenouveler %}
+                            {# MESSAGE D'ALERTE SI CET USER EST VERROUILLE POUR LICENCE EXPIREE #}
+                            <div style="padding:5px 0 30px 0">
+                                {{ easy_include('alerte-licence-obsolete', 'alerte')}}
                             </div>
-                        </div>
-                    {% endif %}
+                        {% elseif app.user.getAlerteRenouveler %}
+                            {# MESSAGE D'ALERTE SI CET USER DOIT RENOUVELER SA LICENCE AVANT BIENTOT #}
+                            <div style="padding:5px 0 30px 0">
+                                {{ easy_include('alerte-licence-renouveler', 'alerte')}}
+                            </div>
+                        {% elseif is_user_profile_incomplete() %}
+                            <div style="padding:5px 0 30px 0">
+                                <div id="incomplete-profile-warning" class="alerte">
+                                    <h1>Attention, votre compte est incomplet.</h1>
+                                    <p class="mt20">{{ display_user_profile_warning() }}</p>
+                                </div>
+                            </div>
+                        {% endif %}
 
-                    <div style="width:640px; min-height:160px; float:left; border-right:1px solid #c6e39f; min-height:130px; padding:0px 5px 0 0">
-                        <div class="nav-user">
-                            <p class="menutitle">Sorties</p>
-                            <ul>
-                                {% if allowed('evt_validate') %}
-                                    {# publier une sortie (notification au besoin, variable définie dans SCRIPTS.'reqs.php') #}
+                        <div style="width:640px; min-height:160px; float:left; border-right:1px solid #c6e39f; min-height:130px; padding:0px 5px 0 0">
+                            <div class="nav-user">
+                                <p class="menutitle">Sorties</p>
+                                <ul>
+                                    {% if allowed('evt_validate') %}
+                                        {# publier une sortie (notification au besoin, variable définie dans SCRIPTS.'reqs.php') #}
+                                        <li>
+                                            <a href="{{ path('manage_events') }}" title="Approuver les sorties en attente">
+                                                {% set notif_sorties = notifications_counter_sorties() %}
+                                                {% if notif_sorties > 0 %}<span class="notification">{{ notif_sorties }}</span>{% endif %}
+                                                approbation des sorties
+                                            </a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% if allowed('evt_legal_accept') %}
+                                        {# valider juridiquement une sortie#}
+                                        <li>
+                                            <a href="{{ path('legal_manage_events') }}" title="Valider légalement les sorties">
+                                                {% set notif_president = notifications_counter_sorties_president() %}
+                                                {% if notif_president > 0 %}<span class="notification">{{ notif_president }}</span>{% endif %}
+                                                validation des sorties
+                                            </a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% if allowed('evt_create') %}
+                                        {# créer une sortie (par défaut : pour la commission courante si autorisé)#}
+                                        <li>
+                                            <a href="{{ path('creer_sortie') }}" title="">
+                                                proposer une sortie
+                                            </a>
+                                        </li>
+
+                                        {# les sorties que j'ai créé#}
+                                        <li>
+                                            <a href="{{ path('profil_sorties_self') }}" title="sorties que je propose">
+                                                sorties que je propose
+                                            </a>
+                                        </li>
+                                    {% endif %}
+
                                     <li>
-                                        <a href="{{ path('manage_events') }}" title="Approuver les sorties en attente">
-                                            {% set notif_sorties = notifications_counter_sorties() %}
-                                            {% if notif_sorties > 0 %}<span class="notification">{{ notif_sorties }}</span>{% endif %}
-                                            approbation des sorties
+                                        <a href="{{ path('profil_sorties_next') }}" title="">
+                                            mes sorties à venir
                                         </a>
                                     </li>
-                                {% endif %}
-
-                                {% if allowed('evt_legal_accept') %}
-                                    {# valider juridiquement une sortie#}
                                     <li>
-                                        <a href="{{ path('legal_manage_events') }}" title="Valider légalement les sorties">
-                                            {% set notif_president = notifications_counter_sorties_president() %}
-                                            {% if notif_president > 0 %}<span class="notification">{{ notif_president }}</span>{% endif %}
-                                            validation des sorties
+                                        <a href="{{ path('profil_sorties_prev') }}" title="">
+                                            mes sorties passées
                                         </a>
                                     </li>
-                                {% endif %}
+                                </ul>
+                            </div>
 
-                                {% if allowed('evt_create') %}
-                                    {# créer une sortie (par défaut : pour la commission courante si autorisé)#}
-                                    <li>
-                                        <a href="{{ path('creer_sortie') }}" title="">
-                                            proposer une sortie
-                                        </a>
-                                    </li>
-
-                                    {# les sorties que j'ai créé#}
-                                    <li>
-                                        <a href="{{ path('profil_sorties_self') }}" title="sorties que je propose">
-                                            sorties que je propose
-                                        </a>
-                                    </li>
-                                {% endif %}
-
-                                <li>
-                                    <a href="{{ path('profil_sorties_next') }}" title="">
-                                        mes sorties à venir
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ path('profil_sorties_prev') }}" title="">
-                                        mes sorties passées
-                                    </a>
-                                </li>
-                            </ul>
-                        </div>
-
-                        <div class="nav-user">
-                            <p class="menutitle">Outils</p>
-                            <ul>
-                            {% if app.user and caf_id == 'lyon' %}
-                                {% if app.user.hasAttribute(constant('App\\Entity\\UserAttr::ENCADRANT'))
-                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::COENCADRANT'))
-                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::STAGIAIRE'))
-                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::BENEVOLE'))
-                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::SALARIE')) %}
-                                <li>
-                                    <a href="/pages/guide-encadrement.html" title="">
-                                        Guide de l'encadrement
-                                    </a>
-                                </li>
-                                {% endif %}
-                                {% if app.user.hasAttribute(constant('App\\Entity\\UserAttr::RESPONSABLE_COMMISSION'))
-                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::PRESIDENT'))
-                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::VICE_PRESIDENT'))
-                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::SALARIE')) %}
-                                <li>
-                                    <a href="/pages/guide-responsable-commission.html" title="">
-                                        Guide des responsables de commission
-                                    </a>
-                                </li>
-                                {% endif %}
-                            {% endif %}
-                            <li>
-                                <a href="{{ path('profil_alertes') }}" title="">
-                                    mes alertes
-                                </a>
-                            </li>
-                            {% if app.user and caf_id == 'lyon' %}
-                                <li>
-                                    <a href="{{ path('minibus') }}" title="">
-                                        réservation de minibus
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ path('local_club') }}" title="">
-                                        réservation local du Club
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ path('materiel_index') }}" title="">
-                                        réservation de matériel
-                                    </a>
-                                </li>
-                                {% if app.user.hasAttribute(constant('App\\Entity\\UserAttr::BENEVOLE'))
-                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::REDACTEUR'))
-                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::COENCADRANT'))
-                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::STAGIAIRE'))
-                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::ENCADRANT'))
-                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::RESPONSABLE_COMMISSION'))
-                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::VICE_PRESIDENT'))
-                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::PRESIDENT'))
-                                    or app.user.hasAttribute(constant('App\\Entity\\UserAttr::ADMINISTRATEUR')) %}
-                                    <li>
-                                        <a href="https://drive.google.com/drive/shared-drives" title="Tous les fichiers partagés sur Google Drive">
-                                            Drive partagés
-                                        </a>
-                                    </li>
-                                {% endif %}
-                                <li>
-                                    <a href="/pages/tutos-vidos.html" title="Tutoriels vidéo">
-                                        Tutoriels vidéo
-                                    </a>
-                                </li>
-                            {% endif %}
-                            </ul>
-                        </div>
-
-                            {% if allowed('article_create') or allowed('article_validate') or allowed('article_validate_all') %}
-
-                                <div class="nav-user">
-                                    <p class="menutitle">Articles</p>
-
-                                    <ul>
-                                    {% if allowed('article_create') %}
-                                        {% set params = {} %}
-                                        {% if current_commission and current_commission is instanceof('App\\Entity\\Commission') %}
-                                            {% set params = {'commission': current_commission.code} %}
+                            <div class="nav-user">
+                                <p class="menutitle">Outils</p>
+                                <ul>
+                                    {% if app.user and caf_id == 'lyon' %}
+                                        {% if app.user.hasAttribute(constant('App\\Entity\\UserAttr::ENCADRANT'))
+                                            or app.user.hasAttribute(constant('App\\Entity\\UserAttr::COENCADRANT'))
+                                            or app.user.hasAttribute(constant('App\\Entity\\UserAttr::STAGIAIRE'))
+                                            or app.user.hasAttribute(constant('App\\Entity\\UserAttr::BENEVOLE'))
+                                            or app.user.hasAttribute(constant('App\\Entity\\UserAttr::SALARIE')) %}
+                                            <li>
+                                                <a href="/pages/guide-encadrement.html" title="">
+                                                    Guide de l'encadrement
+                                                </a>
+                                            </li>
                                         {% endif %}
+                                        {% if app.user.hasAttribute(constant('App\\Entity\\UserAttr::RESPONSABLE_COMMISSION'))
+                                            or app.user.hasAttribute(constant('App\\Entity\\UserAttr::PRESIDENT'))
+                                            or app.user.hasAttribute(constant('App\\Entity\\UserAttr::VICE_PRESIDENT'))
+                                            or app.user.hasAttribute(constant('App\\Entity\\UserAttr::SALARIE')) %}
+                                            <li>
+                                                <a href="/pages/guide-responsable-commission.html" title="">
+                                                    Guide des responsables de commission
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    {% endif %}
+                                <li>
+                                    <a href="{{ path('profil_alertes') }}" title="">
+                                        mes alertes
+                                    </a>
+                                </li>
+                                {% if app.user and caf_id == 'lyon' %}
+                                    <li>
+                                        <a href="{{ path('minibus') }}" title="">
+                                            réservation de minibus
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ path('local_club') }}" title="">
+                                            réservation local du Club
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ path('materiel_index') }}" title="">
+                                            réservation de matériel
+                                        </a>
+                                    </li>
+                                    {% if app.user.hasAttribute(constant('App\\Entity\\UserAttr::BENEVOLE'))
+                                        or app.user.hasAttribute(constant('App\\Entity\\UserAttr::REDACTEUR'))
+                                        or app.user.hasAttribute(constant('App\\Entity\\UserAttr::COENCADRANT'))
+                                        or app.user.hasAttribute(constant('App\\Entity\\UserAttr::STAGIAIRE'))
+                                        or app.user.hasAttribute(constant('App\\Entity\\UserAttr::ENCADRANT'))
+                                        or app.user.hasAttribute(constant('App\\Entity\\UserAttr::RESPONSABLE_COMMISSION'))
+                                        or app.user.hasAttribute(constant('App\\Entity\\UserAttr::VICE_PRESIDENT'))
+                                        or app.user.hasAttribute(constant('App\\Entity\\UserAttr::PRESIDENT'))
+                                        or app.user.hasAttribute(constant('App\\Entity\\UserAttr::ADMINISTRATEUR')) %}
                                         <li>
-                                        <a href="{{ path('article_new', params) }}" title="">
-                                            rédiger un article
-                                        </a>
-                                    </li>
+                                            <a href="https://drive.google.com/drive/shared-drives" title="Tous les fichiers partagés sur Google Drive">
+                                                Drive partagés
+                                            </a>
+                                        </li>
+                                    {% endif %}
                                     <li>
-                                        <a href="{{ path('profil_articles') }}{{ current_commission and current_commission is instanceof('App\\Entity\\Commission') ? '?commission=' ~ current_commission.code : '' }}" title="">
-                                            mes articles
-                                        </a>
-                                    </li>
-                                {% endif %}
-
-                                {% if allowed('article_validate') or allowed('article_validate_all') %}
-                                    <li>
-                                        <a href="{{ path('manage_articles') }}{{ current_commission and current_commission is instanceof('App\\Entity\\Commission') ? '?commission=' ~ current_commission.code : '' }}" title="">
-                                            {% set notif_article = notifications_counter_articles() %}
-                                            {% if notif_article > 0 %}<span class="notification">{{ notif_article }}</span>{% endif %}
-                                            validation / gestion des articles
+                                        <a href="/pages/tutos-vidos.html" title="Tutoriels vidéo">
+                                            Tutoriels vidéo
                                         </a>
                                     </li>
                                 {% endif %}
                                 </ul>
                             </div>
-                        {% endif %}
 
-                        <br  style="clear:both" />
+                                {% if allowed('article_create') or allowed('article_validate') or allowed('article_validate_all') %}
 
-                        {% if allowed('user_see_all') or allowed('user_create_manually') or allowed('user_updatefiles') or allowed('user_see_status_list') %}
-                            <div class="nav-user">
-                                <p class="menutitle" style="padding-top:13px;">Adhérents</p>
-                                <ul>
-                                {% if allowed('user_see_all') %}
-                                    <li>
-                                        <a href="{{ path('user_list') }}" title="">
-                                        gestion des adhérents
-                                        </a>
-                                    </li>
-                                {% endif %}
+                                    <div class="nav-user">
+                                        <p class="menutitle">Articles</p>
 
-                                {% if allowed('user_create_manually') %}
-                                    <li>
-                                        <a href="{{ path('user_create') }}" title="">
-                                        créer un utilisateur
-                                        </a>
-                                    </li>
-                                {% endif %}
-
-                                {% if allowed('user_see_status_list') %}
-                                    <li>
-                                        <a href="{{ path('user_status_list') }}" title="Responsabilités des adhérents sur le site">
-                                            responsabilités sur le site
-                                        </a>
-                                    </li>
-                                {% endif %}
-                                </ul>
-                            </div>
-                        {% endif %}
-
-                        {% if allowed('comm_create') or allowed('comm_edit') or allowed('comm_desactivate') or allowed('comm_delete') or allowed('commission_list') %}
-                            <div class="nav-user">
-                                <p class="menutitle" style="padding-top:13px;">Commissions</p>
-                                <ul>
-                                {% if allowed('comm_edit') %}
-                                    <li>
-                                        <a href="/gestion-des-commissions.html" title="">
-                                            gestion des commissions
-                                        </a>
-                                    </li>
-                                {% endif %}
-
-                                {% if allowed('comm_create') %}
-                                    <li>
-                                        <a href="/commission-add.html" title="">
-                                            créer une commission
-                                        </a>
-                                    </li>
-                                {% endif %}
-
-                                    {% if allowed('commission_list') %}
+                                        <ul>
+                                        {% if allowed('article_create') %}
+                                            {% set params = {} %}
+                                            {% if current_commission and current_commission is instanceof('App\\Entity\\Commission') %}
+                                                {% set params = {'commission': current_commission.code} %}
+                                            {% endif %}
+                                            <li>
+                                            <a href="{{ path('article_new', params) }}" title="">
+                                                rédiger un article
+                                            </a>
+                                        </li>
                                         <li>
-                                            <a href="{{ path('commission_index') }}" title="">
-                                                mes commissions
+                                            <a href="{{ path('profil_articles') }}{{ current_commission and current_commission is instanceof('App\\Entity\\Commission') ? '?commission=' ~ current_commission.code : '' }}" title="">
+                                                mes articles
+                                            </a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% if allowed('article_validate') or allowed('article_validate_all') %}
+                                        <li>
+                                            <a href="{{ path('manage_articles') }}{{ current_commission and current_commission is instanceof('App\\Entity\\Commission') ? '?commission=' ~ current_commission.code : '' }}" title="">
+                                                {% set notif_article = notifications_counter_articles() %}
+                                                {% if notif_article > 0 %}<span class="notification">{{ notif_article }}</span>{% endif %}
+                                                validation / gestion des articles
                                             </a>
                                         </li>
                                     {% endif %}
@@ -355,78 +293,143 @@
                             </div>
                         {% endif %}
 
-                        {% if allowed('stats_commissions_read') %}
-                            <div class="nav-user">
-                                <p class="menutitle" style="padding-top:13px;">Statistiques</p>
-                                <ul>
-                                {% if allowed('stats_commissions_read') %}
-                                    <li>
-                                        <a href="/stats/commissions.html" title="">
-                                        statistiques par sorties
-                                        </a>
-                                    </li>
-                                {% endif %}
-                                    {% if caf_id == 'lyon' %}
-                                        <li><a href="{{ path('stats_metabase') }}">statistiques sur Metabase</a></li>
-                                    {% endif %}
-                                </ul>
-                            </div>
-                        {% endif %}
-                    </div>
+                            <br  style="clear:both" />
 
-                    <div style="width:290px; float:right; padding:0px 10px 0 0; ">
+                            {% if allowed('user_see_all') or allowed('user_create_manually') or allowed('user_updatefiles') or allowed('user_see_status_list') %}
+                                <div class="nav-user">
+                                    <p class="menutitle" style="padding-top:13px;">Adhérents</p>
+                                    <ul>
+                                    {% if allowed('user_see_all') %}
+                                        <li>
+                                            <a href="{{ path('user_list') }}" title="">
+                                            gestion des adhérents
+                                            </a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% if allowed('user_create_manually') %}
+                                        <li>
+                                            <a href="{{ path('user_create') }}" title="">
+                                            créer un utilisateur
+                                            </a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% if allowed('user_see_status_list') %}
+                                        <li>
+                                            <a href="{{ path('user_status_list') }}" title="Responsabilités des adhérents sur le site">
+                                                responsabilités sur le site
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+
+                            {% if allowed('comm_create') or allowed('comm_edit') or allowed('comm_desactivate') or allowed('comm_delete') or allowed('commission_list') %}
+                                <div class="nav-user">
+                                    <p class="menutitle" style="padding-top:13px;">Commissions</p>
+                                    <ul>
+                                    {% if allowed('comm_edit') %}
+                                        <li>
+                                            <a href="/gestion-des-commissions.html" title="">
+                                                gestion des commissions
+                                            </a>
+                                        </li>
+                                    {% endif %}
+
+                                    {% if allowed('comm_create') %}
+                                        <li>
+                                            <a href="/commission-add.html" title="">
+                                                créer une commission
+                                            </a>
+                                        </li>
+                                    {% endif %}
+
+                                        {% if allowed('commission_list') %}
+                                            <li>
+                                                <a href="{{ path('commission_index') }}" title="">
+                                                    mes commissions
+                                                </a>
+                                            </li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+
+                            {% if allowed('stats_commissions_read') %}
+                                <div class="nav-user">
+                                    <p class="menutitle" style="padding-top:13px;">Statistiques</p>
+                                    <ul>
+                                    {% if allowed('stats_commissions_read') %}
+                                        <li>
+                                            <a href="/stats/commissions.html" title="">
+                                            statistiques par sorties
+                                            </a>
+                                        </li>
+                                    {% endif %}
+                                        {% if caf_id == 'lyon' %}
+                                            <li><a href="{{ path('stats_metabase') }}">statistiques sur Metabase</a></li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div style="width:290px; float:right; padding:0px 10px 0 0; ">
 
                         {{ user_image.user_img(app.user, 'pic', '', 'float:left; max-width: 55px; padding:0 10px 0 0;') }}
 
-                        {% if is_granted('IS_IMPERSONATOR') %}
-                            <p style="border: 2px solid red; border-radius: 5px; font-size: 0.9rem; padding:10px;">
-                                En cours d'impersonification <a href="/?_switch_user=_exit">Quitter</a>
+                            {% if is_granted('IS_IMPERSONATOR') %}
+                                <p style="border: 2px solid red; border-radius: 5px; font-size: 0.9rem; padding:10px;">
+                                    En cours d'impersonification <a href="/?_switch_user=_exit">Quitter</a>
+                                </p>
+                            {% endif %}
+                            <p style="font-family:DIN; font-size: 1.1rem; line-height:20px; white-space:nowrap; padding-top:10px;">
+                                Mon pseudonyme : <br />
+                                <span style="font-family:DINBold; font-size: 1.2rem;">
+                                    <a href="{{ path('user_full', {'id': app.user.id}) }}">
+                                        {{ app.user.getNickname() }}
+                                    </a>
+                                </span>
                             </p>
-                        {% endif %}
-                        <p style="font-family:DIN; font-size: 1.1rem; line-height:20px; white-space:nowrap; padding-top:10px;">
-                            Mon pseudonyme : <br />
-                            <span style="font-family:DINBold; font-size: 1.2rem;">
-                                <a href="{{ path('user_full', {'id': app.user.id}) }}">
-                                    {{ app.user.getNickname() }}
-                                </a>
-                            </span>
-                        </p>
 
-                        {# deconn #}
-                        <a href="{{ path('app_logout') }}" title="" class="nice2">
-                            Me déconnecter
-                        </a>
-                        <br />
-                        {# compte #}
-                        <a href="{{ path('my_profile') }}" title="" class="nice2">
-                            Mon compte
-                        </a>
+                            {# deconn #}
+                            <a href="{{ path('app_logout') }}" title="" class="nice2">
+                                Me déconnecter
+                            </a>
+                            <br />
+                            {# compte #}
+                            <a href="{{ path('my_profile') }}" title="" class="nice2">
+                                Mon compte
+                            </a>
 
-                        {% if app.user.hasAttribute() %}
-                            <p class="status">
-                                Vous êtes <span style="font-family:DINBold">{{ app.user.getAttributes()[0].getTitle() }}</span>
-                                {% if app.user.getAttributes() | length > 1 %}
-                                    <a href="{{ path('my_profile') }}" title="Entre autres choses..." style="font-weight:100; font-family:Arial">[+]</a>
-                                {% endif %}
-                            </p>
-                        {% else %}
-                            <p class="status">Vous êtes connecté en tant qu'<span style="font-family:DINBold">adhérent</span></p>
-                        {% endif %}
-                    </div>
+                            {% if app.user.hasAttribute() %}
+                                <p class="status">
+                                    Vous êtes <span style="font-family:DINBold">{{ app.user.getAttributes()[0].getTitle() }}</span>
+                                    {% if app.user.getAttributes() | length > 1 %}
+                                        <a href="{{ path('my_profile') }}" title="Entre autres choses..." style="font-weight:100; font-family:Arial">[+]</a>
+                                    {% endif %}
+                                </p>
+                            {% else %}
+                                <p class="status">Vous êtes connecté en tant qu'<span style="font-family:DINBold">adhérent</span></p>
+                            {% endif %}
+                        </div>
 
-                {% endif %}
-                <br style="clear:both" />
-            </div>
-        </nav>
+                    {% endif %}
+                    <br style="clear:both" />
+                </div>
+            </nav>
+        </div>
+    </header>
+    <div id="top-openers">
+        <div class="sitewidth">
+            <span class="opener" style="left:480px;"><img src="/img/opener-commission.png" alt="" title="" /></span>
+            <span class="opener" style="left:630px;"><img src="/img/opener-navigation.png" alt="" title="" /></span>
+            <span class="opener" style="left:820px;"><img src="/img/opener-user.png" alt="" title="" /></span>
+        </div>
     </div>
-</header>
-<div id="top-openers">
-    <div class="sitewidth">
-        <span class="opener" style="left:480px;"><img src="/img/opener-commission.png" alt="" title="" /></span>
-        <span class="opener" style="left:630px;"><img src="/img/opener-navigation.png" alt="" title="" /></span>
-        <span class="opener" style="left:820px;"><img src="/img/opener-user.png" alt="" title="" /></span>
-    </div>
-</div>
 
-{# balise a : permet de focaliser dessus = masquer les menu dans une navigation au clavier / voir js/onready-site.js #}
-<a href="javascript:void(0)" id="top-hider"></a>
+    {# balise a : permet de focaliser dessus = masquer les menu dans une navigation au clavier / voir js/onready-site.js #}
+    <a href="javascript:void(0)" id="top-hider"></a>
+{% endif %}
