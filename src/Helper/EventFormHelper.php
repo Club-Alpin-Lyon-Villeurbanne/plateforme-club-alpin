@@ -58,7 +58,7 @@ class EventFormHelper
         return $builder;
     }
 
-    public function specificMandatoryFields(FormBuilderInterface $builder, ?Commission $commission): FormBuilderInterface
+    public function specificMandatoryFields(FormBuilderInterface $builder, ?Commission $commission, ?Evt $event = null): FormBuilderInterface
     {
         $mandatoryFields = [];
         if ($commission instanceof Commission) {
@@ -82,6 +82,7 @@ class EventFormHelper
             ->add('difficulte', TextType::class, [
                 'label' => 'Difficulté, niveau',
                 'required' => $difficulteRequired,
+                'data' => $event ? $event->getDifficulte() : null,
                 'attr' => [
                     'placeholder' => 'ex : PD, 5d+, exposé, ...',
                     'maxlength' => 50,
@@ -96,6 +97,7 @@ class EventFormHelper
             ->add('distance', TextType::class, [
                 'label' => 'Distance',
                 'required' => $distanceRequired,
+                'data' => $event ? $event->getDistance() : null,
                 'attr' => [
                     'placeholder' => 'ex : 13.50',
                     'maxlength' => 50,
@@ -114,6 +116,7 @@ class EventFormHelper
             ->add('denivele', TextType::class, [
                 'label' => 'Dénivelé positif',
                 'required' => $deniveleRequired,
+                'data' => $event ? $event->getDenivele() : null,
                 'attr' => [
                     'placeholder' => 'ex : 1200',
                     'maxlength' => 50,

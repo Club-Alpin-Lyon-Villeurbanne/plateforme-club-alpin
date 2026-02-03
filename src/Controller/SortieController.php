@@ -82,6 +82,7 @@ class SortieController extends AbstractController
         /** @var User $user */
         $user = $this->getUser();
         $isUpdate = true;
+        $isDuplicate = false;
         $commission = $commissionRepository->findOneBy(['code' => $request->query->get('commission')]);
 
         if (!$event instanceof Evt) {
@@ -106,6 +107,7 @@ class SortieController extends AbstractController
             $commission = $event->getCommission();
             $event = $this->duplicate($request, $event, $mode);
             $isUpdate = false;
+            $isDuplicate = true;
         }
 
         if (!$isUpdate && !$this->isGranted('SORTIE_CREATE', $commission)) {
@@ -277,6 +279,7 @@ class SortieController extends AbstractController
             'commissions' => $availableCommissions,
             'current_commission' => $commission,
             'form_action' => $isUpdate ? $this->generateUrl('modifier_sortie', ['event' => $event->getId()]) : $this->generateUrl('creer_sortie'),
+            'is_duplicate' => $isDuplicate,
         ];
     }
 

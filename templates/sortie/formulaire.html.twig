@@ -267,7 +267,7 @@
         document.addEventListener('DOMContentLoaded', function () {
             {% if is_update is same as (true) %}
                 initParticipantsCheckboxes(document);
-            {% else %}
+            {% elseif is_duplicate is same as (false) %}
                 switchCommission(document);
             {% endif %}
             searchCommunes(document);
@@ -334,7 +334,7 @@
 
         document.getElementById('event_form').addEventListener('submit', function (e) {
             let prefix = 'form';
-            {% if is_update %}
+            {% if is_update or is_duplicate %}
                 prefix = 'event';
             {% endif %}
 

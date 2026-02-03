@@ -279,7 +279,7 @@ class EventType extends AbstractType
             ])
         ;
         // champs obligatoires selon la commission
-        $builder = $this->eventFormHelper->specificMandatoryFields($builder, $commission);
+        $builder = $this->eventFormHelper->specificMandatoryFields($builder, $commission, $event);
         $builder
             ->add('matos', TextareaType::class, [
                 'label' => 'Matériel nécessaire',
