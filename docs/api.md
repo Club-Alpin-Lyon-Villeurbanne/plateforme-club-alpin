@@ -14,8 +14,8 @@ https://[votre-domaine]/api
 
 L'API utilise l'authentification JWT (JSON Web Tokens). Vous devez être authentifié pour accéder aux endpoints.
 
-```bash
-# Obtenir un token JWT (à implémenter selon votre système d'authentification)
+### Obtenir un token JWT
+```http
 POST /api/auth
 Content-Type: application/json
 
@@ -24,6 +24,38 @@ Content-Type: application/json
   "password": "motdepasse"
 }
 ```
+
+**Réponse (200) :**
+```json
+{
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...",
+  "refresh_token": "abc123def456..."
+}
+```
+
+### Rafraîchir un token
+```http
+POST /api/token/refresh
+Content-Type: application/json
+
+{
+  "refresh_token": "abc123def456..."
+}
+```
+
+**Réponse (200) :**
+```json
+{
+  "token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9...",
+  "refresh_token": "xyz789..."
+}
+```
+
+### Durée de validité
+- **Token JWT** : Configuré via `JWT_TOKEN_TTL` (variable d'environnement)
+- **Refresh token** : 90 jours
+
+### Utilisation du token
 
 Incluez le token dans l'en-tête Authorization pour les requêtes suivantes :
 
@@ -142,14 +174,29 @@ GET /api/utilisateurs/{id}
 
 ### 💰 Notes de frais
 
-#### Liste des notes de frais
+#### Liste des notes de frais (utilisateur connecté)
 ```http
 GET /api/notes-de-frais
 ```
 
+Retourne uniquement les notes de frais de l'utilisateur connecté.
+
 **Paramètres de requête :**
 - `event` : Filtrer par ID de sortie
-- `inclure_brouillons` : Inclure les brouillons (true/false)
+- `pagination` : `false` pour désactiver la pagination
+
+#### Liste des notes de frais (admin/comptabilité)
+```http
+GET /api/admin/notes-de-frais
+```
+
+Retourne toutes les notes de frais de tous les utilisateurs. Réservé aux administrateurs et aux utilisateurs ayant le droit `manage_expense_reports`.
+
+**Sécurité :** `ROLE_ADMIN` ou droit `manage_expense_reports`
+
+**Paramètres de requête :**
+- `event` : Filtrer par ID de sortie
+- `pagination` : `false` pour désactiver la pagination
 
 **Réponse exemple :**
 ```json
