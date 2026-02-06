@@ -193,4 +193,84 @@ class EventJoiningAddVoterTest extends TestCase
         $res = $voter->vote($token, $event, ['EVENT_JOINING_ADD']);
         $this->assertSame(Voter::ACCESS_GRANTED, $res);
     }
+
+    public function testDeniesWhenNoMatchingCondition(): void
+    {
+        $commission = $this->createMock(Commission::class);
+        $userRights = $this->createMock(UserRights::class);
+        $userRights->method('allowed')->willReturn(false);
+        $userRights->method('allowedOnCommission')->willReturn(false);
+        $security = $this->createMock(Security::class);
+        $voter = new EventJoiningAddVoter($userRights, $security);
+
+        $user = $this->createMock(User::class);
+        $user->method('hasAttribute')->willReturn(false);
+        $token = $this->getToken($user);
+
+        $event = $this->getMockBuilder('App\\Entity\\Evt')
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getCancelled', 'getUser', 'getCommission', 'getEncadrants'])
+            ->getMock();
+        $event->method('getCancelled')->willReturn(false);
+        $event->method('getUser')->willReturn($this->createMock(User::class));
+        $event->method('getCommission')->willReturn($commission);
+        $event->method('getEncadrants')->willReturn([]);
+
+        $res = $voter->vote($token, $event, ['EVENT_JOINING_ADD']);
+        $this->assertSame(Voter::ACCESS_DENIED, $res);
+    }
+
+    public function testGrantsWhenResponsableWithCommissionUnjoinRight(): void
+    {
+        $commission = $this->createMock(Commission::class);
+        $userRights = $this->createMock(UserRights::class);
+        $userRights->method('allowed')->willReturn(false);
+        $userRights->method('allowedOnCommission')->willReturnCallback(
+            fn ($code) => 'evt_unjoin_notme' === $code
+        );
+
+        $security = $this->createMock(Security::class);
+        $voter = new EventJoiningAddVoter($userRights, $security);
+
+        $user = $this->createMock(User::class);
+        $user->method('hasAttribute')->willReturnCallback(function ($attr, $param = null) use ($commission) {
+            return UserAttr::RESPONSABLE_COMMISSION === $attr && $param === $commission;
+        });
+        $token = $this->getToken($user);
+
+        $event = $this->getMockBuilder('App\\Entity\\Evt')
+            ->disableOriginalConstructor()
+            ->onlyMethods(['getCancelled', 'getUser', 'getCommission', 'getEncadrants'])
+            ->getMock();
+        $event->method('getCancelled')->willReturn(false);
+        $event->method('getUser')->willReturn($this->createMock(User::class));
+        $event->method('getCommission')->willReturn($commission);
+        $event->method('getEncadrants')->willReturn([]);
+
+        $res = $voter->vote($token, $event, ['EVENT_JOINING_ADD']);
+        $this->assertSame(Voter::ACCESS_GRANTED, $res);
+    }
+
+    public function testAbstainsForNonEvtSubject(): void
+    {
+        $userRights = $this->createMock(UserRights::class);
+        $security = $this->createMock(Security::class);
+        $voter = new EventJoiningAddVoter($userRights, $security);
+
+        $user = $this->createMock(User::class);
+        $res = $voter->vote($this->getToken($user), new \stdClass(), ['EVENT_JOINING_ADD']);
+        $this->assertSame(Voter::ACCESS_ABSTAIN, $res);
+    }
+
+    public function testAbstainsForWrongAttribute(): void
+    {
+        $userRights = $this->createMock(UserRights::class);
+        $security = $this->createMock(Security::class);
+        $voter = new EventJoiningAddVoter($userRights, $security);
+
+        $user = $this->createMock(User::class);
+        $event = $this->getMockBuilder('App\\Entity\\Evt')->disableOriginalConstructor()->getMock();
+        $res = $voter->vote($this->getToken($user), $event, ['SOME_OTHER_ATTRIBUTE']);
+        $this->assertSame(Voter::ACCESS_ABSTAIN, $res);
+    }
 }

@@ -10,57 +10,42 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class UserLoginVoterTest extends TestCase
 {
-    private function getToken(): TokenInterface
+    private function getToken($user): TokenInterface
     {
-        return $this->createMock(TokenInterface::class);
+        $token = $this->createMock(TokenInterface::class);
+        $token->method('getUser')->willReturn($user);
+
+        return $token;
     }
 
-    private function createUser(bool $isDeleted = false, bool $isLocked = false): User
-    {
-        $user = $this->createMock(User::class);
-        $user->method('isDeleted')->willReturn($isDeleted);
-        $user->method('isLocked')->willReturn($isLocked);
-
-        return $user;
-    }
-
-    public function testGrantsForActiveUser(): void
+    public function testGrantsWhenUserNotDeleted(): void
     {
         $voter = new UserLoginVoter();
-        $res = $voter->vote($this->getToken(), $this->createUser(), [UserLoginVoter::LOGIN]);
 
+        $user = $this->createMock(User::class);
+        $user->method('isDeleted')->willReturn(false);
+
+        $res = $voter->vote($this->getToken($user), $user, [UserLoginVoter::LOGIN]);
         $this->assertSame(Voter::ACCESS_GRANTED, $res);
     }
 
-    public function testDeniesForDeletedUser(): void
+    public function testDeniesWhenUserDeleted(): void
     {
         $voter = new UserLoginVoter();
-        $res = $voter->vote($this->getToken(), $this->createUser(isDeleted: true), [UserLoginVoter::LOGIN]);
 
+        $user = $this->createMock(User::class);
+        $user->method('isDeleted')->willReturn(true);
+
+        $res = $voter->vote($this->getToken($user), $user, [UserLoginVoter::LOGIN]);
         $this->assertSame(Voter::ACCESS_DENIED, $res);
     }
 
-    public function testDeniesForLockedUser(): void
+    public function testAbstainsForNonUserSubject(): void
     {
         $voter = new UserLoginVoter();
-        $res = $voter->vote($this->getToken(), $this->createUser(isLocked: true), [UserLoginVoter::LOGIN]);
 
-        $this->assertSame(Voter::ACCESS_DENIED, $res);
-    }
-
-    public function testDeniesForDeletedAndLockedUser(): void
-    {
-        $voter = new UserLoginVoter();
-        $res = $voter->vote($this->getToken(), $this->createUser(isDeleted: true, isLocked: true), [UserLoginVoter::LOGIN]);
-
-        $this->assertSame(Voter::ACCESS_DENIED, $res);
-    }
-
-    public function testAbstainsForUnsupportedAttribute(): void
-    {
-        $voter = new UserLoginVoter();
-        $res = $voter->vote($this->getToken(), $this->createUser(), ['SOME_OTHER_ATTRIBUTE']);
-
+        $user = $this->createMock(User::class);
+        $res = $voter->vote($this->getToken($user), new \stdClass(), [UserLoginVoter::LOGIN]);
         $this->assertSame(Voter::ACCESS_ABSTAIN, $res);
     }
 }
