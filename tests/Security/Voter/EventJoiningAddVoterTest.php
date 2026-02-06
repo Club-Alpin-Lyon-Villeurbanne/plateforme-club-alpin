@@ -173,22 +173,11 @@ class EventJoiningAddVoterTest extends TestCase
         });
         $token = $this->getToken($user);
 
-        $participation = new class($user) {
-            public function __construct(private $u)
-            {
-            }
-
-            public function getUser()
-            {
-                return $this->u;
-            }
-        };
-
         $event = $this->getMockBuilder('App\\Entity\\Evt')->disableOriginalConstructor()->onlyMethods(['getCancelled', 'getUser', 'getCommission', 'getEncadrants'])->getMock();
         $event->method('getCancelled')->willReturn(false);
         $event->method('getUser')->willReturn($this->createMock(User::class));
         $event->method('getCommission')->willReturn($commission);
-        $event->method('getEncadrants')->willReturn([$participation]);
+        $event->method('getEncadrants')->willReturn([]);
 
         $res = $voter->vote($token, $event, ['EVENT_JOINING_ADD']);
         $this->assertSame(Voter::ACCESS_GRANTED, $res);

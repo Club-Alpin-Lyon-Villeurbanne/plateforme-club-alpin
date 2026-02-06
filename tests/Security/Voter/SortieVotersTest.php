@@ -3,6 +3,7 @@
 namespace App\Tests\Security\Voter;
 
 use App\Entity\Commission;
+use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\User;
 use App\Entity\UserAttr;
@@ -73,18 +74,12 @@ class SortieVotersTest extends TestCase
         return $event;
     }
 
-    private function makeEncadrant(User $user): object
+    private function makeEncadrant(User $user): EventParticipation
     {
-        return new class($user) {
-            public function __construct(private $u)
-            {
-            }
+        $participation = $this->createMock(EventParticipation::class);
+        $participation->method('getUser')->willReturn($user);
 
-            public function getUser()
-            {
-                return $this->u;
-            }
-        };
+        return $participation;
     }
 
     // ==========================================
