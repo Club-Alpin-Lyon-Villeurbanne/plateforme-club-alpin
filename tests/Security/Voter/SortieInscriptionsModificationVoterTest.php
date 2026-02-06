@@ -31,9 +31,9 @@ class SortieInscriptionsModificationVoterTest extends TestCase
         $security->method('isGranted')->with(SecurityConstants::ROLE_ADMIN)->willReturn($isAdmin);
 
         $userRights = $this->createMock(UserRights::class);
-        $userRights->method('allowed')->willReturnCallback(fn ($right) => \in_array($right, $allowedRights, true));
+        $userRights->method('allowed')->willReturnCallback(static fn ($right) => \in_array($right, $allowedRights, true));
         $userRights->method('allowedOnCommission')->willReturnCallback(
-            fn ($right, $commission) => \in_array($right, $commissionRights, true)
+            static fn ($right, $commission) => \in_array($right, $commissionRights, true)
         );
 
         return new SortieInscriptionsModificationVoter($userRights, $security);
@@ -100,7 +100,7 @@ class SortieInscriptionsModificationVoterTest extends TestCase
     {
         $voter = $this->createVoter();
         $user = $this->createMock(User::class);
-        $user->method('hasAttribute')->willReturnCallback(fn ($attr) => UserAttr::SALARIE === $attr);
+        $user->method('hasAttribute')->willReturnCallback(static fn ($attr) => UserAttr::SALARIE === $attr);
         $event = $this->createEvent();
 
         $res = $voter->vote($this->getToken($user), $event, ['SORTIE_INSCRIPTIONS_MODIFICATION']);
@@ -136,7 +136,7 @@ class SortieInscriptionsModificationVoterTest extends TestCase
         $voter = $this->createVoter(allowedRights: ['evt_join_notme']);
         $user = $this->createMock(User::class);
         $user->method('hasAttribute')->willReturnCallback(
-            fn ($attr, $com = null) => UserAttr::RESPONSABLE_COMMISSION === $attr && $com === $commission
+            static fn ($attr, $com = null) => UserAttr::RESPONSABLE_COMMISSION === $attr && $com === $commission
         );
         $event = $this->createEvent(commission: $commission);
 
@@ -182,7 +182,7 @@ class SortieInscriptionsModificationVoterTest extends TestCase
         $voter = $this->createVoter(commissionRights: ['evt_unjoin_notme']);
         $user = $this->createMock(User::class);
         $user->method('hasAttribute')->willReturnCallback(
-            fn ($attr, $com = null) => UserAttr::RESPONSABLE_COMMISSION === $attr && $com === $commission
+            static fn ($attr, $com = null) => UserAttr::RESPONSABLE_COMMISSION === $attr && $com === $commission
         );
         $event = $this->createEvent(commission: $commission);
 
@@ -197,7 +197,7 @@ class SortieInscriptionsModificationVoterTest extends TestCase
         $voter = $this->createVoter(commissionRights: ['evt_joining_accept']);
         $user = $this->createMock(User::class);
         $user->method('hasAttribute')->willReturnCallback(
-            fn ($attr, $com = null) => UserAttr::RESPONSABLE_COMMISSION === $attr && $com === $commission
+            static fn ($attr, $com = null) => UserAttr::RESPONSABLE_COMMISSION === $attr && $com === $commission
         );
         $event = $this->createEvent(commission: $commission);
 
@@ -212,7 +212,7 @@ class SortieInscriptionsModificationVoterTest extends TestCase
         $voter = $this->createVoter(commissionRights: ['evt_joining_refuse']);
         $user = $this->createMock(User::class);
         $user->method('hasAttribute')->willReturnCallback(
-            fn ($attr, $com = null) => UserAttr::RESPONSABLE_COMMISSION === $attr && $com === $commission
+            static fn ($attr, $com = null) => UserAttr::RESPONSABLE_COMMISSION === $attr && $com === $commission
         );
         $event = $this->createEvent(commission: $commission);
 

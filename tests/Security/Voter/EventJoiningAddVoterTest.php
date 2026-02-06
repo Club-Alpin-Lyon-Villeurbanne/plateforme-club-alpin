@@ -155,7 +155,7 @@ class EventJoiningAddVoterTest extends TestCase
     {
         $commission = $this->createMock(Commission::class);
         $userRights = $this->createMock(UserRights::class);
-        $userRights->method('allowed')->willReturnCallback(function ($code) {
+        $userRights->method('allowed')->willReturnCallback(static function ($code) {
             return 'evt_join_notme' === $code;
         });
         $userRights->method('allowedOnCommission')->with('evt_unjoin_notme', $commission)->willReturn(false);
@@ -164,7 +164,7 @@ class EventJoiningAddVoterTest extends TestCase
         $voter = new EventJoiningAddVoter($userRights, $security);
 
         $user = $this->createMock(User::class);
-        $user->method('hasAttribute')->willReturnCallback(function ($attr, $param = null) use ($commission) {
+        $user->method('hasAttribute')->willReturnCallback(static function ($attr, $param = null) use ($commission) {
             if (UserAttr::RESPONSABLE_COMMISSION === $attr && $param === $commission) {
                 return true;
             }
@@ -226,14 +226,14 @@ class EventJoiningAddVoterTest extends TestCase
         $userRights = $this->createMock(UserRights::class);
         $userRights->method('allowed')->willReturn(false);
         $userRights->method('allowedOnCommission')->willReturnCallback(
-            fn ($code) => 'evt_unjoin_notme' === $code
+            static fn ($code) => 'evt_unjoin_notme' === $code
         );
 
         $security = $this->createMock(Security::class);
         $voter = new EventJoiningAddVoter($userRights, $security);
 
         $user = $this->createMock(User::class);
-        $user->method('hasAttribute')->willReturnCallback(function ($attr, $param = null) use ($commission) {
+        $user->method('hasAttribute')->willReturnCallback(static function ($attr, $param = null) use ($commission) {
             return UserAttr::RESPONSABLE_COMMISSION === $attr && $param === $commission;
         });
         $token = $this->getToken($user);

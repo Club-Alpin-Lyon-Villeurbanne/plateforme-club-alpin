@@ -3,7 +3,6 @@
 namespace App\Tests\Security\Voter;
 
 use App\Entity\Commission;
-use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\User;
 use App\Entity\UserAttr;
@@ -60,8 +59,8 @@ class SortieVotersTest extends TestCase
         $event->method('getCommission')->willReturn($commission);
         $event->method('getCancelled')->willReturn($cancelled);
         $event->method('isFinished')->willReturn($finished);
-        $event->method('isPublicStatusValide')->willReturn($publicStatus === Evt::STATUS_PUBLISHED_VALIDE);
-        $event->method('isLegalStatusUnseen')->willReturn($legalStatus === Evt::STATUS_LEGAL_UNSEEN);
+        $event->method('isPublicStatusValide')->willReturn(Evt::STATUS_PUBLISHED_VALIDE === $publicStatus);
+        $event->method('isLegalStatusUnseen')->willReturn(Evt::STATUS_LEGAL_UNSEEN === $legalStatus);
         $event->method('isDraft')->willReturn($isDraft);
         $event->method('getEncadrants')->willReturn($encadrants);
         $event->method('getStatus')->willReturn($publicStatus);
@@ -509,7 +508,7 @@ class SortieVotersTest extends TestCase
     {
         $user = $this->createMock(User::class);
         $userRights = $this->createMock(UserRights::class);
-        $userRights->method('allowed')->willReturnCallback(fn ($code) => 'evt_cancel_own' === $code);
+        $userRights->method('allowed')->willReturnCallback(static fn ($code) => 'evt_cancel_own' === $code);
         $voter = new SortieAnnulationVoter($userRights);
 
         $event = $this->createEvent(creator: $user);
@@ -521,7 +520,7 @@ class SortieVotersTest extends TestCase
     {
         $user = $this->createMock(User::class);
         $userRights = $this->createMock(UserRights::class);
-        $userRights->method('allowed')->willReturnCallback(fn ($code) => 'evt_cancel_own' === $code);
+        $userRights->method('allowed')->willReturnCallback(static fn ($code) => 'evt_cancel_own' === $code);
         $voter = new SortieAnnulationVoter($userRights);
 
         $event = $this->createEvent(encadrants: [$this->makeEncadrant($user)]);
@@ -548,7 +547,7 @@ class SortieVotersTest extends TestCase
         $user = $this->createMock(User::class);
         $commission = $this->createMock(Commission::class);
         $userRights = $this->createMock(UserRights::class);
-        $userRights->method('allowed')->willReturnCallback(fn ($code) => 'evt_cancel_any' === $code);
+        $userRights->method('allowed')->willReturnCallback(static fn ($code) => 'evt_cancel_any' === $code);
         $userRights->method('allowedOnCommission')->willReturn(false);
         $voter = new SortieAnnulationVoter($userRights);
 
@@ -586,7 +585,7 @@ class SortieVotersTest extends TestCase
     {
         $user = $this->createMock(User::class);
         $userRights = $this->createMock(UserRights::class);
-        $userRights->method('allowed')->willReturnCallback(fn ($code) => 'evt_cancel_own' === $code);
+        $userRights->method('allowed')->willReturnCallback(static fn ($code) => 'evt_cancel_own' === $code);
         $voter = new SortieAnnulationVoter($userRights);
 
         $event = $this->createEvent(creator: $user, cancelled: true, publicStatus: Evt::STATUS_PUBLISHED_UNSEEN);

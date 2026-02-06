@@ -182,7 +182,7 @@ class ArticleVotersTest extends TestCase
         $commission = $this->createMock(Commission::class);
 
         $userRights = $this->createMock(UserRights::class);
-        $userRights->method('allowedOnCommission')->willReturnCallback(function ($code) {
+        $userRights->method('allowedOnCommission')->willReturnCallback(static function ($code) {
             return 'article_read' === $code;
         });
         $voter = new ArticleViewVoter($userRights);
@@ -199,7 +199,7 @@ class ArticleVotersTest extends TestCase
 
         $userRights = $this->createMock(UserRights::class);
         $userRights->method('allowedOnCommission')->willReturn(false);
-        $userRights->method('allowed')->willReturnCallback(fn ($code) => 'article_read' === $code);
+        $userRights->method('allowed')->willReturnCallback(static fn ($code) => 'article_read' === $code);
         $voter = new ArticleViewVoter($userRights);
 
         $article = $this->createArticle($owner);
@@ -253,7 +253,7 @@ class ArticleVotersTest extends TestCase
         $owner = $this->createMock(User::class);
 
         $userRights = $this->createMock(UserRights::class);
-        $userRights->method('allowed')->willReturnCallback(fn ($code) => 'article_read' === $code);
+        $userRights->method('allowed')->willReturnCallback(static fn ($code) => 'article_read' === $code);
         $voter = new ArticleViewVoter($userRights);
 
         $article = $this->createArticle($owner);
@@ -271,7 +271,7 @@ class ArticleVotersTest extends TestCase
 
         $userRights = $this->createMock(UserRights::class);
         $userRights->method('allowedOnCommission')->willReturnCallback(
-            fn ($code) => 'article_read' === $code
+            static fn ($code) => 'article_read' === $code
         );
         $voter = new ArticleViewVoter($userRights);
 
@@ -288,7 +288,7 @@ class ArticleVotersTest extends TestCase
 
         $userRights = $this->createMock(UserRights::class);
         $userRights->method('allowedOnCommission')->willReturnCallback(
-            fn ($code) => 'article_validate' === $code
+            static fn ($code) => 'article_validate' === $code
         );
         $voter = new ArticleViewVoter($userRights);
 
@@ -304,7 +304,7 @@ class ArticleVotersTest extends TestCase
 
         $userRights = $this->createMock(UserRights::class);
         $userRights->method('allowedOnCommission')->willReturn(false);
-        $userRights->method('allowed')->willReturnCallback(fn ($code) => 'article_validate_all' === $code);
+        $userRights->method('allowed')->willReturnCallback(static fn ($code) => 'article_validate_all' === $code);
         $voter = new ArticleViewVoter($userRights);
 
         $article = $this->createArticle($owner);
@@ -320,7 +320,7 @@ class ArticleVotersTest extends TestCase
 
         $userRights = $this->createMock(UserRights::class);
         $userRights->method('allowedOnCommission')->willReturnCallback(
-            fn ($code) => 'article_validate' === $code
+            static fn ($code) => 'article_validate' === $code
         );
         $voter = new ArticleViewVoter($userRights);
 
@@ -533,7 +533,7 @@ class ArticleVotersTest extends TestCase
         $user = $this->createMock(User::class);
 
         $userRights = $this->createMock(UserRights::class);
-        $userRights->method('allowed')->willReturnCallback(fn ($code) => 'article_edit' === $code);
+        $userRights->method('allowed')->willReturnCallback(static fn ($code) => 'article_edit' === $code);
         $voter = new ArticleUnpublishVoter($userRights);
 
         $article = $this->createArticle($user);
@@ -564,7 +564,7 @@ class ArticleVotersTest extends TestCase
         $commission = $this->createMock(Commission::class);
 
         $userRights = $this->createMock(UserRights::class);
-        $userRights->method('allowed')->willReturnCallback(fn ($code) => 'article_validate_all' === $code);
+        $userRights->method('allowed')->willReturnCallback(static fn ($code) => 'article_validate_all' === $code);
         $userRights->method('allowedOnCommission')->willReturn(false);
         $voter = new ArticleUnpublishVoter($userRights);
 

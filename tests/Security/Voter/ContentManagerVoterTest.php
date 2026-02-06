@@ -19,8 +19,8 @@ class ContentManagerVoterTest extends TestCase
     {
         $token = $this->createMock(TokenInterface::class);
         $token->method('getUser')->willReturn($user);
-        $token->method('getAttribute')->willReturnCallback(fn ($key) => $attributes[$key] ?? null);
-        $token->method('hasAttribute')->willReturnCallback(fn ($key) => isset($attributes[$key]));
+        $token->method('getAttribute')->willReturnCallback(static fn ($key) => $attributes[$key] ?? null);
+        $token->method('hasAttribute')->willReturnCallback(static fn ($key) => isset($attributes[$key]));
 
         return $token;
     }
