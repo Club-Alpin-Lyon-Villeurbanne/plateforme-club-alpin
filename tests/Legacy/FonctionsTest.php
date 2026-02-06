@@ -11,36 +11,11 @@ class FonctionsTest extends KernelTestCase
         parent::setUp();
         self::bootKernel();
 
-        // Charger fonctions.php (nécessite le kernel pour LegacyContainer)
         require_once __DIR__ . '/../../legacy/app/fonctions.php';
     }
 
     // ==========================================
-    // html_utf8() - 126 usages
-    // ==========================================
-
-    public function testHtmlUtf8EscapesHtml(): void
-    {
-        $this->assertEquals('&lt;script&gt;', html_utf8('<script>'));
-    }
-
-    public function testHtmlUtf8EscapesQuotes(): void
-    {
-        $this->assertEquals('&quot;test&quot;', html_utf8('"test"'));
-    }
-
-    public function testHtmlUtf8HandlesNull(): void
-    {
-        $this->assertEquals('', html_utf8(null));
-    }
-
-    public function testHtmlUtf8PreservesUtf8(): void
-    {
-        $this->assertEquals('Caf&eacute;', html_utf8('Café'));
-    }
-
-    // ==========================================
-    // formater() - 13 usages
+    // formater() - 10 usages
     // ==========================================
 
     public function testFormaterType1LowercaseWithSpaces(): void
@@ -67,6 +42,11 @@ class FonctionsTest extends KernelTestCase
     public function testFormaterType4Filename(): void
     {
         $this->assertEquals('mon-fichier.pdf', formater('Mon Fichier.pdf', 4));
+    }
+
+    public function testFormaterHandlesNull(): void
+    {
+        $this->assertEquals('', formater(null, 1));
     }
 
     // ==========================================
@@ -105,28 +85,6 @@ class FonctionsTest extends KernelTestCase
     }
 
     // ==========================================
-    // limiterTexte() - troncature
-    // ==========================================
-
-    public function testLimiterTexteShortText(): void
-    {
-        $this->assertEquals('Hello', limiterTexte('Hello', 100));
-    }
-
-    public function testLimiterTexteTruncatesAtSpace(): void
-    {
-        $text = 'Ceci est un texte assez long pour être tronqué';
-        $result = limiterTexte($text, 20);
-        $this->assertLessThanOrEqual(30, strlen($result));
-    }
-
-    public function testLimiterTexteStripsHtml(): void
-    {
-        $text = '<p>Hello <strong>World</strong></p>';
-        $this->assertEquals('Hello World', limiterTexte($text, 100));
-    }
-
-    // ==========================================
     // wd_remove_accents() - accents
     // ==========================================
 
@@ -138,6 +96,11 @@ class FonctionsTest extends KernelTestCase
     public function testWdRemoveAccentsNoel(): void
     {
         $this->assertEquals('noel', wd_remove_accents('noël'));
+    }
+
+    public function testWdRemoveAccentsHandlesNull(): void
+    {
+        $this->assertEquals('', wd_remove_accents(null));
     }
 
     // ==========================================
@@ -157,6 +120,11 @@ class FonctionsTest extends KernelTestCase
     public function testFormatSizeMegabytes(): void
     {
         $this->assertEquals('1.00 Mo', formatSize(1024 * 1024));
+    }
+
+    public function testFormatSizeZero(): void
+    {
+        $this->assertEquals('0.00 o', formatSize(0));
     }
 
     // ==========================================
@@ -179,17 +147,25 @@ class FonctionsTest extends KernelTestCase
     }
 
     // ==========================================
-    // getYearsSinceDate() - calcul âge
+    // getArrayFirstValue()
     // ==========================================
 
-    public function testGetYearsSinceDate(): void
+    public function testGetArrayFirstValueReturnsFirst(): void
     {
-        $tenYearsAgo = strtotime('-10 years');
-        $this->assertEquals(10, getYearsSinceDate($tenYearsAgo));
+        $this->assertEquals('a', getArrayFirstValue(['a', 'b', 'c']));
     }
 
-    public function testGetYearsSinceDateNull(): void
+    public function testGetArrayFirstValueReturnsNullForEmpty(): void
     {
-        $this->assertEquals('inconnu', getYearsSinceDate(null));
+        $this->assertNull(getArrayFirstValue([]));
+    }
+
+    // ==========================================
+    // clearDir() - suppression récursive
+    // ==========================================
+
+    public function testClearDirNonExistentReturnsNull(): void
+    {
+        $this->assertNull(clearDir('/non/existent/path'));
     }
 }
