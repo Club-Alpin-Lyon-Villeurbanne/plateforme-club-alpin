@@ -231,7 +231,7 @@ class Evt
     #[Groups('event:read')]
     private ?\DateTimeImmutable $legalStatusChangeDate = null;
 
-    #[ORM\Column(name: 'waiting_seat', type: 'integer', nullable: true, options: ['comment' => "Nombre de place en liste d'attente"])]
+    #[ORM\Column(name: 'waiting_seat', type: 'integer', nullable: true, options: ['comment' => "Nombre de place en liste d'attente", 'unsigned' => true])]
     #[Groups('event:read')]
     #[SerializedName('waitingSeat')]
     private ?int $waitingSeat = null;
