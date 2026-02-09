@@ -30,15 +30,15 @@ class CarbonCostHelper
         ];
     }
 
-    public function calculate(float $nbKm, int $nbPerson, int $nbVehicle, ?TransportModeEnum $transportMode): float
+    public function calculate(float $nbKm, int $nbPerson = 1, int $nbVehicle = 1, ?TransportModeEnum $transportMode = null): float
     {
         $rate = $this->rates[$transportMode?->value ?? TransportModeEnum::PUBLIC_TRAIN->value] ?? 0;
 
         $globalCost = $nbKm * $rate;
         if ($this->isCoefByPerson($transportMode)) {
-            $cost = $globalCost * $nbPerson;
+            $cost = $globalCost * max(1, $nbPerson);
         } else {
-            $cost = $globalCost * $nbVehicle;
+            $cost = $globalCost * max(1, $nbVehicle);
         }
 
         return round($cost, 2);

@@ -140,22 +140,22 @@ class Evt
     #[ORM\Column(name: 'lat_evt', type: 'decimal', precision: 11, scale: 8, nullable: false)]
     #[Groups('event:details')]
     #[SerializedName('latitudeRDV')]
-    private string|float|null $lat;
+    private string|float $lat;
 
     #[ORM\Column(name: 'long_evt', type: 'decimal', precision: 11, scale: 8, nullable: false)]
     #[Groups('event:details')]
     #[SerializedName('longitudeRDV')]
-    private string|float|null $long;
+    private string|float $long;
 
     #[ORM\Column(name: 'start_lat', type: 'decimal', precision: 11, scale: 8, nullable: false)]
     #[Groups('event:details')]
     #[SerializedName('latitudeDepart')]
-    private string|float|null $startLat;
+    private string|float $startLat;
 
     #[ORM\Column(name: 'start_long', type: 'decimal', precision: 11, scale: 8, nullable: false)]
     #[Groups('event:details')]
     #[SerializedName('longitudeDepart')]
-    private string|float|null $startLong;
+    private string|float $startLong;
 
     #[ORM\Column(name: 'matos_evt', type: 'text', nullable: true)]
     #[Groups('event:details')]
@@ -250,9 +250,9 @@ class Evt
     #[Groups('event:read')]
     private ?TransportModeEnum $mainTransportMode = null;
 
-    #[ORM\Column(name: 'nb_vehicle', type: Types::INTEGER, nullable: true)]
+    #[ORM\Column(name: 'nb_vehicle', type: Types::INTEGER, nullable: false, options: ['default' => 1])]
     #[Groups('event:read')]
-    private ?int $nbVehicle = null;
+    private int $nbVehicle;
 
     #[ORM\Column(name: 'nb_km', type: Types::FLOAT, nullable: true)]
     #[Groups('event:read')]
@@ -284,8 +284,9 @@ class Evt
         $this->rdv = $rdv;
         $this->lat = $rdvLat;
         $this->long = $rdvLong;
-        $this->startLat = 0;
-        $this->startLong = 0;
+        $this->startLat = 0.0;
+        $this->startLong = 0.0;
+        $this->nbVehicle = 1;
         $this->description = $description;
         $this->joinMax = $maxInscriptions;
         $this->ngensMax = $maxParticipants;
