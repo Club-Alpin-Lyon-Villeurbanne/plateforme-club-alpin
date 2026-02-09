@@ -714,24 +714,24 @@ class Evt
         return $this;
     }
 
-    public function getLat(): string|float|null
+    public function getLat(): string|float
     {
         return $this->lat;
     }
 
-    public function setLat(string|float|null $lat): self
+    public function setLat(string|float $lat): self
     {
         $this->lat = $lat;
 
         return $this;
     }
 
-    public function getLong(): string|float|null
+    public function getLong(): string|float
     {
         return $this->long;
     }
 
-    public function setLong(string|float|null $long): self
+    public function setLong(string|float $long): self
     {
         $this->long = $long;
 
@@ -954,12 +954,12 @@ class Evt
         return $this;
     }
 
-    public function getNbVehicle(): ?int
+    public function getNbVehicle(): int
     {
         return $this->nbVehicle;
     }
 
-    public function setNbVehicle(?int $nbVehicle): self
+    public function setNbVehicle(int $nbVehicle): self
     {
         $this->nbVehicle = $nbVehicle;
 
@@ -1091,24 +1091,24 @@ class Evt
         return $this;
     }
 
-    public function getStartLat(): float|string|null
+    public function getStartLat(): float|string
     {
         return $this->startLat;
     }
 
-    public function setStartLat(float|string|null $startLat): self
+    public function setStartLat(float|string $startLat): self
     {
         $this->startLat = $startLat;
 
         return $this;
     }
 
-    public function getStartLong(): float|string|null
+    public function getStartLong(): float|string
     {
         return $this->startLong;
     }
 
-    public function setStartLong(float|string|null $startLong): self
+    public function setStartLong(float|string $startLong): self
     {
         $this->startLong = $startLong;
 
