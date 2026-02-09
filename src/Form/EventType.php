@@ -199,7 +199,6 @@ class EventType extends AbstractType
                 'constraints' => [
                     new NotBlank(null, 'La latitude est obligatoire. Avez-vous bien cliqué sur le bouton pour placer le marqueur ?'),
                     new Type(['type' => 'numeric', 'message' => 'La latitude doit être un nombre valide.']),
-                    new GreaterThan(0),
                 ],
             ])
             ->add('long', HiddenType::class, [
@@ -209,7 +208,6 @@ class EventType extends AbstractType
                 'constraints' => [
                     new NotBlank(null, 'La longitude est obligatoire. Avez-vous bien cliqué sur le bouton pour placer le marqueur ?'),
                     new Type(['type' => 'numeric', 'message' => 'La longitude doit être un nombre valide.']),
-                    new GreaterThan(0),
                 ],
             ])
             ->add('startDate', DateTimeType::class, [
@@ -403,7 +401,6 @@ class EventType extends AbstractType
                 'constraints' => [
                     new NotBlank(null, 'La latitude de départ est obligatoire. Avez-vous bien choisi le lieu dans la liste déroulante ?'),
                     new Type(['type' => 'numeric', 'message' => 'La latitude de départ doit être un nombre valide.']),
-                    new GreaterThan(0),
                 ],
             ])
             ->add('startLong', HiddenType::class, [
@@ -413,7 +410,6 @@ class EventType extends AbstractType
                 'constraints' => [
                     new NotBlank(null, 'La longitude de départ est obligatoire. Avez-vous bien choisi le lieu dans la liste déroulante ?'),
                     new Type(['type' => 'numeric', 'message' => 'La longitude de départ doit être un nombre valide.']),
-                    new GreaterThan(0),
                 ],
             ])
         ;

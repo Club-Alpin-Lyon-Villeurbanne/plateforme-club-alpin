@@ -267,16 +267,8 @@ class SortieController extends AbstractController
 
             // bilan carbone
             $nbKm = $distanceHelper->calculate($event);
-            $nbPerson = $event->getParticipationsCount();
-            $carbonCost = $carbonCostHelper->calculate(
-                $nbKm,
-                $nbPerson,
-                $event->getNbVehicle(),
-                $event->getMainTransportMode(),
-            );
             $event->setNbKm($nbKm);
-            $event->setCarbonCost($carbonCost);
-
+            $this->calculateCarbonCost($event, $carbonCostHelper);
             $entityManager->persist($event);
             $entityManager->flush();
 
@@ -616,13 +608,7 @@ class SortieController extends AbstractController
         }
 
         // bilan carbone mis à jour selon nb de participants
-        $carbonCost = $carbonCostHelper->calculate(
-            $event->getNbKm() ?: 0,
-            $event->getParticipationsCount(),
-            $event->getNbVehicle() ?: 1,
-            $event->getMainTransportMode(),
-        );
-        $event->setCarbonCost($carbonCost);
+        $this->calculateCarbonCost($event, $carbonCostHelper);
         $em->persist($event);
         $em->flush();
 
@@ -886,13 +872,7 @@ class SortieController extends AbstractController
         $em->remove($participation);
 
         // bilan carbone mis à jour selon nb de participants
-        $carbonCost = $carbonCostHelper->calculate(
-            $event->getNbKm(),
-            $event->getParticipationsCount(),
-            $event->getNbVehicle(),
-            $event->getMainTransportMode(),
-        );
-        $event->setCarbonCost($carbonCost);
+        $this->calculateCarbonCost($event, $carbonCostHelper);
         $em->persist($event);
         $em->flush();
 
@@ -1167,13 +1147,7 @@ class SortieController extends AbstractController
                 }
 
                 // bilan carbone mis à jour selon nb de participants
-                $carbonCost = $carbonCostHelper->calculate(
-                    $event->getNbKm(),
-                    $current_participants,
-                    $event->getNbVehicle(),
-                    $event->getMainTransportMode(),
-                );
-                $event->setCarbonCost($carbonCost);
+                $this->calculateCarbonCost($event, $carbonCostHelper);
                 $em->persist($event);
                 $em->flush();
 
@@ -1353,5 +1327,16 @@ class SortieController extends AbstractController
             'hideBlankLines' => ('y' === $request->query->get('hide_blank')),
             'pdf' => $isPdf,
         ];
+    }
+
+    protected function calculateCarbonCost(Evt $event, CarbonCostHelper $helper): void
+    {
+        $cost = $helper->calculate(
+            $event->getNbKm() ?: 0,
+            $event->getParticipationsCount(),
+            $event->getNbVehicle() ?: 1,
+            $event->getMainTransportMode(),
+        );
+        $event->setCarbonCost($cost);
     }
 }

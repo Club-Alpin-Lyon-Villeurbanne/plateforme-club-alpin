@@ -365,11 +365,11 @@ services:
 
   App\Helper\CarbonCostHelper:
     arguments:
-      $publicTrainRate: '%env(PUBLIC_TRAIN_CARBON_COST_RATE)%'
-      $publicCoachRate: '%env(PUBLIC_COACH_CARBON_COST_RATE)%'
-      $dedicatedCoachRate: '%env(DEDICATED_COACH_CARBON_COST_RATE)%'
-      $minivanRate: '%env(MINIVAN_CARBON_COST_RATE)%'
-      $bikeWalkRate: '%env(BIKE_OR_WALK_CARBON_COST_RATE)%'
-      $thermicCarpoolingRate: '%env(THERMIC_CARPOOLING_CARBON_COST_RATE)%'
-      $electricCarpoolingRate: '%env(ELECTRIC_CARPOOLING_CARBON_COST_RATE)%'
-      $planeRate: '%env(PLANE_CARBON_COST_RATE)%'
+      $publicTrainRate: '%env(float:PUBLIC_TRAIN_CARBON_COST_RATE)%'
+      $publicCoachRate: '%env(float:PUBLIC_COACH_CARBON_COST_RATE)%'
+      $dedicatedCoachRate: '%env(float:DEDICATED_COACH_CARBON_COST_RATE)%'
+      $minivanRate: '%env(float:MINIVAN_CARBON_COST_RATE)%'
+      $bikeWalkRate: '%env(float:BIKE_OR_WALK_CARBON_COST_RATE)%'
+      $thermicCarpoolingRate: '%env(float:THERMIC_CARPOOLING_CARBON_COST_RATE)%'
+      $electricCarpoolingRate: '%env(float:ELECTRIC_CARPOOLING_CARBON_COST_RATE)%'
+      $planeRate: '%env(float:PLANE_CARBON_COST_RATE)%'
