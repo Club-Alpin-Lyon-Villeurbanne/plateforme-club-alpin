@@ -27,7 +27,7 @@ class DistanceHelper
 
         try {
             $response = $this->httpClient->request(
-                'POST',
+                'GET',
                 $url,
             );
             $data = $response->toArray();
