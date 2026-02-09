@@ -76,9 +76,10 @@ class EventType extends AbstractType
         $appointment = $event->getRdv();
         $lat = $event->getLat();
         $long = $event->getLong();
+
+        // bilan carbone
         $startLat = $event->getStartLat();
         $startLong = $event->getStartLong();
-
         $nbVehicle = $event->getNbVehicle();
 
         $builder
