@@ -427,6 +427,7 @@ class EvtRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('e')
             ->where('e.status = :status')
             ->andWhere('e.statusLegal = :legal')
+            ->andWhere('e.cancelled = false')
             ->andWhere('e.startDate > :dateNow')
             ->andWhere('e.startDate < :dateMax')
             ->setParameter('status', Evt::STATUS_PUBLISHED_VALIDE)
