@@ -530,18 +530,17 @@
                                 <th class="event-manage-user">Contact</th>
 
                                 {% if afficher_competences %}
-                                {% for groupe in groupes_competences %}
-                                    <th class="event-user-skill groupe-comp">
-                                        {{ groupe.intitule }}
-                                    </th>
-                                {% endfor %}
-                                {% for niveau in niveaux %}
-                                    <th class="event-user-skill niveau-pratique">
-                                        {{ niveau.libelle }}
-                                    </th>
-                                {% endfor %}
-                                <th class="event-user-skill formation-generale">STG-UFFG10</th>
-                                <th class="event-user-skill formation-generale">STG-PSC1</th>
+                                    <th class="event-user-skill formation-generale">STG-PSC1</th>
+                                    {% for groupe in groupes_competences %}
+                                        <th class="event-user-skill groupe-comp">
+                                            {{ groupe.intitule }}
+                                        </th>
+                                    {% endfor %}
+                                    {% for niveau in niveaux %}
+                                        <th class="event-user-skill niveau-pratique">
+                                            {{ niveau.libelle }}
+                                        </th>
+                                    {% endfor %}
                                 {% endif %}
                             </tr>
                         </thead>
@@ -813,18 +812,17 @@
                                     </td>
 
                                     {% if afficher_competences %}
-                                    {% for groupe in groupes_competences %}
-                                        <td class="event-user-skill">
-                                            {{ date_competence_user(participation.user, groupe, current_commission) }}
-                                        </td>
-                                    {% endfor %}
-                                    {% for niveau in niveaux %}
-                                        <td class="event-user-skill">
-                                            {{ date_niveau_user(participation.user, niveau, current_commission) }}
-                                        </td>
-                                    {% endfor %}
-                                    <td class="event-user-skill">{{ date_formation_user(participation.user, 'STG-UFFG10') }}</td>
-                                    <td class="event-user-skill">{{ date_formation_user(participation.user, 'STG-PSC1') }}</td>
+                                        <td class="event-user-skill">{{ date_formation_user(participation.user, 'STG-PSC1') }}</td>
+                                        {% for groupe in groupes_competences %}
+                                            <td class="event-user-skill">
+                                                {{ date_competence_user(participation.user, groupe, current_commission) }}
+                                            </td>
+                                        {% endfor %}
+                                        {% for niveau in niveaux %}
+                                            <td class="event-user-skill">
+                                                {{ date_niveau_user(participation.user, niveau, current_commission) }}
+                                            </td>
+                                        {% endfor %}
                                     {% endif %}
                                 </tr>
                             {% endfor %}
