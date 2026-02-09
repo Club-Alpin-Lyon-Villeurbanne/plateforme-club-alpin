@@ -900,7 +900,7 @@ class SortieController extends AbstractController
             $event->getLat(),
             $event->getLong(),
             $event->getDescription(),
-            $event->getJoinMax(),
+            $event->getNgensMax(),
             $event->getNgensMax(),
             new \DateTimeImmutable()
         );
