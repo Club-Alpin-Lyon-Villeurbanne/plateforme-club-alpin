@@ -617,7 +617,9 @@ class UserController extends AbstractController
                 $formattedDate = (!empty($joinDate) ? $joinDate->format('d/m/Y H:i:s') : '');
                 $formattedDate .= (!empty($user->getDiscoveryEndDatetime()) ? ' au ' . $user->getDiscoveryEndDatetime()->format('d/m/Y H:i:s') : '');
             }
-            if ($user->getDoitRenouveler()) {
+            if (in_array($user->getProfileType(), [User::PROFILE_OTHER_CLUB_MEMBER, User::PROFILE_EXTERNAL_PERSON], true)) {
+                $renew = '<span  style="color:orange">Pas de licence au club</span>';
+            } elseif ($user->getDoitRenouveler()) {
                 $renew = '<span  style="color:red" title="' . ($userRights->allowed('user_read_private') ? $formattedDate : '') . '">Licence expirée</span>';
             } else {
                 $renew = ($userRights->allowed('user_read_private') ? $formattedDate : $img_lock);
