@@ -146,6 +146,9 @@ class EventType extends AbstractType
                     'class' => 'type2 wide',
                     'style' => 'width: 97%',
                 ],
+                'constraints' => [
+                    new NotBlank(['message' => 'Veuillez sélectionner le mode de transport principal.']),
+                ],
                 'placeholder' => 'Choisissez un mode de transport principal',
                 'help' => 'Permet d\'aider au calcul du bilan carbone.',
                 'help_attr' => [
