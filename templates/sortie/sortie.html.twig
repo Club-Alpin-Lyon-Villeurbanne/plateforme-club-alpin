@@ -1133,7 +1133,6 @@
             <hr />
             <ul class="nice-list">
                 <li class="wide"><b>NOMBRE MAXIMUM DE PLACES :</b> {{ event.ngensMax }}</li>
-                <li class="wide"><b>DISPONIBLES VIA INTERNET :</b> {{ nPlacesRestantesOnline }}</li>
                 {% if event.waitingSeat and event.waitingSeat > 0 %}
                     {% set waiting_seat_left = event.waitingSeat - nEnAttente  %}
                     <li class="wide"><b>DISPONIBLES EN LISTE D'ATTENTE :</b> {{ waiting_seat_left }}</li>
