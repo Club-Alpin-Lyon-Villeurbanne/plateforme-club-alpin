@@ -32,7 +32,7 @@ class UserRightService
                 $roles['club'][] = $userRight;
             } else {
                 $commission = $this->manager->getRepository(Commission::class)->findOneBy(['code' => $commissionCode]);
-                if (!in_array($commission->getTitle(), array_keys($roles['commission']), true)) {
+                if ($commission instanceof Commission && !in_array($commission->getTitle(), array_keys($roles['commission']), true)) {
                     $roles['commission'][$commission->getTitle()] = $userRight;
                 }
             }
