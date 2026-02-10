@@ -893,7 +893,7 @@ class SortieController extends AbstractController
             $this->getUser(),
             $event->getCommission(),
             $event->getTitre(),
-            $event->getCode(),
+            null,
             null,
             null,
             $event->getRdv(),
