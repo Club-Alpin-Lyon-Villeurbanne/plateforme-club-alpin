@@ -26,7 +26,6 @@ use App\Repository\UserRepository;
 use App\Service\HelloAssoService;
 use App\Service\UserLicenseHelper;
 use App\Twig\JavascriptGlobalsExtension;
-use App\UserRights;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use App\Utils\ExcelExport;
 use App\Utils\PdfGenerator;
@@ -74,19 +73,22 @@ class SortieController extends AbstractController
         Request $request,
         ManagerRegistry $doctrine,
         CommissionRepository $commissionRepository,
-        UserRights $userRights,
         Mailer $mailer,
         ?Evt $event = null,
         ?string $mode = null,
     ): array|RedirectResponse {
         /** @var User $user */
         $user = $this->getUser();
-        $isUpdate = true;
+        $isUpdate = $event instanceof Evt;
         $isDuplicate = false;
         $hasErrors = false;
-        $commission = $commissionRepository->findOneBy(['code' => $request->query->get('commission')]);
+        $commission = $event?->getCommission();
 
         if (!$event instanceof Evt) {
+            if (!$commission instanceof Commission) {
+                $commission = $commissionRepository->findOneBy(['code' => $request->query->get('commission')]);
+            }
+
             $event = new Evt(
                 $user,
                 $commission,
@@ -105,10 +107,18 @@ class SortieController extends AbstractController
             $event->setJoinStartDate(new \DateTimeImmutable());
             $isUpdate = false;
         } elseif (!empty($mode)) {
-            $commission = $event->getCommission();
             $event = $this->duplicate($request, $event, $mode);
+            $commission = $event->getCommission();
             $isUpdate = false;
             $isDuplicate = true;
+        }
+
+        // récupérer la commission sélectionnée dans le formulaire pour la vérif droit d'accès
+        $data = $request->request->all();
+        if (!empty($data['event']) && !empty($data['event']['commission'])) {
+            $commissionId = $data['event']['commission'];
+            $commission = $commissionRepository->find($commissionId);
+            $event->setCommission($commission);
         }
 
         if (!$isUpdate && !$this->isGranted('SORTIE_CREATE', $commission)) {
@@ -180,47 +190,6 @@ class SortieController extends AbstractController
                     }
                 }
             }
-            // retirer les encadrants qui ne sont plus cochés
-            if ($isUpdate && !empty($currentEncadrants)) {
-                foreach ($currentEncadrants as $currentEncadrant) {
-                    if (!in_array($currentEncadrant->getUser()->getId(), $formData['encadrants'], false)) {
-                        $event->removeParticipation($currentEncadrant);
-                    }
-                }
-            }
-            // retirer les stagiaires qui ne sont plus cochés
-            if ($isUpdate && !empty($currentStagiaires)) {
-                if (empty($formData['initiateurs'])) {
-                    $formData['initiateurs'] = [];
-                }
-                foreach ($currentStagiaires as $currentStagiaire) {
-                    if (!in_array($currentStagiaire->getUser()->getId(), $formData['initiateurs'], false)) {
-                        $event->removeParticipation($currentStagiaire);
-                    }
-                }
-            }
-            // retirer les coencadrants qui ne sont plus cochés
-            if ($isUpdate && !empty($currentCoencadrants)) {
-                if (empty($formData['coencadrants'])) {
-                    $formData['coencadrants'] = [];
-                }
-                foreach ($currentCoencadrants as $currentEncadrant) {
-                    if (!in_array($currentEncadrant->getUser()->getId(), $formData['coencadrants'], false)) {
-                        $event->removeParticipation($currentEncadrant);
-                    }
-                }
-            }
-            // retirer les bénévoles d'encadrement qui ne sont plus cochés
-            if ($isUpdate && !empty($currentBenevoles)) {
-                if (empty($formData['benevoles'])) {
-                    $formData['benevoles'] = [];
-                }
-                foreach ($currentBenevoles as $currentBenevole) {
-                    if (!in_array($currentBenevole->getUser()->getId(), $formData['benevoles'], false)) {
-                        $event->removeParticipation($currentBenevole);
-                    }
-                }
-            }
 
             // champs obligatoires selon la commission
             $event->setDifficulte($formData['difficulte']);
@@ -230,6 +199,48 @@ class SortieController extends AbstractController
             if (!$isUpdate) {
                 $event->setCode($this->slugHelper->generateSlug($event->getTitre()));
             } else {
+                // retirer les encadrants qui ne sont plus cochés
+                if (!empty($currentEncadrants)) {
+                    foreach ($currentEncadrants as $currentEncadrant) {
+                        if (!in_array($currentEncadrant->getUser()->getId(), $formData['encadrants'], false)) {
+                            $event->removeParticipation($currentEncadrant);
+                        }
+                    }
+                }
+                // retirer les stagiaires qui ne sont plus cochés
+                if (!empty($currentStagiaires)) {
+                    if (empty($formData['initiateurs'])) {
+                        $formData['initiateurs'] = [];
+                    }
+                    foreach ($currentStagiaires as $currentStagiaire) {
+                        if (!in_array($currentStagiaire->getUser()->getId(), $formData['initiateurs'], false)) {
+                            $event->removeParticipation($currentStagiaire);
+                        }
+                    }
+                }
+                // retirer les coencadrants qui ne sont plus cochés
+                if (!empty($currentCoencadrants)) {
+                    if (empty($formData['coencadrants'])) {
+                        $formData['coencadrants'] = [];
+                    }
+                    foreach ($currentCoencadrants as $currentEncadrant) {
+                        if (!in_array($currentEncadrant->getUser()->getId(), $formData['coencadrants'], false)) {
+                            $event->removeParticipation($currentEncadrant);
+                        }
+                    }
+                }
+                // retirer les bénévoles d'encadrement qui ne sont plus cochés
+                if (!empty($currentBenevoles)) {
+                    if (empty($formData['benevoles'])) {
+                        $formData['benevoles'] = [];
+                    }
+                    foreach ($currentBenevoles as $currentBenevole) {
+                        if (!in_array($currentBenevole->getUser()->getId(), $formData['benevoles'], false)) {
+                            $event->removeParticipation($currentBenevole);
+                        }
+                    }
+                }
+
                 $event->setUpdatedAt(new \DateTime());
 
                 // sortie dépubliée à l'édition (si certains champs sont modifiés seulement)
@@ -269,18 +280,12 @@ class SortieController extends AbstractController
             $hasErrors = true;
         }
 
-        $availableCommissions = array_filter(
-            iterator_to_array($commissionRepository->findVisible()),
-            fn (Commission $commission) => $userRights->allowedOnCommission('evt_create', $commission),
-        );
-
         return [
             'form' => $form,
             'title' => $isUpdate ? 'Modifier une sortie' : 'Proposer une sortie',
             'is_update' => $isUpdate,
             'commission' => $isUpdate ? $event->getCommission()->getTitle() : '',
             'event' => $event,
-            'commissions' => $availableCommissions,
             'current_commission' => $commission,
             'form_action' => $isUpdate ? $this->generateUrl('modifier_sortie', ['event' => $event->getId()]) : $this->generateUrl('creer_sortie'),
             'is_duplicate' => $isDuplicate,

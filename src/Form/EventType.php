@@ -82,6 +82,7 @@ class EventType extends AbstractType
                     iterator_to_array($this->commissionRepository->findVisible()),
                     fn (Commission $commission) => $this->userRights->allowedOnCommission('evt_create', $commission),
                 ),
+                'data' => $commission,
                 'label' => 'Sortie liée à la commission',
                 'placeholder' => 'Choisissez une commission',
                 'required' => true,
