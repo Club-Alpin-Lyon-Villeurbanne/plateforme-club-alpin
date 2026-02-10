@@ -82,7 +82,7 @@ class EventFormHelper
             ->add('difficulte', TextType::class, [
                 'label' => 'Difficulté, niveau',
                 'required' => $difficulteRequired,
-                'data' => $event ? $event->getDifficulte() : null,
+                'data' => $event?->getDifficulte(),
                 'attr' => [
                     'placeholder' => 'ex : PD, 5d+, exposé, ...',
                     'maxlength' => 50,
@@ -97,7 +97,7 @@ class EventFormHelper
             ->add('distance', TextType::class, [
                 'label' => 'Distance',
                 'required' => $distanceRequired,
-                'data' => $event ? $event->getDistance() : null,
+                'data' => $event?->getDistance(),
                 'attr' => [
                     'placeholder' => 'ex : 13.50',
                     'maxlength' => 50,
@@ -116,7 +116,7 @@ class EventFormHelper
             ->add('denivele', TextType::class, [
                 'label' => 'Dénivelé positif',
                 'required' => $deniveleRequired,
-                'data' => $event ? $event->getDenivele() : null,
+                'data' => $event?->getDenivele(),
                 'attr' => [
                     'placeholder' => 'ex : 1200',
                     'maxlength' => 50,
