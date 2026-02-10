@@ -12,10 +12,12 @@ use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
 
 /**
- * Gère le filtrage des notes de frais :
+ * Gère le filtrage et l'optimisation des notes de frais :
  * - Par défaut : filtré par l'utilisateur connecté (sécurité par défaut)
  * - /admin/notes-de-frais : pas de filtrage (réservé aux admins/gestionnaires via security)
  * - Exclut les brouillons par défaut (sauf si inclure_brouillons=true)
+ * - Eager loading des relations pour éviter le problème N+1
+ * - Tri par défaut : created_at DESC
  */
 final class ExpenseReportExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
 {
@@ -55,6 +57,13 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
         $rootAlias = $queryBuilder->getRootAliases()[0];
         $user = $this->security->getUser();
 
+        // 0. Eager loading des relations pour éviter N+1 queries
+        // Charge user et event en un seul SELECT avec des JOINs
+        $queryBuilder
+            ->addSelect('user', 'event')
+            ->leftJoin(sprintf('%s.user', $rootAlias), 'user')
+            ->leftJoin(sprintf('%s.event', $rootAlias), 'event');
+
         // 1. Filtrage par utilisateur (sauf sur /admin/notes-de-frais)
         if ('/admin/notes-de-frais' !== $operation?->getUriTemplate() && $user) {
             $queryBuilder->andWhere(sprintf('%s.user = :current_user', $rootAlias))
@@ -69,5 +78,9 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
             $queryBuilder->andWhere(sprintf('%s.status != :draft_status', $rootAlias))
                 ->setParameter('draft_status', ExpenseReportStatusEnum::DRAFT->value);
         }
+
+        // 3. Tri par défaut : plus récentes en premier
+        // Les index créés dans la migration optimiseront ce tri
+        $queryBuilder->orderBy(sprintf('%s.createdAt', $rootAlias), 'DESC');
     }
 }
