@@ -25,63 +25,6 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class SortieVotersTest extends TestCase
 {
-    private function getToken($user): TokenInterface
-    {
-        $token = $this->createMock(TokenInterface::class);
-        $token->method('getUser')->willReturn($user);
-
-        return $token;
-    }
-
-    private function createEvent(
-        ?User $creator = null,
-        ?Commission $commission = null,
-        bool $cancelled = false,
-        bool $finished = false,
-        int $publicStatus = Evt::STATUS_PUBLISHED_VALIDE,
-        int $legalStatus = Evt::STATUS_LEGAL_UNSEEN,
-        bool $isDraft = false,
-        array $encadrants = [],
-        bool $hasExpenseReports = false,
-        bool $joinStarted = true,
-        array $participations = [],
-    ): Evt {
-        $event = $this->getMockBuilder(Evt::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods([
-                'getUser', 'getCommission', 'getCancelled', 'isFinished',
-                'isPublicStatusValide', 'isLegalStatusUnseen', 'isDraft',
-                'getEncadrants', 'getExpenseReports', 'getStatus', 'joinHasStarted',
-                'getParticipations',
-            ])
-            ->getMock();
-
-        $event->method('getUser')->willReturn($creator);
-        $event->method('getCommission')->willReturn($commission);
-        $event->method('getCancelled')->willReturn($cancelled);
-        $event->method('isFinished')->willReturn($finished);
-        $event->method('isPublicStatusValide')->willReturn(Evt::STATUS_PUBLISHED_VALIDE === $publicStatus);
-        $event->method('isLegalStatusUnseen')->willReturn(Evt::STATUS_LEGAL_UNSEEN === $legalStatus);
-        $event->method('isDraft')->willReturn($isDraft);
-        $event->method('getEncadrants')->willReturn($encadrants);
-        $event->method('getStatus')->willReturn($publicStatus);
-        $event->method('joinHasStarted')->willReturn($joinStarted);
-        $event->method('getParticipations')->willReturn(new ArrayCollection($participations));
-
-        $reports = new ArrayCollection($hasExpenseReports ? [new \stdClass()] : []);
-        $event->method('getExpenseReports')->willReturn($reports);
-
-        return $event;
-    }
-
-    private function makeEncadrant(User $user): EventParticipation
-    {
-        $participation = $this->createMock(EventParticipation::class);
-        $participation->method('getUser')->willReturn($user);
-
-        return $participation;
-    }
-
     // ==========================================
     // SortieCreateVoter
     // ==========================================
@@ -962,5 +905,64 @@ class SortieVotersTest extends TestCase
 
         $user = $this->createMock(User::class);
         $voter->vote($this->getToken($user), new \stdClass(), ['SORTIE_LEGAL_VALIDATION']);
+    }
+
+    // Helper methods
+
+    private function getToken($user): TokenInterface
+    {
+        $token = $this->createMock(TokenInterface::class);
+        $token->method('getUser')->willReturn($user);
+
+        return $token;
+    }
+
+    private function createEvent(
+        ?User $creator = null,
+        ?Commission $commission = null,
+        bool $cancelled = false,
+        bool $finished = false,
+        int $publicStatus = Evt::STATUS_PUBLISHED_VALIDE,
+        int $legalStatus = Evt::STATUS_LEGAL_UNSEEN,
+        bool $isDraft = false,
+        array $encadrants = [],
+        bool $hasExpenseReports = false,
+        bool $joinStarted = true,
+        array $participations = [],
+    ): Evt {
+        $event = $this->getMockBuilder(Evt::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods([
+                'getUser', 'getCommission', 'getCancelled', 'isFinished',
+                'isPublicStatusValide', 'isLegalStatusUnseen', 'isDraft',
+                'getEncadrants', 'getExpenseReports', 'getStatus', 'joinHasStarted',
+                'getParticipations',
+            ])
+            ->getMock();
+
+        $event->method('getUser')->willReturn($creator);
+        $event->method('getCommission')->willReturn($commission);
+        $event->method('getCancelled')->willReturn($cancelled);
+        $event->method('isFinished')->willReturn($finished);
+        $event->method('isPublicStatusValide')->willReturn(Evt::STATUS_PUBLISHED_VALIDE === $publicStatus);
+        $event->method('isLegalStatusUnseen')->willReturn(Evt::STATUS_LEGAL_UNSEEN === $legalStatus);
+        $event->method('isDraft')->willReturn($isDraft);
+        $event->method('getEncadrants')->willReturn($encadrants);
+        $event->method('getStatus')->willReturn($publicStatus);
+        $event->method('joinHasStarted')->willReturn($joinStarted);
+        $event->method('getParticipations')->willReturn(new ArrayCollection($participations));
+
+        $reports = new ArrayCollection($hasExpenseReports ? [new \stdClass()] : []);
+        $event->method('getExpenseReports')->willReturn($reports);
+
+        return $event;
+    }
+
+    private function makeEncadrant(User $user): EventParticipation
+    {
+        $participation = $this->createMock(EventParticipation::class);
+        $participation->method('getUser')->willReturn($user);
+
+        return $participation;
     }
 }

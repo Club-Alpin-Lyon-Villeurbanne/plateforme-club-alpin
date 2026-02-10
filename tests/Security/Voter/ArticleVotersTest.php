@@ -19,25 +19,6 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class ArticleVotersTest extends TestCase
 {
-    private function getToken($user): TokenInterface
-    {
-        $token = $this->createMock(TokenInterface::class);
-        $token->method('getUser')->willReturn($user);
-
-        return $token;
-    }
-
-    private function createArticle(?User $author = null, ?Commission $commission = null, ?Evt $evt = null, bool $public = true): Article
-    {
-        $article = $this->createMock(Article::class);
-        $article->method('getUser')->willReturn($author);
-        $article->method('getCommission')->willReturn($commission);
-        $article->method('getEvt')->willReturn($evt);
-        $article->method('isPublic')->willReturn($public);
-
-        return $article;
-    }
-
     // ==========================================
     // ArticleCreateVoter
     // ==========================================
@@ -629,5 +610,28 @@ class ArticleVotersTest extends TestCase
 
         $user = $this->createMock(User::class);
         $voter->vote($this->getToken($user), new \stdClass(), ['ARTICLE_UNPUBLISH']);
+    }
+
+    // ==========================================
+    // Helper methods
+    // ==========================================
+
+    private function getToken($user): TokenInterface
+    {
+        $token = $this->createMock(TokenInterface::class);
+        $token->method('getUser')->willReturn($user);
+
+        return $token;
+    }
+
+    private function createArticle(?User $author = null, ?Commission $commission = null, ?Evt $evt = null, bool $public = true): Article
+    {
+        $article = $this->createMock(Article::class);
+        $article->method('getUser')->willReturn($author);
+        $article->method('getCommission')->willReturn($commission);
+        $article->method('getEvt')->willReturn($evt);
+        $article->method('isPublic')->willReturn($public);
+
+        return $article;
     }
 }

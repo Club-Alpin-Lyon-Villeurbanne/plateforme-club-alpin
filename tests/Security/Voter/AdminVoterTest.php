@@ -15,37 +15,6 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class AdminVoterTest extends TestCase
 {
-    private function getToken($user, array $attributes = []): TokenInterface
-    {
-        $token = $this->createMock(TokenInterface::class);
-        $token->method('getUser')->willReturn($user);
-        $token->method('getAttribute')->willReturnCallback(static fn ($key) => $attributes[$key] ?? null);
-        $token->method('hasAttribute')->willReturnCallback(static fn ($key) => isset($attributes[$key]));
-
-        return $token;
-    }
-
-    private function createVoterWithSession(?string $sessionRole = null): AdminVoter
-    {
-        $requestStack = $this->createMock(RequestStack::class);
-
-        if (null !== $sessionRole) {
-            $session = $this->createMock(SessionInterface::class);
-            $session->method('get')->with(SecurityConstants::SESSION_USER_ROLE_KEY)->willReturn($sessionRole);
-
-            $request = $this->createMock(Request::class);
-            $request->method('hasSession')->willReturn(true);
-            $request->method('getSession')->willReturn($session);
-            $request->attributes = new \Symfony\Component\HttpFoundation\ParameterBag();
-
-            $requestStack->method('getMainRequest')->willReturn($request);
-        } else {
-            $requestStack->method('getMainRequest')->willReturn(null);
-        }
-
-        return new AdminVoter($requestStack);
-    }
-
     public function testDeniesWhenNotUser(): void
     {
         $voter = $this->createVoterWithSession();
@@ -115,5 +84,38 @@ class AdminVoterTest extends TestCase
 
         $res = $voter->vote($token, $user, ['SOME_OTHER_ROLE']);
         $this->assertSame(Voter::ACCESS_ABSTAIN, $res);
+    }
+
+    // Helper methods
+
+    private function getToken($user, array $attributes = []): TokenInterface
+    {
+        $token = $this->createMock(TokenInterface::class);
+        $token->method('getUser')->willReturn($user);
+        $token->method('getAttribute')->willReturnCallback(static fn ($key) => $attributes[$key] ?? null);
+        $token->method('hasAttribute')->willReturnCallback(static fn ($key) => isset($attributes[$key]));
+
+        return $token;
+    }
+
+    private function createVoterWithSession(?string $sessionRole = null): AdminVoter
+    {
+        $requestStack = $this->createMock(RequestStack::class);
+
+        if (null !== $sessionRole) {
+            $session = $this->createMock(SessionInterface::class);
+            $session->method('get')->with(SecurityConstants::SESSION_USER_ROLE_KEY)->willReturn($sessionRole);
+
+            $request = $this->createMock(Request::class);
+            $request->method('hasSession')->willReturn(true);
+            $request->method('getSession')->willReturn($session);
+            $request->attributes = new \Symfony\Component\HttpFoundation\ParameterBag();
+
+            $requestStack->method('getMainRequest')->willReturn($request);
+        } else {
+            $requestStack->method('getMainRequest')->willReturn(null);
+        }
+
+        return new AdminVoter($requestStack);
     }
 }

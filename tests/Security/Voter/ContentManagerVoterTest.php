@@ -15,40 +15,6 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class ContentManagerVoterTest extends TestCase
 {
-    private function getToken($user, array $attributes = []): TokenInterface
-    {
-        $token = $this->createMock(TokenInterface::class);
-        $token->method('getUser')->willReturn($user);
-        $token->method('getAttribute')->willReturnCallback(static fn ($key) => $attributes[$key] ?? null);
-        $token->method('hasAttribute')->willReturnCallback(static fn ($key) => isset($attributes[$key]));
-
-        return $token;
-    }
-
-    private function createVoter(bool $isAdmin = false, ?string $sessionRole = null, bool $hasRequest = true): ContentManagerVoter
-    {
-        $security = $this->createMock(Security::class);
-        $security->method('isGranted')->with(SecurityConstants::ROLE_ADMIN)->willReturn($isAdmin);
-
-        $requestStack = $this->createMock(RequestStack::class);
-
-        if ($hasRequest) {
-            $session = $this->createMock(SessionInterface::class);
-            $session->method('get')->with(SecurityConstants::SESSION_USER_ROLE_KEY)->willReturn($sessionRole);
-
-            $request = $this->createMock(Request::class);
-            $request->method('hasSession')->willReturn(true);
-            $request->method('getSession')->willReturn($session);
-            $request->attributes = new \Symfony\Component\HttpFoundation\ParameterBag();
-
-            $requestStack->method('getMainRequest')->willReturn($request);
-        } else {
-            $requestStack->method('getMainRequest')->willReturn(null);
-        }
-
-        return new ContentManagerVoter($security, $requestStack);
-    }
-
     public function testDeniesWhenAnonymous(): void
     {
         $voter = $this->createVoter();
@@ -116,5 +82,41 @@ class ContentManagerVoterTest extends TestCase
 
         $res = $voter->vote($token, null, ['SOME_OTHER_ROLE']);
         $this->assertSame(Voter::ACCESS_ABSTAIN, $res);
+    }
+
+    // Helper methods
+
+    private function getToken($user, array $attributes = []): TokenInterface
+    {
+        $token = $this->createMock(TokenInterface::class);
+        $token->method('getUser')->willReturn($user);
+        $token->method('getAttribute')->willReturnCallback(static fn ($key) => $attributes[$key] ?? null);
+        $token->method('hasAttribute')->willReturnCallback(static fn ($key) => isset($attributes[$key]));
+
+        return $token;
+    }
+
+    private function createVoter(bool $isAdmin = false, ?string $sessionRole = null, bool $hasRequest = true): ContentManagerVoter
+    {
+        $security = $this->createMock(Security::class);
+        $security->method('isGranted')->with(SecurityConstants::ROLE_ADMIN)->willReturn($isAdmin);
+
+        $requestStack = $this->createMock(RequestStack::class);
+
+        if ($hasRequest) {
+            $session = $this->createMock(SessionInterface::class);
+            $session->method('get')->with(SecurityConstants::SESSION_USER_ROLE_KEY)->willReturn($sessionRole);
+
+            $request = $this->createMock(Request::class);
+            $request->method('hasSession')->willReturn(true);
+            $request->method('getSession')->willReturn($session);
+            $request->attributes = new \Symfony\Component\HttpFoundation\ParameterBag();
+
+            $requestStack->method('getMainRequest')->willReturn($request);
+        } else {
+            $requestStack->method('getMainRequest')->willReturn(null);
+        }
+
+        return new ContentManagerVoter($security, $requestStack);
     }
 }

@@ -12,14 +12,6 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class CommissionConfigVoterTest extends TestCase
 {
-    private function getToken($user): TokenInterface
-    {
-        $token = $this->createMock(TokenInterface::class);
-        $token->method('getUser')->willReturn($user);
-
-        return $token;
-    }
-
     public function testDeniesWhenAnonymous(): void
     {
         $userRights = $this->createMock(UserRights::class);
@@ -79,5 +71,15 @@ class CommissionConfigVoterTest extends TestCase
 
         $user = $this->createMock(User::class);
         $voter->vote($this->getToken($user), new \stdClass(), ['COMMISSION_CONFIG']);
+    }
+
+    // Helper methods
+
+    private function getToken($user): TokenInterface
+    {
+        $token = $this->createMock(TokenInterface::class);
+        $token->method('getUser')->willReturn($user);
+
+        return $token;
     }
 }

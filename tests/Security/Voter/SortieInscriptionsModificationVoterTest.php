@@ -17,46 +17,6 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class SortieInscriptionsModificationVoterTest extends TestCase
 {
-    private function getToken($user): TokenInterface
-    {
-        $token = $this->createMock(TokenInterface::class);
-        $token->method('getUser')->willReturn($user);
-
-        return $token;
-    }
-
-    private function createVoter(bool $isAdmin = false, array $allowedRights = [], array $commissionRights = []): SortieInscriptionsModificationVoter
-    {
-        $security = $this->createMock(Security::class);
-        $security->method('isGranted')->with(SecurityConstants::ROLE_ADMIN)->willReturn($isAdmin);
-
-        $userRights = $this->createMock(UserRights::class);
-        $userRights->method('allowed')->willReturnCallback(static fn ($right) => \in_array($right, $allowedRights, true));
-        $userRights->method('allowedOnCommission')->willReturnCallback(
-            static fn ($right, $commission) => \in_array($right, $commissionRights, true)
-        );
-
-        return new SortieInscriptionsModificationVoter($userRights, $security);
-    }
-
-    private function createEvent(?User $organizer = null, bool $cancelled = false, array $encadrants = [], ?Commission $commission = null): Evt
-    {
-        $event = $this->createMock(Evt::class);
-        $event->method('getUser')->willReturn($organizer);
-        $event->method('getCancelled')->willReturn($cancelled);
-        $event->method('getCommission')->willReturn($commission);
-
-        $participations = [];
-        foreach ($encadrants as $encadrant) {
-            $participation = $this->createMock(EventParticipation::class);
-            $participation->method('getUser')->willReturn($encadrant);
-            $participations[] = $participation;
-        }
-        $event->method('getEncadrants')->willReturn($participations);
-
-        return $event;
-    }
-
     public function testDeniesWhenAnonymous(): void
     {
         $voter = $this->createVoter();
@@ -218,5 +178,47 @@ class SortieInscriptionsModificationVoterTest extends TestCase
 
         $res = $voter->vote($this->getToken($user), $event, ['SORTIE_INSCRIPTIONS_MODIFICATION']);
         $this->assertSame(Voter::ACCESS_GRANTED, $res);
+    }
+
+    // Helper methods
+
+    private function getToken($user): TokenInterface
+    {
+        $token = $this->createMock(TokenInterface::class);
+        $token->method('getUser')->willReturn($user);
+
+        return $token;
+    }
+
+    private function createVoter(bool $isAdmin = false, array $allowedRights = [], array $commissionRights = []): SortieInscriptionsModificationVoter
+    {
+        $security = $this->createMock(Security::class);
+        $security->method('isGranted')->with(SecurityConstants::ROLE_ADMIN)->willReturn($isAdmin);
+
+        $userRights = $this->createMock(UserRights::class);
+        $userRights->method('allowed')->willReturnCallback(static fn ($right) => \in_array($right, $allowedRights, true));
+        $userRights->method('allowedOnCommission')->willReturnCallback(
+            static fn ($right, $commission) => \in_array($right, $commissionRights, true)
+        );
+
+        return new SortieInscriptionsModificationVoter($userRights, $security);
+    }
+
+    private function createEvent(?User $organizer = null, bool $cancelled = false, array $encadrants = [], ?Commission $commission = null): Evt
+    {
+        $event = $this->createMock(Evt::class);
+        $event->method('getUser')->willReturn($organizer);
+        $event->method('getCancelled')->willReturn($cancelled);
+        $event->method('getCommission')->willReturn($commission);
+
+        $participations = [];
+        foreach ($encadrants as $encadrant) {
+            $participation = $this->createMock(EventParticipation::class);
+            $participation->method('getUser')->willReturn($encadrant);
+            $participations[] = $participation;
+        }
+        $event->method('getEncadrants')->willReturn($participations);
+
+        return $event;
     }
 }

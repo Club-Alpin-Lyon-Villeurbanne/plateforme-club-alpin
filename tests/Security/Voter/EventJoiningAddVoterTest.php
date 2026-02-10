@@ -15,14 +15,6 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class EventJoiningAddVoterTest extends TestCase
 {
-    private function getToken($user): TokenInterface
-    {
-        $token = $this->createMock(TokenInterface::class);
-        $token->method('getUser')->willReturn($user);
-
-        return $token;
-    }
-
     public function testDeniesWhenAnonymous(): void
     {
         $userRights = $this->createMock(UserRights::class);
@@ -261,5 +253,15 @@ class EventJoiningAddVoterTest extends TestCase
         $event = $this->getMockBuilder('App\\Entity\\Evt')->disableOriginalConstructor()->getMock();
         $res = $voter->vote($this->getToken($user), $event, ['SOME_OTHER_ATTRIBUTE']);
         $this->assertSame(Voter::ACCESS_ABSTAIN, $res);
+    }
+
+    // Helper methods
+
+    private function getToken($user): TokenInterface
+    {
+        $token = $this->createMock(TokenInterface::class);
+        $token->method('getUser')->willReturn($user);
+
+        return $token;
     }
 }
