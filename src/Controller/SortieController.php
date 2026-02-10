@@ -957,6 +957,11 @@ class SortieController extends AbstractController
         $newEvent->setJoinStartDate(new \DateTimeImmutable());
         $newEvent->setAutoAccept($event->isAutoAccept());
         $newEvent->setIsDraft(true);
+        $newEvent->setStartLat($event->getStartLat());
+        $newEvent->setStartLong($event->getStartLong());
+        $newEvent->setNbVehicle($event->getNbVehicle());
+        $newEvent->setMainTransportMode($event->getMainTransportMode());
+        $newEvent->setNbKm($event->getNbKm());
 
         // dupliquer les participants ?
         if ('full' === $mode) {
