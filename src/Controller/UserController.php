@@ -236,7 +236,10 @@ class UserController extends AbstractController
             }
         }
         foreach ($listedRoles as $code => $role) {
-            $counts[$code] = \count($listedUsers[$code]);
+            $counts[$code] = 0;
+            if (!empty($listedUsers[$code])) {
+                $counts[$code] = \count($listedUsers[$code]);
+            }
         }
 
         return [
