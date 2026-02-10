@@ -15,6 +15,11 @@ class UserLicenseHelper
     {
         $isLicenseValid = true;
 
+        // ignorer la date (car non applicable) pour les profils type 3 et 4
+        if (in_array($user->getProfileType(), [User::PROFILE_OTHER_CLUB_MEMBER, User::PROFILE_EXTERNAL_PERSON], true)) {
+            return true;
+        }
+
         if (!$user->getJoinDate() instanceof \DateTimeImmutable) {
             return false;
         }

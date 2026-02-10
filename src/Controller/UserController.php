@@ -712,6 +712,8 @@ class UserController extends AbstractController
         if (!$user instanceof User) {
             $user = new User();
             $user->setNomadeParent($currentUser->getId());
+            $user->setManuel(true);
+            $user->setDoitRenouveler(true);     // sécurité pour éviter trop d'accès
             $isUpdate = false;
         }
 
@@ -756,8 +758,11 @@ class UserController extends AbstractController
                 } elseif (is_numeric($user->getCafnum())) {
                     $routeTarget = 'nomade';
                     $user->setProfileType(User::PROFILE_OTHER_CLUB_MEMBER);
+                    $user->setNomade(true);
+                    $user->setDoitRenouveler(false);
                 } else {
                     $user->setProfileType(User::PROFILE_EXTERNAL_PERSON);
+                    $user->setDoitRenouveler(false);
                 }
             }
 
@@ -767,9 +772,6 @@ class UserController extends AbstractController
                     $user->setCreatedAt(new \DateTime());
                     $nickname = NicknameGenerator::generateNickname($user->getFirstname(), $user->getLastname(), $user->getCafnum());
                     $user->setNickname($nickname);
-                    $user->setManuel(true);
-                    $user->setNomade(true);
-                    $user->setDoitRenouveler(true);     // sécurité pour éviter trop d'accès
                     $user->setBirthdate(\DateTimeImmutable::createFromMutable($user->getBirthdate()));
                 }
                 $user->setUpdatedAt(new \DateTime());
