@@ -85,9 +85,7 @@ class SortieController extends AbstractController
         $commission = $event?->getCommission();
 
         if (!$event instanceof Evt) {
-            if (!$commission instanceof Commission) {
-                $commission = $commissionRepository->findOneBy(['code' => $request->query->get('commission')]);
-            }
+            $commission = $commissionRepository->findOneBy(['code' => $request->query->get('commission')]);
 
             $event = new Evt(
                 $user,
@@ -134,11 +132,15 @@ class SortieController extends AbstractController
             $originalEntityData['ngensMax'] = $event->getngensMax();
             $originalEntityData['place'] = $event->getPlace();
             $originalEntityData['encadrants'] = [];
+            $originalEntityData['stagiaires'] = [];
             $currentEncadrants = $event->getEncadrants([EventParticipation::ROLE_ENCADRANT]);
             foreach ($currentEncadrants as $currentEncadrant) {
                 $originalEntityData['encadrants'][$currentEncadrant->getUser()->getId()] = $currentEncadrant->getRole();
             }
             $currentStagiaires = $event->getEncadrants([EventParticipation::ROLE_STAGIAIRE]);
+            foreach ($currentStagiaires as $currentStagiaire) {
+                $originalEntityData['stagiaires'][$currentStagiaire->getUser()->getId()] = $currentStagiaire->getRole();
+            }
             $currentCoencadrants = $event->getEncadrants([EventParticipation::ROLE_COENCADRANT]);
             $currentBenevoles = $event->getEncadrants([EventParticipation::ROLE_BENEVOLE]);
             $originalEntityData['hasPaymentForm'] = $event->hasPaymentForm();
@@ -201,6 +203,9 @@ class SortieController extends AbstractController
             } else {
                 // retirer les encadrants qui ne sont plus cochés
                 if (!empty($currentEncadrants)) {
+                    if (empty($formData['encadrants'])) {
+                        $formData['encadrants'] = [];
+                    }
                     foreach ($currentEncadrants as $currentEncadrant) {
                         if (!in_array($currentEncadrant->getUser()->getId(), $formData['encadrants'], false)) {
                             $event->removeParticipation($currentEncadrant);
@@ -244,12 +249,15 @@ class SortieController extends AbstractController
                 $event->setUpdatedAt(new \DateTime());
 
                 // sortie dépubliée à l'édition (si certains champs sont modifiés seulement)
-                if (Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus()
+                if (
+                    Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus()
                     && ($originalEntityData['ngensMax'] !== $event->getngensMax()
                     || $originalEntityData['place'] !== $event->getPlace()
                     || $originalEntityData['hasPaymentForm'] !== $event->hasPaymentForm()
                     || $originalEntityData['paymentAmount'] !== $event->getPaymentAmount()
-                    || $originalEntityData['encadrants'] !== $newEncadrants['encadrants'])) {
+                    || $originalEntityData['encadrants'] !== $newEncadrants['encadrants']
+                    || $originalEntityData['stagiaires'] !== $newEncadrants['stagiaires'])
+                ) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
                 } elseif (!$event->isDraft()) {
                     // on envoie directement le mail de mise à jour de sortie
