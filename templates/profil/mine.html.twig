@@ -40,11 +40,12 @@
             <ul class="nice-list">
                 {% if comm_roles|length > 0 %}
                     {% for commission, role in comm_roles %}
+                        {% set commission_code = role.params|replace({'commission:': ''}) %}
                         <li>{{ commission }} : {{ role.usertype.title }}
                             {% if role.description %}
                                 <img src="/img/base/info.png" title="{{ role.description }}" alt="i" />&nbsp;
                             {% endif %}
-                            <a href="{{ path('user_right_auto_remove', {'type': role.usertype.code}) }}" onclick="return confirm('Êtes-vous sûr de vouloir vous retirer cette responsabilité ? Les responsables du site seront prévenus')">
+                            <a href="{{ path('user_right_auto_remove', {'type': role.usertype.code, 'commission': commission_code}) }}" onclick="return confirm('Êtes-vous sûr de vouloir vous retirer cette responsabilité ? Les responsables du site seront prévenus')">
                                 <img src="/img/base/delete.png" alt="Enlever" title="Me retirer cette responsabilité" />
                             </a>
                         </li>
