@@ -333,10 +333,7 @@
         });
 
         document.getElementById('event_form').addEventListener('submit', function (e) {
-            let prefix = 'form';
-            {% if is_update or is_duplicate %}
-                prefix = 'event';
-            {% endif %}
+            let prefix = 'event';
 
             // vérifier qu'au moins 1 encadrant ou stagiaire est coché
             const encadrants = document.querySelectorAll('input[name="' + prefix + '[encadrants][]"]:checked');

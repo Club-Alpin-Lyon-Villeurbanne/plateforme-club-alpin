@@ -39,7 +39,7 @@ class CommissionController extends AbstractController
         $commissionId = $request->query->get('commission');
         $commission = $doctrine->getRepository(Commission::class)->find($commissionId);
 
-        $builder = $formFactory->createBuilder();
+        $builder = $formFactory->createNamedBuilder('event');
         $builder = $eventFormHelper->encadrementFields($builder, $commission);
 
         return $this->render('form/field_participants.html.twig', [
