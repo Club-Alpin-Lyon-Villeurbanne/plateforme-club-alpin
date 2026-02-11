@@ -1,19 +1,13 @@
 import { Page } from '@playwright/test';
 
-const BASE_URL = process.env.BASE_URL || 'http://localhost:8000';
-
-export const login = async (page: Page, email: string, password: string) => {
-  // Aller à la page de login
-  await page.goto(`${BASE_URL}/login`);
+/**
+ * Login via the UI form. Only used in the login spec itself — other tests
+ * should use storageState from auth.setup.ts instead.
+ */
+export const loginViaUI = async (page: Page, email: string, password: string) => {
+  await page.goto('/login');
+  await page.locator('input[name="_username"]').fill(email);
+  await page.locator('input[name="_password"]').fill(password);
+  await page.locator('input[name="connect-button"]').click();
   await page.waitForLoadState('networkidle');
-  
-  // Remplir email et password avec les bons noms de champs
-  await page.fill('input[name="_username"]', email);
-  await page.fill('input[name="_password"]', password);
-  
-  // Soumettre le formulaire
-  await page.click('input[name="connect-button"]');
-  
-  // Attendre la redirection et le chargement de la page
-  await page.waitForLoadState('networkidle');
-}; 
+};

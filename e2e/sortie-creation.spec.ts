@@ -1,120 +1,94 @@
-import { test, expect, Page } from '@playwright/test';
-import { login } from './helpers/auth';
+import { test, expect } from '@playwright/test';
+import { STORAGE_STATE } from './helpers/storage-state';
+import { fillCKEditor } from './helpers/ckeditor';
 
-// Variables globales
-const BASE_URL = 'http://127.0.0.1:8000/';
-const USER_EMAIL = 'encadrant@test-clubalpinlyon.fr';
-const USER_PASSWORD = 'test';
-const RDV_LIEU = 'bron';
-const NGENS_MAX = '9';
-const JOIN_START_DAYS = '9';
-const JOIN_MAX = '9';
-const HEURE = '08:00';
-const CONTENU = 'test de contenu de page';
-const TITRE = `test création de sortie ${Date.now()}`;
-const DATE_SORTIE = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toLocaleDateString('fr-FR');
+test.use({ storageState: STORAGE_STATE.encadrant });
 
-// Prepare an ISO datetime-local value for the sortie start (YYYY-MM-DDTHH:MM)
-const START_DATETIME = (() => {
-  const d = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
-  d.setHours(8, 0, 0, 0);
-  // build a local datetime string without seconds: YYYY-MM-DDTHH:MM
+function futureDatetime(daysFromNow: number, hour = 8, minute = 0): string {
+  const d = new Date(Date.now() + daysFromNow * 24 * 60 * 60 * 1000);
+  d.setHours(hour, minute, 0, 0);
   const yyyy = d.getFullYear();
   const mm = String(d.getMonth() + 1).padStart(2, '0');
   const dd = String(d.getDate()).padStart(2, '0');
   const hh = String(d.getHours()).padStart(2, '0');
   const min = String(d.getMinutes()).padStart(2, '0');
   return `${yyyy}-${mm}-${dd}T${hh}:${min}`;
-})();
+}
 
-// Fonction utilitaire pour créer une sortie
-const creerSortie = async (page: Page) => {
+const TITRE = `test creation de sortie ${Date.now()}`;
+const START_DATETIME = futureDatetime(7);
+const CONTENU = 'test de contenu de page';
+
+test('creation de sortie famille', async ({ page }) => {
+  await page.goto('/');
   await page.locator('#toolbar-user').hover();
-  await page.getByRole('link', { name: '• proposer une sortie' }).click();
-  await page.getByRole('link', { name: '> Créer une sortie Sorties familles' }).click();
+  await page.getByRole('link', { name: /proposer une sortie/ }).click();
+  await page.getByRole('link', { name: /Créer une sortie Sorties familles/ }).click();
 
-  // Fill fields using Symfony form labels / names from EventType
+  // Title
   await page.getByLabel('Titre').fill(TITRE);
 
-  // check first encadrant checkbox (name ends with [encadrants][] or similar)
+  // Check first encadrant checkbox
   const encadrantCheckbox = page.locator('input[name$="[encadrants][]"]').first();
   if (await encadrantCheckbox.count() > 0) {
     await encadrantCheckbox.check();
   }
 
-  // Lieu de rendez-vous
+  // Meeting point
   const rdvField = page.getByLabel(/Lieu de rendez-vous covoiturage/i);
   if (await rdvField.count() > 0) {
-    await rdvField.fill(RDV_LIEU);
+    await rdvField.fill('bron');
   }
 
-  // Place marker on the map (button with id #codeAddress)
+  // Geocode — click button and wait for map marker to appear
   const codeAddressBtn = page.locator('#codeAddress');
   if (await codeAddressBtn.count() > 0) {
-    await expect(codeAddressBtn).toBeVisible({ timeout: 2000 });
     await codeAddressBtn.click();
-    await page.waitForTimeout(1000);
+    // Wait for geocoding result (marker on map) with a graceful timeout
+    await page.locator('.leaflet-marker-icon, .gm-style img[src*="marker"]')
+      .first()
+      .waitFor({ timeout: 5_000 })
+      .catch(() => { /* geocoding may not be available in test env */ });
   }
 
-  // Date/time fields — EventType uses a single datetime input for startDate
+  // Date/time
   const startDateField = page.getByLabel(/Date et heure de RDV/i);
   if (await startDateField.count() > 0) {
     await startDateField.fill(START_DATETIME);
   }
 
-  // Number of participants
+  // Max participants
   const ngensField = page.getByLabel(/Nombre maximum de personnes/i);
   if (await ngensField.count() > 0) {
-    await ngensField.fill(NGENS_MAX);
+    await ngensField.fill('9');
   }
 
-  // Join start date — use same start date for simplicity
+  // Registration start date
   const joinStartField = page.getByLabel(/Les inscriptions démarrent le/i);
   if (await joinStartField.count() > 0) {
     await joinStartField.fill(START_DATETIME);
   }
 
-  // Join max
+  // Max online registrations
   const joinMaxField = page.getByLabel(/Inscriptions maximum via internet/i);
   if (await joinMaxField.count() > 0) {
-    await joinMaxField.fill(JOIN_MAX);
+    await joinMaxField.fill('9');
   }
 
-  // Description (CKEditor5) — fill underlying textarea and update editable area
-  const descriptionField = page.getByLabel(/Description complète|Description/i).first();
-  if (await descriptionField.count() > 0) {
-    await descriptionField.fill(CONTENU);
-    await page.evaluate((content) => {
-      const editable = document.querySelector('.ck-editor__editable');
-      if (editable) editable.innerHTML = '<p>' + content + '</p>';
-    }, CONTENU);
-  }
+  // Description via CKEditor
+  await fillCKEditor(page, CONTENU);
 
-  // check required checkboxes (images and editorial agreement)
+  // Required checkboxes
   const imagesCheckbox = page.locator('input[name$="[imagesAuthorized]"]');
   if (await imagesCheckbox.count() > 0) await imagesCheckbox.check();
   const agreeCheckbox = page.locator('input[name$="[agreeEdito]"]');
   if (await agreeCheckbox.count() > 0) await agreeCheckbox.check();
 
-  // submit using the publish button
+  // Submit
   const publishBtn = page.getByRole('button', { name: /ENREGISTRER ET DEMANDER LA PUBLICATION/i });
-  await expect(publishBtn).toBeVisible({ timeout: 2000 });
   await publishBtn.click();
-  await page.waitForTimeout(1000);
-};
 
-test('création de sortie famille', async ({ page }) => {
-  await login(page, USER_EMAIL, USER_PASSWORD);
-  await creerSortie(page);
-  await page.waitForTimeout(1000);
-
-  // Vérifie qu'aucune erreur n'est visible sur la page
-  const errorDiv = page.locator('.erreur');
-  if (await errorDiv.isVisible()) {
-    const errorText = await errorDiv.textContent();
-    console.error('Erreur détectée sur la page:', errorText);
-  }
-  await expect(errorDiv).toBeHidden({ timeout: 1000 });
-
+  // Verify: no errors and the sortie appears in the agenda
+  await expect(page.locator('.erreur')).toBeHidden({ timeout: 3_000 });
   await expect(page.locator('#agenda')).toContainText(TITRE);
 });

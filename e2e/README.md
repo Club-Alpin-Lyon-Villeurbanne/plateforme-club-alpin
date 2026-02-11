@@ -1,102 +1,102 @@
 # Tests E2E avec Playwright
 
-Tests end-to-end automatisés pour l'application Club Alpin Lyon.
+Tests end-to-end pour la plateforme Club Alpin Lyon. Ces tests se concentrent sur ce que les tests PHPUnit ne couvrent pas : interactions JavaScript (CKEditor5, maps), workflows multi-pages, et enchainements multi-roles.
 
-## 🚀 Installation
+## Setup local
 
 ```bash
-# Installer les dépendances
+# 1. L'app doit tourner en mode dev avec la base initialisee
+make init
+make database-init
+
+# 2. Installer les deps Node et Playwright
 npm install
+npx playwright install chromium
 
-# Installer les navigateurs Playwright
-npx playwright install
-```
-
-## ⚙️ Configuration
-
-1. Copier le fichier de configuration d'exemple :
-```bash
+# 3. Copier la config de test
 cp .env.test.example .env.test
+
+# 4. Lancer les tests
+npm run test:e2e
 ```
 
-2. Ajuster les valeurs dans `.env.test` si nécessaire (URL, credentials)
-
-## 🧪 Lancer les tests
+## Lancer les tests
 
 ```bash
-# Tous les tests (mode headless)
-npm run test:e2e
-
-# Mode UI interactif (recommandé pour le développement)
-npm run test:e2e:ui
-
-# Mode headed (voir les navigateurs)
-npm run test:e2e:headed
-
-# Mode debug
-npm run test:e2e:debug
-
-# Voir le rapport
-npm run test:e2e:report
+npm run test:e2e            # Headless (CI)
+npm run test:e2e:headed     # Voir le navigateur
+npm run test:e2e:ui         # Interface Playwright
+npm run test:e2e:debug      # Mode debug pas-a-pas
+npm run test:e2e:report     # Ouvrir le dernier rapport HTML
 ```
 
-## 📁 Structure
+Ou via Make :
+
+```bash
+make test-e2e
+make test-e2e-headed
+make test-e2e-report
+```
+
+## Architecture
 
 ```
 e2e/
+├── auth.setup.ts            # Setup : authentifie chaque role et sauvegarde les sessions
+├── .auth/                   # Sessions sauvegardees (gitignored)
+│   ├── admin.json
+│   ├── redacteur.json
+│   ├── encadrant.json
+│   └── resp-comm.json
 ├── helpers/
-│   └── auth.ts                  # Helper pour l'authentification
-├── login.spec.ts                # Tests de connexion (2 tests)
-├── article-creation.spec.ts     # Tests création d'articles
-├── article-publication.spec.ts  # Tests publication d'articles
-├── sortie-creation.spec.ts      # Tests création de sorties
+│   ├── auth.ts              # loginViaUI() — uniquement pour le test de login
+│   ├── ckeditor.ts          # fillCKEditor() — saisie realiste dans CKEditor5
+│   └── storage-state.ts     # Chemins STORAGE_STATE (importe par les specs)
+├── login.spec.ts            # Tests de connexion (2 tests)
+├── article-creation.spec.ts # Creation d'article
+├── article-publication.spec.ts # Workflow creation + moderation (multi-roles)
+├── sortie-creation.spec.ts  # Creation de sortie famille
 └── README.md
 ```
 
-## ✅ Tests actuels
+### Authentification via storageState
 
-- **Authentification** (2 tests)
-  - Connexion valide
-  - Connexion avec identifiants invalides
-- **Articles** (2 tests)
-  - Création d'un article
-  - Publication d'un article
-- **Sorties** (1 test)
-  - Création d'une sortie famille
+Les tests n'appellent pas `login()` a chaque fois. Le projet `auth-setup` se connecte une fois pour chaque role et sauvegarde les cookies dans `e2e/.auth/`. Chaque spec declare son role :
 
-## 🔜 Tests à venir
+```typescript
+import { STORAGE_STATE } from './helpers/storage-state';
+test.use({ storageState: STORAGE_STATE.redacteur });
+```
 
-- Modération d'articles
-- Modification/annulation de sorties
-- Notes de frais
-- Gestion des utilisateurs
+Exception : `login.spec.ts` utilise `storageState: { cookies: [], origins: [] }` car il teste le formulaire de login lui-meme.
 
-## 📝 Écrire de nouveaux tests
-
-Créer un nouveau fichier `*.spec.ts` dans le dossier `e2e/` :
+## Ecrire un nouveau test
 
 ```typescript
 import { test, expect } from '@playwright/test';
-import { login } from './helpers/auth';
+import { STORAGE_STATE } from './helpers/storage-state';
 
-test.describe('Nom du groupe', () => {
-  test('Description du test', async ({ page }) => {
-    await login(page, 'email@example.com', 'password');
+test.use({ storageState: STORAGE_STATE.admin });
 
-    // Votre test ici
-    await expect(page).toHaveURL(/expected-url/);
-  });
+test('description du test', async ({ page }) => {
+  await page.goto('/ma-page');
+  // ...assertions...
 });
 ```
 
-## 🐛 Debugging
+Regles :
+- Pas de `waitForTimeout()` — utiliser des attentes explicites (`waitFor()`, `toBeVisible()`, etc.)
+- Pas d'URL hardcodees — `page.goto('/')` utilise le `baseURL` du config
+- Pas de credentials dans le code — utiliser `storageState`
+- Un test doit etre independant : il cree ses propres donnees et ne depend pas de l'ordre d'execution
 
-- Utiliser `await page.pause()` pour mettre un breakpoint
-- Lancer avec `--debug` pour le mode pas à pas
-- Screenshots et vidéos sont automatiquement générés en cas d'échec
+## Debugging
 
-## 📚 Documentation
+- `await page.pause()` pour un breakpoint interactif
+- `--debug` pour le mode pas-a-pas
+- Screenshots et videos sont generes automatiquement en cas d'echec
+
+## Documentation
 
 - [Playwright Documentation](https://playwright.dev/)
 - [Best Practices](https://playwright.dev/docs/best-practices)
-- [API Reference](https://playwright.dev/docs/api/class-playwright)
