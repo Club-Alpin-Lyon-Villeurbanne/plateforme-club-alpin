@@ -265,9 +265,9 @@
     <script type="text/javascript">
         // au chargement complet de la page
         document.addEventListener('DOMContentLoaded', function () {
-            {% if is_update is same as (true) %}
+            {% if is_update is same as (true) or is_duplicate is same as (true) or has_errors is same as (true) %}
                 initParticipantsCheckboxes(document);
-            {% elseif is_duplicate is same as (false) %}
+            {% else %}
                 switchCommission(document);
             {% endif %}
             searchCommunes(document);
