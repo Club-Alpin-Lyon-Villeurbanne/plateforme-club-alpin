@@ -41,16 +41,13 @@ test('creation de sortie famille', async ({ page }) => {
     await rdvField.fill('bron');
   }
 
-  // Geocode — click button and wait for map marker to appear
-  const codeAddressBtn = page.locator('#codeAddress');
-  if (await codeAddressBtn.count() > 0) {
-    await codeAddressBtn.click();
-    // Wait for geocoding result (marker on map) with a graceful timeout
-    await page.locator('.leaflet-marker-icon, .gm-style img[src*="marker"]')
-      .first()
-      .waitFor({ timeout: 5_000 })
-      .catch(() => { /* geocoding may not be available in test env */ });
-  }
+  // Set lat/long hidden fields directly (geocoding API may not be available in CI)
+  await page.locator('input[name$="[lat]"]').evaluate(
+    (el: HTMLInputElement) => { el.value = '45.7578'; },
+  );
+  await page.locator('input[name$="[long]"]').evaluate(
+    (el: HTMLInputElement) => { el.value = '4.8320'; },
+  );
 
   // Date/time (required)
   await page.getByLabel(/Date et heure de RDV/i).fill(START_DATETIME);
