@@ -16,7 +16,8 @@ function futureDatetime(daysFromNow: number, hour = 8, minute = 0): string {
 }
 
 const TITRE = `test creation de sortie ${Date.now()}`;
-const START_DATETIME = futureDatetime(7);
+const START_DATETIME = futureDatetime(7, 8, 0);
+const END_DATETIME = futureDatetime(7, 17, 0);
 const CONTENU = 'test de contenu de page';
 
 test('creation de sortie famille', async ({ page }) => {
@@ -24,6 +25,9 @@ test('creation de sortie famille', async ({ page }) => {
 
   // Title
   await page.getByLabel('Titre').fill(TITRE);
+
+  // Activity departure location (required)
+  await page.getByLabel(/Lieu de départ/i).fill('69005 Lyon');
 
   // Check first encadrant checkbox
   const encadrantCheckbox = page.locator('input[name$="[encadrants][]"]').first();
@@ -48,17 +52,12 @@ test('creation de sortie famille', async ({ page }) => {
       .catch(() => { /* geocoding may not be available in test env */ });
   }
 
-  // Date/time
-  const startDateField = page.getByLabel(/Date et heure de RDV/i);
-  if (await startDateField.count() > 0) {
-    await startDateField.fill(START_DATETIME);
-  }
+  // Date/time (required)
+  await page.getByLabel(/Date et heure de RDV/i).fill(START_DATETIME);
+  await page.getByLabel(/Date et heure.*retour/i).fill(END_DATETIME);
 
-  // Max participants
-  const ngensField = page.getByLabel(/Nombre maximum de personnes/i);
-  if (await ngensField.count() > 0) {
-    await ngensField.fill('9');
-  }
+  // Max participants (required)
+  await page.getByLabel(/Nombre maximum de personnes/i).fill('9');
 
   // Registration start date
   const joinStartField = page.getByLabel(/Les inscriptions démarrent le/i);
@@ -66,20 +65,12 @@ test('creation de sortie famille', async ({ page }) => {
     await joinStartField.fill(START_DATETIME);
   }
 
-  // Max online registrations
-  const joinMaxField = page.getByLabel(/Inscriptions maximum via internet/i);
-  if (await joinMaxField.count() > 0) {
-    await joinMaxField.fill('9');
-  }
-
   // Description via CKEditor
   await fillCKEditor(page, CONTENU);
 
   // Required checkboxes
-  const imagesCheckbox = page.locator('input[name$="[imagesAuthorized]"]');
-  if (await imagesCheckbox.count() > 0) await imagesCheckbox.check();
-  const agreeCheckbox = page.locator('input[name$="[agreeEdito]"]');
-  if (await agreeCheckbox.count() > 0) await agreeCheckbox.check();
+  await page.locator('input[name$="[imagesAuthorized]"]').check();
+  await page.locator('input[name$="[agreeEdito]"]').check();
 
   // Submit
   const publishBtn = page.getByRole('button', { name: /ENREGISTRER ET DEMANDER LA PUBLICATION/i });

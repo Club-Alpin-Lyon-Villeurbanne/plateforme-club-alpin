@@ -37,7 +37,7 @@ test("Publication d'un article (creation + moderation)", async ({ browser }) => 
   await expect(autoriserPublierBtn).toBeVisible({ timeout: 5_000 });
   await autoriserPublierBtn.click();
 
-  await expect(adminPage.getByText(/Opération effectuée avec succ/i)).toBeVisible({ timeout: 5_000 });
+  await expect(adminPage.getByText(/article.*publié/i)).toBeVisible({ timeout: 5_000 });
 
   await adminContext.close();
 });
