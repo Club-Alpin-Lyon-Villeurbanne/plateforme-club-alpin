@@ -26,6 +26,14 @@ public/dev.txt
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
 
+###> playwright ###
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+.env.test
+###< playwright ###
+
 ###> lexik/jwt-authentication-bundle ###
 # /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
