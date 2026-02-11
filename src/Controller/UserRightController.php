@@ -31,6 +31,7 @@ class UserRightController extends AbstractController
         protected LoggerInterface $logger,
         protected UserRights $userRights,
         protected UserRightService $userRightService,
+        protected bool $cleanInferiorRights = true,
     ) {
     }
 
@@ -90,15 +91,17 @@ class UserRightController extends AbstractController
                 $user->addAttribute($usertype, $commission, $data['description_user_attr']);
 
                 // enlever les responsabilités inférieures
-                foreach ($lowerResps as $lowerResp) {
-                    // on n'enlève pas "encadrant" si on ajoute "responsable de commission"
-                    if (
-                        UserAttr::RESPONSABLE_COMMISSION === $usertype->getCode()
-                        && UserAttr::ENCADRANT === $lowerResp->getCode()
-                    ) {
-                        continue;
+                if ($this->cleanInferiorRights) {
+                    foreach ($lowerResps as $lowerResp) {
+                        // on n'enlève pas "encadrant" si on ajoute "responsable de commission"
+                        if (
+                            UserAttr::RESPONSABLE_COMMISSION === $usertype->getCode()
+                            && UserAttr::ENCADRANT === $lowerResp->getCode()
+                        ) {
+                            continue;
+                        }
+                        $userAttrRepository->deleteByUser($user, $lowerResp, $commissionCode);
                     }
-                    $userAttrRepository->deleteByUser($user, $lowerResp, $commissionCode);
                 }
             }
         } elseif (!$usertype->getLimitedToComm()) {
