@@ -17,7 +17,7 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
-class ArticleVotersTest extends TestCase
+class ArticleVoterTest extends TestCase
 {
     // ==========================================
     // ArticleCreateVoter
