@@ -25,7 +25,7 @@
         "google/apiclient": "^2.18",
         "imagine/imagine": "^1.2",
         "kreait/firebase-php": "^7.20",
-        "lexik/jwt-authentication-bundle": "^2",
+        "lexik/jwt-authentication-bundle": "^3.0",
         "liip/imagine-bundle": "*",
         "nelmio/cors-bundle": "^2.4",
         "pentatrion/vite-bundle": "^7.0",
