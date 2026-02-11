@@ -39,6 +39,7 @@ class UserRightController extends AbstractController
     public function manageRights(
         User $user,
         UsertypeRepository $usertypeRepository,
+        UserRights $userRights,
     ): array {
         if (
             !$this->isGranted(SecurityConstants::ROLE_ADMIN)
@@ -53,15 +54,23 @@ class UserRightController extends AbstractController
         }
 
         $commissions = $this->manager->getRepository(Commission::class)->findBy(['vis' => true], ['ordre' => 'asc']);
-        if ($this->isGranted(SecurityConstants::ROLE_ADMIN)) {
-            $commissions = $this->manager->getRepository(Commission::class)->findAll();
+        $availableCommissions = array_filter(
+            iterator_to_array($commissions),
+            fn (Commission $commission) =>
+                $userRights->allowedOnCommission('user_giveright_1', $commission)
+                || $userRights->allowedOnCommission('user_giveright_3', $commission)
+                || $userRights->allowedOnCommission('comm_lier_encadrant', $commission)
+            ,
+        );
+        if ($this->isGranted(SecurityConstants::ROLE_ADMIN) || $this->userRights->allowed('user_givepresidence')) {
+            $availableCommissions = $this->manager->getRepository(Commission::class)->findBy(['vis' => true], ['ordre' => 'asc']);
         }
 
         return [
             'user' => $user,
             'user_rights' => $user->getAttributes(),
             'usertypes' => $usertypeRepository->findAllManageable(),
-            'commissions' => $commissions,
+            'commissions' => $availableCommissions,
         ];
     }
 
