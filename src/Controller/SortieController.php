@@ -132,14 +132,14 @@ class SortieController extends AbstractController
             $originalEntityData['ngensMax'] = $event->getngensMax();
             $originalEntityData['place'] = $event->getPlace();
             $originalEntityData['encadrants'] = [];
-            $originalEntityData['stagiaires'] = [];
+            $originalEntityData['initiateurs'] = [];
             $currentEncadrants = $event->getEncadrants([EventParticipation::ROLE_ENCADRANT]);
             foreach ($currentEncadrants as $currentEncadrant) {
                 $originalEntityData['encadrants'][$currentEncadrant->getUser()->getId()] = $currentEncadrant->getRole();
             }
             $currentStagiaires = $event->getEncadrants([EventParticipation::ROLE_STAGIAIRE]);
             foreach ($currentStagiaires as $currentStagiaire) {
-                $originalEntityData['stagiaires'][$currentStagiaire->getUser()->getId()] = $currentStagiaire->getRole();
+                $originalEntityData['initiateurs'][$currentStagiaire->getUser()->getId()] = $currentStagiaire->getRole();
             }
             $currentCoencadrants = $event->getEncadrants([EventParticipation::ROLE_COENCADRANT]);
             $currentBenevoles = $event->getEncadrants([EventParticipation::ROLE_BENEVOLE]);
@@ -257,7 +257,7 @@ class SortieController extends AbstractController
                         || $originalEntityData['hasPaymentForm'] !== $event->hasPaymentForm()
                         || $originalEntityData['paymentAmount'] !== $event->getPaymentAmount()
                         || $originalEntityData['encadrants'] !== $newEncadrants['encadrants']
-                        || $originalEntityData['stagiaires'] !== $newEncadrants['stagiaires']
+                        || $originalEntityData['initiateurs'] !== $newEncadrants['initiateurs']
                     )
                 ) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
