@@ -65,6 +65,11 @@ test('creation de sortie famille', async ({ page }) => {
     await joinStartField.fill(START_DATETIME);
   }
 
+  // Commission-specific mandatory fields (Sorties familles)
+  await page.getByLabel(/Difficulté, niveau/i).fill('Facile');
+  await page.getByLabel(/Dénivelé positif/i).fill('300');
+  await page.getByLabel(/Distance/i).fill('5.5');
+
   // Description via CKEditor
   await fillCKEditor(page, CONTENU);
 
@@ -76,7 +81,7 @@ test('creation de sortie famille', async ({ page }) => {
   const publishBtn = page.getByRole('button', { name: /ENREGISTRER ET DEMANDER LA PUBLICATION/i });
   await publishBtn.click();
 
-  // Verify: no errors and the sortie appears in the agenda
-  await expect(page.locator('.erreur')).toBeHidden({ timeout: 3_000 });
+  // Verify: redirected to profile sorties page and the sortie appears in the agenda
+  await expect(page).toHaveURL(/\/sorties\/self/);
   await expect(page.locator('#agenda')).toContainText(TITRE);
 });
