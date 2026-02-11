@@ -226,6 +226,7 @@ class UserController extends AbstractController
             if (!\in_array($role->getCode(), $ignoredRoles, true)) {
                 $listedRoles[$role->getCode()] = $role->getTitle();
                 $users[$role->getCode()] = $userAttrRepository->listAllUsersByRole($role);
+                $listedUsers[$role->getCode()] = [];
             }
         }
 
