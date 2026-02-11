@@ -115,6 +115,41 @@ class LoginControllerTest extends WebTestCase
         $this->assertEmailHtmlBodyContains($emails[0], 'Modification de votre mot de passe');
     }
 
+    public function testLoginLockedAccount()
+    {
+        $hasherFactory = self::getContainer()->get(PasswordHasherFactoryInterface::class);
+
+        $user = $this->signup(mt_rand() . 'test@clubalpinlyon.fr');
+        $user->setPassword($hasherFactory->getPasswordHasher('login_form')->hash('youpla'));
+        $user->setIsLocked(true);
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $em->flush();
+
+        $this->client->request('GET', '/login');
+        $this->client->submitForm('connect-button', [
+            '_username' => $user->getEmail(),
+            '_password' => 'youpla',
+        ]);
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertResponseRedirects('http://localhost/login');
+    }
+
+    public function testPasswordLostLockedAccount()
+    {
+        $user = $this->signup(mt_rand() . 'test@clubalpinlyon.fr');
+        $user->setIsLocked(true);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $this->client->request('GET', '/password-lost');
+
+        $this->client->submitForm('reset_password[submit]', [
+            'reset_password[email]' => $user->getEmail(),
+        ]);
+
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertCount(0, $this->getMailerMessages());
+    }
+
     public function testChangePassword()
     {
         $hasherFactory = self::getContainer()->get(PasswordHasherFactoryInterface::class);

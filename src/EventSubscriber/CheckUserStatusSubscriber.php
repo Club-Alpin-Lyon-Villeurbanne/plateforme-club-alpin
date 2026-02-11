@@ -28,7 +28,7 @@ readonly class CheckUserStatusSubscriber implements EventSubscriberInterface
         $user = $passport->getUser();
 
         if (!$this->authorizationChecker->isGranted(UserLoginVoter::LOGIN, $user)) {
-            throw new CustomUserMessageAuthenticationException('Votre compte est supprimé. Vous ne pouvez pas vous connecter.');
+            throw new CustomUserMessageAuthenticationException('Votre compte est désactivé. Vous ne pouvez pas vous connecter.');
         }
     }
 }
