@@ -251,12 +251,14 @@ class SortieController extends AbstractController
                 // sortie dépubliée à l'édition (si certains champs sont modifiés seulement)
                 if (
                     Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus()
-                    && ($originalEntityData['ngensMax'] !== $event->getngensMax()
-                    || $originalEntityData['place'] !== $event->getPlace()
-                    || $originalEntityData['hasPaymentForm'] !== $event->hasPaymentForm()
-                    || $originalEntityData['paymentAmount'] !== $event->getPaymentAmount()
-                    || $originalEntityData['encadrants'] !== $newEncadrants['encadrants']
-                    || $originalEntityData['stagiaires'] !== $newEncadrants['stagiaires'])
+                    && (
+                        $originalEntityData['ngensMax'] !== $event->getngensMax()
+                        || $originalEntityData['place'] !== $event->getPlace()
+                        || $originalEntityData['hasPaymentForm'] !== $event->hasPaymentForm()
+                        || $originalEntityData['paymentAmount'] !== $event->getPaymentAmount()
+                        || $originalEntityData['encadrants'] !== $newEncadrants['encadrants']
+                        || $originalEntityData['stagiaires'] !== $newEncadrants['stagiaires']
+                    )
                 ) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
                 } elseif (!$event->isDraft()) {
