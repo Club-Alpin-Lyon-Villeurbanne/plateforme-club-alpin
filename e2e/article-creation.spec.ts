@@ -33,5 +33,5 @@ test("Creation d'un article", async ({ page }) => {
 
   // Verify redirect to articles list with success flash
   await expect(page).toHaveURL(/\/profil\/articles\.html/);
-  await expect(page.locator('.info, .flash-success, .flash--success, .alert-success')).toBeVisible();
+  await expect(page.locator('.info, .flash-success, .flash--success, .alert-success').first()).toBeVisible();
 });

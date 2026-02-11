@@ -25,21 +25,19 @@ test("Publication d'un article (creation + moderation)", async ({ browser }) => 
 
   await redacteurContext.close();
 
-  // --- Step 2: Publish the article as resp.comm ---
-  const respCommContext = await browser.newContext({ storageState: STORAGE_STATE.respComm });
-  const respCommPage = await respCommContext.newPage();
+  // --- Step 2: Publish the article as admin (has article_validate_all) ---
+  const adminContext = await browser.newContext({ storageState: STORAGE_STATE.admin });
+  const adminPage = await adminContext.newPage();
 
-  await respCommPage.goto('/');
-  await respCommPage.locator('#toolbar-user').hover();
-  await respCommPage.locator('a[href="/gestion-des-articles.html"]').click();
+  await adminPage.goto('/gestion-des-articles.html');
 
-  const autoriserPublierBtn = respCommPage
+  const autoriserPublierBtn = adminPage
     .locator('input[type="submit"][value="Autoriser & publier"]')
     .first();
   await expect(autoriserPublierBtn).toBeVisible({ timeout: 5_000 });
   await autoriserPublierBtn.click();
 
-  await expect(respCommPage.getByText(/Opération effectuée avec succ/i)).toBeVisible({ timeout: 5_000 });
+  await expect(adminPage.getByText(/Opération effectuée avec succ/i)).toBeVisible({ timeout: 5_000 });
 
-  await respCommContext.close();
+  await adminContext.close();
 });

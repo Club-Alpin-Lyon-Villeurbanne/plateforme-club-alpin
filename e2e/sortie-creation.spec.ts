@@ -20,10 +20,7 @@ const START_DATETIME = futureDatetime(7);
 const CONTENU = 'test de contenu de page';
 
 test('creation de sortie famille', async ({ page }) => {
-  await page.goto('/');
-  await page.locator('#toolbar-user').hover();
-  await page.getByRole('link', { name: /proposer une sortie/ }).click();
-  await page.getByRole('link', { name: /Créer une sortie Sorties familles/ }).click();
+  await page.goto('/creer-une-sortie?commission=sorties-familles');
 
   // Title
   await page.getByLabel('Titre').fill(TITRE);
