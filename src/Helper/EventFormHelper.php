@@ -28,6 +28,7 @@ class EventFormHelper
                 'mapped' => false,
                 'multiple' => true,
                 'expanded' => true,
+                'required' => false,
             ])
             ->add('coencadrants', ChoiceType::class, [
                 'label' => false,
@@ -36,6 +37,7 @@ class EventFormHelper
                 'mapped' => false,
                 'multiple' => true,
                 'expanded' => true,
+                'required' => false,
             ])
             ->add('initiateurs', ChoiceType::class, [
                 'label' => false,
@@ -44,6 +46,7 @@ class EventFormHelper
                 'mapped' => false,
                 'multiple' => true,
                 'expanded' => true,
+                'required' => false,
             ])
             ->add('benevoles', ChoiceType::class, [
                 'label' => false,
@@ -52,6 +55,7 @@ class EventFormHelper
                 'mapped' => false,
                 'multiple' => true,
                 'expanded' => true,
+                'required' => false,
             ])
         ;
 
