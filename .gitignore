@@ -26,6 +26,15 @@ public/dev.txt
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
 
+###> playwright ###
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+/e2e/.auth/
+.env.test
+###< playwright ###
+
 ###> lexik/jwt-authentication-bundle ###
 # /config/jwt/*.pem
 ###< lexik/jwt-authentication-bundle ###
@@ -44,18 +53,9 @@ public/dev.txt
 /public/media/cache/
 ###< liip/imagine-bundle ###
 
-# Playwright
-node_modules/
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
 # Claude Code assistant files
 .claude/
 
-# Test reports
-test-results/
-playwright-report/
 AGENTS.md
 
 .clever.json
