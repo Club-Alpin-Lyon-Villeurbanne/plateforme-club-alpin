@@ -36,7 +36,7 @@ class SortiePublieeHandlerTest extends WebTestCase
         $otherUserSubscribed = $this->signup('test-' . bin2hex(random_bytes(12)) . '@clubalpinlyon.fr', 'Azerty42!');
         $otherUserNotSubscribed = $this->signup();
         $otherUserSubscribedToAnotherCommission = $this->signup();
-        $otherUserSubscribedNotEnabledAccount = $this->signup('test-' . bin2hex(random_bytes(12)) . '@clubalpinlyon.fr', 'Azerty42!');
+        $otherUserSubscribedNotEnabledAccount = $this->signup();
 
         $evt = $this->createEvent($userOwner);
         $otherCommission = $this->createCommission('other');

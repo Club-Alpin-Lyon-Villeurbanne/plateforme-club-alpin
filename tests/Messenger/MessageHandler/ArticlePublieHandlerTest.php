@@ -35,7 +35,7 @@ class ArticlePublieHandlerTest extends WebTestCase
         $userOwner = $this->signup('test-' . bin2hex(random_bytes(12)) . '@clubalpinlyon.fr', 'Azerty42!');
         $otherUserSubscribed = $this->signup('test-' . bin2hex(random_bytes(12)) . '@clubalpinlyon.fr', 'Azerty42!');
         $otherUserNotSubscribed = $this->signup();
-        $otherUserSubscribedNotEnabledAccount = $this->signup('test-' . bin2hex(random_bytes(12)) . '@clubalpinlyon.fr', 'Azerty42!');
+        $otherUserSubscribedNotEnabledAccount = $this->signup();
 
         $article = $this->createArticle($userOwner);
 
