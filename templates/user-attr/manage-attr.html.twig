@@ -111,9 +111,7 @@
 
             <div id="commissions-pick" class="nice-checkboxes">
                 {% for commission in commissions %}
-                    {% if allowed('user_giveright_1', 'commission:' ~ commission.code) %}
-                        <label for="commissions-pick-{{ commission.id }}"><input type="checkbox" name="commission[]" value="commission:{{ commission.code }}" id="commissions-pick-{{ commission.id }}" /> {{ commission.title }} </label>
-                    {% endif %}
+                    <label for="commissions-pick-{{ commission.id }}"><input type="checkbox" name="commission[]" value="commission:{{ commission.code }}" id="commissions-pick-{{ commission.id }}" /> {{ commission.title }} </label>
                 {% endfor %}
             </div>
             <br /><br />
