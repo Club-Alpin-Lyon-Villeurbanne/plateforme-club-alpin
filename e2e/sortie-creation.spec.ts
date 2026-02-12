@@ -21,7 +21,18 @@ const END_DATETIME = futureDatetime(7, 17, 0);
 const CONTENU = 'test de contenu de page';
 
 test('creation de sortie famille', async ({ page }) => {
-  await page.goto('/creer-une-sortie?commission=sorties-familles');
+  // Navigate and wait for both the page and the AJAX calls triggered by
+  // switchCommission() on DOMContentLoaded. This function replaces #individus
+  // (encadrant checkboxes) and #commission-specific-fields via two fetch() calls.
+  // We must wait for these responses before interacting with those sections,
+  // otherwise the AJAX responses will overwrite any values we set.
+  await Promise.all([
+    page.waitForResponse((resp) => resp.url().includes('/encadrement-par-commission') && resp.status() === 200),
+    page.waitForResponse((resp) => resp.url().includes('/champs-parametrables-par-commission') && resp.status() === 200),
+    page.goto('/creer-une-sortie?commission=sorties-familles'),
+  ]);
+  // Small yield to let the fetch .then() callbacks update the DOM
+  await page.locator('#individus input[name$="[encadrants][]"]').first().waitFor();
 
   // Title
   await page.getByLabel('Titre').fill(TITRE);
@@ -29,11 +40,8 @@ test('creation de sortie famille', async ({ page }) => {
   // Activity departure location (required)
   await page.getByLabel(/Lieu de départ/i).fill('69005 Lyon');
 
-  // Check first encadrant checkbox
-  const encadrantCheckbox = page.locator('input[name$="[encadrants][]"]').first();
-  if (await encadrantCheckbox.count() > 0) {
-    await encadrantCheckbox.check();
-  }
+  // Check first encadrant checkbox (loaded via AJAX)
+  await page.locator('#individus input[name$="[encadrants][]"]').first().check();
 
   // Meeting point
   const rdvField = page.getByLabel(/Lieu de rendez-vous covoiturage/i);
@@ -62,7 +70,7 @@ test('creation de sortie famille', async ({ page }) => {
     await joinStartField.fill(START_DATETIME);
   }
 
-  // Commission-specific mandatory fields (Sorties familles)
+  // Commission-specific mandatory fields (loaded via AJAX)
   await page.getByLabel(/Difficulté, niveau/i).fill('Facile');
   await page.getByLabel(/Dénivelé positif/i).fill('300');
   await page.getByLabel(/Distance/i).fill('5.5');
