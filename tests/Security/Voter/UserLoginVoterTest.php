@@ -10,20 +10,6 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class UserLoginVoterTest extends TestCase
 {
-    private function getToken(): TokenInterface
-    {
-        return $this->createMock(TokenInterface::class);
-    }
-
-    private function createUser(bool $isDeleted = false, bool $isLocked = false): User
-    {
-        $user = $this->createMock(User::class);
-        $user->method('isDeleted')->willReturn($isDeleted);
-        $user->method('isLocked')->willReturn($isLocked);
-
-        return $user;
-    }
-
     public function testGrantsForActiveUser(): void
     {
         $voter = new UserLoginVoter();
@@ -62,5 +48,21 @@ class UserLoginVoterTest extends TestCase
         $res = $voter->vote($this->getToken(), $this->createUser(), ['SOME_OTHER_ATTRIBUTE']);
 
         $this->assertSame(Voter::ACCESS_ABSTAIN, $res);
+    }
+
+    // Helper methods
+
+    private function getToken(): TokenInterface
+    {
+        return $this->createMock(TokenInterface::class);
+    }
+
+    private function createUser(bool $isDeleted = false, bool $isLocked = false): User
+    {
+        $user = $this->createMock(User::class);
+        $user->method('isDeleted')->willReturn($isDeleted);
+        $user->method('isLocked')->willReturn($isLocked);
+
+        return $user;
     }
 }
