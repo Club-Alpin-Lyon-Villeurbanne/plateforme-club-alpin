@@ -32,15 +32,17 @@ class ArticlePublieHandlerTest extends WebTestCase
 
     public function testItDispatchMessages()
     {
-        $userOwner = $this->signup();
-        $otherUserSubscribed = $this->signup();
+        $userOwner = $this->signup('test-' . bin2hex(random_bytes(12)) . '@clubalpinlyon.fr', 'Azerty42!');
+        $otherUserSubscribed = $this->signup('test-' . bin2hex(random_bytes(12)) . '@clubalpinlyon.fr', 'Azerty42!');
         $otherUserNotSubscribed = $this->signup();
+        $otherUserSubscribedNotEnabledAccount = $this->signup('test-' . bin2hex(random_bytes(12)) . '@clubalpinlyon.fr', 'Azerty42!');
 
         $article = $this->createArticle($userOwner);
 
         $userOwner->setAlertStatus(AlertType::Article, $article->getCommission()->getCode(), true);
         $otherUserSubscribed->setAlertStatus(AlertType::Article, $article->getCommission()->getCode(), true);
         $otherUserNotSubscribed->setAlertStatus(AlertType::Article, $article->getCommission()->getCode(), false);
+        $otherUserSubscribedNotEnabledAccount->setAlertStatus(AlertType::Article, $article->getCommission()->getCode(), true);
 
         self::getContainer()->get(EntityManagerInterface::class)->flush();
 
