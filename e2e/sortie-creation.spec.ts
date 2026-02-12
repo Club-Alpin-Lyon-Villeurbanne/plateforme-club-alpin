@@ -21,18 +21,11 @@ const END_DATETIME = futureDatetime(7, 17, 0);
 const CONTENU = 'test de contenu de page';
 
 test('creation de sortie famille', async ({ page }) => {
-  // Navigate and wait for both the page and the AJAX calls triggered by
-  // switchCommission() on DOMContentLoaded. This function replaces #individus
-  // (encadrant checkboxes) and #commission-specific-fields via two fetch() calls.
-  // We must wait for these responses before interacting with those sections,
-  // otherwise the AJAX responses will overwrite any values we set.
-  await Promise.all([
-    page.waitForResponse((resp) => resp.url().includes('/encadrement-par-commission') && resp.status() === 200),
-    page.waitForResponse((resp) => resp.url().includes('/champs-parametrables-par-commission') && resp.status() === 200),
-    page.goto('/creer-une-sortie?commission=sorties-familles'),
-  ]);
-  // Small yield to let the fetch .then() callbacks update the DOM
-  await page.locator('#individus input[name$="[encadrants][]"]').first().waitFor();
+  // On DOMContentLoaded, switchCommission() fires two AJAX calls that replace
+  // #individus (encadrant checkboxes) and #commission-specific-fields with fresh
+  // HTML. We use networkidle to wait for these AJAX calls to complete and their
+  // .then() callbacks to update the DOM before interacting with the form.
+  await page.goto('/creer-une-sortie?commission=sorties-familles', { waitUntil: 'networkidle' });
 
   // Title
   await page.getByLabel('Titre').fill(TITRE);
