@@ -61,7 +61,7 @@ class TransportDetailsValidator
         }
 
         $this->validateRequiredFields($transport, $type, $context);
-        $this->validateRequiredAttachments($attachments, $type, $context);
+        $this->validateRequiredAttachments($attachments, $transport, $type, $context);
     }
 
     private function isValidTransportObject($transport, ExecutionContextInterface $context): bool
@@ -113,9 +113,14 @@ class TransportDetailsValidator
         }
     }
 
-    private function validateRequiredAttachments(Collection $attachments, string $type, ExecutionContextInterface $context): void
+    private function validateRequiredAttachments(Collection $attachments, mixed $transport, string $type, ExecutionContextInterface $context): void
     {
-        $requiredAttachments = self::REQUIRED_ATTACHMENTS[$type] ?? [];
+        if ('RENTAL_MINIBUS' === $type && empty($transport['fuelExpense'])) {
+            $requiredAttachments = ['rentalPrice'];
+        } else {
+            $requiredAttachments = self::REQUIRED_ATTACHMENTS[$type] ?? [];
+        }
+
         $this->attachmentValidator->validate($attachments, $requiredAttachments, $context);
     }
 }
