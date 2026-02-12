@@ -5,11 +5,12 @@ namespace App\Tests\Security\Voter;
 use App\Entity\User;
 use App\Security\Voter\ExpenseReportVoter;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class ExpenseReportVoterTest extends TestCase
 {
+    use VoterTestHelperTrait;
+
     public function testDeniesWhenAnonymous(): void
     {
         $voter = new ExpenseReportVoter('1,2,3');
@@ -60,15 +61,5 @@ class ExpenseReportVoterTest extends TestCase
 
         $res = $voter->vote($this->getToken($user), null, [ExpenseReportVoter::MANAGE_EXPENSE_REPORTS]);
         $this->assertSame(Voter::ACCESS_DENIED, $res);
-    }
-
-    // Helper methods
-
-    private function getToken($user): TokenInterface
-    {
-        $token = $this->createMock(TokenInterface::class);
-        $token->method('getUser')->willReturn($user);
-
-        return $token;
     }
 }

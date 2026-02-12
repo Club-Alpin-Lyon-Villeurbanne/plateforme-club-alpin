@@ -7,11 +7,12 @@ use App\Entity\User;
 use App\Security\Voter\ParticipantAnnulationVoter;
 use App\UserRights;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class ParticipantAnnulationVoterTest extends TestCase
 {
+    use VoterTestHelperTrait;
+
     public function testDeniesWhenAnonymous(): void
     {
         $userRights = $this->createMock(UserRights::class);
@@ -75,15 +76,5 @@ class ParticipantAnnulationVoterTest extends TestCase
 
         $user = $this->createMock(User::class);
         $voter->vote($this->getToken($user), new \stdClass(), ['PARTICIPANT_ANNULATION']);
-    }
-
-    // Helper methods
-
-    private function getToken($user): TokenInterface
-    {
-        $token = $this->createMock(TokenInterface::class);
-        $token->method('getUser')->willReturn($user);
-
-        return $token;
     }
 }

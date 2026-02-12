@@ -7,11 +7,12 @@ use App\Entity\User;
 use App\Security\Voter\NomadJoinSortieVoter;
 use App\UserRights;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class NomadJoinSortieVoterTest extends TestCase
 {
+    use VoterTestHelperTrait;
+
     public function testDeniesWhenAnonymous(): void
     {
         $userRights = $this->createMock(UserRights::class);
@@ -63,15 +64,5 @@ class NomadJoinSortieVoterTest extends TestCase
 
         $res = $voter->vote($token, $event, ['EVENT_NOMAD_JOINING_ADD']);
         $this->assertSame(Voter::ACCESS_DENIED, $res);
-    }
-
-    // Helper methods
-
-    private function getToken($user): TokenInterface
-    {
-        $token = $this->createMock(TokenInterface::class);
-        $token->method('getUser')->willReturn($user);
-
-        return $token;
     }
 }

@@ -12,11 +12,12 @@ use App\Security\Voter\SortieInscriptionsModificationVoter;
 use App\UserRights;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class SortieInscriptionsModificationVoterTest extends TestCase
 {
+    use VoterTestHelperTrait;
+
     public function testDeniesWhenAnonymous(): void
     {
         $voter = $this->createVoter();
@@ -178,16 +179,6 @@ class SortieInscriptionsModificationVoterTest extends TestCase
 
         $res = $voter->vote($this->getToken($user), $event, ['SORTIE_INSCRIPTIONS_MODIFICATION']);
         $this->assertSame(Voter::ACCESS_GRANTED, $res);
-    }
-
-    // Helper methods
-
-    private function getToken($user): TokenInterface
-    {
-        $token = $this->createMock(TokenInterface::class);
-        $token->method('getUser')->willReturn($user);
-
-        return $token;
     }
 
     private function createVoter(bool $isAdmin = false, array $allowedRights = [], array $commissionRights = []): SortieInscriptionsModificationVoter

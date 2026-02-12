@@ -8,11 +8,12 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Security\Voter\UserJoinSortieVoter;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
 class UserJoinSortieVoterTest extends TestCase
 {
+    use VoterTestHelperTrait;
+
     public function testDeniesWhenAnonymous(): void
     {
         $userRepo = $this->createMock(UserRepository::class);
@@ -111,16 +112,6 @@ class UserJoinSortieVoterTest extends TestCase
 
         $user = $this->createMock(User::class);
         $voter->vote($this->getToken($user), new \stdClass(), ['JOIN_SORTIE']);
-    }
-
-    // Helper methods
-
-    private function getToken($user): TokenInterface
-    {
-        $token = $this->createMock(TokenInterface::class);
-        $token->method('getUser')->willReturn($user);
-
-        return $token;
     }
 
     private function createEvent(bool $joinStarted = true): Evt
