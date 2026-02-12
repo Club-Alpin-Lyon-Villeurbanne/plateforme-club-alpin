@@ -139,13 +139,23 @@ class Evt
 
     #[ORM\Column(name: 'lat_evt', type: 'decimal', precision: 11, scale: 8, nullable: false)]
     #[Groups('event:details')]
-    #[SerializedName('latitude')]
-    private string|float|null $lat;
+    #[SerializedName('latitudeRDV')]
+    private string|float $lat;
 
     #[ORM\Column(name: 'long_evt', type: 'decimal', precision: 11, scale: 8, nullable: false)]
     #[Groups('event:details')]
-    #[SerializedName('longitude')]
-    private string|float|null $long;
+    #[SerializedName('longitudeRDV')]
+    private string|float $long;
+
+    #[ORM\Column(name: 'start_lat', type: 'decimal', precision: 11, scale: 8, nullable: false)]
+    #[Groups('event:details')]
+    #[SerializedName('latitudeDepart')]
+    private string|float $startLat;
+
+    #[ORM\Column(name: 'start_long', type: 'decimal', precision: 11, scale: 8, nullable: false)]
+    #[Groups('event:details')]
+    #[SerializedName('longitudeDepart')]
+    private string|float $startLong;
 
     #[ORM\Column(name: 'matos_evt', type: 'text', nullable: true)]
     #[Groups('event:details')]
@@ -236,6 +246,22 @@ class Evt
     #[SerializedName('waitingSeat')]
     private ?int $waitingSeat = null;
 
+    #[ORM\Column(name: 'main_transport_mode', type: Types::STRING, length: 50, nullable: true, enumType: TransportModeEnum::class)]
+    #[Groups('event:read')]
+    private ?TransportModeEnum $mainTransportMode = null;
+
+    #[ORM\Column(name: 'nb_vehicle', type: Types::INTEGER, nullable: false, options: ['default' => 1])]
+    #[Groups('event:read')]
+    private int $nbVehicle;
+
+    #[ORM\Column(name: 'nb_km', type: Types::FLOAT, nullable: true)]
+    #[Groups('event:read')]
+    private ?float $nbKm = null;
+
+    #[ORM\Column(name: 'carbon_cost', type: Types::FLOAT, nullable: true)]
+    #[Groups('event:read')]
+    private ?float $carbonCost = null;
+
     public function __construct(
         ?User $user,
         ?Commission $commission,
@@ -258,6 +284,9 @@ class Evt
         $this->rdv = $rdv;
         $this->lat = $rdvLat;
         $this->long = $rdvLong;
+        $this->startLat = 0.0;
+        $this->startLong = 0.0;
+        $this->nbVehicle = 1;
         $this->description = $description;
         $this->joinMax = $maxInscriptions;
         $this->ngensMax = $maxParticipants;
@@ -685,24 +714,24 @@ class Evt
         return $this;
     }
 
-    public function getLat(): string|float|null
+    public function getLat(): string|float
     {
         return $this->lat;
     }
 
-    public function setLat(string|float|null $lat): self
+    public function setLat(string|float $lat): self
     {
         $this->lat = $lat;
 
         return $this;
     }
 
-    public function getLong(): string|float|null
+    public function getLong(): string|float
     {
         return $this->long;
     }
 
-    public function setLong(string|float|null $long): self
+    public function setLong(string|float $long): self
     {
         $this->long = $long;
 
@@ -913,6 +942,54 @@ class Evt
         return $this;
     }
 
+    public function getMainTransportMode(): ?TransportModeEnum
+    {
+        return $this->mainTransportMode;
+    }
+
+    public function setMainTransportMode(?TransportModeEnum $mainTransportMode): self
+    {
+        $this->mainTransportMode = $mainTransportMode;
+
+        return $this;
+    }
+
+    public function getNbVehicle(): int
+    {
+        return $this->nbVehicle;
+    }
+
+    public function setNbVehicle(int $nbVehicle): self
+    {
+        $this->nbVehicle = $nbVehicle;
+
+        return $this;
+    }
+
+    public function getNbKm(): ?float
+    {
+        return $this->nbKm;
+    }
+
+    public function setNbKm(?float $nbKm): self
+    {
+        $this->nbKm = $nbKm;
+
+        return $this;
+    }
+
+    public function getCarbonCost(): ?float
+    {
+        return $this->carbonCost;
+    }
+
+    public function setCarbonCost(?float $carbonCost): self
+    {
+        $this->carbonCost = $carbonCost;
+
+        return $this;
+    }
+
     public function hasPaymentForm(): bool
     {
         return $this->hasPaymentForm;
@@ -1010,6 +1087,30 @@ class Evt
     public function setWaitingSeat(?int $waitingSeat): self
     {
         $this->waitingSeat = $waitingSeat;
+
+        return $this;
+    }
+
+    public function getStartLat(): float|string
+    {
+        return $this->startLat;
+    }
+
+    public function setStartLat(float|string $startLat): self
+    {
+        $this->startLat = $startLat;
+
+        return $this;
+    }
+
+    public function getStartLong(): float|string
+    {
+        return $this->startLong;
+    }
+
+    public function setStartLong(float|string $startLong): self
+    {
+        $this->startLong = $startLong;
 
         return $this;
     }
