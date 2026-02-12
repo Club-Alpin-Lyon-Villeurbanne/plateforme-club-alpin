@@ -29,7 +29,7 @@ abstract class WebTestCase extends BaseWebTestCase
         $this->client = static::createClient();
     }
 
-    protected function signup(?string $email = null): User
+    protected function signup(?string $email = null, ?string $mdp = null): User
     {
         $em = $this->getContainer()->get('doctrine')->getManager();
 
@@ -39,6 +39,7 @@ abstract class WebTestCase extends BaseWebTestCase
 
         $user = new User();
         $user->setEmail($email);
+        $user->setMdp($mdp);
         $user->setFirstname('prenom');
         $user->setLastname('nom');
         $user->setNickname('nickname');

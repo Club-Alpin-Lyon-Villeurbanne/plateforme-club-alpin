@@ -87,6 +87,8 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
                     AND u.doit_renouveler_user = 0
                     AND u.email_user IS NOT NULL
                     AND u.email_user != ''
+                    AND u.mdp_user IS NOT NULL
+                    AND u.mdp_user != ''
                     AND u.profile_type = $profileType
             ) as sub_query
             WHERE
