@@ -83,9 +83,9 @@ class UserRightController extends AbstractController
             throw new AccessDeniedHttpException('Vous n\'avez pas le droit d\'accéder à cette fonctionnalité');
         }
 
-        $lowerResps = $usertypeRepository->findLowerResps($usertype->getHierarchie(), $usertype->getLimitedToComm());
-
         if ($usertype->getLimitedToComm() && !empty($data['commission'])) {
+            $lowerResps = $usertypeRepository->findLowerResps($usertype->getHierarchie(), $usertype->getLimitedToComm());
+
             foreach ($data['commission'] as $commission) {
                 $commissionCode = str_replace('commission:', '', $commission);
                 $user->addAttribute($usertype, $commission, $data['description_user_attr']);
