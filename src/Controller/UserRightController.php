@@ -31,6 +31,7 @@ class UserRightController extends AbstractController
         protected LoggerInterface $logger,
         protected UserRights $userRights,
         protected UserRightService $userRightService,
+        protected bool $cleanInferiorRights = true,
     ) {
     }
 
@@ -88,23 +89,25 @@ class UserRightController extends AbstractController
             throw new AccessDeniedHttpException('Vous n\'avez pas le droit d\'accéder à cette fonctionnalité');
         }
 
-        $lowerResps = $usertypeRepository->findLowerResps($usertype->getHierarchie(), $usertype->getLimitedToComm());
-
         if ($usertype->getLimitedToComm() && !empty($data['commission'])) {
+            $lowerResps = $usertypeRepository->findLowerResps($usertype->getHierarchie(), $usertype->getLimitedToComm());
+
             foreach ($data['commission'] as $commission) {
                 $commissionCode = str_replace('commission:', '', $commission);
                 $user->addAttribute($usertype, $commission, $data['description_user_attr']);
 
                 // enlever les responsabilités inférieures
-                foreach ($lowerResps as $lowerResp) {
-                    // on n'enlève pas "encadrant" si on ajoute "responsable de commission"
-                    if (
-                        UserAttr::RESPONSABLE_COMMISSION === $usertype->getCode()
-                        && UserAttr::ENCADRANT === $lowerResp->getCode()
-                    ) {
-                        continue;
+                if ($this->cleanInferiorRights) {
+                    foreach ($lowerResps as $lowerResp) {
+                        // on n'enlève pas "encadrant" si on ajoute "responsable de commission"
+                        if (
+                            UserAttr::RESPONSABLE_COMMISSION === $usertype->getCode()
+                            && UserAttr::ENCADRANT === $lowerResp->getCode()
+                        ) {
+                            continue;
+                        }
+                        $userAttrRepository->deleteByUser($user, $lowerResp, $commissionCode);
                     }
-                    $userAttrRepository->deleteByUser($user, $lowerResp, $commissionCode);
                 }
             }
         } elseif (!$usertype->getLimitedToComm()) {

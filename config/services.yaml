@@ -57,6 +57,7 @@ parameters:
   club_cafnum_prefix: '%env(string:CLUB_CAFNUM_PREFIX)%'
   max_user_articles: '%env(int:MAX_ARTICLES_ADHERENT)%'
   max_articles_validation: '%env(int:MAX_ARTICLES_VALIDATION)%'
+  inferior_rights_clean: '%env(bool:INFERIOR_RIGHTS_CLEAN)%'
 
 services:
   # default configuration for services in *this* file
@@ -356,3 +357,8 @@ services:
   App\Command\AutoRenewSpecialAccounts:
     arguments:
       $specialAccountsIds: '%env(SPECIAL_ACCOUNTS_IDS)%'
+
+  App\Controller\UserRightController:
+    arguments:
+      $cleanInferiorRights: '%inferior_rights_clean%'
+    tags: ['controller.service_arguments']
