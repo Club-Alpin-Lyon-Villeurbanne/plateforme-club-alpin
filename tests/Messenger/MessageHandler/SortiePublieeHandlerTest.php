@@ -32,10 +32,11 @@ class SortiePublieeHandlerTest extends WebTestCase
 
     public function testItDispatchMessages()
     {
-        $userOwner = $this->signup();
-        $otherUserSubscribed = $this->signup();
+        $userOwner = $this->signup('test-' . bin2hex(random_bytes(12)) . '@clubalpinlyon.fr', 'Azerty42!');
+        $otherUserSubscribed = $this->signup('test-' . bin2hex(random_bytes(12)) . '@clubalpinlyon.fr', 'Azerty42!');
         $otherUserNotSubscribed = $this->signup();
         $otherUserSubscribedToAnotherCommission = $this->signup();
+        $otherUserSubscribedNotEnabledAccount = $this->signup();
 
         $evt = $this->createEvent($userOwner);
         $otherCommission = $this->createCommission('other');
@@ -44,6 +45,7 @@ class SortiePublieeHandlerTest extends WebTestCase
         $otherUserSubscribed->setAlertStatus(AlertType::Sortie, $evt->getCommission()->getCode(), true);
         $otherUserNotSubscribed->setAlertStatus(AlertType::Sortie, $evt->getCommission()->getCode(), false);
         $otherUserSubscribedToAnotherCommission->setAlertStatus(AlertType::Sortie, $otherCommission->getCode(), true);
+        $otherUserSubscribedNotEnabledAccount->setAlertStatus(AlertType::Sortie, $evt->getCommission()->getCode(), true);
 
         self::getContainer()->get(EntityManagerInterface::class)->flush();
 
