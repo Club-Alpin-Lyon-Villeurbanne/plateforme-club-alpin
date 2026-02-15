@@ -115,12 +115,28 @@ class TransportDetailsValidator
 
     private function validateRequiredAttachments(Collection $attachments, array $transport, string $type, ExecutionContextInterface $context): void
     {
-        $requiredAttachments = array_values(array_filter(
-            self::REQUIRED_ATTACHMENTS[$type] ?? [],
-            fn (string $expenseId): bool => $this->isStrictlyPositiveAmount($transport[$expenseId] ?? null)
-        ));
+        $requiredAttachments = $this->getRequiredAttachmentsForTransport($transport, $type);
 
         $this->attachmentValidator->validate($attachments, $requiredAttachments, $context);
+    }
+
+    private function getRequiredAttachmentsForTransport(array $transport, string $type): array
+    {
+        $attachmentFields = self::REQUIRED_ATTACHMENTS[$type] ?? [];
+        $requiredAttachments = [];
+
+        foreach ($attachmentFields as $expenseId) {
+            if ($this->hasStrictlyPositiveAmount($transport, $expenseId)) {
+                $requiredAttachments[] = $expenseId;
+            }
+        }
+
+        return $requiredAttachments;
+    }
+
+    private function hasStrictlyPositiveAmount(array $transport, string $expenseId): bool
+    {
+        return $this->isStrictlyPositiveAmount($transport[$expenseId] ?? null);
     }
 
     private function isStrictlyPositiveAmount(mixed $value): bool
