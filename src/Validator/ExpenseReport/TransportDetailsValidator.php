@@ -113,14 +113,18 @@ class TransportDetailsValidator
         }
     }
 
-    private function validateRequiredAttachments(Collection $attachments, mixed $transport, string $type, ExecutionContextInterface $context): void
+    private function validateRequiredAttachments(Collection $attachments, array $transport, string $type, ExecutionContextInterface $context): void
     {
-        if ('RENTAL_MINIBUS' === $type && empty($transport['fuelExpense'])) {
-            $requiredAttachments = ['rentalPrice'];
-        } else {
-            $requiredAttachments = self::REQUIRED_ATTACHMENTS[$type] ?? [];
-        }
+        $requiredAttachments = array_values(array_filter(
+            self::REQUIRED_ATTACHMENTS[$type] ?? [],
+            fn (string $expenseId): bool => $this->isStrictlyPositiveAmount($transport[$expenseId] ?? null)
+        ));
 
         $this->attachmentValidator->validate($attachments, $requiredAttachments, $context);
+    }
+
+    private function isStrictlyPositiveAmount(mixed $value): bool
+    {
+        return \is_numeric($value) && (float) $value > 0;
     }
 }
