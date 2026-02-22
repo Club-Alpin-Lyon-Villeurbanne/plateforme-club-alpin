@@ -63,7 +63,7 @@
             <p class="summup">
                 {% set limit = 150 %}
                 {% set text = article.cont|striptags|decode_html_entities %}
-                {{ text|u.truncate(limit, '...', false) }}
+                {{ text|u.truncate(limit, '.', false) }}
 
                 {% if text|length > limit %}
                     <a href="{{ url }}" title="Voir cet article">
