@@ -61,7 +61,7 @@ class TransportDetailsValidator
         }
 
         $this->validateRequiredFields($transport, $type, $context);
-        $this->validateRequiredAttachments($attachments, $type, $context);
+        $this->validateRequiredAttachments($attachments, $transport, $type, $context);
     }
 
     private function isValidTransportObject($transport, ExecutionContextInterface $context): bool
@@ -113,9 +113,34 @@ class TransportDetailsValidator
         }
     }
 
-    private function validateRequiredAttachments(Collection $attachments, string $type, ExecutionContextInterface $context): void
+    private function validateRequiredAttachments(Collection $attachments, array $transport, string $type, ExecutionContextInterface $context): void
     {
-        $requiredAttachments = self::REQUIRED_ATTACHMENTS[$type] ?? [];
+        $requiredAttachments = $this->getRequiredAttachmentsForTransport($transport, $type);
+
         $this->attachmentValidator->validate($attachments, $requiredAttachments, $context);
+    }
+
+    private function getRequiredAttachmentsForTransport(array $transport, string $type): array
+    {
+        $attachmentFields = self::REQUIRED_ATTACHMENTS[$type] ?? [];
+        $requiredAttachments = [];
+
+        foreach ($attachmentFields as $expenseId) {
+            if ($this->hasStrictlyPositiveAmount($transport, $expenseId)) {
+                $requiredAttachments[] = $expenseId;
+            }
+        }
+
+        return $requiredAttachments;
+    }
+
+    private function hasStrictlyPositiveAmount(array $transport, string $expenseId): bool
+    {
+        return $this->isStrictlyPositiveAmount($transport[$expenseId] ?? null);
+    }
+
+    private function isStrictlyPositiveAmount(mixed $value): bool
+    {
+        return \is_numeric($value) && (float) $value > 0;
     }
 }
