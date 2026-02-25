@@ -59,7 +59,7 @@ class ContentHtml implements ServiceSubscriberInterface
         }
 
         if ($content) {
-            $ret .= $content->getContenu();
+            $ret .= self::addHeadingIds($content->getContenu());
         } else {
             if ($this->locator->get(AuthorizationCheckerInterface::class)->isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
                 $ret .= '<div class="blocdesactive"><img src="/img/base/bullet_key.png" alt="" title="" /> Bloc de contenu désactivé</div>';
@@ -73,5 +73,69 @@ class ContentHtml implements ServiceSubscriberInterface
         $ret .= '</div>';
 
         return $ret;
+    }
+
+    /**
+     * Ajoute automatiquement des attributs id aux headings (h1-h6)
+     * pour que les liens avec ancres fonctionnent.
+     * Les headings ayant déjà un id explicite sont préservés.
+     * En cas de slugs dupliqués, un suffixe numérique est ajouté (ex: "tarifs2").
+     */
+    public static function addHeadingIds(string $html): string
+    {
+        $usedIds = [];
+
+        return preg_replace_callback(
+            '/<(h[1-6])((?:\s[^>]*)?)>([\s\S]+?)<\/\1>/iu',
+            function ($matches) use (&$usedIds) {
+                $tag = $matches[1];
+                $attrs = $matches[2];
+                $content = $matches[3];
+
+                // Ne pas écraser un id existant ((?:^|\s) évite le faux positif sur data-id, aria-id, etc.)
+                if (preg_match('/(?:^|\s)id\s*=/i', $attrs)) {
+                    return $matches[0];
+                }
+
+                $text = strip_tags($content);
+                $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                $id = self::slugify($text);
+
+                if ('' === $id) {
+                    return $matches[0];
+                }
+
+                // Dédupliquer les ids
+                if (isset($usedIds[$id])) {
+                    $usedIds[$id]++;
+                    $id .= $usedIds[$id];
+                } else {
+                    $usedIds[$id] = 1;
+                }
+
+                return "<{$tag}{$attrs} id=\"{$id}\">{$content}</{$tag}>";
+            },
+            $html
+        ) ?? $html;
+    }
+
+    /**
+     * Génère un slug sans séparateur à partir d'un texte :
+     * supprime accents, emojis, caractères spéciaux, met en minuscules.
+     * Tronqué à 100 caractères max.
+     */
+    public static function slugify(string $text): string
+    {
+        if (function_exists('transliterator_transliterate')) {
+            $text = transliterator_transliterate('Any-Latin; Latin-ASCII; Lower()', $text);
+        } else {
+            $text = mb_strtolower($text, 'UTF-8');
+            $text = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text);
+        }
+
+        $text = strtolower($text);
+        $text = preg_replace('/[^a-z0-9]/', '', $text);
+
+        return substr($text, 0, 100);
     }
 }
