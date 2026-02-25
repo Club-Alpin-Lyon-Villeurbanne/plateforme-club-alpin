@@ -59,7 +59,7 @@ class ContentHtml implements ServiceSubscriberInterface
         }
 
         if ($content) {
-            $ret .= self::addHeadingIds($content->getContenu());
+            $ret .= self::addHeadingIds($content->getContenu() ?? '');
         } else {
             if ($this->locator->get(AuthorizationCheckerInterface::class)->isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
                 $ret .= '<div class="blocdesactive"><img src="/img/base/bullet_key.png" alt="" title="" /> Bloc de contenu désactivé</div>';
@@ -107,7 +107,7 @@ class ContentHtml implements ServiceSubscriberInterface
 
                 // Dédupliquer les ids
                 if (isset($usedIds[$id])) {
-                    $usedIds[$id]++;
+                    ++$usedIds[$id];
                     $id .= $usedIds[$id];
                 } else {
                     $usedIds[$id] = 1;
@@ -131,9 +131,9 @@ class ContentHtml implements ServiceSubscriberInterface
         } else {
             $text = mb_strtolower($text, 'UTF-8');
             $text = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text);
+            $text = strtolower($text);
         }
 
-        $text = strtolower($text);
         $text = preg_replace('/[^a-z0-9]/', '', $text);
 
         return substr($text, 0, 100);
