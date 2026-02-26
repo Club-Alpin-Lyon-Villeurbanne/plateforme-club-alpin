@@ -1,18 +1,43 @@
-import { test, expect } from "@playwright/test";
-import { login } from "./helpers/auth";
+import { test, expect } from '@playwright/test';
+import { STORAGE_STATE } from './helpers/storage-state';
+import { fillCKEditor } from './helpers/ckeditor';
 
-test("Publication d'un article", async ({ page }) => {
-  await login(page, "resp.comm@test-clubalpinlyon.fr", "test");
-  await page.locator("#toolbar-user").hover();
-  await page.waitForTimeout(1000);
-  await page.locator('a[href="/gestion-des-articles.html"]').click();
-  // On the legacy moderation page, the "Autoriser & publier" submit exists inline
-  // Find and click the first matching moderation button rather than relying on a popup preview
-  const autoriserPublierBtn = page.locator('input[type="submit"][value="Autoriser & publier"]').first();
-  await expect(autoriserPublierBtn).toBeVisible({ timeout: 5000 });
+test("Publication d'un article (creation + moderation)", async ({ browser }) => {
+  const articleTitle = 'test e2e publication article ' + Date.now();
+
+  // --- Step 1: Create an article as redacteur ---
+  const redacteurContext = await browser.newContext({ storageState: STORAGE_STATE.redacteur });
+  const redacteurPage = await redacteurContext.newPage();
+
+  await redacteurPage.goto('/');
+  await redacteurPage.locator('#toolbar-user').hover();
+  await redacteurPage.getByRole('link', { name: /rédiger un article/ }).click();
+
+  await redacteurPage.locator('#article_commission').selectOption({ index: 1 });
+  await redacteurPage.locator('input[name="article[articleType]"][value="article"]').check();
+  await redacteurPage.locator('#article_titre').fill(articleTitle);
+  await redacteurPage.locator('#article_agreeEdito').check();
+  await redacteurPage.locator('#article_imagesAuthorized').check();
+  await fillCKEditor(redacteurPage, 'Contenu pour test de publication');
+
+  await redacteurPage.getByRole('button', { name: /ENREGISTRER ET DEMANDER LA PUBLICATION/i }).click();
+  await expect(redacteurPage).toHaveURL(/\/profil\/articles\.html/);
+
+  await redacteurContext.close();
+
+  // --- Step 2: Publish the article as admin (has article_validate_all) ---
+  const adminContext = await browser.newContext({ storageState: STORAGE_STATE.admin });
+  const adminPage = await adminContext.newPage();
+
+  await adminPage.goto('/gestion-des-articles.html');
+
+  const autoriserPublierBtn = adminPage
+    .locator('input[type="submit"][value="Autoriser & publier"]')
+    .first();
+  await expect(autoriserPublierBtn).toBeVisible({ timeout: 5_000 });
   await autoriserPublierBtn.click();
 
-  // Wait for the operation to complete and show a success message on the same page
-  await page.waitForLoadState('networkidle');
-  await expect(page.getByText(/Opération effectuée avec succ/i)).toBeVisible({ timeout: 5000 });
+  await expect(adminPage.getByText(/article.*publié/i)).toBeVisible({ timeout: 5_000 });
+
+  await adminContext.close();
 });

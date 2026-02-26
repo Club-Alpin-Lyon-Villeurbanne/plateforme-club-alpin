@@ -75,6 +75,18 @@ phpunit-setup: ## Setup phpunit
 	@$(PHP) bin/phpunit --version
 .PHONY: phpunit-setup
 
+test-e2e: ## Run Playwright E2E tests
+	npx playwright test
+.PHONY: test-e2e
+
+test-e2e-headed: ## Run Playwright E2E tests (headed)
+	npx playwright test --headed
+.PHONY: test-e2e-headed
+
+test-e2e-report: ## Open Playwright HTML report
+	npx playwright show-report
+.PHONY: test-e2e-report
+
 database-init-test: ## Init database for test
 
 	$(SYMFONY_CONSOLE) doctrine:database:drop --force --if-exists --env=test
