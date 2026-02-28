@@ -89,12 +89,19 @@ class UserRightController extends AbstractController
             throw new AccessDeniedHttpException('Vous n\'avez pas le droit d\'accéder à cette fonctionnalité');
         }
 
+        $newAttributes = [];
+
         if ($usertype->getLimitedToComm() && !empty($data['commission'])) {
             $lowerResps = $usertypeRepository->findLowerResps($usertype->getHierarchie(), $usertype->getLimitedToComm());
 
             foreach ($data['commission'] as $commission) {
                 $commissionCode = str_replace('commission:', '', $commission);
+                $alreadyExists = $user->getAttribute($usertype->getCode(), $commissionCode) instanceof UserAttr;
                 $user->addAttribute($usertype, $commission, $data['description_user_attr']);
+                $userAttr = $user->getAttribute($usertype->getCode(), $commissionCode);
+                if (!$alreadyExists && $userAttr instanceof UserAttr) {
+                    $newAttributes[] = $userAttr;
+                }
 
                 // enlever les responsabilités inférieures
                 if ($this->cleanInferiorRights) {
@@ -111,10 +118,24 @@ class UserRightController extends AbstractController
                 }
             }
         } elseif (!$usertype->getLimitedToComm()) {
+            $alreadyExists = $user->getAttribute($usertype->getCode(), null) instanceof UserAttr;
             $user->addAttribute($usertype, null, $data['description_user_attr']);
+            $userAttr = $user->getAttribute($usertype->getCode(), null);
+            if (!$alreadyExists && $userAttr instanceof UserAttr) {
+                $newAttributes[] = $userAttr;
+            }
         }
         $this->manager->persist($user);
         $this->manager->flush();
+
+        foreach ($newAttributes as $userAttr) {
+            try {
+                $this->userRightService->notify($userAttr, 'ajout', $this->getUser());
+            } catch (\Exception $exception) {
+                $this->logger->error('Impossible de notifier l\'ajout d\'une responsabilité');
+                $this->logger->error($exception->getMessage());
+            }
+        }
 
         return $this->redirectToRoute('user_right_manage', ['user' => $user->getId()]);
     }
