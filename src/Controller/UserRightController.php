@@ -96,9 +96,10 @@ class UserRightController extends AbstractController
 
             foreach ($data['commission'] as $commission) {
                 $commissionCode = str_replace('commission:', '', $commission);
+                $alreadyExists = $user->getAttribute($usertype->getCode(), $commissionCode) instanceof UserAttr;
                 $user->addAttribute($usertype, $commission, $data['description_user_attr']);
                 $userAttr = $user->getAttribute($usertype->getCode(), $commissionCode);
-                if ($userAttr instanceof UserAttr) {
+                if (!$alreadyExists && $userAttr instanceof UserAttr) {
                     $newAttributes[] = $userAttr;
                 }
 
@@ -117,9 +118,10 @@ class UserRightController extends AbstractController
                 }
             }
         } elseif (!$usertype->getLimitedToComm()) {
+            $alreadyExists = $user->getAttribute($usertype->getCode(), null) instanceof UserAttr;
             $user->addAttribute($usertype, null, $data['description_user_attr']);
             $userAttr = $user->getAttribute($usertype->getCode(), null);
-            if ($userAttr instanceof UserAttr) {
+            if (!$alreadyExists && $userAttr instanceof UserAttr) {
                 $newAttributes[] = $userAttr;
             }
         }
