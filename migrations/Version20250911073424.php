@@ -16,11 +16,11 @@ final class Version20250911073424 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE caf_evt ADD main_transport_mode VARCHAR(50) DEFAULT NULL, ADD nb_km DOUBLE PRECISION DEFAULT NULL, ADD carbon_cost DOUBLE PRECISION DEFAULT NULL');
+        $this->addSql('ALTER TABLE caf_evt ADD mode_transport VARCHAR(50) DEFAULT NULL, ADD nb_km DOUBLE PRECISION DEFAULT NULL, ADD cout_carbone DOUBLE PRECISION DEFAULT NULL');
     }
 
     public function down(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE caf_evt DROP main_transport_mode, DROP nb_km, DROP carbon_cost');
+        $this->addSql('ALTER TABLE caf_evt DROP mode_transport, DROP nb_km, DROP cout_carbone');
     }
 }

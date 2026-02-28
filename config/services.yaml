@@ -363,6 +363,11 @@ services:
       $cleanInferiorRights: '%inferior_rights_clean%'
     tags: ['controller.service_arguments']
 
+  App\Helper\DistanceHelper:
+    arguments:
+      $osrmApiUrl: '%env(OSRM_API_URL)%'
+      $timeout: '%env(int:OSRM_TIMEOUT)%'
+
   App\Helper\CarbonCostHelper:
     arguments:
       $publicTrainRate: '%env(float:PUBLIC_TRAIN_CARBON_COST_RATE)%'

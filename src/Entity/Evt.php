@@ -139,23 +139,23 @@ class Evt
 
     #[ORM\Column(name: 'lat_evt', type: 'decimal', precision: 11, scale: 8, nullable: false)]
     #[Groups('event:details')]
-    #[SerializedName('latitudeRDV')]
+    #[SerializedName('latitude')]
     private string|float $lat;
 
     #[ORM\Column(name: 'long_evt', type: 'decimal', precision: 11, scale: 8, nullable: false)]
     #[Groups('event:details')]
-    #[SerializedName('longitudeRDV')]
+    #[SerializedName('longitude')]
     private string|float $long;
 
-    #[ORM\Column(name: 'start_lat', type: 'decimal', precision: 11, scale: 8, nullable: false)]
+    #[ORM\Column(name: 'lat_depart', type: 'decimal', precision: 11, scale: 8, nullable: false)]
     #[Groups('event:details')]
     #[SerializedName('latitudeDepart')]
-    private string|float $startLat;
+    private string|float $latDepart;
 
-    #[ORM\Column(name: 'start_long', type: 'decimal', precision: 11, scale: 8, nullable: false)]
+    #[ORM\Column(name: 'long_depart', type: 'decimal', precision: 11, scale: 8, nullable: false)]
     #[Groups('event:details')]
     #[SerializedName('longitudeDepart')]
-    private string|float $startLong;
+    private string|float $longDepart;
 
     #[ORM\Column(name: 'matos_evt', type: 'text', nullable: true)]
     #[Groups('event:details')]
@@ -246,21 +246,25 @@ class Evt
     #[SerializedName('waitingSeat')]
     private ?int $waitingSeat = null;
 
-    #[ORM\Column(name: 'main_transport_mode', type: Types::STRING, length: 50, nullable: true, enumType: TransportModeEnum::class)]
+    #[ORM\Column(name: 'mode_transport', type: Types::STRING, length: 50, nullable: true, enumType: TransportModeEnum::class)]
     #[Groups('event:read')]
-    private ?TransportModeEnum $mainTransportMode = null;
+    #[SerializedName('modeTransport')]
+    private ?TransportModeEnum $modeTransport = null;
 
-    #[ORM\Column(name: 'nb_vehicle', type: Types::INTEGER, nullable: false, options: ['default' => 1])]
+    #[ORM\Column(name: 'nb_vehicules', type: Types::INTEGER, nullable: false, options: ['default' => 1])]
     #[Groups('event:read')]
-    private int $nbVehicle;
+    #[SerializedName('nbVehicules')]
+    private int $nbVehicules;
 
     #[ORM\Column(name: 'nb_km', type: Types::FLOAT, nullable: true)]
     #[Groups('event:read')]
+    #[SerializedName('nbKm')]
     private ?float $nbKm = null;
 
-    #[ORM\Column(name: 'carbon_cost', type: Types::FLOAT, nullable: true)]
+    #[ORM\Column(name: 'cout_carbone', type: Types::FLOAT, nullable: true)]
     #[Groups('event:read')]
-    private ?float $carbonCost = null;
+    #[SerializedName('coutCarbone')]
+    private ?float $coutCarbone = null;
 
     public function __construct(
         ?User $user,
@@ -284,9 +288,9 @@ class Evt
         $this->rdv = $rdv;
         $this->lat = $rdvLat;
         $this->long = $rdvLong;
-        $this->startLat = 0.0;
-        $this->startLong = 0.0;
-        $this->nbVehicle = 1;
+        $this->latDepart = 0.0;
+        $this->longDepart = 0.0;
+        $this->nbVehicules = 1;
         $this->description = $description;
         $this->joinMax = $maxInscriptions;
         $this->ngensMax = $maxParticipants;
@@ -942,26 +946,26 @@ class Evt
         return $this;
     }
 
-    public function getMainTransportMode(): ?TransportModeEnum
+    public function getModeTransport(): ?TransportModeEnum
     {
-        return $this->mainTransportMode;
+        return $this->modeTransport;
     }
 
-    public function setMainTransportMode(?TransportModeEnum $mainTransportMode): self
+    public function setModeTransport(?TransportModeEnum $modeTransport): self
     {
-        $this->mainTransportMode = $mainTransportMode;
+        $this->modeTransport = $modeTransport;
 
         return $this;
     }
 
-    public function getNbVehicle(): int
+    public function getNbVehicules(): int
     {
-        return $this->nbVehicle;
+        return $this->nbVehicules;
     }
 
-    public function setNbVehicle(int $nbVehicle): self
+    public function setNbVehicules(int $nbVehicules): self
     {
-        $this->nbVehicle = $nbVehicle;
+        $this->nbVehicules = $nbVehicules;
 
         return $this;
     }
@@ -978,14 +982,14 @@ class Evt
         return $this;
     }
 
-    public function getCarbonCost(): ?float
+    public function getCoutCarbone(): ?float
     {
-        return $this->carbonCost;
+        return $this->coutCarbone;
     }
 
-    public function setCarbonCost(?float $carbonCost): self
+    public function setCoutCarbone(?float $coutCarbone): self
     {
-        $this->carbonCost = $carbonCost;
+        $this->coutCarbone = $coutCarbone;
 
         return $this;
     }
@@ -1091,26 +1095,26 @@ class Evt
         return $this;
     }
 
-    public function getStartLat(): float|string
+    public function getLatDepart(): float|string
     {
-        return $this->startLat;
+        return $this->latDepart;
     }
 
-    public function setStartLat(float|string $startLat): self
+    public function setLatDepart(float|string $latDepart): self
     {
-        $this->startLat = $startLat;
+        $this->latDepart = $latDepart;
 
         return $this;
     }
 
-    public function getStartLong(): float|string
+    public function getLongDepart(): float|string
     {
-        return $this->startLong;
+        return $this->longDepart;
     }
 
-    public function setStartLong(float|string $startLong): self
+    public function setLongDepart(float|string $longDepart): self
     {
-        $this->startLong = $startLong;
+        $this->longDepart = $longDepart;
 
         return $this;
     }

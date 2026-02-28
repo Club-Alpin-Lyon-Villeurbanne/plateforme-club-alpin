@@ -107,7 +107,6 @@ class SortieController extends AbstractController
                 new \DateTimeImmutable()
             );
             $event->setJoinStartDate(new \DateTimeImmutable());
-            $event->setNbVehicle(1);
             $isUpdate = false;
         } elseif (!empty($mode)) {
             $event = $this->duplicate($request, $event, $mode);
@@ -150,6 +149,10 @@ class SortieController extends AbstractController
             $currentBenevoles = $event->getEncadrants([EventParticipation::ROLE_BENEVOLE]);
             $originalEntityData['hasPaymentForm'] = $event->hasPaymentForm();
             $originalEntityData['paymentAmount'] = $event->getPaymentAmount();
+            $originalEntityData['lat'] = (float) $event->getLat();
+            $originalEntityData['long'] = (float) $event->getLong();
+            $originalEntityData['latDepart'] = (float) $event->getLatDepart();
+            $originalEntityData['longDepart'] = (float) $event->getLongDepart();
         }
 
         $form = $this->createForm(EventType::class, $event, ['is_edit' => $isUpdate, 'editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink, 'user' => $user]);
@@ -286,9 +289,20 @@ class SortieController extends AbstractController
                 $event->setJoinMax($event->getNgensMax());
             }
 
-            // bilan carbone
-            $nbKm = $distanceHelper->calculate($event);
-            $event->setNbKm($nbKm);
+            // bilan carbone : ne recalculer la distance que si les coordonnées ont changé
+            $coordsChanged = !$isUpdate
+                || (float) $event->getLat() !== $originalEntityData['lat']
+                || (float) $event->getLong() !== $originalEntityData['long']
+                || (float) $event->getLatDepart() !== $originalEntityData['latDepart']
+                || (float) $event->getLongDepart() !== $originalEntityData['longDepart'];
+
+            if ($coordsChanged) {
+                $nbKm = $distanceHelper->calculate($event);
+                // Conserver l'ancienne distance si l'appel OSRM échoue (retourne 0)
+                if ($nbKm > 0 || !$isUpdate) {
+                    $event->setNbKm($nbKm);
+                }
+            }
             $this->calculateCarbonCost($event, $carbonCostHelper);
             $entityManager->persist($event);
             $entityManager->flush();
@@ -518,6 +532,7 @@ class SortieController extends AbstractController
             $availableSpotNb = 0;
         }
 
+        $flush = true;
         foreach ($request->request->all('id_evt_join', []) as $participationId) {
             $status = $request->request->get('status_evt_join_' . $participationId);
             $role = $request->request->get('role_evt_join_' . $participationId);
@@ -534,7 +549,7 @@ class SortieController extends AbstractController
             }
 
             if ($status < 0) {
-                $em->remove($participation);
+                $event->removeParticipation($participation);
 
                 continue;
             }
@@ -562,6 +577,7 @@ class SortieController extends AbstractController
             // reste-t-il assez de place ?
             if ($currentParticipantNb > $nbPeopleMax && EventParticipation::STATUS_VALIDE === $status) {
                 $this->addFlash('error', 'Vous ne pouvez pas valider plus de participants que de places disponibles (' . $availableSpotNb . '). Vous pouvez augmenter le nombre maximum de places pour ensuite rajouter des personnes.');
+                $flush = false;
 
                 // s'il n'y a plus de place, inutile de parcourir le reste, on sort de la boucle
                 break;
@@ -622,10 +638,11 @@ class SortieController extends AbstractController
             $mailer->send($toMail, $template, $context, replyTo: $replyTo);
         }
 
-        // bilan carbone mis à jour selon nb de participants
-        $this->calculateCarbonCost($event, $carbonCostHelper);
-        $em->persist($event);
-        $em->flush();
+        if ($flush) {
+            // bilan carbone mis à jour selon nb de participants
+            $this->calculateCarbonCost($event, $carbonCostHelper);
+            $em->flush();
+        }
 
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
@@ -884,11 +901,11 @@ class SortieController extends AbstractController
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
-        $em->remove($participation);
+        $event->removeParticipation($participation);
+        // orphanRemoval: true on Evt::$participations handles the DELETE in DB
 
         // bilan carbone mis à jour selon nb de participants
         $this->calculateCarbonCost($event, $carbonCostHelper);
-        $em->persist($event);
         $em->flush();
 
         /** @var User */
@@ -957,11 +974,12 @@ class SortieController extends AbstractController
         $newEvent->setJoinStartDate(new \DateTimeImmutable());
         $newEvent->setAutoAccept($event->isAutoAccept());
         $newEvent->setIsDraft(true);
-        $newEvent->setStartLat($event->getStartLat());
-        $newEvent->setStartLong($event->getStartLong());
-        $newEvent->setNbVehicle($event->getNbVehicle());
-        $newEvent->setMainTransportMode($event->getMainTransportMode());
+        $newEvent->setLatDepart($event->getLatDepart());
+        $newEvent->setLongDepart($event->getLongDepart());
+        $newEvent->setNbVehicules($event->getNbVehicules());
+        $newEvent->setModeTransport($event->getModeTransport());
         $newEvent->setNbKm($event->getNbKm());
+        $newEvent->setCoutCarbone($event->getCoutCarbone());
 
         // dupliquer les participants ?
         if ('full' === $mode) {
@@ -1168,7 +1186,6 @@ class SortieController extends AbstractController
 
                 // bilan carbone mis à jour selon nb de participants
                 $this->calculateCarbonCost($event, $carbonCostHelper);
-                $em->persist($event);
                 $em->flush();
 
                 // E-MAIL À L'ORGANISATEUR ET AUX ENCADRANTS
@@ -1354,9 +1371,9 @@ class SortieController extends AbstractController
         $cost = $helper->calculate(
             $event->getNbKm() ?: 0,
             $event->getParticipationsCount(),
-            $event->getNbVehicle() ?: 1,
-            $event->getMainTransportMode(),
+            $event->getNbVehicules() ?: 1,
+            $event->getModeTransport(),
         );
-        $event->setCarbonCost($cost);
+        $event->setCoutCarbone($cost);
     }
 }

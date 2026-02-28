@@ -30,6 +30,7 @@ use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Constraints\Type;
 
 class EventType extends AbstractType
@@ -78,9 +79,9 @@ class EventType extends AbstractType
         $long = $event->getLong();
 
         // bilan carbone
-        $startLat = $event->getStartLat();
-        $startLong = $event->getStartLong();
-        $nbVehicle = $event->getNbVehicle();
+        $latDepart = $event->getLatDepart();
+        $longDepart = $event->getLongDepart();
+        $nbVehicules = $event->getNbVehicules();
 
         $builder
             ->add('commission', EntityType::class, [
@@ -94,7 +95,7 @@ class EventType extends AbstractType
                 'placeholder' => 'Choisissez une commission',
                 'required' => true,
                 'attr' => [
-                    'class' => 'type2 wide',
+                    'class' => 'type1 wide',
                     'style' => 'width: 100%',
                 ],
             ])
@@ -109,7 +110,7 @@ class EventType extends AbstractType
                     'placeholder' => 'ex : Escalade du Grand Som',
                     'minlength' => 10,
                     'maxlength' => 100,
-                    'class' => 'type2',
+                    'class' => 'type1',
                     'style' => 'width:320px',
                 ],
                 'constraints' => [
@@ -139,16 +140,13 @@ class EventType extends AbstractType
                     ]),
                 ],
             ])
-            ->add('mainTransportMode', EnumType::class, [
+            ->add('modeTransport', EnumType::class, [
                 'label' => 'Mode de transport principal',
-                'required' => true,
+                'required' => false,
                 'class' => TransportModeEnum::class,
                 'attr' => [
                     'class' => 'type2 wide',
                     'style' => 'width: 97%',
-                ],
-                'constraints' => [
-                    new NotBlank(['message' => 'Veuillez sélectionner le mode de transport principal.']),
                 ],
                 'placeholder' => 'Choisissez un mode de transport principal',
                 'help' => 'Permet d\'aider au calcul du bilan carbone.',
@@ -156,7 +154,7 @@ class EventType extends AbstractType
                     'class' => 'mini',
                 ],
             ])
-            ->add('nbVehicle', NumberType::class, [
+            ->add('nbVehicules', NumberType::class, [
                 'label' => 'Nombre de véhicules',
                 'required' => true,
                 'html5' => true,
@@ -165,7 +163,7 @@ class EventType extends AbstractType
                     'class' => 'type2',
                     'min' => 1,
                 ],
-                'data' => $nbVehicle,
+                'data' => $nbVehicules,
                 'scale' => 0,
                 'constraints' => [
                     new Type(['type' => 'numeric', 'message' => 'Veuillez saisir un nombre valide.']),
@@ -399,22 +397,22 @@ class EventType extends AbstractType
                 ],
                 'help_html' => true,
             ])
-            ->add('startLat', HiddenType::class, [
+            ->add('latDepart', HiddenType::class, [
                 'label' => false,
-                'required' => true,
-                'data' => $startLat,
+                'required' => false,
+                'data' => $latDepart,
                 'constraints' => [
-                    new NotBlank(null, 'La latitude de départ est obligatoire. Avez-vous bien choisi le lieu dans la liste déroulante ?'),
                     new Type(['type' => 'numeric', 'message' => 'La latitude de départ doit être un nombre valide.']),
+                    new Range(min: -90, max: 90, notInRangeMessage: 'La latitude doit être comprise entre -90 et 90.'),
                 ],
             ])
-            ->add('startLong', HiddenType::class, [
+            ->add('longDepart', HiddenType::class, [
                 'label' => false,
-                'required' => true,
-                'data' => $startLong,
+                'required' => false,
+                'data' => $longDepart,
                 'constraints' => [
-                    new NotBlank(null, 'La longitude de départ est obligatoire. Avez-vous bien choisi le lieu dans la liste déroulante ?'),
                     new Type(['type' => 'numeric', 'message' => 'La longitude de départ doit être un nombre valide.']),
+                    new Range(min: -180, max: 180, notInRangeMessage: 'La longitude doit être comprise entre -180 et 180.'),
                 ],
             ])
         ;

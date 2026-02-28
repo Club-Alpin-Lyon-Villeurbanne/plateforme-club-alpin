@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Entity;
 
 use Symfony\Contracts\Translation\TranslatableInterface;
@@ -8,18 +10,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 enum TransportModeEnum: string implements TranslatableInterface
 {
     case PUBLIC_TRAIN = 'train';
-    case PUBLIC_COACH = 'public_coach';
-    case DEDICATED_COACH = 'dedicated_coach';
-    case MINIVAN = 'minivan';
-    case THERMIC_CARPOOLING = 'thermic_carpooling';
-    case ELECTRIC_CARPOOLING = 'electric_carpooling';
-    case BIKE_OR_WALK = 'bike_walk';
-    case PLANE = 'plane';
-
-    public static function getAsArray(): array
-    {
-        return self::cases();
-    }
+    case PUBLIC_COACH = 'car_ligne';
+    case DEDICATED_COACH = 'car_affrete';
+    case MINIVAN = 'minibus';
+    case THERMIC_CARPOOLING = 'covoiturage_thermique';
+    case ELECTRIC_CARPOOLING = 'covoiturage_electrique';
+    case BIKE_OR_WALK = 'velo_marche';
+    case PLANE = 'avion';
 
     public function trans(TranslatorInterface $translator, ?string $locale = null): string
     {

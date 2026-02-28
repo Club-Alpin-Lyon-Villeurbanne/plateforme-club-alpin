@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Helper;
 
 use App\Entity\TransportModeEnum;
@@ -30,27 +32,29 @@ class CarbonCostHelper
         ];
     }
 
-    public function calculate(float $nbKm, int $nbPerson = 1, int $nbVehicle = 1, ?TransportModeEnum $transportMode = null): float
+    public function calculate(float $nbKm, int $nbPerson = 1, int $nbVehicules = 1, ?TransportModeEnum $transportMode = null): ?float
     {
-        $rate = $this->rates[$transportMode?->value ?? TransportModeEnum::PUBLIC_TRAIN->value] ?? 0;
+        if (null === $transportMode) {
+            return null;
+        }
+
+        $rate = $this->rates[$transportMode->value] ?? 0;
 
         $globalCost = $nbKm * $rate;
         if ($this->isCoefByPerson($transportMode)) {
             $cost = $globalCost * max(1, $nbPerson);
         } else {
-            $cost = $globalCost * max(1, $nbVehicle);
+            $cost = $globalCost * max(1, $nbVehicules);
         }
 
         return round($cost, 2);
     }
 
-    protected function isCoefByPerson(?TransportModeEnum $transportMode): bool
+    protected function isCoefByPerson(TransportModeEnum $transportMode): bool
     {
-        $value = $transportMode?->value ?? TransportModeEnum::PUBLIC_TRAIN->value;
-
-        return match ($value) {
-            TransportModeEnum::PUBLIC_TRAIN->value, TransportModeEnum::PUBLIC_COACH->value, TransportModeEnum::PLANE->value => true,
-            TransportModeEnum::DEDICATED_COACH->value, TransportModeEnum::THERMIC_CARPOOLING->value, TransportModeEnum::ELECTRIC_CARPOOLING->value, TransportModeEnum::BIKE_OR_WALK->value, TransportModeEnum::MINIVAN->value => false,
+        return match ($transportMode) {
+            TransportModeEnum::PUBLIC_TRAIN, TransportModeEnum::PUBLIC_COACH, TransportModeEnum::PLANE => true,
+            TransportModeEnum::DEDICATED_COACH, TransportModeEnum::THERMIC_CARPOOLING, TransportModeEnum::ELECTRIC_CARPOOLING, TransportModeEnum::BIKE_OR_WALK, TransportModeEnum::MINIVAN => false,
         };
     }
 }

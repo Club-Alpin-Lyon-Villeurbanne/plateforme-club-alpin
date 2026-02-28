@@ -78,10 +78,12 @@
             </div>
             <br style="clear:both" />
 
-            {{ form_row(form.place) }}
+            <div data-start-lat-field="{{ form.latDepart.vars.id }}" data-start-long-field="{{ form.longDepart.vars.id }}">
+                {{ form_row(form.place) }}
+            </div>
             <ul id="place_suggestions"></ul>
-            {{ form_row(form.startLat) }}
-            {{ form_row(form.startLong) }}
+            {{ form_row(form.latDepart) }}
+            {{ form_row(form.longDepart) }}
         </div>
 
         <h2 class="trigger-h2">Tarif :</h2>
@@ -156,14 +158,14 @@
 
         <h2 class="trigger-h2">Mode de transport :</h2>
         <div class="trigger-me">
-            {{ form_row(form.mainTransportMode) }}<br>
+            {{ form_row(form.modeTransport) }}<br>
 
             <div>
-                {{ form_label(form.nbVehicle) }}
-                {{ form_errors(form.nbVehicle) }}
-                {{ form_widget(form.nbVehicle) }}
+                {{ form_label(form.nbVehicules) }}
+                {{ form_errors(form.nbVehicules) }}
+                {{ form_widget(form.nbVehicules) }}
                 <br>
-                {{ form_help(form.nbVehicle) }}
+                {{ form_help(form.nbVehicules) }}
             </div>
         </div>
 
