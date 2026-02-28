@@ -128,13 +128,13 @@ class UserRightController extends AbstractController
         $this->manager->persist($user);
         $this->manager->flush();
 
-        try {
-            foreach ($newAttributes as $userAttr) {
+        foreach ($newAttributes as $userAttr) {
+            try {
                 $this->userRightService->notify($userAttr, 'ajout', $this->getUser());
+            } catch (\Exception $exception) {
+                $this->logger->error('Impossible de notifier l\'ajout d\'une responsabilité');
+                $this->logger->error($exception->getMessage());
             }
-        } catch (\Exception $exception) {
-            $this->logger->error('Impossible de notifier l\'ajout d\'une responsabilité');
-            $this->logger->error($exception->getMessage());
         }
 
         return $this->redirectToRoute('user_right_manage', ['user' => $user->getId()]);
