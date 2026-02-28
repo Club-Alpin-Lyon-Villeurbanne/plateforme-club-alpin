@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
@@ -64,7 +67,15 @@ use Symfony\Component\Validator\Constraints as Assert;
     normalizationContext: ['groups' => ['report:read', 'attachment:read', 'user:read', 'event:read', 'commission:read'], 'skip_null_values' => false],
 )]
 
-#[ApiFilter(SearchFilter::class, properties: ['event' => 'exact'])]
+#[ApiFilter(SearchFilter::class, properties: [
+    'event' => 'exact',
+    'status' => 'exact',
+    'user.lastname' => 'partial',
+    'event.titre' => 'partial',
+])]
+#[ApiFilter(BooleanFilter::class, properties: ['refundRequired'])]
+#[ApiFilter(DateFilter::class, properties: ['event.startDate'])]
+#[ApiFilter(OrderFilter::class, properties: ['createdAt', 'event.startDate', 'user.lastname', 'status'])]
 
 #[HasLifecycleCallbacks]
 #[ValidExpenseReport]
