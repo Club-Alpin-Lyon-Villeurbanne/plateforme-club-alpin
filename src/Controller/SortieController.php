@@ -10,6 +10,8 @@ use App\Entity\FormationValidationNiveauPratique;
 use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Form\EventType;
+use App\Helper\CarbonCostHelper;
+use App\Helper\DistanceHelper;
 use App\Helper\RoleHelper;
 use App\Helper\SlugHelper;
 use App\Legacy\LegacyContainer;
@@ -74,6 +76,8 @@ class SortieController extends AbstractController
         ManagerRegistry $doctrine,
         CommissionRepository $commissionRepository,
         Mailer $mailer,
+        CarbonCostHelper $carbonCostHelper,
+        DistanceHelper $distanceHelper,
         ?Evt $event = null,
         ?string $mode = null,
     ): array|RedirectResponse {
@@ -145,6 +149,10 @@ class SortieController extends AbstractController
             $currentBenevoles = $event->getEncadrants([EventParticipation::ROLE_BENEVOLE]);
             $originalEntityData['hasPaymentForm'] = $event->hasPaymentForm();
             $originalEntityData['paymentAmount'] = $event->getPaymentAmount();
+            $originalEntityData['lat'] = (float) $event->getLat();
+            $originalEntityData['long'] = (float) $event->getLong();
+            $originalEntityData['latDepart'] = (float) $event->getLatDepart();
+            $originalEntityData['longDepart'] = (float) $event->getLongDepart();
         }
 
         $form = $this->createForm(EventType::class, $event, ['is_edit' => $isUpdate, 'editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink, 'user' => $user]);
@@ -281,6 +289,21 @@ class SortieController extends AbstractController
                 $event->setJoinMax($event->getNgensMax());
             }
 
+            // bilan carbone : ne recalculer la distance que si les coordonnées ont changé
+            $coordsChanged = !$isUpdate
+                || (float) $event->getLat() !== $originalEntityData['lat']
+                || (float) $event->getLong() !== $originalEntityData['long']
+                || (float) $event->getLatDepart() !== $originalEntityData['latDepart']
+                || (float) $event->getLongDepart() !== $originalEntityData['longDepart'];
+
+            if ($coordsChanged) {
+                $nbKm = $distanceHelper->calculate($event);
+                // Conserver l'ancienne distance si l'appel OSRM échoue (retourne 0)
+                if ($nbKm > 0 || !$isUpdate) {
+                    $event->setNbKm($nbKm);
+                }
+            }
+            $this->calculateCarbonCost($event, $carbonCostHelper);
             $entityManager->persist($event);
             $entityManager->flush();
 
@@ -487,6 +510,7 @@ class SortieController extends AbstractController
         EntityManagerInterface $em,
         Mailer $mailer,
         RoleHelper $roleHelper,
+        CarbonCostHelper $carbonCostHelper,
     ): RedirectResponse {
         if (!$this->isCsrfTokenValid('sortie_update_inscriptions', $request->request->get('csrf_token_inscriptions'))) {
             $this->addFlash('error', 'Jeton de validation invalide.');
@@ -525,7 +549,7 @@ class SortieController extends AbstractController
             }
 
             if ($status < 0) {
-                $em->remove($participation);
+                $event->removeParticipation($participation);
 
                 continue;
             }
@@ -615,6 +639,8 @@ class SortieController extends AbstractController
         }
 
         if ($flush) {
+            // bilan carbone mis à jour selon nb de participants
+            $this->calculateCarbonCost($event, $carbonCostHelper);
             $em->flush();
         }
 
@@ -858,8 +884,13 @@ class SortieController extends AbstractController
     }
 
     #[Route(path: '/sortie/remove-participant/{id}', name: 'sortie_remove_participant', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
-    public function removeParticipant(Request $request, EventParticipation $participation, EntityManagerInterface $em, Mailer $mailer): RedirectResponse
-    {
+    public function removeParticipant(
+        Request $request,
+        EventParticipation $participation,
+        EntityManagerInterface $em,
+        Mailer $mailer,
+        CarbonCostHelper $carbonCostHelper,
+    ): RedirectResponse {
         $event = $participation->getEvt();
 
         if (!$this->isCsrfTokenValid('remove_participant', $request->request->get('csrf_token'))) {
@@ -870,7 +901,11 @@ class SortieController extends AbstractController
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
-        $em->remove($participation);
+        $event->removeParticipation($participation);
+        // orphanRemoval: true on Evt::$participations handles the DELETE in DB
+
+        // bilan carbone mis à jour selon nb de participants
+        $this->calculateCarbonCost($event, $carbonCostHelper);
         $em->flush();
 
         /** @var User */
@@ -939,6 +974,12 @@ class SortieController extends AbstractController
         $newEvent->setJoinStartDate(new \DateTimeImmutable());
         $newEvent->setAutoAccept($event->isAutoAccept());
         $newEvent->setIsDraft(true);
+        $newEvent->setLatDepart($event->getLatDepart());
+        $newEvent->setLongDepart($event->getLongDepart());
+        $newEvent->setNbVehicules($event->getNbVehicules());
+        $newEvent->setModeTransport($event->getModeTransport());
+        $newEvent->setNbKm($event->getNbKm());
+        $newEvent->setCoutCarbone($event->getCoutCarbone());
 
         // dupliquer les participants ?
         if ('full' === $mode) {
@@ -990,6 +1031,7 @@ class SortieController extends AbstractController
         EntityManagerInterface $em,
         Mailer $mailer,
         UserRepository $userRepository,
+        CarbonCostHelper $carbonCostHelper,
     ): RedirectResponse {
         if (!$this->isCsrfTokenValid('join_event', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
@@ -1141,6 +1183,9 @@ class SortieController extends AbstractController
                         }
                     }
                 }
+
+                // bilan carbone mis à jour selon nb de participants
+                $this->calculateCarbonCost($event, $carbonCostHelper);
                 $em->flush();
 
                 // E-MAIL À L'ORGANISATEUR ET AUX ENCADRANTS
@@ -1319,5 +1364,16 @@ class SortieController extends AbstractController
             'hideBlankLines' => ('y' === $request->query->get('hide_blank')),
             'pdf' => $isPdf,
         ];
+    }
+
+    protected function calculateCarbonCost(Evt $event, CarbonCostHelper $helper): void
+    {
+        $cost = $helper->calculate(
+            $event->getNbKm() ?: 0,
+            $event->getParticipationsCount(),
+            $event->getNbVehicules() ?: 1,
+            $event->getModeTransport(),
+        );
+        $event->setCoutCarbone($cost);
     }
 }

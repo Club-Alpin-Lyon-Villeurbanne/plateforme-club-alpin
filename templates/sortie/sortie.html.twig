@@ -1018,6 +1018,14 @@
                 <hr />
             {% endif %}
 
+            {% set nInscritsValides = event.participationsCount %}
+            {% if event.modeTransport and event.coutCarbone is not null and nInscritsValides > 0 %}
+                <ul class="nice-list">
+                    <li class="wide"><b>IMPACT CARBONE TRANSPORT :</b> {{ event.modeTransport|trans }} - {{ (event.coutCarbone / nInscritsValides) | round }} gCO2e / personne</li>
+                </ul>
+                <hr />
+            {% endif %}
+
             <ul class="nice-list">
                 <li class="wide">
                     <b>DÉPART :</b> Le {{ event.startDate | intldate('cccc d MMMM') }} {% if allowed('user_read_limited') %}{{ event.startDate|date('H:i') }}{% endif %}

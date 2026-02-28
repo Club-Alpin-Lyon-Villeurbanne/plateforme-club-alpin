@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Commission;
 use App\Entity\Evt;
+use App\Entity\TransportModeEnum;
 use App\Entity\User;
 use App\Helper\EventFormHelper;
 use App\Repository\CommissionRepository;
@@ -14,6 +15,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -28,6 +30,7 @@ use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Constraints\Type;
 
 class EventType extends AbstractType
@@ -74,6 +77,11 @@ class EventType extends AbstractType
         $appointment = $event->getRdv();
         $lat = $event->getLat();
         $long = $event->getLong();
+
+        // bilan carbone
+        $latDepart = $event->getLatDepart();
+        $longDepart = $event->getLongDepart();
+        $nbVehicules = $event->getNbVehicules();
 
         $builder
             ->add('commission', EntityType::class, [
@@ -132,6 +140,40 @@ class EventType extends AbstractType
                     ]),
                 ],
             ])
+            ->add('modeTransport', EnumType::class, [
+                'label' => 'Mode de transport principal',
+                'required' => false,
+                'class' => TransportModeEnum::class,
+                'attr' => [
+                    'class' => 'type2 wide',
+                    'style' => 'width: 97%',
+                ],
+                'placeholder' => 'Choisissez un mode de transport principal',
+                'help' => 'Permet d\'aider au calcul du bilan carbone.',
+                'help_attr' => [
+                    'class' => 'mini',
+                ],
+            ])
+            ->add('nbVehicules', NumberType::class, [
+                'label' => 'Nombre de véhicules',
+                'required' => true,
+                'html5' => true,
+                'attr' => [
+                    'placeholder' => 'ex : 2',
+                    'class' => 'type2',
+                    'min' => 1,
+                ],
+                'data' => $nbVehicules,
+                'scale' => 0,
+                'constraints' => [
+                    new Type(['type' => 'numeric', 'message' => 'Veuillez saisir un nombre valide.']),
+                    new GreaterThan(0),
+                ],
+                'help' => 'Permet d\'aider au calcul du bilan carbone.',
+                'help_attr' => [
+                    'class' => 'mini',
+                ],
+            ])
             ->add('rdv', TextType::class, [
                 'label' => 'Lieu de rendez-vous covoiturage',
                 'help' => 'Ville et adresse du lieu de RDV pour vous rendre à la sortie. Ce champ permet de placer le marqueur sur la carte.',
@@ -160,7 +202,6 @@ class EventType extends AbstractType
                 'constraints' => [
                     new NotBlank(null, 'La latitude est obligatoire. Avez-vous bien cliqué sur le bouton pour placer le marqueur ?'),
                     new Type(['type' => 'numeric', 'message' => 'La latitude doit être un nombre valide.']),
-                    new GreaterThan(0),
                 ],
             ])
             ->add('long', HiddenType::class, [
@@ -170,7 +211,6 @@ class EventType extends AbstractType
                 'constraints' => [
                     new NotBlank(null, 'La longitude est obligatoire. Avez-vous bien cliqué sur le bouton pour placer le marqueur ?'),
                     new Type(['type' => 'numeric', 'message' => 'La longitude doit être un nombre valide.']),
-                    new GreaterThan(0),
                 ],
             ])
             ->add('startDate', DateTimeType::class, [
@@ -356,6 +396,24 @@ class EventType extends AbstractType
                     'class' => 'mini',
                 ],
                 'help_html' => true,
+            ])
+            ->add('latDepart', HiddenType::class, [
+                'label' => false,
+                'required' => false,
+                'data' => $latDepart,
+                'constraints' => [
+                    new Type(['type' => 'numeric', 'message' => 'La latitude de départ doit être un nombre valide.']),
+                    new Range(min: -90, max: 90, notInRangeMessage: 'La latitude doit être comprise entre -90 et 90.'),
+                ],
+            ])
+            ->add('longDepart', HiddenType::class, [
+                'label' => false,
+                'required' => false,
+                'data' => $longDepart,
+                'constraints' => [
+                    new Type(['type' => 'numeric', 'message' => 'La longitude de départ doit être un nombre valide.']),
+                    new Range(min: -180, max: 180, notInRangeMessage: 'La longitude doit être comprise entre -180 et 180.'),
+                ],
             ])
         ;
         if ($displayHelloAssoFields && $isUserAuthorizeToUseHelloAsso) {

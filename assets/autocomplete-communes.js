@@ -1,6 +1,7 @@
 function searchCommunes(context) {
     const field = document.getElementById('event_place');
     const list = document.getElementById("place_suggestions");
+    const container = field ? field.closest('[data-start-lat-field][data-start-long-field]') || field.parentElement : null;
     let timer;
 
     field.addEventListener('keyup', (e) => {
@@ -34,6 +35,18 @@ function searchCommunes(context) {
                             li.onclick = () => {
                                 field.value = liContentText;
                                 list.innerHTML = '';
+
+                                // Remplir les champs cachés latDepart et longDepart
+                                const startLatSelector = container ? container.getAttribute('data-start-lat-field') : null;
+                                const startLongSelector = container ? container.getAttribute('data-start-long-field') : null;
+                                const startLatField = startLatSelector ? document.getElementById(startLatSelector) : document.getElementById('event_latDepart');
+                                const startLongField = startLongSelector ? document.getElementById(startLongSelector) : document.getElementById('event_longDepart');
+                                if (startLatField && item.latitude) {
+                                    startLatField.value = item.latitude;
+                                }
+                                if (startLongField && item.longitude) {
+                                    startLongField.value = item.longitude;
+                                }
                             };
                             list.appendChild(li);
                         });
