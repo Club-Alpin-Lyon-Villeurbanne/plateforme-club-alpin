@@ -17,10 +17,10 @@ Tâche planifiée qui s'exécute automatiquement à intervalles réguliers. Dans
 ## Rôles et permissions
 
 ### Admin
-Rôle avec tous les droits, y compris la gestion des permissions et des rôles importants.
+Rôle avec tous les droits : gestion des permissions, des rôles de président ou de responsables de commission. Accès à l'administration via https://www.clubalpinlyon.fr/admin/.
 
 ### Gestionnaire de contenu
-Rôle permettant de modifier les pages et les blocs de contenu du site sans avoir les droits d'administration complets.
+Rôle permettant de modifier les pages et les blocs de contenu du site, sans les droits d'administration complets. Identifiants de test en local : voir le [guide d'installation](installation.md#accès).
 
 ## Fonctionnalités
 
