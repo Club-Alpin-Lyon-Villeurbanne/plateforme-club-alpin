@@ -48,4 +48,11 @@ class AgendaControllerTest extends WebTestCase
         $commissionIcsUrl = $crawler->filter('.subscribe-calendar-copy input')->eq(1)->attr('value');
         $this->assertStringContainsString(sprintf('/calendrier/%s.ics', $code), $commissionIcsUrl);
     }
+
+    public function testAgendaWithInvalidYearDoesNotCrash(): void
+    {
+        $this->client->request('GET', '/agenda.html?year=20250&month=9');
+
+        $this->assertResponseIsSuccessful();
+    }
 }
