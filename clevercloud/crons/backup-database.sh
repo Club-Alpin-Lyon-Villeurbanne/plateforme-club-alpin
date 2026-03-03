@@ -33,8 +33,8 @@ if [[ ! -f "${RESTIC_PATH}" ]]; then
 fi
 
 # Vérifications des variables
-if [[ -z "${MYSQL_ADDON_UUID:-}" ]] || [[ -z "${B2_BUCKET:-}" ]] || [[ -z "${RESTIC_PASSWORD:-}" ]]; then
-    log "ERROR: Missing required environment variables"
+if [[ -z "${MYSQL_ADDON_UUID:-}" ]] || [[ -z "${B2_ACCOUNT_ID:-}" ]] || [[ -z "${B2_ACCOUNT_KEY:-}" ]] || [[ -z "${B2_BUCKET:-}" ]] || [[ -z "${RESTIC_PASSWORD:-}" ]]; then
+    log "ERROR: Missing required environment variables (MYSQL_ADDON_UUID, B2_ACCOUNT_ID, B2_ACCOUNT_KEY, B2_BUCKET, RESTIC_PASSWORD)"
     exit 1
 fi
 
@@ -100,5 +100,5 @@ log "Backup completed successfully"
 
 # Ping healthchecks.io si configuré
 if [[ -n "${HEALTHCHECK_BACKUP_DB:-}" ]]; then
-    curl -fsS "https://hc-ping.com/${HEALTHCHECK_BACKUP_DB}" &
+    curl -fsS "https://hc-ping.com/${HEALTHCHECK_BACKUP_DB}"
 fi
