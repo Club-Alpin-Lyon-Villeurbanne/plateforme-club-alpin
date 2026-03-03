@@ -72,7 +72,7 @@ class AgendaController extends AbstractController
             'commissions' => $commissions,
             'current_commission' => $commission,
             'current_url' => $this->generateUrl(
-                $request->attributes->get('_route'),
+                $commission ? 'commission_agenda' : 'agenda',
                 $commission ? ['code' => $commission->getCode()] : [],
             ),
             'first_day_weekday' => $firstDayOfMonth,

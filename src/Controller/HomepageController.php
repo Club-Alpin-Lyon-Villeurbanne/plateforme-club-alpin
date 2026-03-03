@@ -45,7 +45,9 @@ class HomepageController extends AbstractController
             'sitename' => $this->getParameter('sitename'),
             'current_commission' => $commission,
             'current_url' => $this->generateUrl(
-                $request->attributes->get('_route'),
+                !$commission && 'commission_homepage' === $request->attributes->get('_route')
+                    ? 'homepage'
+                    : $request->attributes->get('_route'),
                 $commission ? ['code' => $commission->getCode()] : [],
             ),
         ], $paginationParams);
