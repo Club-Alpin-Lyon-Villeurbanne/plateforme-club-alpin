@@ -89,11 +89,12 @@
             var link = e.target.closest('a[href^="#"]');
             if (!link) return;
             var id = link.getAttribute('href').substring(1);
+            e.preventDefault();
             if (!id) return;
             var target = document.getElementById(id);
-            if (!target) return;
-            e.preventDefault();
-            target.scrollIntoView({behavior: 'smooth'});
+            if (target) {
+                target.scrollIntoView({behavior: 'smooth'});
+            }
             history.replaceState(null, '', '#' + id);
         });
     </script>

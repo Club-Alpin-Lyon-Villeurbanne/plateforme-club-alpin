@@ -106,12 +106,14 @@ class ContentHtml implements ServiceSubscriberInterface
                 }
 
                 // Dédupliquer les ids
+                $baseId = $id;
                 if (isset($usedIds[$id])) {
-                    ++$usedIds[$id];
-                    $id .= $usedIds[$id];
-                } else {
-                    $usedIds[$id] = 1;
+                    do {
+                        ++$usedIds[$baseId];
+                        $id = $baseId . $usedIds[$baseId];
+                    } while (isset($usedIds[$id]));
                 }
+                $usedIds[$id] = 1;
 
                 return "<{$tag}{$attrs} id=\"{$id}\">{$content}</{$tag}>";
             },
@@ -127,10 +129,10 @@ class ContentHtml implements ServiceSubscriberInterface
     public static function slugify(string $text): string
     {
         if (function_exists('transliterator_transliterate')) {
-            $text = transliterator_transliterate('Any-Latin; Latin-ASCII; Lower()', $text);
+            $text = transliterator_transliterate('Any-Latin; Latin-ASCII; Lower()', $text) ?: '';
         } else {
             $text = mb_strtolower($text, 'UTF-8');
-            $text = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text);
+            $text = @iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE', $text) ?: '';
             $text = strtolower($text);
         }
 

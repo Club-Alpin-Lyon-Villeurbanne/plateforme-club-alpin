@@ -203,6 +203,17 @@ class ContentHtmlTest extends TestCase
         $this->assertStringContainsString('<h2 id="contact2">', $result);
     }
 
+    public function testAddHeadingIdsSuffixDoesNotCollideWithNaturalSlug(): void
+    {
+        // "tarifs2" existe en tant que slug naturel, et "tarifs" apparaît 2 fois
+        // Le 2e "tarifs" ne doit pas recevoir id="tarifs2" (collision)
+        $html = '<h1>Tarifs 2</h1><h1>Tarifs</h1><h1>Tarifs</h1>';
+        $result = ContentHtml::addHeadingIds($html);
+        $this->assertStringContainsString('<h1 id="tarifs2">Tarifs 2</h1>', $result);
+        $this->assertStringContainsString('<h1 id="tarifs">Tarifs</h1>', $result);
+        $this->assertStringContainsString('<h1 id="tarifs3">Tarifs</h1>', $result);
+    }
+
     public function testAddHeadingIdsRealWorldContent(): void
     {
         $html = <<<'HTML'
