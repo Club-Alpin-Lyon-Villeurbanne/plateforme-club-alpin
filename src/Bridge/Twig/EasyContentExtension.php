@@ -10,6 +10,7 @@ use Psr\Container\NotFoundExceptionInterface;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Contracts\Service\ServiceSubscriberInterface;
 use Twig\Extension\AbstractExtension;
+use Twig\TwigFilter;
 use Twig\TwigFunction;
 
 class EasyContentExtension extends AbstractExtension implements ServiceSubscriberInterface
@@ -27,6 +28,13 @@ class EasyContentExtension extends AbstractExtension implements ServiceSubscribe
             AuthorizationCheckerInterface::class,
             UserRights::class,
             ContentHtml::class,
+        ];
+    }
+
+    public function getFilters(): array
+    {
+        return [
+            new TwigFilter('add_heading_ids', [ContentHtml::class, 'addHeadingIds'], ['is_safe' => ['html']]),
         ];
     }
 
