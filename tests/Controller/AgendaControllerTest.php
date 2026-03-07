@@ -48,4 +48,11 @@ class AgendaControllerTest extends WebTestCase
         $commissionIcsUrl = $crawler->filter('.subscribe-calendar-copy input')->eq(1)->attr('value');
         $this->assertStringContainsString(sprintf('/calendrier/%s.ics', $code), $commissionIcsUrl);
     }
+
+    public function testAgendaWithNonExistentCommissionDoesNotCrash(): void
+    {
+        $this->client->request('GET', '/agenda/code-inexistant-xyz.html');
+
+        $this->assertResponseIsSuccessful();
+    }
 }
