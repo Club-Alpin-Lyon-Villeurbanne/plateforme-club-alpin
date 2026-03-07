@@ -613,6 +613,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         // $this->plainPassword = null;
     }
 
+    public function __serialize(): array
+    {
+        return [
+            'id' => isset($this->id) ? $this->id : null,
+            'email' => $this->email,
+            'mdp' => $this->mdp,
+        ];
+    }
+
+    public function __unserialize(array $data): void
+    {
+        // Support both new format (from __serialize) and legacy native PHP
+        // serialization format where private property keys are mangled as
+        // "\0ClassName\0propertyName" and bigint $id is stored as string.
+        $p = "\0" . self::class . "\0";
+        $id = $data['id'] ?? $data[$p . 'id'] ?? null;
+        $this->id = null !== $id ? (int) $id : null;
+        $this->email = $data['email'] ?? $data[$p . 'email'] ?? null;
+        $this->mdp = $data['mdp'] ?? $data[$p . 'mdp'] ?? null;
+    }
+
     /**
      * A visual identifier that represents this user.
      *
