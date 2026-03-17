@@ -45,7 +45,7 @@ class HelloAssoService
             'id' => $event->getId(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
         $params = [
-            'title' => '[' . $eventDate->format('Y-m-d') . '] ' . $event->getTitre(),
+            'title' => '[' . $eventDate->format('Y-m-d') . '] ' . $event->getCommission()->getTitle() . ' - ' . $event->getUser()->getLastname() . ' - ' . $event->getPlace(),
             'description' => $description,
             'amountVisible' => true,
             'generateTickets' => false,
