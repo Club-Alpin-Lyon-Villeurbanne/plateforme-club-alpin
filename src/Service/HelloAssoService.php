@@ -44,8 +44,16 @@ class HelloAssoService
             'code' => $event->getCode(),
             'id' => $event->getId(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
+        $commissionTitle = trim((string) $event->getCommission()?->getTitle());
+        $organizerLastname = trim((string) $event->getUser()?->getLastname());
+        $departurePlace = trim((string) $event->getPlace());
+
+        if ('' === $commissionTitle || '' === $organizerLastname || '' === $departurePlace) {
+            throw new \InvalidArgumentException('Impossible de créer le titre HelloAsso: commission, organisateur et lieu de départ sont obligatoires.');
+        }
+
         $params = [
-            'title' => '[' . $eventDate->format('Y-m-d') . '] ' . $event->getCommission()->getTitle() . ' - ' . $event->getUser()->getLastname() . ' - ' . $event->getPlace(),
+            'title' => sprintf('[%s] %s - %s - %s', $eventDate->format('Y-m-d'), $commissionTitle, $organizerLastname, $departurePlace),
             'description' => $description,
             'amountVisible' => true,
             'generateTickets' => false,
