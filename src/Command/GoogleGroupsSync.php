@@ -140,7 +140,7 @@ class GoogleGroupsSync extends Command
         }
 
         foreach ($this->userAttrRepository->listAllResponsables() as $commissionMember) {
-            $type = 'MEMBER';
+            $type = 'OWNER';
             $email = $this->getUserEmail($commissionMember->getUser());
 
             if (!$email) {
@@ -197,7 +197,7 @@ class GoogleGroupsSync extends Command
         }
 
         foreach ($this->userAttrRepository->listAllEncadrants($commission) as $commissionMember) {
-            $type = 'MEMBER';
+            $type = UserAttr::RESPONSABLE_COMMISSION === $commissionMember->getCode() ? 'OWNER' : 'MEMBER';
             $email = $this->getUserEmail($commissionMember->getUser());
 
             if (!$email) {
