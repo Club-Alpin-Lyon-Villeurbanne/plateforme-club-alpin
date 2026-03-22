@@ -7,6 +7,12 @@ framework:
                 allow_elements:
                     a: ['href', 'title', 'target', 'rel']
                     p: ['style']
+                    h1: ['id']
+                    h2: ['id']
+                    h3: ['id']
+                    h4: ['id']
+                    h5: ['id']
+                    h6: ['id']
                     img: ['src', 'alt', 'title', 'width', 'height', 'class', 'style']
                     figure: ['class', 'style']
                     iframe: ['src', 'width', 'height', 'frameborder', 'allow', 'allowfullscreen', 'title']
