@@ -41,6 +41,9 @@ class GoogleGroupsSync extends Command
     private bool $dryRun = true;
     private ?OutputInterface $output;
 
+    /**
+     * @param array<mixed>|null $googleAuthConfig Configuration du compte de service Google (JSON décodé)
+     */
     public function __construct(
         private readonly EntityManagerInterface $em,
         private readonly CommissionRepository $commissionRepository,
@@ -52,6 +55,9 @@ class GoogleGroupsSync extends Command
         parent::__construct($name);
     }
 
+    /**
+     * Déclare les options de la commande : --execute pour sortir du dry-run, --commission pour filtrer sur une seule commission.
+     */
     protected function configure(): void
     {
         $this
@@ -245,6 +251,14 @@ class GoogleGroupsSync extends Command
         $this->upsertMemberToGoogleGroup($existingCommissionsAll, self::ALL_COMMISSIONS_ADRESSE, $groupKey);
     }
 
+    /**
+     * Insère un nouveau membre dans un groupe Google ou met à jour son rôle s'il est déjà présent avec un rôle différent.
+     *
+     * @param array<string, string> $existingMembers Membres déjà présents dans le groupe (email => email)
+     * @param string                $groupKey        Adresse email du groupe Google cible
+     * @param string                $email           Adresse email du membre à insérer/mettre à jour
+     * @param string                $type            Rôle Google Group : MEMBER, OWNER ou MANAGER
+     */
     private function upsertMemberToGoogleGroup(array $existingMembers, string $groupKey, string $email, string $type = 'MEMBER'): void
     {
         if (!isset($existingMembers[$email])) {
@@ -293,6 +307,13 @@ class GoogleGroupsSync extends Command
         }
     }
 
+    /**
+     * Vérifie l'existence du Google Drive partagé de la commission et provisionne les accès :
+     * - crée le Drive s'il est absent (hors dry-run) ; en cas d'échec, log un avertissement et ne provisionne pas les permissions
+     * - accorde l'accès "writer" au groupe Google de la commission
+     * - accorde l'accès "fileOrganizer" aux responsables de commission
+     * - accorde l'accès "commenter" aux drives communs transverses
+     */
     private function upsertDriveAndAccesses(Commission $commission): void
     {
         $this->output->writeln('');
@@ -409,6 +430,9 @@ class GoogleGroupsSync extends Command
         }
     }
 
+    /**
+     * Vérifie si le groupe Google de la commission dispose déjà d'une permission sur le Drive spécifié.
+     */
     private function hasCommissionAccessOnDrive(Commission $commission, string $driveId): bool
     {
         $commissionGroup = $this->getGoogleGroupKey($commission);
@@ -434,6 +458,9 @@ class GoogleGroupsSync extends Command
         return false;
     }
 
+    /**
+     * Vérifie si un utilisateur dispose déjà d'une permission de type "user" sur le Drive spécifié.
+     */
     private function hasUserOrganizerAccessOnDrive(User $user, string $driveId): bool
     {
         $nextPageToken = null;
@@ -458,6 +485,13 @@ class GoogleGroupsSync extends Command
         return false;
     }
 
+    /**
+     * Retourne les membres actuels d'un groupe Google sous forme de tableau indexé par email (email => email).
+     *
+     * @return array<string, string>
+     *
+     * @throws Exception
+     */
     private function getCommissionGoogleGroupMembers(string $groupEmail): array
     {
         $members = array_map(fn (Member $member) => mb_strtolower($member->getEmail() ?? ''), $this->googleGroupsService->members->listMembers($groupEmail)->getMembers());
@@ -466,6 +500,9 @@ class GoogleGroupsSync extends Command
         return array_combine($members, $members);
     }
 
+    /**
+     * Crée ou vérifie le groupe Google associé à une commission et retourne son adresse email.
+     */
     private function upsertCommissionGoogleGroup(Commission $commission): string
     {
         $name = sprintf('%s %s', self::PREFIX_GROUP_NAME, $commission->getTitle());
@@ -474,6 +511,10 @@ class GoogleGroupsSync extends Command
         return $this->upsertGoogleGroup($groupEmail, $name);
     }
 
+    /**
+     * Crée un groupe Google s'il n'existe pas encore, ou met à jour son nom s'il a changé.
+     * Retourne l'adresse email du groupe.
+     */
     private function upsertGoogleGroup(string $groupEmail, string $name): string
     {
         $existingGroups = $this->listgoogleGroupsService();
@@ -509,6 +550,10 @@ class GoogleGroupsSync extends Command
         return $groupEmail;
     }
 
+    /**
+     * Retourne l'adresse email du groupe Google correspondant à une commission.
+     * Certaines commissions ont un alias spécifique (environnement, vtt).
+     */
     private function getGoogleGroupKey(Commission $commission): string
     {
         return match ($commission->getCode()) {
@@ -518,6 +563,11 @@ class GoogleGroupsSync extends Command
         };
     }
 
+    /**
+     * Retourne la liste des adresses email de tous les groupes Google de l'organisation.
+     *
+     * @return string[]
+     */
     private function listgoogleGroupsService(): array
     {
         return array_map(
@@ -527,6 +577,10 @@ class GoogleGroupsSync extends Command
         );
     }
 
+    /**
+     * Retourne l'email à utiliser pour un utilisateur dans Google Workspace.
+     * Privilégie gdriveEmail (compte Google dédié) sur l'email principal si les deux sont renseignés.
+     */
     private function getUserEmail(User $user): string
     {
         $email = '';
