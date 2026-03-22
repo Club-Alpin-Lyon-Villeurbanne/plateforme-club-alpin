@@ -373,7 +373,7 @@ class GoogleGroupsSync extends Command
                 }
             }
         } else {
-            $this->output->writeln("\t💨 Ajout de l'acces au GoogleDrive <info>Commission " . $commission->getTitle() . '</info> à <info>' . $googleGroupEmail . '</info>');
+            $this->output->writeln("\t⏭️ Pas de GoogleDrive pour <info>Commission " . $commission->getTitle() . '</info>, provisionnement des permissions ignoré');
         }
 
         // On donne ici acces à des drive communs a tout le monde
