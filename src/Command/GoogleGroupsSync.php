@@ -319,8 +319,10 @@ class GoogleGroupsSync extends Command
         $this->output->writeln('');
         $this->output->writeln("\tCheck du Google drive...");
 
-        if ($commission->getGoogleDriveId()) {
-            $drive = $this->googleDriveService->drives->get($commission->getGoogleDriveId());
+        $commissionDriveId = $commission->getGoogleDriveId();
+
+        if ($commissionDriveId) {
+            $drive = $this->googleDriveService->drives->get($commissionDriveId);
             $this->output->writeln("\t👌 Google Drive OK <info>" . $drive->getName() . '</info> ' . $drive->getId());
         } else {
             if (!$this->dryRun) {
@@ -329,11 +331,19 @@ class GoogleGroupsSync extends Command
                     $drive = $this->googleDriveService->drives->create(uniqid('', true), new Drive\Drive([
                         'name' => sprintf('%s %s', self::PREFIX_GROUP_NAME, $commission->getTitle()),
                     ]));
-
-                    $commission->setGoogleDriveId($drive->getId());
-                    $this->em->flush();
                 } catch (Exception $e) {
                     $this->output->writeln("\t🚨 Impossible de créer le Google Drive pour <info>Commission " . $commission->getTitle() . '</info> : ' . $e->getMessage());
+                }
+
+                if (isset($drive)) {
+                    try {
+                        $commission->setGoogleDriveId($drive->getId());
+                        $this->em->flush();
+                        $commissionDriveId = $drive->getId();
+                    } catch (\Throwable $e) {
+                        $commission->setGoogleDriveId(null);
+                        $this->output->writeln("\t🚨 Impossible de persister le Google Drive pour <info>Commission " . $commission->getTitle() . '</info> : ' . $e->getMessage());
+                    }
                 }
             } else {
                 $this->output->writeln("\t💨 Would have create a Google Drive for <info>Commission " . $commission->getTitle() . '</info>');
@@ -342,14 +352,14 @@ class GoogleGroupsSync extends Command
 
         $googleGroupEmail = $this->getGoogleGroupKey($commission);
 
-        if ($commission->getGoogleDriveId()) {
+        if ($commissionDriveId) {
             // Le google group de commission est grant "writer"
-            if (!$this->hasCommissionAccessOnDrive($commission, $commission->getGoogleDriveId())) {
+            if (!$this->hasCommissionAccessOnDrive($commission, $commissionDriveId)) {
                 if (!$this->dryRun) {
                     $this->output->writeln("\t☑️ Granting access to GoogleDrive <info>Commission " . $commission->getTitle() . '</info> to <info>' . $googleGroupEmail . '</info>');
                     try {
                         $this->googleDriveService->permissions->create(
-                            $commission->getGoogleDriveId(),
+                            $commissionDriveId,
                             new Drive\Permission([
                                 'type' => 'group',
                                 'role' => 'writer', // organizer / fileOrganizer / writer / commenter / reader
@@ -370,12 +380,12 @@ class GoogleGroupsSync extends Command
             // Les responsables de commission sont grant "fileOrganizer"
             foreach ($this->userAttrRepository->listAllEncadrants($commission, [UserAttr::RESPONSABLE_COMMISSION]) as $responsable) {
                 $responsableEmail = $this->getUserEmail($responsable->getUser());
-                if (!$this->hasUserOrganizerAccessOnDrive($responsable->getUser(), $commission->getGoogleDriveId())) {
+                if (!$this->hasUserOrganizerAccessOnDrive($responsable->getUser(), $commissionDriveId)) {
                     if (!$this->dryRun) {
                         $this->output->writeln("\t☑️ Granting access to GoogleDrive <info>Commission " . $commission->getTitle() . '</info> as <info>fileOrganizer</info> to <info>' . $responsableEmail . '</info>');
                         try {
                             $this->googleDriveService->permissions->create(
-                                $commission->getGoogleDriveId(),
+                                $commissionDriveId,
                                 new Drive\Permission([
                                     'type' => 'user',
                                     'role' => 'fileOrganizer', // organizer / fileOrganizer / writer / commenter / reader
