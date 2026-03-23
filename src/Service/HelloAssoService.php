@@ -18,6 +18,11 @@ class HelloAssoService
     protected const string HELLO_ASSO_CAMPAIGN_PUBLISH_ENDPOINT = '/v5/organizations/{organizationSlug}/forms/Event/{formSlug}/state';
     protected const string HELLO_ASSO_PAYMENT_INFO_ENDPOINT = '/v5/organizations/{organizationSlug}/forms/Event/{formSlug}/payments';
 
+    /**
+     * @param string $organizationSlug Slug de l'organisation HelloAsso
+     * @param string $baseUrl          URL de base de l'API HelloAsso
+     * @param int    $activityTypeId   Identifiant du type d'activité HelloAsso (ex. "Sortie")
+     */
     public function __construct(
         protected string $organizationSlug,
         protected string $baseUrl,
@@ -91,6 +96,9 @@ class HelloAssoService
         }
     }
 
+    /**
+     * Vérifie que les paramètres de configuration HelloAsso sont tous renseignés.
+     */
     public function isConfigSet(): bool
     {
         return $this->helloAssoClient->areCredentialsSet()
