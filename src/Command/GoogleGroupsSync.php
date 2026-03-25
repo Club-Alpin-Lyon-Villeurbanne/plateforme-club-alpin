@@ -140,7 +140,7 @@ class GoogleGroupsSync extends Command
         }
 
         foreach ($this->userAttrRepository->listAllResponsables() as $commissionMember) {
-            $type = 'MEMBER';
+            $type = 'OWNER';
             $email = $this->getUserEmail($commissionMember->getUser());
 
             if (!$email) {
@@ -197,7 +197,7 @@ class GoogleGroupsSync extends Command
         }
 
         foreach ($this->userAttrRepository->listAllEncadrants($commission) as $commissionMember) {
-            $type = 'MEMBER';
+            $type = UserAttr::RESPONSABLE_COMMISSION === $commissionMember->getCode() ? 'OWNER' : 'MEMBER';
             $email = $this->getUserEmail($commissionMember->getUser());
 
             if (!$email) {
@@ -304,12 +304,16 @@ class GoogleGroupsSync extends Command
         } else {
             if (!$this->dryRun) {
                 $this->output->writeln("\t☑️ Creating a Google Drive for <info>Commission " . $commission->getTitle() . '</info>');
-                $drive = $this->googleDriveService->drives->create(uniqid('', true), new Drive\Drive([
-                    'name' => sprintf('%s %s', self::PREFIX_GROUP_NAME, $commission->getTitle()),
-                ]));
+                try {
+                    $drive = $this->googleDriveService->drives->create(uniqid('', true), new Drive\Drive([
+                        'name' => sprintf('%s %s', self::PREFIX_GROUP_NAME, $commission->getTitle()),
+                    ]));
 
-                $commission->setGoogleDriveId($drive->getId());
-                $this->em->flush();
+                    $commission->setGoogleDriveId($drive->getId());
+                    $this->em->flush();
+                } catch (Exception $e) {
+                    $this->output->writeln("\t🚨 Impossible de créer le Google Drive pour <info>Commission " . $commission->getTitle() . '</info> : ' . $e->getMessage());
+                }
             } else {
                 $this->output->writeln("\t💨 Would have create a Google Drive for <info>Commission " . $commission->getTitle() . '</info>');
             }
@@ -317,7 +321,7 @@ class GoogleGroupsSync extends Command
 
         $googleGroupEmail = $this->getGoogleGroupKey($commission);
 
-        if (!$this->dryRun || $commission->getGoogleDriveId()) {
+        if ($commission->getGoogleDriveId()) {
             // Le google group de commission est grant "writer"
             if (!$this->hasCommissionAccessOnDrive($commission, $commission->getGoogleDriveId())) {
                 if (!$this->dryRun) {
