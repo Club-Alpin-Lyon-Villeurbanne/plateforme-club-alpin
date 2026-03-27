@@ -206,9 +206,10 @@ class ProfilController extends AbstractController
             $user->setProfilePicture(null);
             $manager->persist($user);
             $manager->flush();
+            $this->addFlash('success', 'Photo de profil supprimée avec succès !');
+        } else {
+            $this->addFlash('info', 'Aucune photo de profil à supprimer.');
         }
-
-        $this->addFlash('success', 'Photo de profil supprimée avec succès !');
 
         return $this->redirectToRoute('my_profile');
     }
