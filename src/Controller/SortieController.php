@@ -199,7 +199,7 @@ class SortieController extends AbstractController
             $sourceId = (int) $request->request->get('source_event_id');
             if ($sourceId > 0) {
                 $sourceEvent = $entityManager->getRepository(Evt::class)->find($sourceId);
-                if ($sourceEvent) {
+                 if ($sourceEvent && $this->isGranted('SORTIE_DUPLICATE', $sourceEvent)) {
                     foreach ($sourceEvent->getParticipations(null, EventParticipation::STATUS_VALIDE) as $participation) {
                         if (!$event->getParticipation($participation->getUser())) {
                             $event->addParticipation($participation->getUser(), $participation->getRole(), EventParticipation::STATUS_VALIDE);
