@@ -330,9 +330,9 @@ class EvtRepository extends ServiceEntityRepository
         ;
     }
 
-    public function getEventsToLegalValidate(int $dateMax, int $first, int $perPage)
+    public function getEventsToLegalValidate(int $dateMax, int $first, int $perPage, array $commissions = [])
     {
-        $qb = $this->getEventsToLegalValidateQueryBuilder($dateMax)
+        $qb = $this->getEventsToLegalValidateQueryBuilder($dateMax, $commissions)
             ->orderBy('e.startDate', 'ASC')
         ;
 
@@ -343,10 +343,10 @@ class EvtRepository extends ServiceEntityRepository
      * @throws NonUniqueResultException
      * @throws NoResultException
      */
-    public function getEventsToLegalValidateCount(int $dateMax): int
+    public function getEventsToLegalValidateCount(int $dateMax, array $commissions = []): int
     {
         return (int) $this
-            ->getEventsToLegalValidateQueryBuilder($dateMax)
+            ->getEventsToLegalValidateQueryBuilder($dateMax, $commissions)
             ->select('count(e)')
             ->getQuery()
             ->getSingleScalarResult()
@@ -422,9 +422,9 @@ class EvtRepository extends ServiceEntityRepository
         return $qb;
     }
 
-    protected function getEventsToLegalValidateQueryBuilder(int $dateMax): QueryBuilder
+    protected function getEventsToLegalValidateQueryBuilder(int $dateMax, array $commissions = []): QueryBuilder
     {
-        return $this->createQueryBuilder('e')
+        $qb = $this->createQueryBuilder('e')
             ->where('e.status = :status')
             ->andWhere('e.statusLegal = :legal')
             ->andWhere('e.cancelled = false')
@@ -435,6 +435,14 @@ class EvtRepository extends ServiceEntityRepository
             ->setParameter('dateNow', new \DateTimeImmutable())
             ->setParameter('dateMax', (new \DateTimeImmutable())->setTimestamp($dateMax))
         ;
+        if (!empty($commissions)) {
+            $qb
+                ->andWhere('e.commission IN (:commissions)')
+                ->setParameter('commissions', $commissions)
+            ;
+        }
+
+        return $qb;
     }
 
     private function getUserUpcomingEventsDql(User $user): QueryBuilder

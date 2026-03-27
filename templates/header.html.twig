@@ -147,7 +147,7 @@
                                         </li>
                                     {% endif %}
 
-                                    {% if allowed('evt_legal_accept') %}
+                                    {% if allowed('evt_legal_accept') or allowed('evt_legal_refuse') %}
                                         {# valider juridiquement une sortie#}
                                         <li>
                                             <a href="{{ path('legal_manage_events') }}" title="Valider légalement les sorties">
