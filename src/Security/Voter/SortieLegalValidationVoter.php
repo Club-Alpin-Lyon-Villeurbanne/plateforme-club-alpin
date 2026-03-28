@@ -35,6 +35,9 @@ class SortieLegalValidationVoter extends Voter
         }
 
         $commission = $subject->getCommission();
+        if (!$commission) {
+            return false;
+        }
         $hasRight = $this->userRights->allowedOnCommission('evt_legal_accept', $commission)
             || $this->userRights->allowedOnCommission('evt_legal_refuse', $commission);
 
