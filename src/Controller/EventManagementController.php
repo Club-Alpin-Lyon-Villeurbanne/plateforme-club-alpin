@@ -68,16 +68,22 @@ class EventManagementController extends AbstractController
     #[Template('sortie/gestion-sorties.html.twig')]
     public function legalManageEvents(Request $request): array
     {
-        if (!$this->userRights->allowed('evt_legal_accept')) {
+        if (!$this->userRights->allowed('evt_legal_accept') && !$this->userRights->allowed('evt_legal_refuse')) {
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
+        $commissionCodes = array_unique(array_merge(
+            $this->userRights->getCommissionListForRight('evt_legal_accept'),
+            $this->userRights->getCommissionListForRight('evt_legal_refuse'),
+        ));
+        $commissions = $this->commissionRepository->findBy(['code' => $commissionCodes]);
+
         $dateMax = (int) strtotime($this->maxTimestampForLegalValidation);
-        $total = $this->eventRepository->getEventsToLegalValidateCount($dateMax);
+        $total = $this->eventRepository->getEventsToLegalValidateCount($dateMax, $commissions);
         $paginationParams = $this->getPaginationParams($request, $total);
 
         return array_merge([
-            'events' => $this->eventRepository->getEventsToLegalValidate($dateMax, $paginationParams['first'], $paginationParams['per_page']),
+            'events' => $this->eventRepository->getEventsToLegalValidate($dateMax, $paginationParams['first'], $paginationParams['per_page'], $commissions),
             'title' => 'Validation des sorties en tant que sortie officielle du CAF',
             'page_url' => $this->generateUrl('legal_manage_events'),
             'to_include' => 'validation-des-sorties-main',
