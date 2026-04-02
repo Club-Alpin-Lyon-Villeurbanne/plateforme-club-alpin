@@ -9,6 +9,7 @@ use App\Repository\ArticleRepository;
 use App\Repository\CommissionRepository;
 use App\Trait\PaginationControllerTrait;
 use App\UserRights;
+use App\Messenger\Message\ArticlePublie;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -19,6 +20,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -68,7 +70,7 @@ class ArticleManagementController extends AbstractController
      * @throws TransportExceptionInterface
      */
     #[Route(path: '/article/{id}/publier', name: 'article_validate', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
-    public function approve(Request $request, Article $article, EntityManagerInterface $em, Mailer $mailer): RedirectResponse
+    public function approve(Request $request, Article $article, EntityManagerInterface $em, Mailer $mailer, MessageBusInterface $messageBus): RedirectResponse
     {
         if (!$this->isCsrfTokenValid('article_validate', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
@@ -84,6 +86,8 @@ class ArticleManagementController extends AbstractController
             ->setValidationDate(new \DateTimeImmutable())
         ;
         $em->flush();
+
+        $messageBus->dispatch(new ArticlePublie($article->getId()));
 
         $mailer->send($article->getUser(), 'transactional/article-valide', [
             'article_name' => $article->getTitre(),
