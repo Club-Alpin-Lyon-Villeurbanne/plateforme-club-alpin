@@ -170,7 +170,6 @@ class EventType extends AbstractType
                 'constraints' => [
                     new NotBlank(null, 'La longitude est obligatoire. Avez-vous bien cliqué sur le bouton pour placer le marqueur ?'),
                     new Type(['type' => 'numeric', 'message' => 'La longitude doit être un nombre valide.']),
-                    new GreaterThan(0),
                 ],
             ])
             ->add('startDate', DateTimeType::class, [
