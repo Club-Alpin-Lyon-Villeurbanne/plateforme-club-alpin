@@ -47,6 +47,10 @@ class PaymentController extends AbstractController
                 ],
             ]);
 
+            if (!isset($result['redirectUrl'])) {
+                throw new \RuntimeException('HelloAsso response missing redirectUrl');
+            }
+
             return $this->redirect($result['redirectUrl']);
         } catch (\Exception $e) {
             $this->logger->error('Failed to create HelloAsso checkout intent', [
