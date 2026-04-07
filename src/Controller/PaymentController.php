@@ -2,13 +2,12 @@
 
 namespace App\Controller;
 
-use App\Messenger\Message\ReservationPaid;
 use App\Service\HelloAssoClient;
+use App\Service\LoxyaReservationService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
@@ -19,7 +18,7 @@ class PaymentController extends AbstractController
         private readonly string $helloAssoSignatureKey,
         private readonly string $helloAssoOrganizationSlug,
         private readonly HelloAssoClient $helloAssoClient,
-        private readonly MessageBusInterface $messageBus,
+        private readonly LoxyaReservationService $loxyaReservationService,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -126,12 +125,15 @@ class PaymentController extends AbstractController
             return new Response('OK', Response::HTTP_OK);
         }
 
-        $this->messageBus->dispatch(new ReservationPaid((int) $reservationId, (string) $helloAssoPaymentId));
-
-        $this->logger->info('Payment webhook - Dispatched ReservationPaid message', [
-            'reservationId' => $reservationId,
-            'helloAssoPaymentId' => $helloAssoPaymentId,
-        ]);
+        try {
+            $this->loxyaReservationService->markReservationAsPaid((int) $reservationId, (string) $helloAssoPaymentId);
+        } catch (\Exception $e) {
+            $this->logger->error('Payment webhook - Loxya update failed', [
+                'reservationId' => $reservationId,
+                'helloAssoPaymentId' => $helloAssoPaymentId,
+                'error' => $e->getMessage(),
+            ]);
+        }
 
         return new Response('OK', Response::HTTP_OK);
     }

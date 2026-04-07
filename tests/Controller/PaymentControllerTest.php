@@ -2,8 +2,8 @@
 
 namespace App\Tests\Controller;
 
-use App\Messenger\Message\ReservationPaid;
 use App\Service\HelloAssoClient;
+use App\Service\LoxyaReservationService;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class PaymentControllerTest extends WebTestCase
@@ -122,6 +122,12 @@ class PaymentControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
+        $loxyaService = $this->createMock(LoxyaReservationService::class);
+        $loxyaService->expects($this->once())
+            ->method('markReservationAsPaid')
+            ->with(42, '99999');
+        $client->getContainer()->set(LoxyaReservationService::class, $loxyaService);
+
         $payload = json_encode([
             'eventType' => 'Payment',
             'data' => ['id' => '99999', 'state' => 'Authorized'],
@@ -131,15 +137,26 @@ class PaymentControllerTest extends WebTestCase
         $this->makeWebhookRequest($client, $payload);
 
         $this->assertResponseStatusCodeSame(200);
+    }
 
-        $transport = $client->getContainer()->get('messenger.transport.alertes');
-        $messages = $transport->get();
-        $this->assertCount(1, $messages);
+    public function testWebhookReturns200OnLoxyaError(): void
+    {
+        $client = static::createClient();
 
-        $message = $messages[0]->getMessage();
-        $this->assertInstanceOf(ReservationPaid::class, $message);
-        $this->assertEquals(42, $message->reservationId);
-        $this->assertEquals('99999', $message->helloAssoPaymentId);
+        $loxyaService = $this->createMock(LoxyaReservationService::class);
+        $loxyaService->method('markReservationAsPaid')
+            ->willThrowException(new \RuntimeException('Loxya is down'));
+        $client->getContainer()->set(LoxyaReservationService::class, $loxyaService);
+
+        $payload = json_encode([
+            'eventType' => 'Payment',
+            'data' => ['id' => '99999', 'state' => 'Authorized'],
+            'metadata' => ['reservation_id' => 42],
+        ]);
+
+        $this->makeWebhookRequest($client, $payload);
+
+        $this->assertResponseStatusCodeSame(200);
     }
 
     // --- Return page tests ---
