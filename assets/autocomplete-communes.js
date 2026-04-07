@@ -25,7 +25,7 @@ function searchCommunes(context) {
                         list.innerHTML = "";
                         data.forEach(item => {
                             let liContentText = item. codePostal + ' ' + item.nomCommune;
-                            if ('' !== item.ligne5) {
+                            if (item.ligne5) {
                                 liContentText += ' (' + item.ligne5 + ')';
                             }
                             const li = document.createElement("li");
