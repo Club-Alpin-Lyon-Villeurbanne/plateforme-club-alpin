@@ -17,15 +17,25 @@ class PaymentController extends AbstractController
         private readonly string $helloAssoServerIp,
         private readonly string $helloAssoSignatureKey,
         private readonly string $helloAssoOrganizationSlug,
+        private readonly string $loxyaJwt,
         private readonly HelloAssoClient $helloAssoClient,
         private readonly LoxyaReservationService $loxyaReservationService,
         private readonly LoggerInterface $logger,
     ) {
     }
 
+    private function isEnabled(): bool
+    {
+        return '' !== $this->loxyaJwt;
+    }
+
     #[Route(path: '/paiement', name: 'payment_checkout', methods: ['GET'])]
     public function checkout(Request $request): Response
     {
+        if (!$this->isEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
         $reservationId = $request->query->getInt('reservation_id');
         $amount = $request->query->getInt('amount');
 
@@ -66,6 +76,10 @@ class PaymentController extends AbstractController
     #[Route(path: '/webhook/paiement', name: 'payment_webhook', methods: ['POST'])]
     public function webhook(Request $request): Response
     {
+        if (!$this->isEnabled()) {
+            return new Response('Not configured', Response::HTTP_NOT_FOUND);
+        }
+
         $rawContent = $request->getContent();
         $payload = json_decode($rawContent, true);
 
@@ -145,6 +159,10 @@ class PaymentController extends AbstractController
     #[Route(path: '/paiement/retour', name: 'payment_return', methods: ['GET'])]
     public function paymentReturn(): Response
     {
+        if (!$this->isEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
         return $this->render('payment/return.html.twig', [
             'status' => 'success',
         ]);
@@ -153,6 +171,10 @@ class PaymentController extends AbstractController
     #[Route(path: '/paiement/annuler', name: 'payment_cancel', methods: ['GET'])]
     public function paymentCancel(): Response
     {
+        if (!$this->isEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
         return $this->render('payment/return.html.twig', [
             'status' => 'cancel',
         ]);
@@ -161,6 +183,10 @@ class PaymentController extends AbstractController
     #[Route(path: '/paiement/erreur', name: 'payment_error', methods: ['GET'])]
     public function paymentError(): Response
     {
+        if (!$this->isEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
         return $this->render('payment/error.html.twig');
     }
 }
