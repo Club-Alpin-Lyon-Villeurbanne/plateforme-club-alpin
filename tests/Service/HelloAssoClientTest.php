@@ -45,6 +45,7 @@ class HelloAssoClientTest extends TestCase
         $this->mockCachePassthrough();
 
         $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(200);
         $response->method('toArray')->willReturn([
             'access_token' => 'token123',
             'expires_in' => 1800,
@@ -70,6 +71,7 @@ class HelloAssoClientTest extends TestCase
         $this->mockCachePassthrough();
 
         $loginResponse = $this->createMock(ResponseInterface::class);
+        $loginResponse->method('getStatusCode')->willReturn(200);
         $loginResponse->method('toArray')->willReturn([
             'access_token' => 'token123',
             'expires_in' => 1800,
@@ -92,6 +94,7 @@ class HelloAssoClientTest extends TestCase
         $this->mockCachePassthrough();
 
         $loginResponse = $this->createMock(ResponseInterface::class);
+        $loginResponse->method('getStatusCode')->willReturn(200);
         $loginResponse->method('toArray')->willReturn([
             'access_token' => 'token123',
             'expires_in' => 1800,
@@ -114,6 +117,7 @@ class HelloAssoClientTest extends TestCase
         $this->mockCachePassthrough();
 
         $loginResponse = $this->createMock(ResponseInterface::class);
+        $loginResponse->method('getStatusCode')->willReturn(200);
         $loginResponse->method('toArray')->willReturn([
             'access_token' => 'token123',
             'expires_in' => 1800,
@@ -145,6 +149,7 @@ class HelloAssoClientTest extends TestCase
         $this->mockCachePassthrough();
 
         $loginResponse = $this->createMock(ResponseInterface::class);
+        $loginResponse->method('getStatusCode')->willReturn(200);
         $loginResponse->method('toArray')->willReturn([
             'access_token' => 'token123',
             'expires_in' => 1800,

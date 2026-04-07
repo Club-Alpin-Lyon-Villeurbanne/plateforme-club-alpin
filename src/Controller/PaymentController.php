@@ -39,8 +39,8 @@ class PaymentController extends AbstractController
         $reservationId = $request->query->getInt('reservation_id');
         $amount = $request->query->getInt('amount');
 
-        if ($reservationId <= 0 || $amount <= 0) {
-            return new Response('Paramètres reservation_id et amount obligatoires (entiers positifs).', Response::HTTP_BAD_REQUEST);
+        if ($reservationId <= 0 || $amount <= 0 || $amount > 100000) {
+            return new Response('Paramètres reservation_id et amount obligatoires (entiers positifs, max 1000€).', Response::HTTP_BAD_REQUEST);
         }
 
         try {
@@ -107,6 +107,12 @@ class PaymentController extends AbstractController
             return new Response('Missing signature', Response::HTTP_BAD_REQUEST);
         }
 
+        if ('' === $this->helloAssoSignatureKey) {
+            $this->logger->error('Payment webhook - Signature key not configured');
+
+            return new Response('Webhook not configured', Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+
         $calculatedSignature = hash_hmac('sha256', $rawContent, $this->helloAssoSignatureKey);
         if (!hash_equals($signatureHeader, $calculatedSignature)) {
             $this->logger->error('Payment webhook - Signature mismatch', [
@@ -157,14 +163,17 @@ class PaymentController extends AbstractController
     }
 
     #[Route(path: '/paiement/retour', name: 'payment_return', methods: ['GET'])]
-    public function paymentReturn(): Response
+    public function paymentReturn(Request $request): Response
     {
         if (!$this->isEnabled()) {
             throw $this->createNotFoundException();
         }
 
+        $code = $request->query->get('code', '');
+        $status = 'succeeded' === $code ? 'success' : 'error';
+
         return $this->render('payment/return.html.twig', [
-            'status' => 'success',
+            'status' => $status,
         ]);
     }
 

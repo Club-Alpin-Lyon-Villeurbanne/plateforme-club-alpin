@@ -161,13 +161,22 @@ class PaymentControllerTest extends WebTestCase
 
     // --- Return page tests ---
 
-    public function testReturnPageRendersSuccess(): void
+    public function testReturnPageRendersSuccessWithCode(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/paiement/retour?code=succeeded');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h2', 'Paiement pris en compte');
+    }
+
+    public function testReturnPageRendersErrorWithoutCode(): void
     {
         $client = static::createClient();
         $client->request('GET', '/paiement/retour');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h2', 'Paiement pris en compte');
+        $this->assertSelectorTextContains('h2', 'Paiement échoué');
     }
 
     public function testCancelPageRenders(): void
@@ -187,4 +196,5 @@ class PaymentControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h2', 'Erreur de paiement');
     }
+
 }
