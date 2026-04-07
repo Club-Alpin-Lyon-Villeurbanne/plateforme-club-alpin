@@ -1,0 +1,160 @@
+<?php
+
+namespace App\Controller;
+
+use App\Messenger\Message\ReservationPaid;
+use App\Service\HelloAssoClient;
+use Psr\Log\LoggerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+
+class PaymentController extends AbstractController
+{
+    public function __construct(
+        private readonly string $helloAssoServerIp,
+        private readonly string $helloAssoSignatureKey,
+        private readonly string $helloAssoOrganizationSlug,
+        private readonly HelloAssoClient $helloAssoClient,
+        private readonly MessageBusInterface $messageBus,
+        private readonly LoggerInterface $logger,
+    ) {
+    }
+
+    #[Route(path: '/paiement', name: 'payment_checkout', methods: ['GET'])]
+    public function checkout(Request $request): Response
+    {
+        $reservationId = $request->query->getInt('reservation_id');
+        $amount = $request->query->getInt('amount');
+
+        if ($reservationId <= 0 || $amount <= 0) {
+            return new Response('Paramètres reservation_id et amount obligatoires (entiers positifs).', Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $result = $this->helloAssoClient->createCheckoutIntent($this->helloAssoOrganizationSlug, [
+                'totalAmount' => $amount,
+                'initialAmount' => $amount,
+                'itemName' => sprintf('Location de matériel - Réservation n°%d', $reservationId),
+                'backUrl' => $this->generateUrl('payment_cancel', [], UrlGeneratorInterface::ABSOLUTE_URL),
+                'errorUrl' => $this->generateUrl('payment_error', [], UrlGeneratorInterface::ABSOLUTE_URL),
+                'returnUrl' => $this->generateUrl('payment_return', [], UrlGeneratorInterface::ABSOLUTE_URL),
+                'containsDonation' => false,
+                'metadata' => [
+                    'reservation_id' => $reservationId,
+                ],
+            ]);
+
+            return $this->redirect($result['redirectUrl']);
+        } catch (\Exception $e) {
+            $this->logger->error('Failed to create HelloAsso checkout intent', [
+                'reservationId' => $reservationId,
+                'amount' => $amount,
+                'error' => $e->getMessage(),
+            ]);
+
+            return $this->render('payment/error.html.twig');
+        }
+    }
+
+    #[Route(path: '/webhook/paiement', name: 'payment_webhook', methods: ['POST'])]
+    public function webhook(Request $request): Response
+    {
+        $rawContent = $request->getContent();
+        $payload = json_decode($rawContent, true);
+
+        if (!\is_array($payload)) {
+            return new Response('Invalid JSON', Response::HTTP_BAD_REQUEST);
+        }
+
+        // Vérification IP d'origine
+        if ($this->helloAssoServerIp !== $request->getClientIp()) {
+            $this->logger->error('Payment webhook - Invalid IP', [
+                'ip' => $request->getClientIp(),
+                'payload' => $payload,
+            ]);
+
+            return new Response('Invalid IP', Response::HTTP_BAD_REQUEST);
+        }
+
+        // Vérification signature HMAC-SHA256
+        $signatureHeader = $request->headers->get('x-ha-signature');
+        if (null === $signatureHeader) {
+            $this->logger->error('Payment webhook - Missing signature', [
+                'payload' => $payload,
+            ]);
+
+            return new Response('Missing signature', Response::HTTP_BAD_REQUEST);
+        }
+
+        $calculatedSignature = hash_hmac('sha256', $rawContent, $this->helloAssoSignatureKey);
+        if (!hash_equals($signatureHeader, $calculatedSignature)) {
+            $this->logger->error('Payment webhook - Signature mismatch', [
+                'payload' => $payload,
+            ]);
+
+            return new Response('Signature mismatch', Response::HTTP_FORBIDDEN);
+        }
+
+        // Filtrage : seuls les paiements autorisés nous intéressent
+        $eventType = $payload['eventType'] ?? null;
+        $state = $payload['data']['state'] ?? null;
+
+        if ('Payment' !== $eventType || 'Authorized' !== $state) {
+            $this->logger->info('Payment webhook - Ignored notification', [
+                'eventType' => $eventType,
+                'state' => $state,
+            ]);
+
+            return new Response('OK', Response::HTTP_OK);
+        }
+
+        // HelloAsso peut placer les metadata à différents endroits selon le type de notification
+        $reservationId = $payload['metadata']['reservation_id']
+            ?? $payload['data']['meta']['reservation_id']
+            ?? null;
+        $helloAssoPaymentId = $payload['data']['id'] ?? null;
+
+        if (null === $reservationId || null === $helloAssoPaymentId) {
+            $this->logger->error('Payment webhook - Missing reservation_id or payment id', [
+                'payload' => $payload,
+            ]);
+
+            return new Response('OK', Response::HTTP_OK);
+        }
+
+        $this->messageBus->dispatch(new ReservationPaid((int) $reservationId, (string) $helloAssoPaymentId));
+
+        $this->logger->info('Payment webhook - Dispatched ReservationPaid message', [
+            'reservationId' => $reservationId,
+            'helloAssoPaymentId' => $helloAssoPaymentId,
+        ]);
+
+        return new Response('OK', Response::HTTP_OK);
+    }
+
+    #[Route(path: '/paiement/retour', name: 'payment_return', methods: ['GET'])]
+    public function paymentReturn(): Response
+    {
+        return $this->render('payment/return.html.twig', [
+            'status' => 'success',
+        ]);
+    }
+
+    #[Route(path: '/paiement/annuler', name: 'payment_cancel', methods: ['GET'])]
+    public function paymentCancel(): Response
+    {
+        return $this->render('payment/return.html.twig', [
+            'status' => 'cancel',
+        ]);
+    }
+
+    #[Route(path: '/paiement/erreur', name: 'payment_error', methods: ['GET'])]
+    public function paymentError(): Response
+    {
+        return $this->render('payment/error.html.twig');
+    }
+}

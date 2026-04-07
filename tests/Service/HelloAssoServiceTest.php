@@ -10,14 +10,12 @@ use App\Service\HelloAssoService;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class HelloAssoServiceTest extends TestCase
 {
     private string $organizationSlug;
     private string $baseUrl;
     private int $activityTypeId;
-    private HttpClientInterface $httpClient;
     private LoggerInterface $logger;
     private UrlGeneratorInterface $urlGenerator;
     private HelloAssoClient $helloAssoClient;
@@ -31,7 +29,6 @@ class HelloAssoServiceTest extends TestCase
         $this->organizationSlug = 'test-org';
         $this->baseUrl = 'https://api.helloasso.com';
         $this->activityTypeId = 123;
-        $this->httpClient = $this->createMock(HttpClientInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
         $this->urlGenerator = $this->createMock(UrlGeneratorInterface::class);
         $this->helloAssoClient = $this->createMock(HelloAssoClient::class);
@@ -40,7 +37,6 @@ class HelloAssoServiceTest extends TestCase
             $this->organizationSlug,
             $this->baseUrl,
             $this->activityTypeId,
-            $this->httpClient,
             $this->logger,
             $this->urlGenerator,
             $this->helloAssoClient
@@ -82,7 +78,6 @@ class HelloAssoServiceTest extends TestCase
             '',
             $this->baseUrl,
             $this->activityTypeId,
-            $this->httpClient,
             $this->logger,
             $this->urlGenerator,
             $this->helloAssoClient
@@ -104,7 +99,6 @@ class HelloAssoServiceTest extends TestCase
             $this->organizationSlug,
             $this->baseUrl,
             0,
-            $this->httpClient,
             $this->logger,
             $this->urlGenerator,
             $this->helloAssoClient
@@ -126,7 +120,6 @@ class HelloAssoServiceTest extends TestCase
             $this->organizationSlug,
             '',
             $this->activityTypeId,
-            $this->httpClient,
             $this->logger,
             $this->urlGenerator,
             $this->helloAssoClient
@@ -275,7 +268,6 @@ class HelloAssoServiceTest extends TestCase
             '',
             $this->baseUrl,
             $this->activityTypeId,
-            $this->httpClient,
             $this->logger,
             $this->urlGenerator,
             $this->helloAssoClient

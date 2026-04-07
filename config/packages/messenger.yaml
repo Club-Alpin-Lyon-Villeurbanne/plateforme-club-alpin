@@ -35,6 +35,7 @@ framework:
             'App\Messenger\Message\ArticlePublie': alertes
             'App\Messenger\Message\SortiePubliee': alertes
             'App\Messenger\Message\UserNotification': alertes
+            'App\Messenger\Message\ReservationPaid': alertes
             'Symfony\Component\Mailer\Messenger\SendEmailMessage': mails
 
         buses:
