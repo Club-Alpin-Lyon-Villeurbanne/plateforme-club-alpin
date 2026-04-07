@@ -1021,7 +1021,7 @@
             {% set nInscritsValides = event.participationsCount %}
             {% if event.modeTransport and event.coutCarbone is not null and nInscritsValides > 0 %}
                 <ul class="nice-list">
-                    <li class="wide"><b>IMPACT CARBONE TRANSPORT :</b> {{ event.modeTransport|trans }} - {{ (event.coutCarbone / nInscritsValides) | round }} gCO2e / personne</li>
+                    <li class="wide"><b>IMPACT CARBONE TRANSPORT :</b> {{ event.modeTransport|trans }} - {{ (event.coutCarbone / nInscritsValides)|number_format(0, ',', ' ') }} gCO2e / personne</li>
                 </ul>
                 <hr />
             {% endif %}

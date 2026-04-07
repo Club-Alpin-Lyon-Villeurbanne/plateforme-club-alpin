@@ -167,7 +167,7 @@ class EventType extends AbstractType
                 'scale' => 0,
                 'constraints' => [
                     new Type(['type' => 'numeric', 'message' => 'Veuillez saisir un nombre valide.']),
-                    new GreaterThan(0),
+                    new GreaterThanOrEqual(1),
                 ],
                 'help' => 'Permet d\'aider au calcul du bilan carbone.',
                 'help_attr' => [
