@@ -196,9 +196,9 @@ class SortieController extends AbstractController
             }
 
             // participants depuis duplication "avec le groupe"
-            $sourceId = (int) $request->request->get('source_event_id');
-            if (!$isUpdate && $sourceId > 0) {
-                $sourceEvent = $entityManager->getRepository(Evt::class)->find($sourceId);
+            $sourceEventIdFromRequest = (int) $request->request->get('source_event_id');
+            if (!$isUpdate && $sourceEventIdFromRequest > 0) {
+                $sourceEvent = $entityManager->getRepository(Evt::class)->find($sourceEventIdFromRequest);
                 if ($sourceEvent && $this->isGranted('SORTIE_DUPLICATE', $sourceEvent)) {
                     $rolesImportedOutsideForm = [
                         EventParticipation::ROLE_INSCRIT,
