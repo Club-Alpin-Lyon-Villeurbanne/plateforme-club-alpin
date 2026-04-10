@@ -24,7 +24,6 @@ use App\Repository\FormationValidationNiveauPratiqueRepository;
 use App\Repository\UserAttrRepository;
 use App\Repository\UserRepository;
 use App\Service\HelloAssoService;
-use App\Service\UserLicenseHelper;
 use App\Twig\JavascriptGlobalsExtension;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use App\Utils\ExcelExport;
@@ -372,11 +371,8 @@ class SortieController extends AbstractController
             }
         }
 
-        // Date cutoff: September 30 of current year if after Dec 1, otherwise September 30 of previous year
-        $currentMonth = date('m');
-        $currentYear = date('Y');
-        $cutoffYear = $currentMonth >= 12 ? $currentYear : $currentYear - 1;
-        $cutoffDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $cutoffYear . '-' . UserLicenseHelper::LICENSE_TOLERANCY_PERIOD_END);
+        // Notes de frais must be submitted within 90 days of the event's end date
+        $expenseReportDeadline = $event->getEndDate()->modify('+90 days');
 
         // Check if user has a viewable expense report (submitted, approved, or accounted)
         $hasViewableExpenseReport = false;
@@ -403,8 +399,7 @@ class SortieController extends AbstractController
             'current_user_has_paid' => $currentUserHasPaid,
             'current_user_accepted' => $currentUserAccepted,
             'accepted_participations' => $participationRepository->getSortedParticipations($event),
-            'is_event_after_cutoff' => $event->getEndDate() >= $cutoffDate,
-            'cutoff_year' => $cutoffYear,
+            'is_within_expense_report_deadline' => new \DateTimeImmutable() <= $expenseReportDeadline,
             'has_viewable_expense_report' => $hasViewableExpenseReport,
             'groupes_competences' => $groupesCompRefs,
             'niveaux' => $nivRefs,
