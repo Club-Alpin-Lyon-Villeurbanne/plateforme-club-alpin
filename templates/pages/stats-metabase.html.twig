@@ -4,10 +4,16 @@
 
 {% block body %}
     <iframe
+            id="metabase-iframe"
             src="{{ iframeUrl }}"
-            frameborder="0"
-            width="665"
-            height="1000"
-            allowtransparency>
+            title="Dashboard Metabase"
+            width="100%"
+            style="border: none;">
     </iframe>
+    <script src="https://cdn.jsdelivr.net/npm/iframe-resizer@4.4.5/js/iframeResizer.min.js"
+            integrity="sha384-d4pFvBiujcVxXGj//e5dSs/V4+RxupURhD/ya3MLEtk3eLLdLqVHgtUDExXjMD8O"
+            crossorigin="anonymous"></script>
+    <script>
+        iFrameResize({}, '#metabase-iframe');
+    </script>
 {% endblock %}

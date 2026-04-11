@@ -18,6 +18,11 @@ class HelloAssoService
     protected const string HELLO_ASSO_CAMPAIGN_PUBLISH_ENDPOINT = '/v5/organizations/{organizationSlug}/forms/Event/{formSlug}/state';
     protected const string HELLO_ASSO_PAYMENT_INFO_ENDPOINT = '/v5/organizations/{organizationSlug}/forms/Event/{formSlug}/payments';
 
+    /**
+     * @param string $organizationSlug Slug de l'organisation HelloAsso
+     * @param string $baseUrl          URL de base de l'API HelloAsso
+     * @param int    $activityTypeId   Identifiant du type d'activité HelloAsso (ex. "Sortie")
+     */
     public function __construct(
         protected string $organizationSlug,
         protected string $baseUrl,
@@ -44,8 +49,16 @@ class HelloAssoService
             'code' => $event->getCode(),
             'id' => $event->getId(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
+        $commissionTitle = trim((string) $event->getCommission()?->getTitle());
+        $organizerLastname = trim((string) $event->getUser()?->getLastname());
+        $departurePlace = trim((string) $event->getPlace());
+
+        if ('' === $commissionTitle || '' === $organizerLastname || '' === $departurePlace) {
+            throw new \InvalidArgumentException('Impossible de créer le titre HelloAsso: commission, organisateur et lieu de départ sont obligatoires.');
+        }
+
         $params = [
-            'title' => '[' . $eventDate->format('Y-m-d') . '] ' . $event->getTitre(),
+            'title' => sprintf('[%s] %s - %s - %s', $eventDate->format('Y-m-d'), $commissionTitle, $organizerLastname, $departurePlace),
             'description' => $description,
             'amountVisible' => true,
             'generateTickets' => false,
@@ -83,6 +96,9 @@ class HelloAssoService
         }
     }
 
+    /**
+     * Vérifie que les paramètres de configuration HelloAsso sont tous renseignés.
+     */
     public function isConfigSet(): bool
     {
         return $this->helloAssoClient->areCredentialsSet()

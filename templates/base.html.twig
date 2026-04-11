@@ -80,6 +80,22 @@
         </div>
         {% block javascripts %}
             <script src="https://www.google.com/recaptcha/api.js?render={{ recaptcha.site_key }}"></script>
+            <script>
+                // Fix: <base href="/"> makes #hash links navigate to the homepage.
+                // This handler scrolls to the target element on the current page instead.
+                document.addEventListener('click', function(e) {
+                    var link = e.target.closest('a[href^="#"]');
+                    if (!link) return;
+                    var id = link.getAttribute('href').substring(1);
+                    e.preventDefault();
+                    if (!id) return;
+                    var target = document.getElementById(id);
+                    if (target) {
+                        target.scrollIntoView({behavior: 'smooth'});
+                    }
+                    history.replaceState(null, '', '#' + id);
+                });
+            </script>
         {% endblock %}
         {% block trackers %}
             {% if analytics_account != "" %}

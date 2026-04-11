@@ -47,7 +47,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'id_user', type: 'bigint', nullable: false)]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[Groups(['user:read'])]
-    private ?int $id;
+    private ?int $id = null;
 
     #[ORM\Column(name: 'profile_type', type: Types::SMALLINT, nullable: false, options: ['default' => self::PROFILE_UNKNOWN, 'comment' => '1 licencié annuel du club, 2 carte découverte du club, 3 licencié autre club, 4 personne extérieure (ex formateur)'])]
     private int $profileType;
@@ -611,6 +611,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function __serialize(): array
+    {
+        return [
+            'id' => isset($this->id) ? $this->id : null,
+            'email' => $this->email,
+            'mdp' => $this->mdp,
+        ];
+    }
+
+    public function __unserialize(array $data): void
+    {
+        // Support both new format (from __serialize) and legacy native PHP
+        // serialization format where private property keys are mangled as
+        // "\0ClassName\0propertyName" and bigint $id is stored as string.
+        $p = "\0" . self::class . "\0";
+        $id = $data['id'] ?? $data[$p . 'id'] ?? null;
+        $this->id = null !== $id ? (int) $id : null;
+        $this->email = $data['email'] ?? $data[$p . 'email'] ?? null;
+        $this->mdp = $data['mdp'] ?? $data[$p . 'mdp'] ?? null;
     }
 
     /**

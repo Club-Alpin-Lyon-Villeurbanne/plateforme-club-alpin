@@ -362,3 +362,19 @@ services:
     arguments:
       $cleanInferiorRights: '%inferior_rights_clean%'
     tags: ['controller.service_arguments']
+
+  App\Helper\DistanceHelper:
+    arguments:
+      $osrmApiUrl: '%env(OSRM_API_URL)%'
+      $timeout: '%env(int:OSRM_TIMEOUT)%'
+
+  App\Helper\CarbonCostHelper:
+    arguments:
+      $publicTrainRate: '%env(float:PUBLIC_TRAIN_CARBON_COST_RATE)%'
+      $publicCoachRate: '%env(float:PUBLIC_COACH_CARBON_COST_RATE)%'
+      $dedicatedCoachRate: '%env(float:DEDICATED_COACH_CARBON_COST_RATE)%'
+      $minivanRate: '%env(float:MINIVAN_CARBON_COST_RATE)%'
+      $bikeWalkRate: '%env(float:BIKE_OR_WALK_CARBON_COST_RATE)%'
+      $thermicCarpoolingRate: '%env(float:THERMIC_CARPOOLING_CARBON_COST_RATE)%'
+      $electricCarpoolingRate: '%env(float:ELECTRIC_CARPOOLING_CARBON_COST_RATE)%'
+      $planeRate: '%env(float:PLANE_CARBON_COST_RATE)%'
