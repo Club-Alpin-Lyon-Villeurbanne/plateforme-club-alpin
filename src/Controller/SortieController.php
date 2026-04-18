@@ -86,6 +86,7 @@ class SortieController extends AbstractController
         $isDuplicate = false;
         $hasErrors = false;
         $commission = $event?->getCommission();
+        $sourceEventId = null;
 
         if (!$event instanceof Evt) {
             $commission = $commissionRepository->findOneBy(['code' => $request->query->get('commission')]);
@@ -108,6 +109,7 @@ class SortieController extends AbstractController
             $event->setJoinStartDate(new \DateTimeImmutable());
             $isUpdate = false;
         } elseif (!empty($mode)) {
+            $sourceEventId = 'full' === $mode ? $event->getId() : null;
             $event = $this->duplicate($request, $event, $mode);
             $commission = $event->getCommission();
             $isUpdate = false;
@@ -195,6 +197,24 @@ class SortieController extends AbstractController
                             ;
                         } else {
                             $event->addParticipation($participant, $role, EventParticipation::STATUS_VALIDE);
+                        }
+                    }
+                }
+            }
+
+            // participants depuis duplication "avec le groupe"
+            $sourceEventIdFromRequest = (int) $request->request->get('source_event_id');
+            if (!$isUpdate && $sourceEventIdFromRequest > 0) {
+                $sourceEvent = $entityManager->getRepository(Evt::class)->find($sourceEventIdFromRequest);
+                if ($sourceEvent && $this->isGranted('SORTIE_DUPLICATE', $sourceEvent)) {
+                    $rolesImportedOutsideForm = [
+                        EventParticipation::ROLE_INSCRIT,
+                        EventParticipation::ROLE_MANUEL,
+                        EventParticipation::BENEVOLE,
+                    ];
+                    foreach ($sourceEvent->getParticipations($rolesImportedOutsideForm, EventParticipation::STATUS_VALIDE) as $participation) {
+                        if (!$event->getParticipation($participation->getUser())) {
+                            $event->addParticipation($participation->getUser(), $participation->getRole(), EventParticipation::STATUS_VALIDE);
                         }
                     }
                 }
@@ -308,6 +328,7 @@ class SortieController extends AbstractController
         }
         if ($form->isSubmitted() && !$form->isValid()) {
             $hasErrors = true;
+            $sourceEventId = (int) $request->request->get('source_event_id') ?: null;
         }
 
         return [
@@ -320,6 +341,7 @@ class SortieController extends AbstractController
             'form_action' => $isUpdate ? $this->generateUrl('modifier_sortie', ['event' => $event->getId()]) : $this->generateUrl('creer_sortie'),
             'is_duplicate' => $isDuplicate,
             'has_errors' => $hasErrors,
+            'source_event_id' => $sourceEventId,
         ];
     }
 
