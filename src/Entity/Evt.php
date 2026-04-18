@@ -610,6 +610,15 @@ class Evt
         return $this->endDate < new \DateTimeImmutable();
     }
 
+    public function isStarted(): bool
+    {
+        if (null === $this->startDate) {
+            return false;
+        }
+
+        return $this->startDate <= new \DateTimeImmutable();
+    }
+
     public function getPlace(): ?string
     {
         return $this->place;
