@@ -1,0 +1,200 @@
+<?php
+
+namespace App\Tests\Controller;
+
+use App\Service\HelloAssoClient;
+use App\Service\LoxyaReservationService;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+
+class PaymentControllerTest extends WebTestCase
+{
+    private const WEBHOOK_SIGNATURE_KEY = 'test-webhook-secret';
+    private const WEBHOOK_SERVER_IP = '127.0.0.1';
+
+    private function makeWebhookRequest($client, string $payload, ?string $ip = null, ?string $signature = null): void
+    {
+        $client->request('POST', '/webhook/paiement', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_X_HA_SIGNATURE' => $signature ?? hash_hmac('sha256', $payload, self::WEBHOOK_SIGNATURE_KEY),
+            'REMOTE_ADDR' => $ip ?? self::WEBHOOK_SERVER_IP,
+        ], $payload);
+    }
+
+    // --- Checkout tests ---
+
+    public function testCheckoutWithoutParamsReturns400(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/paiement');
+
+        $this->assertResponseStatusCodeSame(400);
+    }
+
+    public function testCheckoutWithMissingAmountReturns400(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/paiement?reservation_id=42');
+
+        $this->assertResponseStatusCodeSame(400);
+    }
+
+    public function testCheckoutWithInvalidParamsReturns400(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/paiement?reservation_id=0&amount=-100');
+
+        $this->assertResponseStatusCodeSame(400);
+    }
+
+    public function testCheckoutRedirectsToHelloAsso(): void
+    {
+        $client = static::createClient();
+
+        $helloAssoClient = $this->createMock(HelloAssoClient::class);
+        $helloAssoClient->expects($this->once())
+            ->method('createCheckoutIntent')
+            ->willReturn([
+                'id' => 123,
+                'redirectUrl' => 'https://checkout.helloasso.com/public/gateway/start/abc123',
+                'metadata' => ['reservation_id' => 42],
+            ]);
+
+        $client->getContainer()->set(HelloAssoClient::class, $helloAssoClient);
+
+        $client->request('GET', '/paiement?reservation_id=42&amount=3500');
+
+        $this->assertResponseRedirects('https://checkout.helloasso.com/public/gateway/start/abc123');
+    }
+
+    // --- Webhook security tests ---
+
+    public function testWebhookRejectsInvalidIp(): void
+    {
+        $client = static::createClient();
+        $payload = json_encode(['eventType' => 'Payment', 'data' => ['id' => 1, 'state' => 'Authorized'], 'metadata' => ['reservation_id' => 1]]);
+
+        $this->makeWebhookRequest($client, $payload, ip: '10.0.0.1');
+
+        $this->assertResponseStatusCodeSame(400);
+    }
+
+    public function testWebhookRejectsMissingSignature(): void
+    {
+        $client = static::createClient();
+        $payload = json_encode(['eventType' => 'Payment']);
+
+        $client->request('POST', '/webhook/paiement', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'REMOTE_ADDR' => self::WEBHOOK_SERVER_IP,
+        ], $payload);
+
+        $this->assertResponseStatusCodeSame(400);
+    }
+
+    public function testWebhookRejectsInvalidSignature(): void
+    {
+        $client = static::createClient();
+        $payload = json_encode(['eventType' => 'Payment']);
+
+        $this->makeWebhookRequest($client, $payload, signature: 'bad-signature');
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    // --- Webhook business logic tests ---
+
+    public function testWebhookIgnoresNonPaymentEvent(): void
+    {
+        $client = static::createClient();
+
+        $payload = json_encode([
+            'eventType' => 'Order',
+            'data' => ['id' => 1, 'state' => 'Processed'],
+            'metadata' => ['reservation_id' => 42],
+        ]);
+
+        $this->makeWebhookRequest($client, $payload);
+
+        $this->assertResponseStatusCodeSame(200);
+    }
+
+    public function testWebhookProcessesAuthorizedPayment(): void
+    {
+        $client = static::createClient();
+
+        $loxyaService = $this->createMock(LoxyaReservationService::class);
+        $loxyaService->expects($this->once())
+            ->method('markReservationAsPaid')
+            ->with(42, '99999');
+        $client->getContainer()->set(LoxyaReservationService::class, $loxyaService);
+
+        $payload = json_encode([
+            'eventType' => 'Payment',
+            'data' => ['id' => '99999', 'state' => 'Authorized'],
+            'metadata' => ['reservation_id' => 42],
+        ]);
+
+        $this->makeWebhookRequest($client, $payload);
+
+        $this->assertResponseStatusCodeSame(200);
+    }
+
+    public function testWebhookReturns200OnLoxyaError(): void
+    {
+        $client = static::createClient();
+
+        $loxyaService = $this->createMock(LoxyaReservationService::class);
+        $loxyaService->method('markReservationAsPaid')
+            ->willThrowException(new \RuntimeException('Loxya is down'));
+        $client->getContainer()->set(LoxyaReservationService::class, $loxyaService);
+
+        $payload = json_encode([
+            'eventType' => 'Payment',
+            'data' => ['id' => '99999', 'state' => 'Authorized'],
+            'metadata' => ['reservation_id' => 42],
+        ]);
+
+        $this->makeWebhookRequest($client, $payload);
+
+        $this->assertResponseStatusCodeSame(200);
+    }
+
+    // --- Return page tests ---
+
+    public function testReturnPageRendersSuccessWithCode(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/paiement/retour?code=succeeded');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h2', 'Paiement pris en compte');
+    }
+
+    public function testReturnPageRendersErrorWithoutCode(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/paiement/retour');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h2', 'Paiement échoué');
+    }
+
+    public function testCancelPageRenders(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/paiement/annuler');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h2', 'Paiement annulé');
+    }
+
+    public function testErrorPageRenders(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/paiement/erreur');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h2', 'Erreur de paiement');
+    }
+
+}
