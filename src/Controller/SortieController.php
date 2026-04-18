@@ -181,7 +181,7 @@ class SortieController extends AbstractController
                 EventParticipation::ROLE_COENCADRANT => 'coencadrants',
                 EventParticipation::ROLE_BENEVOLE => 'benevoles',
             ];
-            $newEncadrants = [];
+            $newEncadrants = array_fill_keys(array_values($rolesMap), []);
             foreach ($rolesMap as $role => $roleName) {
                 if (!empty($formData[$roleName])) {
                     foreach ($formData[$roleName] as $participantId) {
