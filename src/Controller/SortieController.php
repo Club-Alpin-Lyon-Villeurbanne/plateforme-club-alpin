@@ -26,7 +26,6 @@ use App\Repository\FormationValidationNiveauPratiqueRepository;
 use App\Repository\UserAttrRepository;
 use App\Repository\UserRepository;
 use App\Service\HelloAssoService;
-use App\Service\UserLicenseHelper;
 use App\Twig\JavascriptGlobalsExtension;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use App\Utils\ExcelExport;
@@ -395,11 +394,9 @@ class SortieController extends AbstractController
             }
         }
 
-        // Date cutoff: September 30 of current year if after Dec 1, otherwise September 30 of previous year
-        $currentMonth = date('m');
-        $currentYear = date('Y');
-        $cutoffYear = $currentMonth >= 12 ? $currentYear : $currentYear - 1;
-        $cutoffDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $cutoffYear . '-' . UserLicenseHelper::LICENSE_TOLERANCY_PERIOD_END);
+        // Date cutoff: December 31 of the previous year
+        $cutoffYear = (int) date('Y') - 1;
+        $cutoffDate = new \DateTimeImmutable($cutoffYear . '-12-31 23:59:59');
 
         // Check if user has a viewable expense report (submitted, approved, or accounted)
         $hasViewableExpenseReport = false;
