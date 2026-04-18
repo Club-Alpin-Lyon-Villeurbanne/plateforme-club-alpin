@@ -109,24 +109,52 @@ class HelloAssoWebhookController extends AbstractController
         }
 
         if (!$user instanceof User) {
-            // enregistrer dans les payeurs non reconnus
-            $payer = new EventUnrecognizedPayer();
-            $payer
-                ->setEvent($event)
-                ->setEmail($payerEmail ?: '')
-                ->setLastname($requestData['payer']['lastName'])
-                ->setFirstname($requestData['payer']['firstName'])
-                ->setHasPaid(true)
-            ;
-            $event->addUnrecognizedPayer($payer);
-            $this->entityManager->persist($event);
-            $this->entityManager->flush();
+            // Tenter un rapprochement par prénom + nom parmi les participants de la sortie
+            $payerFirstname = strtolower($requestData['payer']['firstName'] ?? '');
+            $payerLastname = strtolower($requestData['payer']['lastName'] ?? '');
+            $matchedUser = null;
 
-            $this->logger->error('HelloAsso Webhook - Unknown payer', [
-                'payerEmail' => $payerEmail,
-            ]);
+            foreach ($event->getAllParticipations() as $participation) {
+                $candidate = $participation->getUser();
+                if (
+                    strtolower($candidate->getFirstname() ?? '') === $payerFirstname
+                    && strtolower($candidate->getLastname() ?? '') === $payerLastname
+                ) {
+                    if ($matchedUser instanceof User) {
+                        // Ambiguïté : plusieurs participants avec le même prénom + nom
+                        $matchedUser = null;
+                        break;
+                    }
+                    $matchedUser = $candidate;
+                }
+            }
 
-            return new Response('Unknown payer', Response::HTTP_OK);
+            if ($matchedUser instanceof User) {
+                $user = $matchedUser;
+                $this->logger->info('HelloAsso Webhook - Payer matched by firstname + lastname', [
+                    'payerEmail' => $payerEmail,
+                    'matchedUserId' => $user->getId(),
+                ]);
+            } else {
+                // enregistrer dans les payeurs non reconnus
+                $payer = new EventUnrecognizedPayer();
+                $payer
+                    ->setEvent($event)
+                    ->setEmail($payerEmail ?: '')
+                    ->setLastname($requestData['payer']['lastName'])
+                    ->setFirstname($requestData['payer']['firstName'])
+                    ->setHasPaid(true)
+                ;
+                $event->addUnrecognizedPayer($payer);
+                $this->entityManager->persist($event);
+                $this->entityManager->flush();
+
+                $this->logger->error('HelloAsso Webhook - Unknown payer', [
+                    'payerEmail' => $payerEmail,
+                ]);
+
+                return new Response('Unknown payer', Response::HTTP_OK);
+            }
         }
 
         $participation = $event->getParticipation($user);
