@@ -59,6 +59,9 @@ class Evt
     #[ORM\Column(name: 'auto_accept', type: 'boolean', nullable: false, options: ['default' => false])]
     private bool $autoAccept = false;
 
+    #[ORM\Column(name: 'skip_new_sortie_alert', type: 'boolean', nullable: false, options: ['default' => false])]
+    private bool $skipNewSortieAlert = false;
+
     #[ORM\Column(name: 'is_draft', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $isDraft = true;
 
@@ -846,6 +849,18 @@ class Evt
     public function setAutoAccept(bool $autoAccept): self
     {
         $this->autoAccept = $autoAccept;
+
+        return $this;
+    }
+
+    public function isSkipNewSortieAlert(): bool
+    {
+        return $this->skipNewSortieAlert;
+    }
+
+    public function setSkipNewSortieAlert(bool $skipNewSortieAlert): self
+    {
+        $this->skipNewSortieAlert = $skipNewSortieAlert;
 
         return $this;
     }
