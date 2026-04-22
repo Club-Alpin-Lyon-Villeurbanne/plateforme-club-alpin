@@ -683,7 +683,7 @@ class SortieControllerTest extends WebTestCase
     }
 
     /**
-     * Helper method to create a past event (ended more than 90 days ago).
+     * Helper method to create a past event (ended more than 120 days ago).
      */
     protected function createPastEvent($user): Evt
     {
