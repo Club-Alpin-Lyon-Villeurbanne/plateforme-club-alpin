@@ -375,12 +375,12 @@
                         {% if has_viewable_expense_report %}
                             {# User already has a submitted/approved/accounted expense report, always show it #}
                             {% include 'vuejs/expense-report-form.twig' %}
-                        {% elseif not is_event_after_cutoff %}
+                        {% elseif not is_within_expense_report_deadline %}
                             <div class="alerte info-container" style="margin-bottom:2rem !important">
                                 <img src="/img/base/cross.png" alt="" title=""/>
                                 <div class="text-container">
                                     <b>Note de frais non disponible :</b><br />
-                                    Il n'est plus possible de déposer une note de frais pour cette sortie car les comptes du Club pour l'année {{ cutoff_year }} ont été clôturés.<br />
+                                    Il n'est plus possible de déposer une note de frais pour cette sortie car le délai de {{ expense_report_deadline_days }} jours après la fin de la sortie est dépassé.<br />
                                     En cas de question, contactez la comptabilité.<br />&nbsp;
                                 </div>
                             </div>

@@ -56,6 +56,8 @@ use Twig\Error\SyntaxError;
 
 class SortieController extends AbstractController
 {
+    public const EXPENSE_REPORT_DEADLINE_DAYS = 120;
+
     public function __construct(
         protected SlugHelper $slugHelper,
         protected float $defaultLat,
@@ -394,9 +396,8 @@ class SortieController extends AbstractController
             }
         }
 
-        // Date cutoff: December 31 of the previous year
-        $cutoffYear = (int) date('Y') - 1;
-        $cutoffDate = new \DateTimeImmutable($cutoffYear . '-12-31 23:59:59');
+        // Notes de frais must be submitted within EXPENSE_REPORT_DEADLINE_DAYS of the event's end date
+        $expenseReportDeadline = $event->getEndDate()->modify('+' . self::EXPENSE_REPORT_DEADLINE_DAYS . ' days');
 
         // Check if user has a viewable expense report (submitted, approved, or accounted)
         $hasViewableExpenseReport = false;
@@ -423,8 +424,8 @@ class SortieController extends AbstractController
             'current_user_has_paid' => $currentUserHasPaid,
             'current_user_accepted' => $currentUserAccepted,
             'accepted_participations' => $participationRepository->getSortedParticipations($event),
-            'is_event_after_cutoff' => $event->getEndDate() >= $cutoffDate,
-            'cutoff_year' => $cutoffYear,
+            'is_within_expense_report_deadline' => new \DateTimeImmutable() <= $expenseReportDeadline,
+            'expense_report_deadline_days' => self::EXPENSE_REPORT_DEADLINE_DAYS,
             'has_viewable_expense_report' => $hasViewableExpenseReport,
             'groupes_competences' => $groupesCompRefs,
             'niveaux' => $nivRefs,

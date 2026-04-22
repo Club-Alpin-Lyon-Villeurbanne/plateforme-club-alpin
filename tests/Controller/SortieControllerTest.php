@@ -564,9 +564,9 @@ class SortieControllerTest extends WebTestCase
 
     /**
      * Test that a user with a submitted expense report can see the form
-     * even if the event is past the cutoff date.
+     * even if the event is past the 120-day deadline.
      */
-    public function testExpenseReportFormVisibleForSubmittedReportPastCutoff()
+    public function testExpenseReportFormVisibleForSubmittedReportPastDeadline()
     {
         $user = $this->signup();
         $this->signin($user);
@@ -584,9 +584,9 @@ class SortieControllerTest extends WebTestCase
 
     /**
      * Test that a user with an approved expense report can see the form
-     * even if the event is past the cutoff date.
+     * even if the event is past the 120-day deadline.
      */
-    public function testExpenseReportFormVisibleForApprovedReportPastCutoff()
+    public function testExpenseReportFormVisibleForApprovedReportPastDeadline()
     {
         $user = $this->signup();
         $this->signin($user);
@@ -604,9 +604,9 @@ class SortieControllerTest extends WebTestCase
 
     /**
      * Test that a user with an accounted expense report can see the form
-     * even if the event is past the cutoff date.
+     * even if the event is past the 120-day deadline.
      */
-    public function testExpenseReportFormVisibleForAccountedReportPastCutoff()
+    public function testExpenseReportFormVisibleForAccountedReportPastDeadline()
     {
         $user = $this->signup();
         $this->signin($user);
@@ -624,9 +624,9 @@ class SortieControllerTest extends WebTestCase
 
     /**
      * Test that a user with a draft expense report cannot see the form
-     * if the event is past the cutoff date.
+     * if the event is past the 120-day deadline.
      */
-    public function testExpenseReportFormNotVisibleForDraftReportPastCutoff()
+    public function testExpenseReportFormNotVisibleForDraftReportPastDeadline()
     {
         $user = $this->signup();
         $this->signin($user);
@@ -644,9 +644,9 @@ class SortieControllerTest extends WebTestCase
 
     /**
      * Test that a user with a rejected expense report cannot see the form
-     * if the event is past the cutoff date.
+     * if the event is past the 120-day deadline.
      */
-    public function testExpenseReportFormNotVisibleForRejectedReportPastCutoff()
+    public function testExpenseReportFormNotVisibleForRejectedReportPastDeadline()
     {
         $user = $this->signup();
         $this->signin($user);
@@ -664,9 +664,9 @@ class SortieControllerTest extends WebTestCase
 
     /**
      * Test that a user without any expense report cannot see the form
-     * if the event is past the cutoff date.
+     * if the event is past the 120-day deadline.
      */
-    public function testExpenseReportFormNotVisibleWithoutReportPastCutoff()
+    public function testExpenseReportFormNotVisibleWithoutReportPastDeadline()
     {
         $user = $this->signup();
         $this->signin($user);
@@ -683,14 +683,14 @@ class SortieControllerTest extends WebTestCase
     }
 
     /**
-     * Helper method to create a past event (before cutoff date).
+     * Helper method to create a past event (ended more than 120 days ago).
      */
     protected function createPastEvent($user): Evt
     {
         $em = $this->getContainer()->get('doctrine')->getManager();
         $commission = $this->createCommission();
 
-        // Create an event that ended 2 years ago (definitely past any cutoff)
+        // Create an event that ended 2 years ago (definitely past the 120-day deadline)
         $event = new Evt(
             $user,
             $commission,
