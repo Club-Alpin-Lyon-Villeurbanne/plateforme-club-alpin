@@ -371,8 +371,8 @@ class SortieController extends AbstractController
             }
         }
 
-        // Notes de frais must be submitted within 90 days of the event's end date
-        $expenseReportDeadline = $event->getEndDate()->modify('+90 days');
+        // Notes de frais must be submitted within 120 days of the event's end date
+        $expenseReportDeadline = $event->getEndDate()->modify('+120 days');
 
         // Check if user has a viewable expense report (submitted, approved, or accounted)
         $hasViewableExpenseReport = false;
