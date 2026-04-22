@@ -564,7 +564,7 @@ class SortieControllerTest extends WebTestCase
 
     /**
      * Test that a user with a submitted expense report can see the form
-     * even if the event is past the 90-day deadline.
+     * even if the event is past the 120-day deadline.
      */
     public function testExpenseReportFormVisibleForSubmittedReportPastDeadline()
     {
@@ -584,7 +584,7 @@ class SortieControllerTest extends WebTestCase
 
     /**
      * Test that a user with an approved expense report can see the form
-     * even if the event is past the 90-day deadline.
+     * even if the event is past the 120-day deadline.
      */
     public function testExpenseReportFormVisibleForApprovedReportPastDeadline()
     {
@@ -604,7 +604,7 @@ class SortieControllerTest extends WebTestCase
 
     /**
      * Test that a user with an accounted expense report can see the form
-     * even if the event is past the 90-day deadline.
+     * even if the event is past the 120-day deadline.
      */
     public function testExpenseReportFormVisibleForAccountedReportPastDeadline()
     {
@@ -624,7 +624,7 @@ class SortieControllerTest extends WebTestCase
 
     /**
      * Test that a user with a draft expense report cannot see the form
-     * if the event is past the 90-day deadline.
+     * if the event is past the 120-day deadline.
      */
     public function testExpenseReportFormNotVisibleForDraftReportPastDeadline()
     {
@@ -644,7 +644,7 @@ class SortieControllerTest extends WebTestCase
 
     /**
      * Test that a user with a rejected expense report cannot see the form
-     * if the event is past the 90-day deadline.
+     * if the event is past the 120-day deadline.
      */
     public function testExpenseReportFormNotVisibleForRejectedReportPastDeadline()
     {
@@ -664,7 +664,7 @@ class SortieControllerTest extends WebTestCase
 
     /**
      * Test that a user without any expense report cannot see the form
-     * if the event is past the 90-day deadline.
+     * if the event is past the 120-day deadline.
      */
     public function testExpenseReportFormNotVisibleWithoutReportPastDeadline()
     {
@@ -690,7 +690,7 @@ class SortieControllerTest extends WebTestCase
         $em = $this->getContainer()->get('doctrine')->getManager();
         $commission = $this->createCommission();
 
-        // Create an event that ended 2 years ago (definitely past the 90-day deadline)
+        // Create an event that ended 2 years ago (definitely past the 120-day deadline)
         $event = new Evt(
             $user,
             $commission,
