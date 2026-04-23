@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
+use App\Entity\ProcessedHelloAssoPayment;
+use App\Repository\ProcessedHelloAssoPaymentRepository;
 use App\Service\HelloAssoClient;
 use App\Service\LoxyaReservationService;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,6 +26,7 @@ class PaymentController extends AbstractController
         private readonly string $loxyaLinkSignatureKey,
         private readonly HelloAssoClient $helloAssoClient,
         private readonly LoxyaReservationService $loxyaReservationService,
+        private readonly ProcessedHelloAssoPaymentRepository $processedPaymentRepository,
         private readonly LoggerInterface $logger,
     ) {
     }
@@ -154,13 +158,40 @@ class PaymentController extends AbstractController
             return new Response('OK', Response::HTTP_OK);
         }
 
+        $reservationId = (int) $reservationId;
+        $helloAssoPaymentId = (string) $helloAssoPaymentId;
+
+        // Idempotence : si le paiement a déjà été traité, on ne refait ni l'appel Loxya ni la persistence.
+        if (null !== $this->processedPaymentRepository->findOneByHelloAssoPaymentId($helloAssoPaymentId)) {
+            $this->logger->info('Payment webhook - Already processed, skipping', [
+                'reservationId' => $reservationId,
+                'helloAssoPaymentId' => $helloAssoPaymentId,
+            ]);
+
+            return new Response('OK', Response::HTTP_OK);
+        }
+
         try {
-            $this->loxyaReservationService->markReservationAsPaid((int) $reservationId, (string) $helloAssoPaymentId);
+            $this->loxyaReservationService->markReservationAsPaid($reservationId, $helloAssoPaymentId);
         } catch (\Exception $e) {
-            $this->logger->error('Payment webhook - Loxya update failed', [
+            $this->logger->error('Payment webhook - Loxya update failed, HelloAsso will retry', [
                 'reservationId' => $reservationId,
                 'helloAssoPaymentId' => $helloAssoPaymentId,
                 'error' => $e->getMessage(),
+            ]);
+
+            // On renvoie 503 pour que HelloAsso retente. Aucune ligne ProcessedHelloAssoPayment persistée
+            // → la prochaine tentative rappellera Loxya.
+            return new Response('Loxya update failed', Response::HTTP_SERVICE_UNAVAILABLE);
+        }
+
+        try {
+            $this->processedPaymentRepository->save(new ProcessedHelloAssoPayment($helloAssoPaymentId, $reservationId));
+        } catch (UniqueConstraintViolationException) {
+            // Race condition : deux workers sont passés sur le même payment_id simultanément.
+            // Le PUT Loxya étant idempotent pour ce use-case, on traite comme un succès.
+            $this->logger->info('Payment webhook - Concurrent processing detected', [
+                'helloAssoPaymentId' => $helloAssoPaymentId,
             ]);
         }
 

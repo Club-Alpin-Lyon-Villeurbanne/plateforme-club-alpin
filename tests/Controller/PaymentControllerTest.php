@@ -2,6 +2,8 @@
 
 namespace App\Tests\Controller;
 
+use App\Entity\ProcessedHelloAssoPayment;
+use App\Repository\ProcessedHelloAssoPaymentRepository;
 use App\Service\HelloAssoClient;
 use App\Service\LoxyaReservationService;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -24,6 +26,20 @@ class PaymentControllerTest extends WebTestCase
     private static function signLink(int $reservationId, int $amount): string
     {
         return hash_hmac('sha256', $reservationId . '|' . $amount, self::LINK_SIGNATURE_KEY);
+    }
+
+    /**
+     * Injecte dans le container un repository mocké, pour isoler les tests webhook
+     * de la DB réelle.
+     */
+    private function mockPaymentRepository($client, ?ProcessedHelloAssoPayment $alreadyProcessed = null): ProcessedHelloAssoPaymentRepository
+    {
+        $repo = $this->createMock(ProcessedHelloAssoPaymentRepository::class);
+        $repo->method('findOneByHelloAssoPaymentId')->willReturn($alreadyProcessed);
+
+        $client->getContainer()->set(ProcessedHelloAssoPaymentRepository::class, $repo);
+
+        return $repo;
     }
 
     // --- Checkout tests ---
@@ -181,6 +197,11 @@ class PaymentControllerTest extends WebTestCase
             ->with(42, '99999');
         $client->getContainer()->set(LoxyaReservationService::class, $loxyaService);
 
+        $repo = $this->mockPaymentRepository($client);
+        $repo->expects($this->once())
+            ->method('save')
+            ->with($this->isInstanceOf(ProcessedHelloAssoPayment::class));
+
         $payload = json_encode([
             'eventType' => 'Payment',
             'data' => ['id' => '99999', 'state' => 'Authorized'],
@@ -192,7 +213,7 @@ class PaymentControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
     }
 
-    public function testWebhookReturns200OnLoxyaError(): void
+    public function testWebhookReturns503OnLoxyaError(): void
     {
         $client = static::createClient();
 
@@ -200,6 +221,34 @@ class PaymentControllerTest extends WebTestCase
         $loxyaService->method('markReservationAsPaid')
             ->willThrowException(new \RuntimeException('Loxya is down'));
         $client->getContainer()->set(LoxyaReservationService::class, $loxyaService);
+
+        $repo = $this->mockPaymentRepository($client);
+        // Aucune persistence si Loxya a échoué : HelloAsso doit retenter.
+        $repo->expects($this->never())->method('save');
+
+        $payload = json_encode([
+            'eventType' => 'Payment',
+            'data' => ['id' => '99999', 'state' => 'Authorized'],
+            'metadata' => ['reservation_id' => 42],
+        ]);
+
+        $this->makeWebhookRequest($client, $payload);
+
+        $this->assertResponseStatusCodeSame(503);
+    }
+
+    public function testWebhookIsIdempotentOnReplay(): void
+    {
+        $client = static::createClient();
+
+        $loxyaService = $this->createMock(LoxyaReservationService::class);
+        // Rejeu d'un webhook déjà traité : Loxya ne doit pas être appelé.
+        $loxyaService->expects($this->never())->method('markReservationAsPaid');
+        $client->getContainer()->set(LoxyaReservationService::class, $loxyaService);
+
+        $alreadyProcessed = new ProcessedHelloAssoPayment('99999', 42);
+        $repo = $this->mockPaymentRepository($client, $alreadyProcessed);
+        $repo->expects($this->never())->method('save');
 
         $payload = json_encode([
             'eventType' => 'Payment',
