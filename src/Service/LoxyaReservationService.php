@@ -18,9 +18,15 @@ class LoxyaReservationService
     ) {
     }
 
+    /**
+     * DOIT rester idempotent : appelé depuis le webhook de paiement qui peut être
+     * rejoué (retry HelloAsso, race concurrente). Deux appels successifs avec le même
+     * $helloAssoPaymentId doivent produire le même état final côté Loxya.
+     */
     public function markReservationAsPaid(int $reservationId, string $helloAssoPaymentId): void
     {
         $url = rtrim($this->loxyaBaseUrl, '/') . '/api/reservations/' . $reservationId;
+        $safePaymentId = preg_replace('/[^A-Za-z0-9_-]/', '', $helloAssoPaymentId);
 
         $response = $this->httpClient->request('PUT', $url, [
             'headers' => [
@@ -30,7 +36,7 @@ class LoxyaReservationService
             ],
             'json' => [
                 'color' => self::RESERVATION_PAID_COLOR,
-                'note' => sprintf('Paiement Helloasso n°%s', $helloAssoPaymentId),
+                'note' => sprintf('Paiement Helloasso n°%s', $safePaymentId),
             ],
         ]);
 
