@@ -90,7 +90,7 @@ class PaymentController extends AbstractController
                 'error' => $e->getMessage(),
             ]);
 
-            return $this->render('payment/error.html.twig');
+            return $this->withSecurityHeaders($this->render('payment/error.html.twig'));
         }
     }
 
@@ -149,8 +149,9 @@ class PaymentController extends AbstractController
             ?? null;
         $helloAssoPaymentId = $payload['data']['id'] ?? null;
 
-        if (null === $reservationId || null === $helloAssoPaymentId) {
-            $this->logger->error('Payment webhook - Missing reservation_id or payment id', [
+        $reservationId = filter_var($reservationId, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if (false === $reservationId || !\is_scalar($helloAssoPaymentId) || '' === (string) $helloAssoPaymentId) {
+            $this->logger->error('Payment webhook - Invalid or missing reservation_id / payment id', [
                 'eventType' => $eventType,
                 'state' => $state,
             ]);
@@ -158,7 +159,6 @@ class PaymentController extends AbstractController
             return new Response('OK', Response::HTTP_OK);
         }
 
-        $reservationId = (int) $reservationId;
         $helloAssoPaymentId = (string) $helloAssoPaymentId;
 
         // Idempotence : si le paiement a déjà été traité, on ne refait ni l'appel Loxya ni la persistence.
