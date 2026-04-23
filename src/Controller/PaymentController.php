@@ -13,6 +13,8 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class PaymentController extends AbstractController
 {
+    public const int MAX_AMOUNT_CENTS = 100_000;
+
     public function __construct(
         private readonly string $helloAssoServerIp,
         private readonly string $helloAssoSignatureKey,
@@ -27,7 +29,9 @@ class PaymentController extends AbstractController
 
     private function isEnabled(): bool
     {
-        return '' !== $this->loxyaJwt && '' !== $this->loxyaLinkSignatureKey;
+        return '' !== $this->loxyaJwt
+            && '' !== $this->loxyaLinkSignatureKey
+            && '' !== $this->helloAssoSignatureKey;
     }
 
     #[Route(path: '/paiement', name: 'payment_checkout', methods: ['GET'])]
@@ -41,10 +45,11 @@ class PaymentController extends AbstractController
         $amount = $request->query->getInt('amount');
         $signature = $request->query->get('signature', '');
 
-        if ($reservationId <= 0 || $amount <= 0 || $amount > 100000) {
-            return new Response('Paramètres reservation_id et amount obligatoires (entiers positifs, max 1000€).', Response::HTTP_BAD_REQUEST);
+        if ($reservationId <= 0 || $amount <= 0 || $amount > self::MAX_AMOUNT_CENTS) {
+            return new Response(sprintf('Paramètres reservation_id et amount obligatoires (entiers positifs, max %d€).', (int) (self::MAX_AMOUNT_CENTS / 100)), Response::HTTP_BAD_REQUEST);
         }
 
+        // Format canonique HMAC convenu avec Loxya : "{reservation_id}|{amount}" (entiers en base 10, séparés par "|").
         $expectedSignature = hash_hmac('sha256', $reservationId . '|' . $amount, $this->loxyaLinkSignatureKey);
         if (!\is_string($signature) || !hash_equals($expectedSignature, $signature)) {
             $this->logger->error('Payment checkout - Invalid signature', [
@@ -89,49 +94,36 @@ class PaymentController extends AbstractController
     public function webhook(Request $request): Response
     {
         if (!$this->isEnabled()) {
-            return new Response('Not configured', Response::HTTP_NOT_FOUND);
+            throw $this->createNotFoundException();
         }
 
-        $rawContent = $request->getContent();
-        $payload = json_decode($rawContent, true);
-
-        if (!\is_array($payload)) {
-            return new Response('Invalid JSON', Response::HTTP_BAD_REQUEST);
-        }
-
-        // Vérification IP d'origine
+        // Ordre des vérifs : IP → signature → décodage JSON. Aucun payload non authentifié n'est loggé.
         if ($this->helloAssoServerIp !== $request->getClientIp()) {
             $this->logger->error('Payment webhook - Invalid IP', [
                 'ip' => $request->getClientIp(),
-                'payload' => $payload,
             ]);
 
             return new Response('Invalid IP', Response::HTTP_BAD_REQUEST);
         }
 
-        // Vérification signature HMAC-SHA256
         $signatureHeader = $request->headers->get('x-ha-signature');
         if (null === $signatureHeader) {
-            $this->logger->error('Payment webhook - Missing signature', [
-                'payload' => $payload,
-            ]);
+            $this->logger->error('Payment webhook - Missing signature');
 
             return new Response('Missing signature', Response::HTTP_BAD_REQUEST);
         }
 
-        if ('' === $this->helloAssoSignatureKey) {
-            $this->logger->error('Payment webhook - Signature key not configured');
-
-            return new Response('Webhook not configured', Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-
+        $rawContent = $request->getContent();
         $calculatedSignature = hash_hmac('sha256', $rawContent, $this->helloAssoSignatureKey);
-        if (!hash_equals($signatureHeader, $calculatedSignature)) {
-            $this->logger->error('Payment webhook - Signature mismatch', [
-                'payload' => $payload,
-            ]);
+        if (!hash_equals($calculatedSignature, $signatureHeader)) {
+            $this->logger->error('Payment webhook - Signature mismatch');
 
             return new Response('Signature mismatch', Response::HTTP_FORBIDDEN);
+        }
+
+        $payload = json_decode($rawContent, true);
+        if (!\is_array($payload)) {
+            return new Response('Invalid JSON', Response::HTTP_BAD_REQUEST);
         }
 
         // Filtrage : seuls les paiements autorisés nous intéressent
@@ -155,7 +147,8 @@ class PaymentController extends AbstractController
 
         if (null === $reservationId || null === $helloAssoPaymentId) {
             $this->logger->error('Payment webhook - Missing reservation_id or payment id', [
-                'payload' => $payload,
+                'eventType' => $eventType,
+                'state' => $state,
             ]);
 
             return new Response('OK', Response::HTTP_OK);
@@ -184,9 +177,9 @@ class PaymentController extends AbstractController
         $code = $request->query->get('code', '');
         $status = 'succeeded' === $code ? 'success' : 'error';
 
-        return $this->render('payment/return.html.twig', [
+        return $this->withSecurityHeaders($this->render('payment/return.html.twig', [
             'status' => $status,
-        ]);
+        ]));
     }
 
     #[Route(path: '/paiement/annuler', name: 'payment_cancel', methods: ['GET'])]
@@ -196,9 +189,9 @@ class PaymentController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        return $this->render('payment/return.html.twig', [
+        return $this->withSecurityHeaders($this->render('payment/return.html.twig', [
             'status' => 'cancel',
-        ]);
+        ]));
     }
 
     #[Route(path: '/paiement/erreur', name: 'payment_error', methods: ['GET'])]
@@ -208,6 +201,13 @@ class PaymentController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        return $this->render('payment/error.html.twig');
+        return $this->withSecurityHeaders($this->render('payment/error.html.twig'));
+    }
+
+    private function withSecurityHeaders(Response $response): Response
+    {
+        $response->headers->set('X-Frame-Options', 'DENY');
+
+        return $response;
     }
 }

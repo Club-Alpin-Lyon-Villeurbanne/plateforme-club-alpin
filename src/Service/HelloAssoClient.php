@@ -42,7 +42,7 @@ class HelloAssoClient
             );
 
             if ($response->getStatusCode() >= 400) {
-                throw new \RuntimeException('HelloAsso login failed: ' . $response->getContent(false));
+                throw new \RuntimeException(sprintf('HelloAsso login failed (HTTP %d)', $response->getStatusCode()));
             }
 
             $data = $response->toArray();
@@ -51,7 +51,7 @@ class HelloAssoClient
                 throw new \RuntimeException('HelloAsso login failed: no access_token in response');
             }
 
-            $item->expiresAfter(max(($data['expires_in'] ?? 1800) - 60, 0));
+            $item->expiresAfter(max(($data['expires_in'] ?? 1800) - 60, 60));
 
             return $data['access_token'];
         });
@@ -75,7 +75,7 @@ class HelloAssoClient
         );
 
         if ($response->getStatusCode() >= 400) {
-            throw new \RuntimeException('HelloAsso createForm failed: ' . $response->getContent(false));
+            throw new \RuntimeException(sprintf('HelloAsso createForm failed (HTTP %d)', $response->getStatusCode()));
         }
 
         return $response->toArray();
@@ -100,7 +100,7 @@ class HelloAssoClient
         );
 
         if ($response->getStatusCode() >= 400) {
-            throw new \RuntimeException('HelloAsso publishForm failed: ' . $response->getContent(false));
+            throw new \RuntimeException(sprintf('HelloAsso publishForm failed (HTTP %d)', $response->getStatusCode()));
         }
     }
 
@@ -123,7 +123,7 @@ class HelloAssoClient
         );
 
         if ($response->getStatusCode() >= 400) {
-            throw new \RuntimeException('HelloAsso checkout intent failed: ' . $response->getContent(false));
+            throw new \RuntimeException(sprintf('HelloAsso checkout intent failed (HTTP %d)', $response->getStatusCode()));
         }
 
         return $response->toArray();

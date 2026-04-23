@@ -39,7 +39,7 @@ class LoxyaReservationServiceTest extends TestCase
                 'https://materiel.example.com/api/reservations/42',
                 $this->callback(function (array $options) {
                     return 'Bearer static-jwt-token' === $options['headers']['Authorization']
-                        && '#5dd0c2' === $options['json']['color']
+                        && LoxyaReservationService::RESERVATION_PAID_COLOR === $options['json']['color']
                         && 'Paiement Helloasso n°HA-12345' === $options['json']['note'];
                 })
             )
@@ -68,7 +68,7 @@ class LoxyaReservationServiceTest extends TestCase
             ->with('Loxya reservation update failed', $this->anything());
 
         $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Failed to update Loxya reservation 42');
+        $this->expectExceptionMessage('Loxya reservation update failed (HTTP 500)');
 
         $this->service->markReservationAsPaid(42, 'HA-12345');
     }

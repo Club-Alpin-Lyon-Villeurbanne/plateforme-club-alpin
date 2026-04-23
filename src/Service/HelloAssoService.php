@@ -3,14 +3,12 @@
 namespace App\Service;
 
 use App\Entity\Evt;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class HelloAssoService
 {
     protected const string HELLO_ASSO_CAMPAIGN_ENDPOINT = '/v5/organizations/{organizationSlug}/forms/Event/action/quick-create';
     protected const string HELLO_ASSO_CAMPAIGN_PUBLISH_ENDPOINT = '/v5/organizations/{organizationSlug}/forms/Event/{formSlug}/state';
-    protected const string HELLO_ASSO_PAYMENT_INFO_ENDPOINT = '/v5/organizations/{organizationSlug}/forms/Event/{formSlug}/payments';
 
     /**
      * @param string $organizationSlug Slug de l'organisation HelloAsso
@@ -21,7 +19,6 @@ class HelloAssoService
         protected string $organizationSlug,
         protected string $baseUrl,
         protected int $activityTypeId,
-        protected readonly LoggerInterface $logger,
         protected readonly UrlGeneratorInterface $urlGenerator,
         protected HelloAssoClient $helloAssoClient,
     ) {

@@ -59,6 +59,16 @@ class PaymentControllerTest extends WebTestCase
         $helloAssoClient = $this->createMock(HelloAssoClient::class);
         $helloAssoClient->expects($this->once())
             ->method('createCheckoutIntent')
+            ->with(
+                $this->isType('string'),
+                $this->callback(function (array $params) {
+                    return 3500 === $params['totalAmount']
+                        && 3500 === $params['initialAmount']
+                        && false === $params['containsDonation']
+                        && 42 === $params['metadata']['reservation_id']
+                        && str_contains($params['itemName'], '42');
+                })
+            )
             ->willReturn([
                 'id' => 123,
                 'redirectUrl' => 'https://checkout.helloasso.com/public/gateway/start/abc123',
@@ -71,6 +81,16 @@ class PaymentControllerTest extends WebTestCase
         $client->request('GET', '/paiement?reservation_id=42&amount=3500&signature=' . $signature);
 
         $this->assertResponseRedirects('https://checkout.helloasso.com/public/gateway/start/abc123');
+    }
+
+    public function testCheckoutRejectsAmountOverCap(): void
+    {
+        $client = static::createClient();
+
+        $signature = self::signLink(42, 100001);
+        $client->request('GET', '/paiement?reservation_id=42&amount=100001&signature=' . $signature);
+
+        $this->assertResponseStatusCodeSame(400);
     }
 
     public function testCheckoutRejectsMissingSignature(): void

@@ -7,6 +7,9 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class LoxyaReservationService
 {
+    // Convention visuelle convenue avec Loxya pour signaler une réservation payée tant qu'il n'y a pas de flag dédié côté Loxya.
+    public const string RESERVATION_PAID_COLOR = '#5dd0c2';
+
     public function __construct(
         private readonly string $loxyaBaseUrl,
         private readonly string $loxyaJwt,
@@ -26,7 +29,7 @@ class LoxyaReservationService
                 'accept' => 'application/json',
             ],
             'json' => [
-                'color' => '#5dd0c2',
+                'color' => self::RESERVATION_PAID_COLOR,
                 'note' => sprintf('Paiement Helloasso n°%s', $helloAssoPaymentId),
             ],
         ]);
@@ -36,9 +39,8 @@ class LoxyaReservationService
             $this->logger->error('Loxya reservation update failed', [
                 'reservationId' => $reservationId,
                 'statusCode' => $statusCode,
-                'response' => $response->getContent(false),
             ]);
-            throw new \RuntimeException('Failed to update Loxya reservation ' . $reservationId);
+            throw new \RuntimeException(sprintf('Loxya reservation update failed (HTTP %d)', $statusCode));
         }
 
         $this->logger->info('Loxya reservation updated after payment', [
