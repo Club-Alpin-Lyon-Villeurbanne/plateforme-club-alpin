@@ -55,6 +55,35 @@ class LoxyaReservationServiceTest extends TestCase
         $this->service->markReservationAsPaid(42, 'HA-12345');
     }
 
+    public function testMarkReservationAsPaidSanitizesPaymentId(): void
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getStatusCode')->willReturn(200);
+
+        // 70 chars de charset autorisé + caractères à stripper (espaces, newlines, <script>)
+        $longPaymentId = str_repeat('A', 70) . "\n<script>";
+
+        $this->httpClient->expects($this->once())
+            ->method('request')
+            ->with(
+                $this->anything(),
+                $this->anything(),
+                $this->callback(function (array $options) {
+                    // Attendu : caractères spéciaux strippés, puis tronqué à 64 chars
+                    $note = $options['json']['note'];
+
+                    return str_starts_with($note, 'Paiement Helloasso n°')
+                        && !str_contains($note, '<')
+                        && !str_contains($note, "\n")
+                        && !str_contains($note, 'script')
+                        && 64 + \strlen('Paiement Helloasso n°') === \strlen($note);
+                })
+            )
+            ->willReturn($response);
+
+        $this->service->markReservationAsPaid(42, $longPaymentId);
+    }
+
     public function testMarkReservationAsPaidThrowsOnError(): void
     {
         $response = $this->createMock(ResponseInterface::class);

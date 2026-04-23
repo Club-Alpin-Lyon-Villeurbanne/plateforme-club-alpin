@@ -139,14 +139,18 @@ class PaymentController extends AbstractController
             return new Response('OK', Response::HTTP_OK);
         }
 
-        // HelloAsso peut placer les metadata à différents endroits selon le type de notification
-        $reservationId = $payload['metadata']['reservation_id']
-            ?? $payload['data']['meta']['reservation_id']
-            ?? null;
+        // Metadata du checkout-intent renvoyées au niveau racine par HelloAsso
+        // (cf. https://dev.helloasso.com/docs/validation-de-vos-paiements).
+        $reservationId = $payload['metadata']['reservation_id'] ?? null;
         $helloAssoPaymentId = $payload['data']['id'] ?? null;
 
-        $reservationId = filter_var($reservationId, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
-        if (false === $reservationId || !\is_scalar($helloAssoPaymentId) || '' === (string) $helloAssoPaymentId) {
+        $reservationId = filter_var($reservationId, FILTER_VALIDATE_INT, [
+            'options' => ['min_range' => 1, 'max_range' => 10_000_000],
+        ]);
+        if (false === $reservationId
+            || (!\is_string($helloAssoPaymentId) && !\is_int($helloAssoPaymentId))
+            || '' === (string) $helloAssoPaymentId
+        ) {
             $this->logger->error('Payment webhook - Invalid or missing reservation_id / payment id', [
                 'eventType' => $eventType,
                 'state' => $state,

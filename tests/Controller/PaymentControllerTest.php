@@ -93,6 +93,21 @@ class PaymentControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(400);
     }
 
+    public function testCheckoutRendersErrorWhenRedirectUrlMissing(): void
+    {
+        $client = static::createClient();
+
+        $helloAssoClient = $this->createMock(HelloAssoClient::class);
+        $helloAssoClient->method('createCheckoutIntent')->willReturn(['id' => 123]);
+        $client->getContainer()->set(HelloAssoClient::class, $helloAssoClient);
+
+        $signature = self::signLink(42, 3500);
+        $client->request('GET', '/paiement?reservation_id=42&amount=3500&signature=' . $signature);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h2', 'Erreur de paiement');
+    }
+
     public function testCheckoutRejectsMissingSignature(): void
     {
         $client = static::createClient();
@@ -171,6 +186,25 @@ class PaymentControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
     }
 
+    public function testWebhookIgnoresNonAuthorizedPaymentState(): void
+    {
+        $client = static::createClient();
+
+        $loxyaService = $this->createMock(LoxyaReservationService::class);
+        $loxyaService->expects($this->never())->method('markReservationAsPaid');
+        $client->getContainer()->set(LoxyaReservationService::class, $loxyaService);
+
+        $payload = json_encode([
+            'eventType' => 'Payment',
+            'data' => ['id' => '99999', 'state' => 'Refused'],
+            'metadata' => ['reservation_id' => 42],
+        ]);
+
+        $this->makeWebhookRequest($client, $payload);
+
+        $this->assertResponseStatusCodeSame(200);
+    }
+
     public function testWebhookProcessesAuthorizedPayment(): void
     {
         $client = static::createClient();
@@ -220,7 +254,7 @@ class PaymentControllerTest extends WebTestCase
         $client->request('GET', '/paiement/retour?code=succeeded');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h2', 'Paiement pris en compte');
+        $this->assertSelectorTextContains('h2', 'Paiement confirmé');
     }
 
     public function testReturnPageRendersErrorWithoutCode(): void
