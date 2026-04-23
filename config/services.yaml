@@ -293,6 +293,7 @@ services:
       $helloAssoSignatureKey: '%env(HELLO_ASSO_WEBHOOK_SIGNATURE_KEY)%'
       $helloAssoOrganizationSlug: '%hello_asso_organization_slug%'
       $loxyaJwt: '%env(LOXYA_RESERVATION_JWT)%'
+      $loxyaLinkSignatureKey: '%env(LOXYA_LINK_SIGNATURE_KEY)%'
 
   App\Form\EventType:
     arguments:

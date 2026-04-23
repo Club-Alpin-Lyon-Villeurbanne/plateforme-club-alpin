@@ -18,6 +18,7 @@ class PaymentController extends AbstractController
         private readonly string $helloAssoSignatureKey,
         private readonly string $helloAssoOrganizationSlug,
         private readonly string $loxyaJwt,
+        private readonly string $loxyaLinkSignatureKey,
         private readonly HelloAssoClient $helloAssoClient,
         private readonly LoxyaReservationService $loxyaReservationService,
         private readonly LoggerInterface $logger,
@@ -26,7 +27,7 @@ class PaymentController extends AbstractController
 
     private function isEnabled(): bool
     {
-        return '' !== $this->loxyaJwt;
+        return '' !== $this->loxyaJwt && '' !== $this->loxyaLinkSignatureKey;
     }
 
     #[Route(path: '/paiement', name: 'payment_checkout', methods: ['GET'])]
@@ -38,9 +39,20 @@ class PaymentController extends AbstractController
 
         $reservationId = $request->query->getInt('reservation_id');
         $amount = $request->query->getInt('amount');
+        $signature = $request->query->get('signature', '');
 
         if ($reservationId <= 0 || $amount <= 0 || $amount > 100000) {
             return new Response('Paramètres reservation_id et amount obligatoires (entiers positifs, max 1000€).', Response::HTTP_BAD_REQUEST);
+        }
+
+        $expectedSignature = hash_hmac('sha256', $reservationId . '|' . $amount, $this->loxyaLinkSignatureKey);
+        if (!\is_string($signature) || !hash_equals($expectedSignature, $signature)) {
+            $this->logger->error('Payment checkout - Invalid signature', [
+                'reservationId' => $reservationId,
+                'amount' => $amount,
+            ]);
+
+            return new Response('Signature invalide.', Response::HTTP_FORBIDDEN);
         }
 
         try {

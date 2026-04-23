@@ -10,6 +10,7 @@ class PaymentControllerTest extends WebTestCase
 {
     private const WEBHOOK_SIGNATURE_KEY = 'test-webhook-secret';
     private const WEBHOOK_SERVER_IP = '127.0.0.1';
+    private const LINK_SIGNATURE_KEY = 'test-loxya-link-secret';
 
     private function makeWebhookRequest($client, string $payload, ?string $ip = null, ?string $signature = null): void
     {
@@ -18,6 +19,11 @@ class PaymentControllerTest extends WebTestCase
             'HTTP_X_HA_SIGNATURE' => $signature ?? hash_hmac('sha256', $payload, self::WEBHOOK_SIGNATURE_KEY),
             'REMOTE_ADDR' => $ip ?? self::WEBHOOK_SERVER_IP,
         ], $payload);
+    }
+
+    private static function signLink(int $reservationId, int $amount): string
+    {
+        return hash_hmac('sha256', $reservationId . '|' . $amount, self::LINK_SIGNATURE_KEY);
     }
 
     // --- Checkout tests ---
@@ -61,9 +67,36 @@ class PaymentControllerTest extends WebTestCase
 
         $client->getContainer()->set(HelloAssoClient::class, $helloAssoClient);
 
-        $client->request('GET', '/paiement?reservation_id=42&amount=3500');
+        $signature = self::signLink(42, 3500);
+        $client->request('GET', '/paiement?reservation_id=42&amount=3500&signature=' . $signature);
 
         $this->assertResponseRedirects('https://checkout.helloasso.com/public/gateway/start/abc123');
+    }
+
+    public function testCheckoutRejectsMissingSignature(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/paiement?reservation_id=42&amount=3500');
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testCheckoutRejectsInvalidSignature(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/paiement?reservation_id=42&amount=3500&signature=bad-signature');
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testCheckoutRejectsSignatureWithTamperedAmount(): void
+    {
+        $client = static::createClient();
+
+        $signature = self::signLink(42, 3500);
+        $client->request('GET', '/paiement?reservation_id=42&amount=100&signature=' . $signature);
+
+        $this->assertResponseStatusCodeSame(403);
     }
 
     // --- Webhook security tests ---
@@ -196,5 +229,4 @@ class PaymentControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertSelectorTextContains('h2', 'Erreur de paiement');
     }
-
 }
