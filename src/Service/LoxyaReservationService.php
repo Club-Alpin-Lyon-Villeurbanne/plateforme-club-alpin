@@ -26,7 +26,7 @@ class LoxyaReservationService
     public function markReservationAsPaid(int $reservationId, string $helloAssoPaymentId): void
     {
         $url = rtrim($this->loxyaBaseUrl, '/') . '/api/reservations/' . $reservationId;
-        $safePaymentId = preg_replace('/[^A-Za-z0-9_-]/', '', $helloAssoPaymentId);
+        $safePaymentId = substr(preg_replace('/[^A-Za-z0-9_-]/', '', $helloAssoPaymentId), 0, 64);
 
         $response = $this->httpClient->request('PUT', $url, [
             'headers' => [
