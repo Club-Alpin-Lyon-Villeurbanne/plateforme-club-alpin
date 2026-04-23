@@ -375,12 +375,12 @@
                         {% if has_viewable_expense_report %}
                             {# User already has a submitted/approved/accounted expense report, always show it #}
                             {% include 'vuejs/expense-report-form.twig' %}
-                        {% elseif not is_event_after_cutoff %}
+                        {% elseif not is_within_expense_report_deadline %}
                             <div class="alerte info-container" style="margin-bottom:2rem !important">
                                 <img src="/img/base/cross.png" alt="" title=""/>
                                 <div class="text-container">
                                     <b>Note de frais non disponible :</b><br />
-                                    Il n'est plus possible de déposer une note de frais pour cette sortie car les comptes du Club pour l'année {{ cutoff_year }} ont été clôturés.<br />
+                                    Il n'est plus possible de déposer une note de frais pour cette sortie car le délai de {{ expense_report_deadline_days }} jours après la fin de la sortie est dépassé.<br />
                                     En cas de question, contactez la comptabilité.<br />&nbsp;
                                 </div>
                             </div>
@@ -1016,6 +1016,27 @@
                 </ul>
                 <br style="clear:both" />
                 <hr />
+            {% endif %}
+
+            {% set nInscritsValides = event.participationsCount %}
+            {% if event.modeTransport and event.coutCarbone is not null and nInscritsValides > 0 %}
+                {% set coutParPersonne = event.coutCarbone / nInscritsValides %}
+                {% set kgCO2 = coutParPersonne / 1000 %}
+                <div style="background: #f0f7f0; border-left: 4px solid #4a9c5b; border-radius: 4px; padding: 12px 16px; margin: 12px 0;">
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
+                        <span style="font-size: 1.3em;">🌿</span>
+                        <b style="color: #2d6a3f;">Empreinte carbone transport</b>
+                    </div>
+                    <div style="color: #444; font-size: 0.95em;">
+                        {{ event.modeTransport|trans }}
+                        {% if event.nbKm %} · {{ event.nbKm|number_format(0, ',', ' ') }} km A/R{% endif %}
+                        {% if event.nbVehicules > 1 %} · {{ event.nbVehicules }} véhicules{% endif %}
+                        {% if nInscritsValides > 1 %} · {{ nInscritsValides }} participants{% endif %}
+                    </div>
+                    <div style="font-size: 1.4em; font-weight: bold; color: #2d6a3f; margin-top: 6px;">
+                        {{ kgCO2|number_format(1, ',', ' ') }} kg CO₂e <span style="font-size: 0.6em; font-weight: normal; color: #666;">/ personne</span>
+                    </div>
+                </div>
             {% endif %}
 
             <ul class="nice-list">
