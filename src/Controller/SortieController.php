@@ -25,6 +25,7 @@ use App\Repository\FormationValidationGroupeCompetenceRepository;
 use App\Repository\FormationValidationNiveauPratiqueRepository;
 use App\Repository\UserAttrRepository;
 use App\Repository\UserRepository;
+use App\Repository\UserRightRepository;
 use App\Service\HelloAssoService;
 use App\Twig\JavascriptGlobalsExtension;
 use App\Utils\Enums\ExpenseReportStatusEnum;
@@ -455,6 +456,7 @@ class SortieController extends AbstractController
         Mailer $mailer,
         MessageBusInterface $messageBus,
         LoggerInterface $logger,
+        UserRightRepository $userRightRepository,
     ): RedirectResponse {
         if (!$this->isCsrfTokenValid('sortie_validate', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
@@ -465,6 +467,12 @@ class SortieController extends AbstractController
         }
 
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE)->setStatusWho($this->getUser());
+
+        if (!$userRightRepository->hasAnyRoleWithRight('evt_legal_accept')) {
+            $event->setStatusLegal(Evt::STATUS_LEGAL_VALIDE)
+                ->setStatusLegalWho(null)
+                ->setLegalStatusChangeDate(new \DateTimeImmutable());
+        }
 
         // créer la campagne hello asso si nécessaire
         if ($event->hasPaymentForm() && !$event->getHelloAssoFormSlug()) {

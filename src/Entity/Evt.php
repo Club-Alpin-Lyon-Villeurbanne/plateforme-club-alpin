@@ -393,7 +393,7 @@ class Evt
         return $this->statusLegalWho;
     }
 
-    public function setStatusLegalWho(User $statusLegalWho): self
+    public function setStatusLegalWho(?User $statusLegalWho): self
     {
         $this->statusLegalWho = $statusLegalWho;
 
