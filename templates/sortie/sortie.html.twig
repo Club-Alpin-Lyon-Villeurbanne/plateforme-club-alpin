@@ -230,7 +230,7 @@
                         Paiement sécurisé via HelloAsso par CB
                     </div>
                     <div class="payment-button">
-                        <a class="ha-pay-btn btn-white bleu-caf" href="{{ event.paymentUrl }}" target="_blank">Payer maintenant ➞</a><br><br>
+                        <a class="ha-pay-btn btn-white bleu-caf" href="{{ event.paymentUrl }}?email={{ app.user.email|url_encode }}" target="_blank">Payer maintenant ➞</a><br><br>
                         Paiement 100% sécurisé
                     </div>
                 </div>
