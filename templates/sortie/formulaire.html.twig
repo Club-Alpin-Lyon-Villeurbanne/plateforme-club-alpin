@@ -14,6 +14,10 @@
             attr: {class: 'padded-form', 'id': 'event_form'}
         }) }}
 
+        {% if source_event_id is defined and source_event_id %}
+            <input type="hidden" name="source_event_id" value="{{ source_event_id }}">
+        {% endif %}
+
         <p class="italic">
             Les champs marqués d'un <span class="required">*</span> sont obligatoires.
             <br>Les champs marqués d'un <span class="revalidation">*</span> demanderont une réapprobation de la sortie par un responsable de commission si vous les modifiez.
