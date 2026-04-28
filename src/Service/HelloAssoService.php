@@ -3,20 +3,12 @@
 namespace App\Service;
 
 use App\Entity\Evt;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class HelloAssoService
 {
     protected const string HELLO_ASSO_CAMPAIGN_ENDPOINT = '/v5/organizations/{organizationSlug}/forms/Event/action/quick-create';
     protected const string HELLO_ASSO_CAMPAIGN_PUBLISH_ENDPOINT = '/v5/organizations/{organizationSlug}/forms/Event/{formSlug}/state';
-    protected const string HELLO_ASSO_PAYMENT_INFO_ENDPOINT = '/v5/organizations/{organizationSlug}/forms/Event/{formSlug}/payments';
 
     /**
      * @param string $organizationSlug Slug de l'organisation HelloAsso
@@ -27,20 +19,11 @@ class HelloAssoService
         protected string $organizationSlug,
         protected string $baseUrl,
         protected int $activityTypeId,
-        protected readonly HttpClientInterface $httpClient,
-        protected readonly LoggerInterface $logger,
         protected readonly UrlGeneratorInterface $urlGenerator,
         protected HelloAssoClient $helloAssoClient,
     ) {
     }
 
-    /**
-     * @throws TransportExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws DecodingExceptionInterface
-     * @throws ClientExceptionInterface
-     */
     public function createFormForEvent(Evt $event): array
     {
         $eventDate = $event->getStartDate();
@@ -79,9 +62,6 @@ class HelloAssoService
         return $this->helloAssoClient->createForm($apiEndpoint, $params);
     }
 
-    /**
-     * @throws TransportExceptionInterface
-     */
     public function publishFormForEvent(Evt $event): void
     {
         $organizationSlug = $this->organizationSlug;

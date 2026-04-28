@@ -282,6 +282,19 @@ services:
     arguments:
       $materielPlatformUrl: '%materiel_platform_url%'
 
+  App\Service\LoxyaReservationService:
+    arguments:
+      $loxyaBaseUrl: '%materiel_api_base_url%'
+      $loxyaJwt: '%env(LOXYA_RESERVATION_JWT)%'
+
+  App\Controller\PaymentController:
+    arguments:
+      $helloAssoServerIp: '%env(HELLO_ASSO_SERVER_IP)%'
+      $helloAssoSignatureKey: '%env(HELLO_ASSO_WEBHOOK_SIGNATURE_KEY)%'
+      $helloAssoOrganizationSlug: '%hello_asso_organization_slug%'
+      $loxyaJwt: '%env(LOXYA_RESERVATION_JWT)%'
+      $loxyaLinkSignatureKey: '%env(LOXYA_LINK_SIGNATURE_KEY)%'
+
   App\Form\EventType:
     arguments:
       $club: '%env(CAF_ID)%'
