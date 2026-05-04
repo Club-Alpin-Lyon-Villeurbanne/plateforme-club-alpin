@@ -284,8 +284,8 @@ class FfcamSynchronizer
 
         try {
             $this->entityManager->getConnection()->executeQuery(
-                "INSERT INTO `caf_log_admin` (`code_log_admin`, `desc_log_admin`, `ip_log_admin`, `date_log_admin`)
-                VALUES ('import-ffcam', :description, '127.0.0.1', :date)",
+                "INSERT INTO `caf_log_admin` (`code_log_admin`, `desc_log_admin`, `ip_log_admin`, `date_log_admin`, `user_log_admin`)
+                VALUES ('import-ffcam', :description, '127.0.0.1', :date, NULL)",
                 [
                     'description' => sprintf(
                         'INSERT: %d, UPDATE: %d, MERGE: %d, fichier %s',
