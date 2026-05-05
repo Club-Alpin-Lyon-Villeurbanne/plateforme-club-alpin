@@ -610,6 +610,15 @@ class Evt
         return $this->endDate < new \DateTimeImmutable();
     }
 
+    public function isExpenseReportOpen(): bool
+    {
+        if (null === $this->endDate) {
+            return false;
+        }
+
+        return new \DateTimeImmutable() <= $this->endDate->modify('+120 days');
+    }
+
     public function isStarted(): bool
     {
         if (null === $this->startDate) {

@@ -418,9 +418,6 @@ class SortieController extends AbstractController
             }
         }
 
-        // Notes de frais must be submitted within EXPENSE_REPORT_DEADLINE_DAYS of the event's end date
-        $expenseReportDeadline = $event->getEndDate()->modify('+' . self::EXPENSE_REPORT_DEADLINE_DAYS . ' days');
-
         // Check if user has a viewable expense report (submitted, approved, or accounted)
         $hasViewableExpenseReport = false;
         if ($user) {
@@ -446,7 +443,7 @@ class SortieController extends AbstractController
             'current_user_has_paid' => $currentUserHasPaid,
             'current_user_accepted' => $currentUserAccepted,
             'accepted_participations' => $participationRepository->getSortedParticipations($event),
-            'is_within_expense_report_deadline' => new \DateTimeImmutable() <= $expenseReportDeadline,
+            'is_within_expense_report_deadline' => $event->isExpenseReportOpen(),
             'expense_report_deadline_days' => self::EXPENSE_REPORT_DEADLINE_DAYS,
             'has_viewable_expense_report' => $hasViewableExpenseReport,
             'groupes_competences' => $groupesCompRefs,
