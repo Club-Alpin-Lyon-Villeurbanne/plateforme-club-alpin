@@ -46,6 +46,8 @@ class Evt
     public const int STATUS_LEGAL_VALIDE = 1;
     public const int STATUS_LEGAL_REFUSE = 2;
 
+    public const int EXPENSE_REPORT_DEADLINE_DAYS = 120;
+
     #[ORM\Column(name: 'id_evt', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -616,7 +618,7 @@ class Evt
             return false;
         }
 
-        return new \DateTimeImmutable() <= $this->endDate->modify('+120 days');
+        return new \DateTimeImmutable() <= $this->endDate->modify(sprintf('+%d days', self::EXPENSE_REPORT_DEADLINE_DAYS));
     }
 
     public function isStarted(): bool

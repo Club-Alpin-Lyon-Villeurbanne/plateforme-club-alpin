@@ -56,8 +56,6 @@ use Twig\Error\SyntaxError;
 
 class SortieController extends AbstractController
 {
-    public const EXPENSE_REPORT_DEADLINE_DAYS = 120;
-
     public function __construct(
         protected SlugHelper $slugHelper,
         protected float $defaultLat,
@@ -444,7 +442,7 @@ class SortieController extends AbstractController
             'current_user_accepted' => $currentUserAccepted,
             'accepted_participations' => $participationRepository->getSortedParticipations($event),
             'is_within_expense_report_deadline' => $event->isExpenseReportOpen(),
-            'expense_report_deadline_days' => self::EXPENSE_REPORT_DEADLINE_DAYS,
+            'expense_report_deadline_days' => Evt::EXPENSE_REPORT_DEADLINE_DAYS,
             'has_viewable_expense_report' => $hasViewableExpenseReport,
             'groupes_competences' => $groupesCompRefs,
             'niveaux' => $nivRefs,
