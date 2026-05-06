@@ -157,6 +157,9 @@ class Evt
     #[SerializedName('longitudeDepart')]
     private string|float $longDepart;
 
+    #[ORM\Column(name: 'pending_email_changes', type: Types::JSON, nullable: true)]
+    private ?array $pendingEmailChanges = null;
+
     #[ORM\Column(name: 'matos_evt', type: 'text', nullable: true)]
     #[Groups('event:details')]
     #[SerializedName('materiel')]
@@ -1124,6 +1127,18 @@ class Evt
     public function setLongDepart(float|string $longDepart): self
     {
         $this->longDepart = $longDepart;
+
+        return $this;
+    }
+
+    public function getPendingEmailChanges(): ?array
+    {
+        return $this->pendingEmailChanges;
+    }
+
+    public function setPendingEmailChanges(?array $pendingEmailChanges): self
+    {
+        $this->pendingEmailChanges = $pendingEmailChanges;
 
         return $this;
     }

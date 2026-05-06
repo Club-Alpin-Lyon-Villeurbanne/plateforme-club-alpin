@@ -6,12 +6,54 @@
 
 {% block inner_html %}
     <p>
-        La sortie <a href="{{ event_url }}" title="">{{ event_name }}</a> a été modifiée.<br>
-        Nous vous invitons à consulter les modifications.
+        La sortie <a href="{{ event_url }}" title="">{{ event_name }}</a> a été modifiée.
     </p>
+
+    {% if changes_with_values is defined and changes_with_values is not empty %}
+        <table style="border-collapse: collapse; width: 100%; margin: 16px 0;">
+            <thead>
+                <tr>
+                    <th style="text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd;">Champ</th>
+                    <th style="text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd;">Avant</th>
+                    <th style="text-align: left; padding: 8px 12px; border-bottom: 2px solid #ddd;">Après</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for change in changes_with_values %}
+                    <tr>
+                        <td style="padding: 8px 12px; border-bottom: 1px solid #eee; font-weight: bold;">{{ change.label }}</td>
+                        <td style="padding: 8px 12px; border-bottom: 1px solid #eee; color: #888;">{{ change.old ?? '—' }}</td>
+                        <td style="padding: 8px 12px; border-bottom: 1px solid #eee;">{{ change.new ?? '—' }}</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    {% if linked_changed_fields is defined and linked_changed_fields is not empty %}
+        {% if linked_changed_fields|length == 1 %}
+            {% set linked_label = linked_changed_fields[0] %}
+        {% elseif linked_changed_fields|length == 2 %}
+            {% set linked_label = linked_changed_fields[0] ~ ' et ' ~ linked_changed_fields[1] %}
+        {% else %}
+            {% set linked_label = linked_changed_fields[0:linked_changed_fields|length - 1]|join(', ') ~ ' et ' ~ linked_changed_fields|last %}
+        {% endif %}
+        <p>Des modifications ont été apportées à la sortie ({{ linked_label }}). <a href="{{ event_url }}">Consultez la sortie</a> pour les voir.</p>
+    {% endif %}
 {% endblock %}
 
 {% block inner_txt %}
-    La sortie {{ event_name }} ({{ event_url }}) a été modifiée.
-    Nous vous invitons à consulter les modifications.
+La sortie {{ event_name }} ({{ event_url }}) a été modifiée.
+{% if changes_with_values is defined and changes_with_values is not empty %}
+
+Modifications :
+{% for change in changes_with_values %}
+- {{ change.label }} : {{ change.old ?? '—' }} > {{ change.new ?? '—' }}
+{% endfor %}
+{% endif %}
+{% if linked_changed_fields is defined and linked_changed_fields is not empty %}
+{% if linked_changed_fields|length == 1 %}{% set linked_label = linked_changed_fields[0] %}{% elseif linked_changed_fields|length == 2 %}{% set linked_label = linked_changed_fields[0] ~ ' et ' ~ linked_changed_fields[1] %}{% else %}{% set linked_label = linked_changed_fields[0:linked_changed_fields|length - 1]|join(', ') ~ ' et ' ~ linked_changed_fields|last %}{% endif %}
+
+Des modifications ont été apportées ({{ linked_label }}). Consultez la sortie pour les voir : {{ event_url }}
+{% endif %}
 {% endblock %}
