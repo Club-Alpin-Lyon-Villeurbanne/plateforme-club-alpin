@@ -384,6 +384,8 @@ class UserController extends AbstractController
                         'event_date' => $evtDate,
                         'commission' => $commissionTitle,
                         'status' => EventParticipation::STATUS_VALIDE === $status ? 'accepté' : 'pré-inscrit',
+                        'event_rdv' => $event->getRdv(),
+                        'event_rdv_time' => $event->getStartDate()?->format('H:i'),
                     ]);
                 } else {
                     $this->addFlash('error', 'La licence de ' . $user->getFullName() . ' a expiré. L\'adhésion doit être renouvelée avant l\'inscription.');
@@ -411,6 +413,8 @@ class UserController extends AbstractController
                     'firstname' => ucfirst($this->getUser()->getFirstname()),
                     'lastname' => strtoupper($this->getUser()->getLastname()),
                     'nickname' => $this->getUser()->getNickname(),
+                    'event_rdv' => $event->getRdv(),
+                    'event_rdv_time' => $event->getStartDate()?->format('H:i'),
                 ], [], null, $this->getUser()->getEmail());
             }
 
