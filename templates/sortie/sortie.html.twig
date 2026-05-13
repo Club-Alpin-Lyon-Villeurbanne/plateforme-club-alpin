@@ -1116,8 +1116,10 @@
         </ul>
         <br style="clear:both" />
         {% if not event.hasStarted and event | is_legal_validable  %}
-            {{ easy_include('status-legal-' ~ event.statusLegal, 'status-legal') }}
-            <br />
+            {% if not event.isLegalStatusValide %}
+                {{ easy_include('status-legal-' ~ event.statusLegal, 'status-legal') }}
+                <br />
+            {% endif %}
 
             {% if is_granted('SORTIE_LEGAL_VALIDATION', event) %}
                 <div class="status-legal noprint">
