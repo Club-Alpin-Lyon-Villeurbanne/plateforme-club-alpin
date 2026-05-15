@@ -18,7 +18,6 @@ class CarbonCostHelper
         float $bikeWalkRate,
         float $thermicCarpoolingRate,
         float $electricCarpoolingRate,
-        float $planeRate,
     ) {
         $this->rates = [
             TransportModeEnum::PUBLIC_TRAIN->value => $publicTrainRate,
@@ -28,33 +27,29 @@ class CarbonCostHelper
             TransportModeEnum::BIKE_OR_WALK->value => $bikeWalkRate,
             TransportModeEnum::THERMIC_CARPOOLING->value => $thermicCarpoolingRate,
             TransportModeEnum::ELECTRIC_CARPOOLING->value => $electricCarpoolingRate,
-            TransportModeEnum::PLANE->value => $planeRate,
         ];
     }
 
-    public function calculate(float $nbKm, int $nbPerson = 1, int $nbVehicules = 1, ?TransportModeEnum $transportMode = null): ?float
+    public function calculate(float $nbKm, int $nbPerson = 1, int $nbVehicules = 1, ?TransportModeEnum $transportMode = null): ?CarbonCost
     {
-        if (null === $transportMode) {
+        if (null === $transportMode || $transportMode->isObsolete()) {
             return null;
         }
 
         $rate = $this->rates[$transportMode->value] ?? 0;
-
         $globalCost = $nbKm * $rate;
-        if ($this->isCoefByPerson($transportMode)) {
-            $cost = $globalCost * max(1, $nbPerson);
+
+        if ($transportMode->requiresVehicleCount()) {
+            $total = $globalCost * max(1, $nbVehicules);
         } else {
-            $cost = $globalCost * max(1, $nbVehicules);
+            $total = $globalCost * max(1, $nbPerson);
         }
 
-        return round($cost, 2);
-    }
+        $perPerson = $total / max(1, $nbPerson);
 
-    protected function isCoefByPerson(TransportModeEnum $transportMode): bool
-    {
-        return match ($transportMode) {
-            TransportModeEnum::PUBLIC_TRAIN, TransportModeEnum::PUBLIC_COACH, TransportModeEnum::PLANE => true,
-            TransportModeEnum::DEDICATED_COACH, TransportModeEnum::THERMIC_CARPOOLING, TransportModeEnum::ELECTRIC_CARPOOLING, TransportModeEnum::BIKE_OR_WALK, TransportModeEnum::MINIVAN => false,
-        };
+        return new CarbonCost(
+            total: round($total, 2),
+            perPerson: round($perPerson, 2),
+        );
     }
 }

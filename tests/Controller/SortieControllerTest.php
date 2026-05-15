@@ -717,6 +717,13 @@ class SortieControllerTest extends WebTestCase
         return $event;
     }
 
+    public function testMethodologieBilanCarboneIsPubliclyAccessible(): void
+    {
+        $this->client->request('GET', '/sorties/methodologie-bilan-carbone');
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertSelectorTextContains('h1', 'Méthodologie du bilan carbone');
+    }
+
     /**
      * Helper method to create an expense report for testing.
      */

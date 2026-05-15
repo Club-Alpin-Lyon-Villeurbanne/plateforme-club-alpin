@@ -11,6 +11,7 @@ public/dev.txt
 /bin/tools
 
 /.php-cs-fixer.cache
+/.phpstan-tmp/
 
 ###> symfony/framework-bundle ###
 /.env.local
@@ -33,6 +34,7 @@ public/dev.txt
 /playwright/.cache/
 /e2e/.auth/
 .env.test
+/.playwright-mcp/
 ###< playwright ###
 
 ###> lexik/jwt-authentication-bundle ###

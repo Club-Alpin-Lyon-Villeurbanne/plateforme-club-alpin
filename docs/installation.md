@@ -24,8 +24,21 @@
 2. Initialiser l'environnement :
 ```bash
 make init
-make database-init
+make database-bootstrap
 ```
+
+### Initialisation de la base de données
+
+Le projet propose deux cibles selon ton besoin :
+
+| Cible | Communes en base | Quand l'utiliser |
+|---|---|---|
+| `make database-init` | Seed minimal (12 communes montagne) | Démarrage rapide, CI |
+| `make database-bootstrap` | ~39 000 communes (API La Poste, ~2 min réseau) | Install initiale, autocomplete complet France |
+
+Le seed minimal inclut Lyon (1er & 3e), le massif du Mont-Blanc (Chamonix, Saint-Gervais, Annecy), les Écrins (Saint-Christophe-en-Oisans avec La Bérarde, Bourg-d'Oisans, Pelvoux, Briançon), la Vanoise (Pralognan, Bonneval-sur-Arc) et le Vercors (Villard-de-Lans) — suffisant pour tester le calcul du bilan carbone des sorties.
+
+Pour rafraîchir uniquement les communes sans toucher au reste : `make database-import-communes` (full) ou `make database-seed-communes` (minimal).
 
 ## Accès
 

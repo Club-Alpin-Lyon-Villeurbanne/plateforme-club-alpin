@@ -377,4 +377,3 @@ services:
       $bikeWalkRate: '%env(float:BIKE_OR_WALK_CARBON_COST_RATE)%'
       $thermicCarpoolingRate: '%env(float:THERMIC_CARPOOLING_CARBON_COST_RATE)%'
       $electricCarpoolingRate: '%env(float:ELECTRIC_CARPOOLING_CARBON_COST_RATE)%'
-      $planeRate: '%env(float:PLANE_CARBON_COST_RATE)%'

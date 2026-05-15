@@ -95,6 +95,7 @@ database-init-test: ## Init database for test
 	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/data/schema_caf.sql
 	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/data/data_caf.sql
 	$(SYMFONY_CONSOLE) doctrine:migrations:migrate --no-interaction --env=test
+	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/data/data_communes_seed.sql
 	$(MAKE) args="--env=test --no-interaction" database-fixtures-load
 .PHONY: database-init-test
 
@@ -142,13 +143,23 @@ npm-watch: ## Watch the frontend files
 .PHONY: npm-watch
 
 ## —— 📊 Database ——
-database-init: ## Init database
+database-init: ## Init database (seed minimal de communes — CI rapide)
 	$(MAKE) database-drop
 	$(MAKE) database-create
 	$(MAKE) database-import
 	$(MAKE) database-migrate
+	$(MAKE) database-seed-communes
 	$(MAKE) args="--env=dev --no-interaction" database-fixtures-load
 .PHONY: database-init
+
+database-bootstrap: ## Setup dev complet : database-init + import des ~39 000 communes (~2 min réseau)
+	$(MAKE) database-init
+	$(MAKE) database-import-communes
+.PHONY: database-bootstrap
+
+database-seed-communes: ## Seed minimal de communes montagne (Lyon, Mont-Blanc, Écrins, Vanoise, Vercors)
+	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/data/data_communes_seed.sql
+.PHONY: database-seed-communes
 
 database-drop: ## Create database
 	$(SYMFONY_CONSOLE) doctrine:database:drop --force --if-exists
@@ -164,6 +175,10 @@ database-create: ## Create database
 database-import: ## Make import
 	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/data/data_caf.sql
 .PHONY: database-import
+
+database-import-communes: ## Import communes françaises (coordonnées GPS, ~39 000 entrées via API La Poste)
+	$(SYMFONY_CONSOLE) app:import-communes
+.PHONY: database-import-communes
 
 database-migration: ## Make migration
 	$(SYMFONY_CONSOLE) make:migration

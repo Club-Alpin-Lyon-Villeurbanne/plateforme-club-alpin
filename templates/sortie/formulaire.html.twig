@@ -164,7 +164,7 @@
         <div class="trigger-me">
             {{ form_row(form.modeTransport) }}<br>
 
-            <div>
+            <div id="nb-vehicules-wrapper" data-modes-with-vehicles="{{ constant('App\\Entity\\TransportModeEnum::VALUES_REQUIRING_VEHICLE_COUNT')|join(',') }}">
                 {{ form_label(form.nbVehicules) }}
                 {{ form_errors(form.nbVehicules) }}
                 {{ form_widget(form.nbVehicules) }}
@@ -269,6 +269,7 @@
     {{ vite_entry_script_tags('participants') }}
     {{ vite_entry_script_tags('commission_switch') }}
     {{ vite_entry_script_tags('autocomplete_communes') }}
+    {{ vite_entry_script_tags('transport_mode_vehicles') }}
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
             integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
             crossorigin=""></script>

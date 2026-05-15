@@ -1001,6 +1001,7 @@ class SortieController extends AbstractController
         $newEvent->setModeTransport($event->getModeTransport());
         $newEvent->setNbKm($event->getNbKm());
         $newEvent->setCoutCarbone($event->getCoutCarbone());
+        $newEvent->setCoutCarbonePerPerson($event->getCoutCarbonePerPerson());
 
         // dupliquer les participants ?
         if ('full' === $mode) {
@@ -1387,6 +1388,12 @@ class SortieController extends AbstractController
         ];
     }
 
+    #[Route(path: '/sorties/methodologie-bilan-carbone', name: 'sortie_methodologie_bilan_carbone', methods: ['GET'])]
+    public function methodologieBilanCarbone(): Response
+    {
+        return $this->render('sortie/methodologie-bilan-carbone.html.twig');
+    }
+
     protected function calculateCarbonCost(Evt $event, CarbonCostHelper $helper): void
     {
         $cost = $helper->calculate(
@@ -1395,6 +1402,7 @@ class SortieController extends AbstractController
             $event->getNbVehicules() ?: 1,
             $event->getModeTransport(),
         );
-        $event->setCoutCarbone($cost);
+        $event->setCoutCarbone($cost?->total);
+        $event->setCoutCarbonePerPerson($cost?->perPerson);
     }
 }
