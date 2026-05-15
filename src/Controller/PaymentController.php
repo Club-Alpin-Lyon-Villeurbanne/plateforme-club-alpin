@@ -74,11 +74,12 @@ class PaymentController extends AbstractController
                 ],
             ]);
 
-            if (!isset($result['redirectUrl'])) {
-                throw new \RuntimeException('HelloAsso response missing redirectUrl');
+            $redirectUrl = $result['redirectUrl'] ?? null;
+            if (!\is_string($redirectUrl) || !self::isHelloAssoUrl($redirectUrl)) {
+                throw new \RuntimeException('Invalid HelloAsso redirect URL');
             }
 
-            return $this->redirect($result['redirectUrl']);
+            return $this->redirect($redirectUrl);
         } catch (\Exception $e) {
             $this->logger->error('Failed to create HelloAsso checkout intent', [
                 'reservationId' => $reservationId,
@@ -98,12 +99,13 @@ class PaymentController extends AbstractController
         }
 
         // Ordre des vérifs : IP → signature → décodage JSON. Aucun payload non authentifié n'est loggé.
+        // Réponse générique (403 sans body) sur les vérifs auth pour ne pas guider un scan.
         if ($this->helloAssoServerIp !== $request->getClientIp()) {
             $this->logger->error('Payment webhook - Invalid IP', [
                 'ip' => $request->getClientIp(),
             ]);
 
-            return new Response('Invalid IP', Response::HTTP_BAD_REQUEST);
+            return new Response('', Response::HTTP_FORBIDDEN);
         }
 
         $signatureHeader = $request->headers->get('x-ha-signature');
@@ -145,7 +147,7 @@ class PaymentController extends AbstractController
         $helloAssoPaymentId = $payload['data']['id'] ?? null;
 
         $reservationId = filter_var($reservationId, FILTER_VALIDATE_INT, [
-            'options' => ['min_range' => 1, 'max_range' => 10_000_000],
+            'options' => ['min_range' => 1],
         ]);
         if (false === $reservationId
             || (!\is_string($helloAssoPaymentId) && !\is_int($helloAssoPaymentId))
@@ -221,5 +223,29 @@ class PaymentController extends AbstractController
         $response->headers->set('X-Frame-Options', 'DENY');
 
         return $response;
+    }
+
+    // Defense in depth : on n'accepte un redirect HelloAsso que si l'URL est en HTTPS,
+    // ne contient pas de userinfo (https://attacker@helloasso.com/...) et que l'host est
+    // helloasso.com ou un sous-domaine (sandbox compris). Le suffixe est littéral, donc
+    // aucun risque d'homographe punycode (helloasso.com ASCII).
+    private static function isHelloAssoUrl(string $url): bool
+    {
+        $parsed = parse_url($url);
+        if (false === $parsed) {
+            return false;
+        }
+
+        if (isset($parsed['user']) || isset($parsed['pass'])) {
+            return false;
+        }
+
+        $scheme = $parsed['scheme'] ?? null;
+        $host = $parsed['host'] ?? null;
+        if ('https' !== $scheme || !\is_string($host)) {
+            return false;
+        }
+
+        return 'helloasso.com' === $host || str_ends_with($host, '.helloasso.com');
     }
 }

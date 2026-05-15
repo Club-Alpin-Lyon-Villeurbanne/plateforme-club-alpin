@@ -108,6 +108,77 @@ class PaymentControllerTest extends WebTestCase
         $this->assertSelectorTextContains('h2', 'Erreur de paiement');
     }
 
+    public function testCheckoutRejectsRedirectOnNonHelloAssoHost(): void
+    {
+        $client = static::createClient();
+
+        $helloAssoClient = $this->createMock(HelloAssoClient::class);
+        $helloAssoClient->method('createCheckoutIntent')->willReturn([
+            'id' => 123,
+            'redirectUrl' => 'https://evil.example.com/steal',
+        ]);
+        $client->getContainer()->set(HelloAssoClient::class, $helloAssoClient);
+
+        $signature = self::signLink(42, 3500);
+        $client->request('GET', '/paiement?reservation_id=42&amount=3500&signature=' . $signature);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h2', 'Erreur de paiement');
+    }
+
+    public function testCheckoutRejectsRedirectOnNonHttpsScheme(): void
+    {
+        $client = static::createClient();
+
+        $helloAssoClient = $this->createMock(HelloAssoClient::class);
+        $helloAssoClient->method('createCheckoutIntent')->willReturn([
+            'id' => 123,
+            'redirectUrl' => 'http://checkout.helloasso.com/public/gateway/start/abc',
+        ]);
+        $client->getContainer()->set(HelloAssoClient::class, $helloAssoClient);
+
+        $signature = self::signLink(42, 3500);
+        $client->request('GET', '/paiement?reservation_id=42&amount=3500&signature=' . $signature);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h2', 'Erreur de paiement');
+    }
+
+    public function testCheckoutRejectsRedirectWithUserinfo(): void
+    {
+        $client = static::createClient();
+
+        $helloAssoClient = $this->createMock(HelloAssoClient::class);
+        $helloAssoClient->method('createCheckoutIntent')->willReturn([
+            'id' => 123,
+            'redirectUrl' => 'https://attacker@checkout.helloasso.com/public/gateway/start/abc',
+        ]);
+        $client->getContainer()->set(HelloAssoClient::class, $helloAssoClient);
+
+        $signature = self::signLink(42, 3500);
+        $client->request('GET', '/paiement?reservation_id=42&amount=3500&signature=' . $signature);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorTextContains('h2', 'Erreur de paiement');
+    }
+
+    public function testCheckoutAcceptsRedirectOnHelloAssoSandboxHost(): void
+    {
+        $client = static::createClient();
+
+        $helloAssoClient = $this->createMock(HelloAssoClient::class);
+        $helloAssoClient->method('createCheckoutIntent')->willReturn([
+            'id' => 123,
+            'redirectUrl' => 'https://checkout-sandbox.helloasso.com/public/gateway/start/abc',
+        ]);
+        $client->getContainer()->set(HelloAssoClient::class, $helloAssoClient);
+
+        $signature = self::signLink(42, 3500);
+        $client->request('GET', '/paiement?reservation_id=42&amount=3500&signature=' . $signature);
+
+        $this->assertResponseRedirects('https://checkout-sandbox.helloasso.com/public/gateway/start/abc');
+    }
+
     public function testCheckoutRejectsMissingSignature(): void
     {
         $client = static::createClient();
@@ -143,7 +214,8 @@ class PaymentControllerTest extends WebTestCase
 
         $this->makeWebhookRequest($client, $payload, ip: '10.0.0.1');
 
-        $this->assertResponseStatusCodeSame(400);
+        $this->assertResponseStatusCodeSame(403);
+        $this->assertEmpty($client->getResponse()->getContent());
     }
 
     public function testWebhookRejectsMissingSignature(): void
