@@ -1396,13 +1396,6 @@ class SortieController extends AbstractController
 
     protected function calculateCarbonCost(Evt $event, CarbonCostHelper $helper): void
     {
-        $cost = $helper->calculate(
-            $event->getNbKm() ?: 0,
-            $event->getParticipationsCount(),
-            $event->getNbVehicules() ?: 1,
-            $event->getModeTransport(),
-        );
-        $event->setCoutCarbone($cost?->total);
-        $event->setCoutCarbonePerPerson($cost?->perPerson);
+        $helper->updateForEvent($event);
     }
 }

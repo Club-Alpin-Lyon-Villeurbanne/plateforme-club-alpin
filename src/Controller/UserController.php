@@ -14,6 +14,7 @@ use App\Entity\Usertype;
 use App\Form\NomadeType;
 use App\Form\UserContactType;
 use App\Form\UserFullType;
+use App\Helper\CarbonCostHelper;
 use App\Mailer\Mailer;
 use App\Repository\ArticleRepository;
 use App\Repository\EvtRepository;
@@ -284,6 +285,7 @@ class UserController extends AbstractController
         UserRepository $userRepository,
         Mailer $mailer,
         EntityManagerInterface $em,
+        CarbonCostHelper $carbonCostHelper,
     ): array|Response {
         if (!$this->isCsrfTokenValid('event_manual_add', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
@@ -389,6 +391,9 @@ class UserController extends AbstractController
                     $this->addFlash('error', 'La licence de ' . $user->getFullName() . ' a expiré. L\'adhésion doit être renouvelée avant l\'inscription.');
                 }
             }
+
+            // bilan carbone mis à jour selon nb de participants validés
+            $carbonCostHelper->updateForEvent($event);
             $em->flush();
 
             // envoi des mails aux encadrants

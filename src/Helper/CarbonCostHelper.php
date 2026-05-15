@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Helper;
 
+use App\Entity\Evt;
 use App\Entity\TransportModeEnum;
 
 class CarbonCostHelper
@@ -51,5 +52,23 @@ class CarbonCostHelper
             total: round($total, 2),
             perPerson: round($perPerson, 2),
         );
+    }
+
+    /**
+     * Recalcule et stocke le bilan carbone sur l'entité Evt selon son état courant
+     * (nbKm, nb de participants validés, nb de véhicules, mode transport).
+     *
+     * À appeler à chaque mutation impactant le nombre de participants validés.
+     */
+    public function updateForEvent(Evt $event): void
+    {
+        $cost = $this->calculate(
+            $event->getNbKm() ?: 0,
+            $event->getParticipationsCount(),
+            $event->getNbVehicules() ?: 1,
+            $event->getModeTransport(),
+        );
+        $event->setCoutCarbone($cost?->total);
+        $event->setCoutCarbonePerPerson($cost?->perPerson);
     }
 }
