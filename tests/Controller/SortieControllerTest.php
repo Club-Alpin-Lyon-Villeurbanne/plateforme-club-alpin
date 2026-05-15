@@ -799,6 +799,11 @@ class SortieControllerTest extends WebTestCase
         $this->assertSame(10950.0, $event->getCoutCarbonePerPerson());
 
         $otherParticipation = $event->getParticipation($other);
+
+        // Le voter PARTICIPANT_ANNULATION n'autorise que le titulaire à retirer
+        // sa propre participation (auto-désinscription).
+        $this->signin($other);
+
         $this->client->request('POST', sprintf('/sortie/remove-participant/%d', $otherParticipation->getId()), [
             'csrf_token' => $this->generateCsrfToken($this->client, 'remove_participant'),
         ]);
