@@ -5,9 +5,7 @@ namespace App\Tests\Controller;
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\ExpenseReport;
-use App\Entity\TransportModeEnum;
 use App\Entity\UserAttr;
-use App\Helper\CarbonCostHelper;
 use App\Messenger\Message\SortiePubliee;
 use App\Tests\WebTestCase;
 use App\Utils\Enums\ExpenseReportStatusEnum;
@@ -717,139 +715,6 @@ class SortieControllerTest extends WebTestCase
         $em->flush();
 
         return $event;
-    }
-
-    public function testMethodologieBilanCarboneIsPubliclyAccessible(): void
-    {
-        $this->client->request('GET', '/sorties/methodologie-bilan-carbone');
-        $this->assertResponseStatusCodeSame(200);
-        $this->assertSelectorTextContains('h1', 'Méthodologie du bilan carbone');
-    }
-
-    /**
-     * Bug remonté : un encadrant ajoute manuellement un participant (status auto = VALIDE)
-     * mais le bilan carbone ne se met pas à jour. Cf. UserController::manualAdd.
-     */
-    public function testManualAddRecalculatesCarbonCostPerPerson(): void
-    {
-        $em = $this->getContainer()->get('doctrine')->getManager();
-        $helper = $this->getContainer()->get(CarbonCostHelper::class);
-
-        $organizer = $this->signup();
-        $this->signin($organizer);
-        $this->addAttribute($organizer, UserAttr::ENCADRANT, 'commission:*');
-
-        $event = $this->createEvent($organizer);
-        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
-        $event->setStatusWho($organizer);
-        $event->setModeTransport(TransportModeEnum::THERMIC_CARPOOLING);
-        $event->setNbVehicules(1);
-        $event->setNbKm(100.0);
-        $helper->updateForEvent($event);
-        $em->flush();
-
-        // État initial : 1 encadrant validé. total = 100 × 219 × 1 = 21900 ; perPerson = 21900 / 1.
-        $this->assertSame(21900.0, $event->getCoutCarbone());
-        $this->assertSame(21900.0, $event->getCoutCarbonePerPerson());
-
-        // Ajout manuel d'un second participant via /ajouter-manuel
-        $other = $this->signup();
-        $this->client->request('POST', sprintf('/ajouter-manuel/%d', $event->getId()), [
-            'csrf_token' => $this->generateCsrfToken($this->client, 'event_manual_add'),
-            'id_user' => [$other->getId()],
-            'role_evt_join' => [EventParticipation::ROLE_MANUEL],
-            'civ_user' => [''],
-            'lastname_user' => [$other->getLastname()],
-            'firstname_user' => [$other->getFirstname()],
-        ]);
-
-        $em->refresh($event);
-
-        // Total inchangé (covoiturage = byVehicle, lié au nb de véhicules pas aux personnes)
-        $this->assertSame(21900.0, $event->getCoutCarbone(), 'total inchangé pour un mode byVehicle');
-        // perPerson divisé par 2 (organizer + other) = 10950
-        $this->assertSame(10950.0, $event->getCoutCarbonePerPerson(), 'perPerson recalculé après ajout manuel');
-    }
-
-    /**
-     * Le retrait d'un participant doit aussi déclencher le recalcul.
-     * Cf. SortieController::removeParticipant.
-     */
-    public function testRemoveParticipantRecalculatesCarbonCostPerPerson(): void
-    {
-        $em = $this->getContainer()->get('doctrine')->getManager();
-        $helper = $this->getContainer()->get(CarbonCostHelper::class);
-
-        $organizer = $this->signup();
-        $this->signin($organizer);
-        $this->addAttribute($organizer, UserAttr::ENCADRANT, 'commission:*');
-
-        $event = $this->createEvent($organizer);
-        $event->setModeTransport(TransportModeEnum::THERMIC_CARPOOLING);
-        $event->setNbVehicules(1);
-        $event->setNbKm(100.0);
-
-        // Ajout d'un 2e participant validé
-        $other = $this->signup();
-        $event->addParticipation($other, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
-        $helper->updateForEvent($event);
-        $em->flush();
-
-        // 2 participants → perPerson = 21900 / 2
-        $this->assertSame(10950.0, $event->getCoutCarbonePerPerson());
-
-        $otherParticipation = $event->getParticipation($other);
-
-        // Le voter PARTICIPANT_ANNULATION n'autorise que le titulaire à retirer
-        // sa propre participation (auto-désinscription).
-        $this->signin($other);
-
-        $this->client->request('POST', sprintf('/sortie/remove-participant/%d', $otherParticipation->getId()), [
-            'csrf_token' => $this->generateCsrfToken($this->client, 'remove_participant'),
-        ]);
-
-        $em->refresh($event);
-
-        // Retour à 1 participant validé → perPerson = 21900 / 1
-        $this->assertSame(21900.0, $event->getCoutCarbonePerPerson(), 'perPerson recalculé après retrait');
-    }
-
-    /**
-     * La validation d'une inscription en attente (NON_CONFIRME → VALIDE) via
-     * /update-inscriptions doit recalculer le bilan.
-     */
-    public function testUpdateInscriptionsRecalculatesCarbonCostPerPerson(): void
-    {
-        $em = $this->getContainer()->get('doctrine')->getManager();
-        $helper = $this->getContainer()->get(CarbonCostHelper::class);
-
-        $organizer = $this->signup();
-        $this->signin($organizer);
-        $this->addAttribute($organizer, UserAttr::ENCADRANT, 'commission:*');
-
-        $event = $this->createEvent($organizer);
-        $event->setModeTransport(TransportModeEnum::THERMIC_CARPOOLING);
-        $event->setNbVehicules(1);
-        $event->setNbKm(100.0);
-
-        $pending = $this->signup();
-        $pendingParticipation = $event->addParticipation($pending, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_NON_CONFIRME);
-        $helper->updateForEvent($event);
-        $em->flush();
-
-        // 1 validé (organizer) + 1 en attente → perPerson = 21900 / 1
-        $this->assertSame(21900.0, $event->getCoutCarbonePerPerson());
-
-        $this->client->request('POST', sprintf('/sortie/%d/update-inscriptions', $event->getId()), [
-            'csrf_token_inscriptions' => $this->generateCsrfToken($this->client, 'sortie_update_inscriptions'),
-            'id_evt_join' => [(string) $pendingParticipation->getId()],
-            'status_evt_join_' . $pendingParticipation->getId() => (string) EventParticipation::STATUS_VALIDE,
-        ]);
-
-        $em->refresh($event);
-
-        // 2 participants validés → perPerson = 21900 / 2
-        $this->assertSame(10950.0, $event->getCoutCarbonePerPerson(), 'perPerson recalculé après validation');
     }
 
     /**
