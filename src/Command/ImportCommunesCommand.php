@@ -61,7 +61,7 @@ class ImportCommunesCommand extends Command
                     'nom_commune' => $row['nom_de_la_commune'] ?? '',
                     'code_postal' => $row['code_postal'] ?? '',
                     'libelle_acheminement' => $row['libelle_d_acheminement'] ?? '',
-                    'ligne5' => null,
+                    'ligne5' => $row['ligne_5'] ?? null,
                     'geopoint' => $geopoint ?: null,
                     'latitude' => (float) $lat,
                     'longitude' => (float) $long,
