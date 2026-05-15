@@ -24,7 +24,10 @@
 2. Initialiser l'environnement :
 ```bash
 make init
-make database-bootstrap
+# Puis choisir UNE des deux cibles ci-dessous selon le besoin :
+make database-init        # seed minimal (12 communes), démarrage rapide
+# ou
+make database-bootstrap   # full import (~39 000 communes, ~2 min réseau)
 ```
 
 ### Initialisation de la base de données

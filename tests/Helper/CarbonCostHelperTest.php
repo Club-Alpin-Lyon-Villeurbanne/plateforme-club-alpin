@@ -72,6 +72,14 @@ class CarbonCostHelperTest extends TestCase
         $this->assertNull($result);
     }
 
+    public function testCalculateObsoletePlaneModeReturnsNull(): void
+    {
+        // PLANE est conservé dans l'enum pour rétro-compat d'hydratation Doctrine
+        // (sorties pré-migration), mais doit être inerte côté calcul carbone.
+        $result = $this->helper->calculate(100, 5, 1, TransportModeEnum::PLANE);
+        $this->assertNull($result);
+    }
+
     public function testCalculateZeroKmReturnsZero(): void
     {
         $result = $this->helper->calculate(0, 5, 1, TransportModeEnum::PUBLIC_TRAIN);
