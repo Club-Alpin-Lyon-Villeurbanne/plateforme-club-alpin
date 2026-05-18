@@ -321,7 +321,9 @@ class SortieController extends AbstractController
                     $event->setNbKm($nbKm);
                 }
             }
-            $this->calculateCarbonCost($event, $carbonCostHelper);
+            // Bilan carbone basé sur ngensMax — recalculé uniquement à la création/modif
+            // de sortie, pas à chaque inscription (décision Jacob Carbonel).
+            $carbonCostHelper->updateForEvent($event);
             $entityManager->persist($event);
             $entityManager->flush();
 
@@ -531,7 +533,6 @@ class SortieController extends AbstractController
         EntityManagerInterface $em,
         Mailer $mailer,
         RoleHelper $roleHelper,
-        CarbonCostHelper $carbonCostHelper,
     ): RedirectResponse {
         if (!$this->isCsrfTokenValid('sortie_update_inscriptions', $request->request->get('csrf_token_inscriptions'))) {
             $this->addFlash('error', 'Jeton de validation invalide.');
@@ -660,8 +661,6 @@ class SortieController extends AbstractController
         }
 
         if ($flush) {
-            // bilan carbone mis à jour selon nb de participants
-            $this->calculateCarbonCost($event, $carbonCostHelper);
             $em->flush();
         }
 
@@ -910,7 +909,6 @@ class SortieController extends AbstractController
         EventParticipation $participation,
         EntityManagerInterface $em,
         Mailer $mailer,
-        CarbonCostHelper $carbonCostHelper,
     ): RedirectResponse {
         $event = $participation->getEvt();
 
@@ -925,8 +923,6 @@ class SortieController extends AbstractController
         $event->removeParticipation($participation);
         // orphanRemoval: true on Evt::$participations handles the DELETE in DB
 
-        // bilan carbone mis à jour selon nb de participants
-        $this->calculateCarbonCost($event, $carbonCostHelper);
         $em->flush();
 
         /** @var User */
@@ -1053,7 +1049,6 @@ class SortieController extends AbstractController
         EntityManagerInterface $em,
         Mailer $mailer,
         UserRepository $userRepository,
-        CarbonCostHelper $carbonCostHelper,
     ): RedirectResponse {
         if (!$this->isCsrfTokenValid('join_event', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
@@ -1206,8 +1201,6 @@ class SortieController extends AbstractController
                     }
                 }
 
-                // bilan carbone mis à jour selon nb de participants
-                $this->calculateCarbonCost($event, $carbonCostHelper);
                 $em->flush();
 
                 // E-MAIL À L'ORGANISATEUR ET AUX ENCADRANTS
@@ -1394,8 +1387,4 @@ class SortieController extends AbstractController
         return $this->render('sortie/methodologie-bilan-carbone.html.twig');
     }
 
-    protected function calculateCarbonCost(Evt $event, CarbonCostHelper $helper): void
-    {
-        $helper->updateForEvent($event);
-    }
 }

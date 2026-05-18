@@ -727,10 +727,12 @@ class SortieControllerTest extends WebTestCase
     }
 
     /**
-     * Bug remonté : un encadrant ajoute manuellement un participant (status auto = VALIDE)
-     * mais le bilan carbone ne se met pas à jour. Cf. UserController::manualAdd.
+     * Le bilan carbone est figé sur le nombre max de places prévues (ngensMax), pas
+     * sur les inscrits réels. Ajouter un participant ne doit donc rien recalculer.
+     * Décision Jacob Carbonel : éviter les valeurs très élevées à l'ouverture des
+     * inscriptions et la fluctuation à chaque join.
      */
-    public function testManualAddRecalculatesCarbonCostPerPerson(): void
+    public function testManualAddDoesNotChangeCarbonCost(): void
     {
         $em = $this->getContainer()->get('doctrine')->getManager();
         $helper = $this->getContainer()->get(CarbonCostHelper::class);
@@ -748,9 +750,10 @@ class SortieControllerTest extends WebTestCase
         $helper->updateForEvent($event);
         $em->flush();
 
-        // État initial : 1 encadrant validé. total = 100 × 219 × 1 = 21900 ; perPerson = 21900 / 1.
+        // ngensMax=12 (cf. WebTestCase::createEvent), 100 km × 219 g/km × 1 véhicule = 21900 ;
+        // perPerson = 21900 / 12 = 1825.
         $this->assertSame(21900.0, $event->getCoutCarbone());
-        $this->assertSame(21900.0, $event->getCoutCarbonePerPerson());
+        $this->assertSame(1825.0, $event->getCoutCarbonePerPerson());
 
         // Ajout manuel d'un second participant via /ajouter-manuel
         $other = $this->signup();
@@ -765,17 +768,15 @@ class SortieControllerTest extends WebTestCase
 
         $em->refresh($event);
 
-        // Total inchangé (covoiturage = byVehicle, lié au nb de véhicules pas aux personnes)
-        $this->assertSame(21900.0, $event->getCoutCarbone(), 'total inchangé pour un mode byVehicle');
-        // perPerson divisé par 2 (organizer + other) = 10950
-        $this->assertSame(10950.0, $event->getCoutCarbonePerPerson(), 'perPerson recalculé après ajout manuel');
+        $this->assertSame(21900.0, $event->getCoutCarbone(), 'total inchangé par une inscription');
+        $this->assertSame(1825.0, $event->getCoutCarbonePerPerson(), 'perPerson inchangé par une inscription');
     }
 
     /**
-     * Le retrait d'un participant doit aussi déclencher le recalcul.
-     * Cf. SortieController::removeParticipant.
+     * Symétrique : le retrait d'un participant ne doit pas modifier le bilan
+     * (figé sur ngensMax).
      */
-    public function testRemoveParticipantRecalculatesCarbonCostPerPerson(): void
+    public function testRemoveParticipantDoesNotChangeCarbonCost(): void
     {
         $em = $this->getContainer()->get('doctrine')->getManager();
         $helper = $this->getContainer()->get(CarbonCostHelper::class);
@@ -789,14 +790,13 @@ class SortieControllerTest extends WebTestCase
         $event->setNbVehicules(1);
         $event->setNbKm(100.0);
 
-        // Ajout d'un 2e participant validé
         $other = $this->signup();
         $event->addParticipation($other, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
         $helper->updateForEvent($event);
         $em->flush();
 
-        // 2 participants → perPerson = 21900 / 2
-        $this->assertSame(10950.0, $event->getCoutCarbonePerPerson());
+        // 21900 / 12 = 1825 (toujours basé sur ngensMax, pas sur les 2 inscrits)
+        $this->assertSame(1825.0, $event->getCoutCarbonePerPerson());
 
         $otherParticipation = $event->getParticipation($other);
 
@@ -810,15 +810,13 @@ class SortieControllerTest extends WebTestCase
 
         $em->refresh($event);
 
-        // Retour à 1 participant validé → perPerson = 21900 / 1
-        $this->assertSame(21900.0, $event->getCoutCarbonePerPerson(), 'perPerson recalculé après retrait');
+        $this->assertSame(1825.0, $event->getCoutCarbonePerPerson(), 'perPerson inchangé par un retrait');
     }
 
     /**
-     * La validation d'une inscription en attente (NON_CONFIRME → VALIDE) via
-     * /update-inscriptions doit recalculer le bilan.
+     * Symétrique : valider une inscription en attente ne doit rien recalculer.
      */
-    public function testUpdateInscriptionsRecalculatesCarbonCostPerPerson(): void
+    public function testUpdateInscriptionsDoesNotChangeCarbonCost(): void
     {
         $em = $this->getContainer()->get('doctrine')->getManager();
         $helper = $this->getContainer()->get(CarbonCostHelper::class);
@@ -837,8 +835,7 @@ class SortieControllerTest extends WebTestCase
         $helper->updateForEvent($event);
         $em->flush();
 
-        // 1 validé (organizer) + 1 en attente → perPerson = 21900 / 1
-        $this->assertSame(21900.0, $event->getCoutCarbonePerPerson());
+        $this->assertSame(1825.0, $event->getCoutCarbonePerPerson());
 
         $this->client->request('POST', sprintf('/sortie/%d/update-inscriptions', $event->getId()), [
             'csrf_token_inscriptions' => $this->generateCsrfToken($this->client, 'sortie_update_inscriptions'),
@@ -848,8 +845,7 @@ class SortieControllerTest extends WebTestCase
 
         $em->refresh($event);
 
-        // 2 participants validés → perPerson = 21900 / 2
-        $this->assertSame(10950.0, $event->getCoutCarbonePerPerson(), 'perPerson recalculé après validation');
+        $this->assertSame(1825.0, $event->getCoutCarbonePerPerson(), 'perPerson inchangé par la validation');
     }
 
     /**

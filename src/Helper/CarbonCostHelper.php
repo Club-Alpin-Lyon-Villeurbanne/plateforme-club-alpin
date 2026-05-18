@@ -56,15 +56,18 @@ class CarbonCostHelper
 
     /**
      * Recalcule et stocke le bilan carbone sur l'entité Evt selon son état courant
-     * (nbKm, nb de participants validés, nb de véhicules, mode transport).
+     * (nbKm, ngensMax, nb de véhicules, mode transport).
      *
-     * À appeler à chaque mutation impactant le nombre de participants validés.
+     * Le coût/personne est figé sur le nombre max d'inscrits prévus (ngensMax), pas
+     * sur les inscrits réels — sinon l'affichage à l'ouverture des inscriptions
+     * (1 seul encadrant) donne une valeur très élevée qui décroît à chaque
+     * inscription. Décision validée avec Jacob Carbonel (commission carbone).
      */
     public function updateForEvent(Evt $event): void
     {
         $cost = $this->calculate(
             $event->getNbKm() ?: 0,
-            $event->getParticipationsCount(),
+            max(1, $event->getNgensMax() ?: 1),
             $event->getNbVehicules() ?: 1,
             $event->getModeTransport(),
         );
