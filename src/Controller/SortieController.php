@@ -1386,5 +1386,4 @@ class SortieController extends AbstractController
     {
         return $this->render('sortie/methodologie-bilan-carbone.html.twig');
     }
-
 }
