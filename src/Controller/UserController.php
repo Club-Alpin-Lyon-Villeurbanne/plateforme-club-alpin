@@ -389,6 +389,7 @@ class UserController extends AbstractController
                     $this->addFlash('error', 'La licence de ' . $user->getFullName() . ' a expiré. L\'adhésion doit être renouvelée avant l\'inscription.');
                 }
             }
+
             $em->flush();
 
             // envoi des mails aux encadrants

@@ -36,6 +36,7 @@ export default defineConfig({
         participants: './assets/participants.js',
         commission_switch: './assets/commission-switch.js',
         autocomplete_communes: './assets/autocomplete-communes.js',
+        transport_mode_vehicles: './assets/transport-mode-vehicles.js',
       },
     },
   },

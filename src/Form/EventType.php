@@ -144,6 +144,7 @@ class EventType extends AbstractType
                 'label' => 'Mode de transport principal',
                 'required' => false,
                 'class' => TransportModeEnum::class,
+                'choice_filter' => static fn (?TransportModeEnum $mode): bool => null !== $mode && !$mode->isObsolete(),
                 'attr' => [
                     'class' => 'type2 wide',
                     'style' => 'width: 97%',
@@ -470,6 +471,24 @@ class EventType extends AbstractType
                     'class' => 'mediumlink btn-blue blanc',
                 ],
             ])
+            ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
+                // Modes sans champ "nombre de véhicules" (train, bus, vélo) :
+                // on force la valeur à 1 pour éviter une donnée polluée envoyée hors UI.
+                // Si le mode n'est pas renseigné, on ne touche pas — l'utilisateur n'a pas validé son choix.
+                $data = $event->getData();
+                if (!\is_array($data)) {
+                    return;
+                }
+                $rawMode = $data['modeTransport'] ?? null;
+                if (null === $rawMode || '' === $rawMode) {
+                    return;
+                }
+                $mode = TransportModeEnum::tryFrom((string) $rawMode);
+                if (null !== $mode && !$mode->requiresVehicleCount()) {
+                    $data['nbVehicules'] = 1;
+                    $event->setData($data);
+                }
+            })
             ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
                 $form = $event->getForm();
 

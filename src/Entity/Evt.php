@@ -268,6 +268,11 @@ class Evt
     #[SerializedName('coutCarbone')]
     private ?float $coutCarbone = null;
 
+    #[ORM\Column(name: 'cout_carbone_per_person', type: Types::FLOAT, nullable: true)]
+    #[Groups('event:read')]
+    #[SerializedName('coutCarbonePerPerson')]
+    private ?float $coutCarbonePerPerson = null;
+
     public function __construct(
         ?User $user,
         ?Commission $commission,
@@ -1010,6 +1015,18 @@ class Evt
     public function setCoutCarbone(?float $coutCarbone): self
     {
         $this->coutCarbone = $coutCarbone;
+
+        return $this;
+    }
+
+    public function getCoutCarbonePerPerson(): ?float
+    {
+        return $this->coutCarbonePerPerson;
+    }
+
+    public function setCoutCarbonePerPerson(?float $coutCarbonePerPerson): self
+    {
+        $this->coutCarbonePerPerson = $coutCarbonePerPerson;
 
         return $this;
     }

@@ -30,6 +30,10 @@ class ImportCommunesCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        // 39 000 communes paginées par 1000 ; Sentry retient les spans HTTP par page,
+        // ce qui peut saturer le 128M par défaut de la CLI Clever Cloud.
+        ini_set('memory_limit', '512M');
+
         $io = new SymfonyStyle($input, $output);
         $io->title('Import des communes depuis l\'API La Poste');
 
@@ -61,7 +65,7 @@ class ImportCommunesCommand extends Command
                     'nom_commune' => $row['nom_de_la_commune'] ?? '',
                     'code_postal' => $row['code_postal'] ?? '',
                     'libelle_acheminement' => $row['libelle_d_acheminement'] ?? '',
-                    'ligne5' => null,
+                    'ligne5' => $row['ligne_5'] ?? null,
                     'geopoint' => $geopoint ?: null,
                     'latitude' => (float) $lat,
                     'longitude' => (float) $long,
@@ -72,6 +76,10 @@ class ImportCommunesCommand extends Command
             $url = $data['next'] ?? null;
 
             $io->write("\r  $total communes importées...");
+
+            // Libère la réponse HTTP et ses éventuels spans Sentry/Cache.
+            unset($response, $data, $results);
+            gc_collect_cycles();
         } while ($url);
 
         $io->newLine();

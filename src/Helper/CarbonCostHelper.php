@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Helper;
 
+use App\Entity\Evt;
 use App\Entity\TransportModeEnum;
 
 class CarbonCostHelper
@@ -18,7 +19,6 @@ class CarbonCostHelper
         float $bikeWalkRate,
         float $thermicCarpoolingRate,
         float $electricCarpoolingRate,
-        float $planeRate,
     ) {
         $this->rates = [
             TransportModeEnum::PUBLIC_TRAIN->value => $publicTrainRate,
@@ -28,33 +28,50 @@ class CarbonCostHelper
             TransportModeEnum::BIKE_OR_WALK->value => $bikeWalkRate,
             TransportModeEnum::THERMIC_CARPOOLING->value => $thermicCarpoolingRate,
             TransportModeEnum::ELECTRIC_CARPOOLING->value => $electricCarpoolingRate,
-            TransportModeEnum::PLANE->value => $planeRate,
         ];
     }
 
-    public function calculate(float $nbKm, int $nbPerson = 1, int $nbVehicules = 1, ?TransportModeEnum $transportMode = null): ?float
+    public function calculate(float $nbKm, int $nbPerson = 1, int $nbVehicules = 1, ?TransportModeEnum $transportMode = null): ?CarbonCost
     {
-        if (null === $transportMode) {
+        if (null === $transportMode || $transportMode->isObsolete()) {
             return null;
         }
 
         $rate = $this->rates[$transportMode->value] ?? 0;
-
         $globalCost = $nbKm * $rate;
-        if ($this->isCoefByPerson($transportMode)) {
-            $cost = $globalCost * max(1, $nbPerson);
+
+        if ($transportMode->requiresVehicleCount()) {
+            $total = $globalCost * max(1, $nbVehicules);
         } else {
-            $cost = $globalCost * max(1, $nbVehicules);
+            $total = $globalCost * max(1, $nbPerson);
         }
 
-        return round($cost, 2);
+        $perPerson = $total / max(1, $nbPerson);
+
+        return new CarbonCost(
+            total: round($total, 2),
+            perPerson: round($perPerson, 2),
+        );
     }
 
-    protected function isCoefByPerson(TransportModeEnum $transportMode): bool
+    /**
+     * Recalcule et stocke le bilan carbone sur l'entité Evt selon son état courant
+     * (nbKm, ngensMax, nb de véhicules, mode transport).
+     *
+     * Le coût/personne est figé sur le nombre max d'inscrits prévus (ngensMax), pas
+     * sur les inscrits réels — sinon l'affichage à l'ouverture des inscriptions
+     * (1 seul encadrant) donne une valeur très élevée qui décroît à chaque
+     * inscription. Décision validée avec Jacob Carbonel (commission carbone).
+     */
+    public function updateForEvent(Evt $event): void
     {
-        return match ($transportMode) {
-            TransportModeEnum::PUBLIC_TRAIN, TransportModeEnum::PUBLIC_COACH, TransportModeEnum::PLANE => true,
-            TransportModeEnum::DEDICATED_COACH, TransportModeEnum::THERMIC_CARPOOLING, TransportModeEnum::ELECTRIC_CARPOOLING, TransportModeEnum::BIKE_OR_WALK, TransportModeEnum::MINIVAN => false,
-        };
+        $cost = $this->calculate(
+            $event->getNbKm() ?: 0,
+            max(1, $event->getNgensMax() ?: 1),
+            $event->getNbVehicules() ?: 1,
+            $event->getModeTransport(),
+        );
+        $event->setCoutCarbone($cost?->total);
+        $event->setCoutCarbonePerPerson($cost?->perPerson);
     }
 }
