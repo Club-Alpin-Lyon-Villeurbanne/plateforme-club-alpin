@@ -31,6 +31,15 @@ class Commune
     #[ORM\Column(name: 'ligne5', type: Types::STRING, nullable: true)]
     private string $ligne5;
 
+    #[ORM\Column(name: 'geopoint', type: Types::STRING, nullable: true)]
+    private ?string $geopoint = null;
+
+    #[ORM\Column(name: 'latitude', type: Types::DECIMAL, precision: 11, scale: 8, nullable: false)]
+    private string|float $latitude = 0;
+
+    #[ORM\Column(name: 'longitude', type: Types::DECIMAL, precision: 11, scale: 8, nullable: false)]
+    private string|float $longitude = 0;
+
     public function __toString(): string
     {
         return $this->getNomCommune();
@@ -97,6 +106,42 @@ class Commune
     public function setLigne5(string $ligne5): self
     {
         $this->ligne5 = $ligne5;
+
+        return $this;
+    }
+
+    public function getGeopoint(): ?string
+    {
+        return $this->geopoint;
+    }
+
+    public function setGeopoint(?string $geopoint): self
+    {
+        $this->geopoint = $geopoint;
+
+        return $this;
+    }
+
+    public function getLatitude(): string|float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(string|float $latitude): self
+    {
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    public function getLongitude(): string|float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(string|float $longitude): self
+    {
+        $this->longitude = $longitude;
 
         return $this;
     }

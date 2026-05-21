@@ -69,6 +69,8 @@ class HelloAssoService
                 [
                     'label' => 'Frais d\'inscription',
                     'price' => (int) ($event->getPaymentAmount() * 100),        // prix en centimes
+                    // maxPayers volontairement absent : le formulaire HelloAsso est illimité,
+                    // la gestion des places est assurée par ngensMax côté plateforme.
                 ],
             ],
         ];

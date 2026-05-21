@@ -46,6 +46,8 @@ class Evt
     public const int STATUS_LEGAL_VALIDE = 1;
     public const int STATUS_LEGAL_REFUSE = 2;
 
+    public const int EXPENSE_REPORT_DEADLINE_DAYS = 120;
+
     #[ORM\Column(name: 'id_evt', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -140,12 +142,22 @@ class Evt
     #[ORM\Column(name: 'lat_evt', type: 'decimal', precision: 11, scale: 8, nullable: false)]
     #[Groups('event:details')]
     #[SerializedName('latitude')]
-    private string|float|null $lat;
+    private string|float $lat;
 
     #[ORM\Column(name: 'long_evt', type: 'decimal', precision: 11, scale: 8, nullable: false)]
     #[Groups('event:details')]
     #[SerializedName('longitude')]
-    private string|float|null $long;
+    private string|float $long;
+
+    #[ORM\Column(name: 'lat_depart', type: 'decimal', precision: 11, scale: 8, nullable: false)]
+    #[Groups('event:details')]
+    #[SerializedName('latitudeDepart')]
+    private string|float $latDepart;
+
+    #[ORM\Column(name: 'long_depart', type: 'decimal', precision: 11, scale: 8, nullable: false)]
+    #[Groups('event:details')]
+    #[SerializedName('longitudeDepart')]
+    private string|float $longDepart;
 
     #[ORM\Column(name: 'matos_evt', type: 'text', nullable: true)]
     #[Groups('event:details')]
@@ -236,6 +248,31 @@ class Evt
     #[SerializedName('waitingSeat')]
     private ?int $waitingSeat = null;
 
+    #[ORM\Column(name: 'mode_transport', type: Types::STRING, length: 50, nullable: true, enumType: TransportModeEnum::class)]
+    #[Groups('event:read')]
+    #[SerializedName('modeTransport')]
+    private ?TransportModeEnum $modeTransport = null;
+
+    #[ORM\Column(name: 'nb_vehicules', type: Types::INTEGER, nullable: false, options: ['default' => 1])]
+    #[Groups('event:read')]
+    #[SerializedName('nbVehicules')]
+    private int $nbVehicules;
+
+    #[ORM\Column(name: 'nb_km', type: Types::FLOAT, nullable: true)]
+    #[Groups('event:read')]
+    #[SerializedName('nbKm')]
+    private ?float $nbKm = null;
+
+    #[ORM\Column(name: 'cout_carbone', type: Types::FLOAT, nullable: true)]
+    #[Groups('event:read')]
+    #[SerializedName('coutCarbone')]
+    private ?float $coutCarbone = null;
+
+    #[ORM\Column(name: 'cout_carbone_per_person', type: Types::FLOAT, nullable: true)]
+    #[Groups('event:read')]
+    #[SerializedName('coutCarbonePerPerson')]
+    private ?float $coutCarbonePerPerson = null;
+
     public function __construct(
         ?User $user,
         ?Commission $commission,
@@ -258,6 +295,9 @@ class Evt
         $this->rdv = $rdv;
         $this->lat = $rdvLat;
         $this->long = $rdvLong;
+        $this->latDepart = 0.0;
+        $this->longDepart = 0.0;
+        $this->nbVehicules = 1;
         $this->description = $description;
         $this->joinMax = $maxInscriptions;
         $this->ngensMax = $maxParticipants;
@@ -360,7 +400,7 @@ class Evt
         return $this->statusLegalWho;
     }
 
-    public function setStatusLegalWho(User $statusLegalWho): self
+    public function setStatusLegalWho(?User $statusLegalWho): self
     {
         $this->statusLegalWho = $statusLegalWho;
 
@@ -577,6 +617,24 @@ class Evt
         return $this->endDate < new \DateTimeImmutable();
     }
 
+    public function isExpenseReportOpen(): bool
+    {
+        if (null === $this->endDate) {
+            return false;
+        }
+
+        return new \DateTimeImmutable() <= $this->endDate->modify(sprintf('+%d days', self::EXPENSE_REPORT_DEADLINE_DAYS));
+    }
+
+    public function isStarted(): bool
+    {
+        if (null === $this->startDate) {
+            return false;
+        }
+
+        return $this->startDate <= new \DateTimeImmutable();
+    }
+
     public function getPlace(): ?string
     {
         return $this->place;
@@ -685,24 +743,24 @@ class Evt
         return $this;
     }
 
-    public function getLat(): string|float|null
+    public function getLat(): string|float
     {
         return $this->lat;
     }
 
-    public function setLat(string|float|null $lat): self
+    public function setLat(string|float $lat): self
     {
         $this->lat = $lat;
 
         return $this;
     }
 
-    public function getLong(): string|float|null
+    public function getLong(): string|float
     {
         return $this->long;
     }
 
-    public function setLong(string|float|null $long): self
+    public function setLong(string|float $long): self
     {
         $this->long = $long;
 
@@ -913,6 +971,66 @@ class Evt
         return $this;
     }
 
+    public function getModeTransport(): ?TransportModeEnum
+    {
+        return $this->modeTransport;
+    }
+
+    public function setModeTransport(?TransportModeEnum $modeTransport): self
+    {
+        $this->modeTransport = $modeTransport;
+
+        return $this;
+    }
+
+    public function getNbVehicules(): int
+    {
+        return $this->nbVehicules;
+    }
+
+    public function setNbVehicules(int $nbVehicules): self
+    {
+        $this->nbVehicules = $nbVehicules;
+
+        return $this;
+    }
+
+    public function getNbKm(): ?float
+    {
+        return $this->nbKm;
+    }
+
+    public function setNbKm(?float $nbKm): self
+    {
+        $this->nbKm = $nbKm;
+
+        return $this;
+    }
+
+    public function getCoutCarbone(): ?float
+    {
+        return $this->coutCarbone;
+    }
+
+    public function setCoutCarbone(?float $coutCarbone): self
+    {
+        $this->coutCarbone = $coutCarbone;
+
+        return $this;
+    }
+
+    public function getCoutCarbonePerPerson(): ?float
+    {
+        return $this->coutCarbonePerPerson;
+    }
+
+    public function setCoutCarbonePerPerson(?float $coutCarbonePerPerson): self
+    {
+        $this->coutCarbonePerPerson = $coutCarbonePerPerson;
+
+        return $this;
+    }
+
     public function hasPaymentForm(): bool
     {
         return $this->hasPaymentForm;
@@ -1010,6 +1128,30 @@ class Evt
     public function setWaitingSeat(?int $waitingSeat): self
     {
         $this->waitingSeat = $waitingSeat;
+
+        return $this;
+    }
+
+    public function getLatDepart(): float|string
+    {
+        return $this->latDepart;
+    }
+
+    public function setLatDepart(float|string $latDepart): self
+    {
+        $this->latDepart = $latDepart;
+
+        return $this;
+    }
+
+    public function getLongDepart(): float|string
+    {
+        return $this->longDepart;
+    }
+
+    public function setLongDepart(float|string $longDepart): self
+    {
+        $this->longDepart = $longDepart;
 
         return $this;
     }
