@@ -37,6 +37,12 @@ class CarbonCostHelper
             return null;
         }
 
+        // nbKm non renseigné (échec OSRM, coords manquantes…) : pas de calcul plutôt
+        // que d'afficher un trompeur « 0,0 kg CO₂e ».
+        if ($nbKm <= 0) {
+            return null;
+        }
+
         $rate = $this->rates[$transportMode->value] ?? 0;
         $globalCost = $nbKm * $rate;
 

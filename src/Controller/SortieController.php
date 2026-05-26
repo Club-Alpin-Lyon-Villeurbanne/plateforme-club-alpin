@@ -307,14 +307,15 @@ class SortieController extends AbstractController
             }
             $event->setJoinMax($event->getNgensMax());
 
-            // bilan carbone : ne recalculer la distance que si les coordonnées ont changé
+            // bilan carbone : recalculer la distance si les coordonnées ont changé,
+            // ou si nbKm est vide (échec OSRM antérieur ou sortie d'avant la feature).
             $coordsChanged = !$isUpdate
                 || (float) $event->getLat() !== $originalEntityData['lat']
                 || (float) $event->getLong() !== $originalEntityData['long']
                 || (float) $event->getLatDepart() !== $originalEntityData['latDepart']
                 || (float) $event->getLongDepart() !== $originalEntityData['longDepart'];
 
-            if ($coordsChanged) {
+            if ($coordsChanged || !$event->getNbKm()) {
                 $nbKm = $distanceHelper->calculate($event);
                 // Conserver l'ancienne distance si l'appel OSRM échoue (retourne 0)
                 if ($nbKm > 0 || !$isUpdate) {
