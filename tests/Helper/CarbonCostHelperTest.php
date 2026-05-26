@@ -80,11 +80,13 @@ class CarbonCostHelperTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testCalculateZeroKmReturnsZero(): void
+    public function testCalculateZeroKmReturnsNull(): void
     {
-        $result = $this->helper->calculate(0, 5, 1, TransportModeEnum::PUBLIC_TRAIN);
-        $this->assertEquals(0.0, $result->total);
-        $this->assertEquals(0.0, $result->perPerson);
+        // nbKm=0 = donnée manquante (OSRM en échec, coords absentes…), pas un
+        // trajet valide à 0 km. On retourne null pour que le template masque le
+        // bloc plutôt que d'afficher un trompeur « 0,0 kg CO₂e ».
+        $this->assertNull($this->helper->calculate(0, 5, 1, TransportModeEnum::PUBLIC_TRAIN));
+        $this->assertNull($this->helper->calculate(0, 5, 1, TransportModeEnum::BIKE_OR_WALK));
     }
 
     public function testCalculateEnforcesMinimumOneForCounts(): void

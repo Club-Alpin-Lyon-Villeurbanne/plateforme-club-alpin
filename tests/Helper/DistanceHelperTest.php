@@ -55,27 +55,68 @@ class DistanceHelperTest extends TestCase
         $this->assertEquals(0.0, $result);
     }
 
-    public function testCalculateReturnsZeroOnHttpException(): void
+    public function testCalculateReturnsZeroAfterAllRetriesFail(): void
     {
-        $mockClient = new MockHttpClient([new MockResponse('', ['http_code' => 500])]);
+        // 3 tentatives (initiale + 2 retries) toutes en 500 → retourne 0
+        $mockClient = new MockHttpClient([
+            new MockResponse('', ['http_code' => 500]),
+            new MockResponse('', ['http_code' => 500]),
+            new MockResponse('', ['http_code' => 500]),
+        ]);
         $logger = $this->createMock(LoggerInterface::class);
-        $logger->expects($this->once())->method('error');
 
         $helper = new DistanceHelper($mockClient, $logger);
         $result = $helper->calculate($this->createEvent());
 
         $this->assertEquals(0.0, $result);
+        $this->assertSame(3, $mockClient->getRequestsCount(), 'doit avoir tenté 3 fois');
     }
 
     public function testCalculateLogsErrorOnFailure(): void
     {
-        $mockClient = new MockHttpClient([new MockResponse('', ['http_code' => 500])]);
+        $mockClient = new MockHttpClient([
+            new MockResponse('', ['http_code' => 500]),
+            new MockResponse('', ['http_code' => 500]),
+            new MockResponse('', ['http_code' => 500]),
+        ]);
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())->method('error')
             ->with($this->stringContains('OSRM distance calculation failed'));
 
         $helper = new DistanceHelper($mockClient, $logger);
         $helper->calculate($this->createEvent());
+    }
+
+    public function testCalculateRetriesOnTransientFailureThenSucceeds(): void
+    {
+        // 2 échecs 503 puis succès → le retry doit récupérer la distance
+        $successBody = json_encode(['routes' => [['distance' => 50000]]]);
+        $mockClient = new MockHttpClient([
+            new MockResponse('', ['http_code' => 503]),
+            new MockResponse('', ['http_code' => 503]),
+            new MockResponse($successBody),
+        ]);
+        $logger = $this->createMock(LoggerInterface::class);
+        $logger->expects($this->never())->method('error');
+
+        $helper = new DistanceHelper($mockClient, $logger);
+        $result = $helper->calculate($this->createEvent());
+
+        $this->assertEquals(100.0, $result);
+        $this->assertSame(3, $mockClient->getRequestsCount());
+    }
+
+    public function testCalculateDoesNotRetryOnEmptyRoutes(): void
+    {
+        // 200 avec routes vides = réponse légitime → pas de retry
+        $responseBody = json_encode(['routes' => []]);
+        $mockClient = new MockHttpClient([new MockResponse($responseBody)]);
+        $logger = $this->createMock(LoggerInterface::class);
+
+        $helper = new DistanceHelper($mockClient, $logger);
+        $helper->calculate($this->createEvent());
+
+        $this->assertSame(1, $mockClient->getRequestsCount(), 'ne doit pas retenter sur 200 sans route');
     }
 
     public function testCalculateReturnsZeroOnZeroDepartureCoords(): void
