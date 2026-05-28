@@ -60,6 +60,11 @@ class PaymentController extends AbstractController
             return new Response('Signature invalide.', Response::HTTP_FORBIDDEN);
         }
 
+        // Risque résiduel assumé : la signature (reservation_id|amount) n'ayant ni timestamp ni nonce,
+        // le lien est rejouable et un adhérent peut repasser par HelloAsso et payer deux fois. Pas de
+        // garde-fou ici pour préserver le bridge stateless : le club n'est pas lésé (il encaisse les deux,
+        // HelloAsso est gratuit), Loxya reste cohérent (PUT idempotent), seul l'adhérent est remboursé à
+        // la main. Cas rare vu les montants/volumes ; à réévaluer si les doublons deviennent fréquents.
         try {
             $result = $this->helloAssoClient->createCheckoutIntent($this->helloAssoOrganizationSlug, [
                 'totalAmount' => $amount,
