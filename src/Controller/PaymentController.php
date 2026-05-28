@@ -19,7 +19,6 @@ class PaymentController extends AbstractController
         private readonly string $helloAssoServerIp,
         private readonly string $helloAssoSignatureKey,
         private readonly string $helloAssoOrganizationSlug,
-        private readonly string $loxyaJwt,
         private readonly string $loxyaLinkSignatureKey,
         private readonly HelloAssoClient $helloAssoClient,
         private readonly LoxyaReservationService $loxyaReservationService,
@@ -29,8 +28,7 @@ class PaymentController extends AbstractController
 
     private function isEnabled(): bool
     {
-        return '' !== $this->loxyaJwt
-            && '' !== $this->loxyaLinkSignatureKey
+        return '' !== $this->loxyaLinkSignatureKey
             && '' !== $this->helloAssoSignatureKey;
     }
 

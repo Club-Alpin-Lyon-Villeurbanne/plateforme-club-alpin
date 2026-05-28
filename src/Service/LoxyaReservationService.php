@@ -12,7 +12,7 @@ class LoxyaReservationService
 
     public function __construct(
         private readonly string $loxyaBaseUrl,
-        private readonly string $loxyaJwt,
+        private readonly LoxyaAuthenticator $authenticator,
         private readonly HttpClientInterface $httpClient,
         private readonly LoggerInterface $logger,
     ) {
@@ -30,7 +30,7 @@ class LoxyaReservationService
 
         $response = $this->httpClient->request('PUT', $url, [
             'headers' => [
-                'Authorization' => 'Bearer ' . $this->loxyaJwt,
+                'Authorization' => 'Bearer ' . $this->authenticator->getToken(),
                 'Content-Type' => 'application/json',
                 'accept' => 'application/json',
             ],

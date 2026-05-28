@@ -2,6 +2,7 @@
 
 namespace App\Tests\Service;
 
+use App\Service\LoxyaAuthenticator;
 use App\Service\LoxyaReservationService;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -19,9 +20,12 @@ class LoxyaReservationServiceTest extends TestCase
         $this->httpClient = $this->createMock(HttpClientInterface::class);
         $this->logger = $this->createMock(LoggerInterface::class);
 
+        $authenticator = $this->createMock(LoxyaAuthenticator::class);
+        $authenticator->method('getToken')->willReturn('session-jwt-token');
+
         $this->service = new LoxyaReservationService(
             'https://materiel.example.com',
-            'static-jwt-token',
+            $authenticator,
             $this->httpClient,
             $this->logger,
         );
@@ -38,7 +42,7 @@ class LoxyaReservationServiceTest extends TestCase
                 'PUT',
                 'https://materiel.example.com/api/reservations/42',
                 $this->callback(function (array $options) {
-                    return 'Bearer static-jwt-token' === $options['headers']['Authorization']
+                    return 'Bearer session-jwt-token' === $options['headers']['Authorization']
                         && LoxyaReservationService::RESERVATION_PAID_COLOR === $options['json']['color']
                         && 'Paiement Helloasso n°HA-12345' === $options['json']['note'];
                 })
