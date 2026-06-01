@@ -8,6 +8,7 @@ use App\Entity\Evt;
 use App\Entity\User;
 use App\Repository\EvtRepository;
 use App\Repository\UserRepository;
+use App\Service\LoxyaReservationService;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,6 +25,7 @@ class HelloAssoWebhookController extends AbstractController
         protected readonly EntityManagerInterface $entityManager,
         protected readonly EvtRepository $eventRepository,
         protected readonly UserRepository $userRepository,
+        protected readonly LoxyaReservationService $loxyaReservationService,
     ) {
     }
 
@@ -43,24 +45,26 @@ class HelloAssoWebhookController extends AbstractController
             return new Response('Invalid IP', Response::HTTP_BAD_REQUEST);
         }
 
-        // vérification signature
-        $requestHeader = $request->headers->all();
-        if (!\in_array('x-ha-signature', array_keys($requestHeader), true)) {
-            $this->logger->error('HelloAsso Webhook - Missing signature', [
-                $requestContent,
-            ]);
+        // vérification signature (optionnelle) : HelloAsso ne signe pas les notifications des comptes
+        // non-partenaires. On ne vérifie que si une clé est configurée ET qu'une signature est fournie
+        // (défense en profondeur) ; sinon l'authenticité repose sur l'allowlist d'IP ci-dessus.
+        $signature = $request->headers->get('x-ha-signature');
+        if ('' !== $this->helloAssoSignatureKey && null !== $signature) {
+            $calculatedSignature = hash_hmac('sha256', $request->getContent(), $this->helloAssoSignatureKey);
+            if (!hash_equals($signature, $calculatedSignature)) {
+                $this->logger->error('HelloAsso Webhook - Signature mismatch', [
+                    'payload' => $requestContent,
+                ]);
 
-            return new Response('Missing signature', Response::HTTP_BAD_REQUEST);
+                return new Response('Signature mismatch', Response::HTTP_OK);
+            }
         }
 
-        $signature = $requestHeader['x-ha-signature'][0];
-        $calculatedSignature = hash_hmac('sha256', $request->getContent(), $this->helloAssoSignatureKey);
-        if (!hash_equals($signature, $calculatedSignature)) {
-            $this->logger->error('HelloAsso Webhook - Signature mismatch', [
-                'payload' => $requestContent,
-            ]);
-
-            return new Response('Signature mismatch', Response::HTTP_OK);
+        // Paiement de location de matériel : identifié par metadata.reservation_id (injecté dans le
+        // checkout-intent par PaymentController::checkout). HelloAsso n'autorisant qu'une URL de notif
+        // par organisation, ces paiements arrivent sur la même URL que les inscriptions événements.
+        if (isset($requestContent['metadata']['reservation_id'])) {
+            return $this->handleMaterialReservationPayment($requestContent);
         }
 
         $requestData = $requestContent['data'] ?? [];
@@ -149,6 +153,52 @@ class HelloAssoWebhookController extends AbstractController
         ]);
 
         // on retourne une 200 même en cas d'erreur pour ne pas que HelloAsso renvoie plusieurs fois la notification
+        return new Response('OK', Response::HTTP_OK);
+    }
+
+    /**
+     * Marque la réservation Loxya comme payée à partir d'une notification de paiement matériel.
+     * Renvoie 503 si Loxya échoue, pour que HelloAsso retente (le PUT Loxya est idempotent).
+     */
+    private function handleMaterialReservationPayment(array $payload): Response
+    {
+        $eventType = $payload['eventType'] ?? null;
+        $state = $payload['data']['state'] ?? null;
+
+        if ('Payment' !== $eventType || 'Authorized' !== $state) {
+            $this->logger->info('HelloAsso Webhook - Loxya : notification ignorée', [
+                'eventType' => $eventType,
+                'state' => $state,
+            ]);
+
+            return new Response('OK', Response::HTTP_OK);
+        }
+
+        $reservationId = filter_var($payload['metadata']['reservation_id'] ?? null, FILTER_VALIDATE_INT, [
+            'options' => ['min_range' => 1],
+        ]);
+        $helloAssoPaymentId = $payload['data']['id'] ?? null;
+
+        if (false === $reservationId
+            || (!\is_string($helloAssoPaymentId) && !\is_int($helloAssoPaymentId))
+            || '' === (string) $helloAssoPaymentId
+        ) {
+            $this->logger->error('HelloAsso Webhook - Loxya : reservation_id ou payment id invalide');
+
+            return new Response('OK', Response::HTTP_OK);
+        }
+
+        try {
+            $this->loxyaReservationService->markReservationAsPaid($reservationId, (string) $helloAssoPaymentId);
+        } catch (\Exception $e) {
+            $this->logger->error('HelloAsso Webhook - Loxya update failed, HelloAsso will retry', [
+                'reservationId' => $reservationId,
+                'error' => $e->getMessage(),
+            ]);
+
+            return new Response('Loxya update failed', Response::HTTP_SERVICE_UNAVAILABLE);
+        }
+
         return new Response('OK', Response::HTTP_OK);
     }
 }
