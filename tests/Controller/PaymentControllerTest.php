@@ -105,7 +105,7 @@ class PaymentControllerTest extends WebTestCase
         $client->request('GET', '/paiement?reservation_id=42&amount=3500&signature=' . $signature);
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h2', 'Erreur de paiement');
+        $this->assertSelectorTextContains('.pay-badge', 'Pépin technique');
     }
 
     public function testCheckoutRejectsRedirectOnNonHelloAssoHost(): void
@@ -123,7 +123,7 @@ class PaymentControllerTest extends WebTestCase
         $client->request('GET', '/paiement?reservation_id=42&amount=3500&signature=' . $signature);
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h2', 'Erreur de paiement');
+        $this->assertSelectorTextContains('.pay-badge', 'Pépin technique');
     }
 
     public function testCheckoutRejectsRedirectOnNonHttpsScheme(): void
@@ -141,7 +141,7 @@ class PaymentControllerTest extends WebTestCase
         $client->request('GET', '/paiement?reservation_id=42&amount=3500&signature=' . $signature);
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h2', 'Erreur de paiement');
+        $this->assertSelectorTextContains('.pay-badge', 'Pépin technique');
     }
 
     public function testCheckoutRejectsRedirectWithUserinfo(): void
@@ -159,7 +159,7 @@ class PaymentControllerTest extends WebTestCase
         $client->request('GET', '/paiement?reservation_id=42&amount=3500&signature=' . $signature);
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h2', 'Erreur de paiement');
+        $this->assertSelectorTextContains('.pay-badge', 'Pépin technique');
     }
 
     public function testCheckoutAcceptsRedirectOnHelloAssoSandboxHost(): void
@@ -326,7 +326,7 @@ class PaymentControllerTest extends WebTestCase
         $client->request('GET', '/paiement/retour?code=succeeded');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h2', 'Paiement confirmé');
+        $this->assertSelectorTextContains('.pay-badge', 'Paiement confirmé');
     }
 
     public function testReturnPageRendersErrorWithoutCode(): void
@@ -335,7 +335,7 @@ class PaymentControllerTest extends WebTestCase
         $client->request('GET', '/paiement/retour');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h2', 'Paiement échoué');
+        $this->assertSelectorTextContains('.pay-badge', 'Paiement échoué');
     }
 
     public function testCancelPageRenders(): void
@@ -344,7 +344,7 @@ class PaymentControllerTest extends WebTestCase
         $client->request('GET', '/paiement/annuler');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h2', 'Paiement annulé');
+        $this->assertSelectorTextContains('.pay-badge', 'Paiement annulé');
     }
 
     public function testErrorPageRenders(): void
@@ -353,6 +353,6 @@ class PaymentControllerTest extends WebTestCase
         $client->request('GET', '/paiement/erreur');
 
         $this->assertResponseIsSuccessful();
-        $this->assertSelectorTextContains('h2', 'Erreur de paiement');
+        $this->assertSelectorTextContains('.pay-badge', 'Pépin technique');
     }
 }
