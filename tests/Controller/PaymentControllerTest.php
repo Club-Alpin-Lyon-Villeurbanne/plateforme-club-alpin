@@ -218,17 +218,30 @@ class PaymentControllerTest extends WebTestCase
         $this->assertEmpty($client->getResponse()->getContent());
     }
 
-    public function testWebhookRejectsMissingSignature(): void
+    public function testWebhookAcceptsMissingSignatureWhenIpValid(): void
     {
+        // Signature optionnelle : sans header de signature mais avec une IP valide, le webhook
+        // est traité (HelloAsso ne signe pas les notifications des comptes non-partenaires).
         $client = static::createClient();
-        $payload = json_encode(['eventType' => 'Payment']);
+
+        $loxyaService = $this->createMock(LoxyaReservationService::class);
+        $loxyaService->expects($this->once())
+            ->method('markReservationAsPaid')
+            ->with(42, '99999');
+        $client->getContainer()->set(LoxyaReservationService::class, $loxyaService);
+
+        $payload = json_encode([
+            'eventType' => 'Payment',
+            'data' => ['id' => '99999', 'state' => 'Authorized'],
+            'metadata' => ['reservation_id' => 42],
+        ]);
 
         $client->request('POST', '/webhook/paiement', [], [], [
             'CONTENT_TYPE' => 'application/json',
             'REMOTE_ADDR' => self::WEBHOOK_SERVER_IP,
         ], $payload);
 
-        $this->assertResponseStatusCodeSame(400);
+        $this->assertResponseStatusCodeSame(200);
     }
 
     public function testWebhookRejectsInvalidSignature(): void

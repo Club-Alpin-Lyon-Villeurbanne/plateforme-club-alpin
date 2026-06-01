@@ -28,8 +28,11 @@ class PaymentController extends AbstractController
 
     private function isEnabled(): bool
     {
-        return '' !== $this->loxyaLinkSignatureKey
-            && '' !== $this->helloAssoSignatureKey;
+        // La clé de signature du lien (partagée avec Loxya) est le seul secret obligatoire :
+        // c'est elle qui authentifie l'entrée du tunnel (page /paiement). La signature du
+        // webhook HelloAsso est optionnelle (cf. webhook()) car HelloAsso ne signe pas les
+        // notifications des comptes non-partenaires — le webhook s'appuie alors sur l'IP.
+        return '' !== $this->loxyaLinkSignatureKey;
     }
 
     #[Route(path: '/paiement', name: 'payment_checkout', methods: ['GET'])]
@@ -101,8 +104,9 @@ class PaymentController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        // Ordre des vérifs : IP → signature → décodage JSON. Aucun payload non authentifié n'est loggé.
-        // Réponse générique (403 sans body) sur les vérifs auth pour ne pas guider un scan.
+        // Ordre des vérifs : IP → signature (optionnelle) → décodage JSON. Aucun payload non authentifié
+        // n'est loggé. Réponse générique (403 sans body) sur les vérifs auth pour ne pas guider un scan.
+        // L'IP HelloAsso est ici le garde principal (allowlist).
         if ($this->helloAssoServerIp !== $request->getClientIp()) {
             $this->logger->error('Payment webhook - Invalid IP', [
                 'ip' => $request->getClientIp(),
@@ -111,19 +115,19 @@ class PaymentController extends AbstractController
             return new Response('', Response::HTTP_FORBIDDEN);
         }
 
-        $signatureHeader = $request->headers->get('x-ha-signature');
-        if (null === $signatureHeader) {
-            $this->logger->error('Payment webhook - Missing signature');
-
-            return new Response('Missing signature', Response::HTTP_BAD_REQUEST);
-        }
-
         $rawContent = $request->getContent();
-        $calculatedSignature = hash_hmac('sha256', $rawContent, $this->helloAssoSignatureKey);
-        if (!hash_equals($calculatedSignature, $signatureHeader)) {
-            $this->logger->error('Payment webhook - Signature mismatch');
 
-            return new Response('Signature mismatch', Response::HTTP_FORBIDDEN);
+        // Signature optionnelle : HelloAsso ne signe pas les webhooks pour les comptes non-partenaires.
+        // Défense en profondeur : on ne vérifie la signature que si une clé est configurée ET qu'une
+        // signature est fournie. Sinon, l'authenticité repose sur l'allowlist d'IP vérifiée ci-dessus.
+        $signatureHeader = $request->headers->get('x-ha-signature');
+        if ('' !== $this->helloAssoSignatureKey && null !== $signatureHeader) {
+            $calculatedSignature = hash_hmac('sha256', $rawContent, $this->helloAssoSignatureKey);
+            if (!hash_equals($calculatedSignature, $signatureHeader)) {
+                $this->logger->error('Payment webhook - Signature mismatch');
+
+                return new Response('Signature mismatch', Response::HTTP_FORBIDDEN);
+            }
         }
 
         $payload = json_decode($rawContent, true);
