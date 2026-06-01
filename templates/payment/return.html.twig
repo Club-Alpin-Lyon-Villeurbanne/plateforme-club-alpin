@@ -1,40 +1,100 @@
 {% extends 'payment/base.html.twig' %}
 
 {% block title %}
-    {% if status == 'success' %}Paiement confirmé{% elseif status == 'cancel' %}Paiement annulé{% else %}Paiement échoué{% endif %}
+    {%- if status == 'success' %}Au sommet !{% elseif status == 'cancel' %}Paiement annulé{% else %}Paiement échoué{% endif -%}
+{% endblock %}
+
+{% block page_styles %}
+<style>
+    .pay-hero--summit{height:236px;}
+    .summit-sky{position:absolute; inset:0; background:linear-gradient(180deg,#15233f 0%,#2c477a 42%,#6f6f9e 70%,#f4a06a 100%);}
+    .summit-glow{position:absolute; left:58%; bottom:96px; width:240px; height:240px; transform:translateX(-50%); border-radius:50%;
+        background:radial-gradient(circle, rgba(255,196,110,.55) 0%, rgba(255,196,110,0) 62%); z-index:1;}
+    .summit-sun{position:absolute; left:58%; bottom:118px; width:62px; height:62px; transform:translateX(-50%); border-radius:50%;
+        background:radial-gradient(circle at 50% 42%, #fff3c7 0%, #ffd36b 52%, #ffb24d 100%);
+        box-shadow:0 0 34px 8px rgba(255,193,90,.55); z-index:2; opacity:1;
+        animation:sunRise 1.2s cubic-bezier(.22,1,.36,1) .1s both;}
+    .summit-ridge{position:absolute; inset:0; width:100%; height:100%; display:block; opacity:1;}
+    .ridge-back{z-index:3; animation:ridgeRise 1s ease .15s both;}
+    .ridge-mid{z-index:4; animation:ridgeRise 1s ease .3s both;}
+    .ridge-front{z-index:5; animation:ridgeRise 1s ease .45s both;}
+    .summit-flag{position:absolute; left:50%; bottom:150px; transform:translateX(-50%); z-index:6; transform-origin:bottom center;
+        animation:flagPlant .7s cubic-bezier(.34,1.56,.64,1) .62s both;}
+    .summit-flag .pennant{transform-origin:6px 12px; animation:pennantWave 2.8s ease-in-out 1.4s infinite;}
+
+    .fade-up{animation:fadeUp .7s ease both;}
+    .fade-up.d1{animation-delay:.75s;} .fade-up.d2{animation-delay:.88s;}
+    .fade-up.d3{animation-delay:1.0s;} .fade-up.d4{animation-delay:1.15s;}
+
+    @keyframes sunRise{0%{transform:translateX(-50%) translateY(42px) scale(.8); opacity:0;} 100%{transform:translateX(-50%) translateY(0) scale(1); opacity:1;}}
+    @keyframes ridgeRise{0%{transform:translateY(56px); opacity:0;} 100%{transform:translateY(0); opacity:1;}}
+    @keyframes flagPlant{0%{transform:translateX(-50%) scaleY(0); opacity:0;} 60%{transform:translateX(-50%) scaleY(1.08);} 100%{transform:translateX(-50%) scaleY(1); opacity:1;}}
+    @keyframes pennantWave{0%,100%{transform:skewY(0deg) scaleX(1);} 50%{transform:skewY(-5deg) scaleX(.93);}}
+    @keyframes fadeUp{0%{transform:translateY(14px); opacity:0;} 100%{transform:translateY(0); opacity:1;}}
+
+    @media (prefers-reduced-motion: reduce){
+        .summit-sun,.summit-ridge,.summit-flag,.summit-flag .pennant,.fade-up{animation:none !important;}
+        .summit-sun,.summit-flag{transform:translateX(-50%) !important;}
+    }
+</style>
+{% endblock %}
+
+{% block hero %}
+    {% if status == 'success' %}
+    <div class="pay-hero pay-hero--summit" aria-hidden="true">
+        <div class="summit-sky"></div>
+        <div class="summit-glow"></div>
+        <div class="summit-sun"></div>
+        <svg class="summit-ridge ridge-back" viewBox="0 0 460 236" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 236 L40 116 L92 146 L150 96 L210 126 L230 78 L262 122 L322 92 L382 134 L432 108 L460 136 L460 236 Z" fill="#8aa2c8" opacity=".8"/>
+        </svg>
+        <svg class="summit-ridge ridge-mid" viewBox="0 0 460 236" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 236 L62 156 L122 178 L186 124 L230 86 L286 130 L352 156 L412 132 L460 160 L460 236 Z" fill="#4c6a96"/>
+            <path d="M230 86 L249 116 L211 116 Z" fill="#f6fbff" opacity=".95"/>
+            <path d="M186 124 L198 144 L174 144 Z" fill="#f6fbff" opacity=".75"/>
+        </svg>
+        <svg class="summit-ridge ridge-front" viewBox="0 0 460 236" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0 236 L72 182 L142 200 L222 172 L302 196 L382 178 L460 200 L460 236 Z" fill="#26395b"/>
+        </svg>
+        <div class="summit-flag">
+            <svg width="34" height="60" viewBox="0 0 34 60" xmlns="http://www.w3.org/2000/svg">
+                <line x1="6" y1="3" x2="6" y2="60" stroke="#2f2a24" stroke-width="3" stroke-linecap="round"/>
+                <path class="pennant" d="M7 5 L31 12 L7 21 Z" fill="#df6a43"/>
+            </svg>
+        </div>
+    </div>
+    {% else %}
+        {{ parent() }}
+    {% endif %}
 {% endblock %}
 
 {% block body %}
     {% if status == 'success' %}
-        <div class="text-center">
-            <div class="text-success mb-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"/>
-                </svg>
-            </div>
-            <h2 class="h5 mb-3">Paiement confirmé</h2>
-            <p class="text-muted">Votre paiement a bien été enregistré. Vous pouvez fermer cette page.</p>
-        </div>
+        <span class="pay-badge pay-badge--ok fade-up d1">✓ Paiement confirmé</span>
+        <h1 class="pay-title fade-up d1">Au sommet ! 🏔️</h1>
+        <p class="pay-lead fade-up d2">Ton paiement est bien passé et ton matos t'attend. Y'a plus qu'à enfiler les chaussures — bonne course&nbsp;!</p>
+        <p class="pay-note fade-up d3">Tu peux fermer cette page tranquille.</p>
+        <a class="pay-cta fade-up d4" href="/">Retour sur le site</a>
     {% elseif status == 'cancel' %}
-        <div class="text-center">
-            <div class="text-warning mb-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
-                    <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
-                </svg>
-            </div>
-            <h2 class="h5 mb-3">Paiement annulé</h2>
-            <p class="text-muted">Vous avez annulé le paiement. Vous pouvez réessayer depuis le lien de réservation.</p>
+        <div class="pay-icon pay-icon--warn">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+                <path d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708"/>
+            </svg>
         </div>
+        <span class="pay-badge pay-badge--warn">Paiement annulé</span>
+        <h1 class="pay-title">Pas de souci !</h1>
+        <p class="pay-lead">Tu n'as rien payé. Quand tu veux, tu peux relancer la résa depuis ton lien.</p>
+        <a class="pay-cta" href="/">Retour sur le site</a>
     {% else %}
-        <div class="text-center">
-            <div class="text-danger mb-3">
-                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 16 16">
-                    <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
-                </svg>
-            </div>
-            <h2 class="h5 mb-3">Paiement échoué</h2>
-            <p class="text-muted">Le paiement n'a pas abouti. Vous pouvez réessayer depuis le lien de réservation.</p>
+        <div class="pay-icon pay-icon--err">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" viewBox="0 0 16 16">
+                <path d="M8.982 1.566a1.13 1.13 0 0 0-1.96 0L.165 13.233c-.457.778.091 1.767.98 1.767h13.713c.889 0 1.438-.99.98-1.767zM8 5c.535 0 .954.462.9.995l-.35 3.507a.552.552 0 0 1-1.1 0L7.1 5.995A.905.905 0 0 1 8 5m.002 6a1 1 0 1 1 0 2 1 1 0 0 1 0-2"/>
+            </svg>
         </div>
+        <span class="pay-badge pay-badge--err">Paiement échoué</span>
+        <h1 class="pay-title">Aïe, ça a glissé</h1>
+        <p class="pay-lead">Le paiement n'a pas abouti. Tu peux réessayer depuis ton lien de réservation.</p>
+        <a class="pay-cta" href="/">Retour sur le site</a>
     {% endif %}
 {% endblock %}
