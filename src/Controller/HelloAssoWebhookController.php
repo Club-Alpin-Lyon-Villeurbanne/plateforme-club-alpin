@@ -56,7 +56,7 @@ class HelloAssoWebhookController extends AbstractController
                     'payload' => $requestContent,
                 ]);
 
-                return new Response('Signature mismatch', Response::HTTP_OK);
+                return new Response('', Response::HTTP_FORBIDDEN);
             }
         }
 

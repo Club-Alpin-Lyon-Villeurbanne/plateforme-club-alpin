@@ -126,7 +126,7 @@ class PaymentController extends AbstractController
             if (!hash_equals($calculatedSignature, $signatureHeader)) {
                 $this->logger->error('Payment webhook - Signature mismatch');
 
-                return new Response('Signature mismatch', Response::HTTP_FORBIDDEN);
+                return new Response('', Response::HTTP_FORBIDDEN);
             }
         }
 
