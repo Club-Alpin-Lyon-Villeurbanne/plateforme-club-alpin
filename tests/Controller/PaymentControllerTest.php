@@ -169,14 +169,14 @@ class PaymentControllerTest extends WebTestCase
         $helloAssoClient = $this->createMock(HelloAssoClient::class);
         $helloAssoClient->method('createCheckoutIntent')->willReturn([
             'id' => 123,
-            'redirectUrl' => 'https://checkout-sandbox.helloasso.com/public/gateway/start/abc',
+            'redirectUrl' => 'https://www.helloasso-sandbox.com/associations/mon-asso/checkout/abc',
         ]);
         $client->getContainer()->set(HelloAssoClient::class, $helloAssoClient);
 
         $signature = self::signLink(42, 3500);
         $client->request('GET', '/paiement?reservation_id=42&amount=3500&signature=' . $signature);
 
-        $this->assertResponseRedirects('https://checkout-sandbox.helloasso.com/public/gateway/start/abc');
+        $this->assertResponseRedirects('https://www.helloasso-sandbox.com/associations/mon-asso/checkout/abc');
     }
 
     public function testCheckoutRejectsMissingSignature(): void

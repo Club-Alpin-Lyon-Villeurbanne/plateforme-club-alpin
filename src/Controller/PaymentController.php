@@ -230,8 +230,10 @@ class PaymentController extends AbstractController
 
     // Defense in depth : on n'accepte un redirect HelloAsso que si l'URL est en HTTPS,
     // ne contient pas de userinfo (https://attacker@helloasso.com/...) et que l'host est
-    // helloasso.com ou un sous-domaine (sandbox compris). Le suffixe est littéral, donc
-    // aucun risque d'homographe punycode (helloasso.com ASCII).
+    // helloasso.com ou helloasso-sandbox.com (ou un sous-domaine de l'un des deux). Le
+    // sandbox utilise l'apex helloasso-sandbox.com (ex. www.helloasso-sandbox.com), distinct
+    // de helloasso.com — sans lui, aucun test de bout en bout en sandbox n'est possible.
+    // Le suffixe est littéral, donc aucun risque d'homographe punycode (ASCII).
     private static function isHelloAssoUrl(string $url): bool
     {
         $parsed = parse_url($url);
@@ -249,6 +251,12 @@ class PaymentController extends AbstractController
             return false;
         }
 
-        return 'helloasso.com' === $host || str_ends_with($host, '.helloasso.com');
+        foreach (['helloasso.com', 'helloasso-sandbox.com'] as $domain) {
+            if ($host === $domain || str_ends_with($host, '.' . $domain)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
