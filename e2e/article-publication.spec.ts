@@ -31,8 +31,7 @@ test("Publication d'un article (creation + moderation)", async ({ browser }) => 
 
   await adminPage.goto('/gestion-des-articles.html');
 
-  // Cible l'article via son titre unique : .first() publierait le premier article
-  // en attente (pas forcément celui-ci) → faux positif si d'autres sont en attente.
+  // Cible par titre unique (pas .first(), qui publierait un autre article en attente).
   const articleCard = adminPage.locator('.encart_article_small', { hasText: articleTitle });
   await expect(articleCard).toBeVisible({ timeout: 5_000 });
 

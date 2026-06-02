@@ -22,18 +22,14 @@ jobs:
       - name: Prepare test env file
         run: cp .env.test.example .env.test
 
-      # Pin the Playwright image to the version locked in package-lock.json so the
-      # preinstalled browsers match exactly.
+      # Version épinglée sur package-lock.json pour matcher les navigateurs de l'image.
       - name: Resolve Playwright version
         id: pw
         run: echo "version=$(jq -r '.packages["node_modules/@playwright/test"].version' package-lock.json)" >> "$GITHUB_OUTPUT"
 
-      # Run the tests inside the official Playwright image: the browsers are preinstalled,
-      # so we avoid the cdn.playwright.dev download that stalls at 100% on GitHub-hosted
-      # runners (it used to hang the job for the full 30 min, tests never running).
-      # --network host lets the tests reach the app started on the host (localhost:8000).
-      # --ipc=host évite les crashs Chromium dus à un /dev/shm trop petit (reco Playwright).
-      # La version passe par une variable d'env (pas d'interpolation ${{ }} dans le shell).
+      # Image officielle Playwright : navigateurs pré-installés → aucun download (celui de
+      # cdn.playwright.dev hangeait le job). --network host pour joindre l'app sur :8000,
+      # --ipc=host pour éviter les crashs Chromium (/dev/shm).
       - name: Run Playwright tests
         timeout-minutes: 20
         env:
