@@ -45,9 +45,7 @@ class HelloAssoWebhookController extends AbstractController
             return new Response('Invalid IP', Response::HTTP_BAD_REQUEST);
         }
 
-        // vérification signature (optionnelle) : HelloAsso ne signe pas les notifications des comptes
-        // non-partenaires. On ne vérifie que si une clé est configurée ET qu'une signature est fournie
-        // (défense en profondeur) ; sinon l'authenticité repose sur l'allowlist d'IP ci-dessus.
+        // Signature vérifiée seulement si clé + header présents (HelloAsso ne signe pas les comptes non-partenaires).
         $signature = $request->headers->get('x-ha-signature');
         if ('' !== $this->helloAssoSignatureKey && null !== $signature) {
             $calculatedSignature = hash_hmac('sha256', $request->getContent(), $this->helloAssoSignatureKey);
@@ -60,9 +58,8 @@ class HelloAssoWebhookController extends AbstractController
             }
         }
 
-        // Paiement de location de matériel : identifié par metadata.reservation_id (injecté dans le
-        // checkout-intent par PaymentController::checkout). HelloAsso n'autorisant qu'une URL de notif
-        // par organisation, ces paiements arrivent sur la même URL que les inscriptions événements.
+        // Paiement matériel (metadata.reservation_id) : HelloAsso n'ayant qu'une URL de notif par orga,
+        // il arrive ici comme les inscriptions événements.
         if (isset($requestContent['metadata']['reservation_id'])) {
             return $this->handleMaterialReservationPayment($requestContent);
         }

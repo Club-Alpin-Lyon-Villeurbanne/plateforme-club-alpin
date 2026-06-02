@@ -28,10 +28,7 @@ class PaymentController extends AbstractController
 
     private function isEnabled(): bool
     {
-        // La clé de signature du lien (partagée avec Loxya) est le seul secret obligatoire :
-        // c'est elle qui authentifie l'entrée du tunnel (page /paiement). La signature du
-        // webhook HelloAsso est optionnelle (cf. webhook()) car HelloAsso ne signe pas les
-        // notifications des comptes non-partenaires — le webhook s'appuie alors sur l'IP.
+        // Seule la clé du lien (partagée avec Loxya) est requise ; la signature webhook est optionnelle (cf. webhook()).
         return '' !== $this->loxyaLinkSignatureKey;
     }
 
@@ -104,9 +101,7 @@ class PaymentController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        // Ordre des vérifs : IP → signature (optionnelle) → décodage JSON. Aucun payload non authentifié
-        // n'est loggé. Réponse générique (403 sans body) sur les vérifs auth pour ne pas guider un scan.
-        // L'IP HelloAsso est ici le garde principal (allowlist).
+        // Garde principal : allowlist d'IP HelloAsso. 403 sans body pour ne pas révéler le contrôle échoué.
         if ($this->helloAssoServerIp !== $request->getClientIp()) {
             $this->logger->error('Payment webhook - Invalid IP', [
                 'ip' => $request->getClientIp(),
@@ -117,9 +112,7 @@ class PaymentController extends AbstractController
 
         $rawContent = $request->getContent();
 
-        // Signature optionnelle : HelloAsso ne signe pas les webhooks pour les comptes non-partenaires.
-        // Défense en profondeur : on ne vérifie la signature que si une clé est configurée ET qu'une
-        // signature est fournie. Sinon, l'authenticité repose sur l'allowlist d'IP vérifiée ci-dessus.
+        // Signature vérifiée seulement si clé + header présents (HelloAsso ne signe pas les comptes non-partenaires).
         $signatureHeader = $request->headers->get('x-ha-signature');
         if ('' !== $this->helloAssoSignatureKey && null !== $signatureHeader) {
             $calculatedSignature = hash_hmac('sha256', $rawContent, $this->helloAssoSignatureKey);
