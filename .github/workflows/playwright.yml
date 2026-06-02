@@ -28,14 +28,47 @@ jobs:
       - name: Install npm dependencies
         run: npm ci
 
-      - name: Install Playwright (Chromium only)
-        run: npx playwright install --with-deps chromium
+      - name: Resolve Playwright version
+        id: pw
+        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
+
+      # Cache the browser binaries (keyed on the Playwright version) so most runs skip the
+      # download entirely. The OS deps live on the runner image and are (re)installed below.
+      - name: Cache Playwright browsers
+        id: pw-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ steps.pw.outputs.version }}
+
+      - name: Install Playwright OS dependencies
+        run: npx playwright install-deps chromium
+        timeout-minutes: 5
+
+      # The Chromium download from cdn.playwright.dev occasionally stalls with no built-in
+      # timeout and used to hang the whole job for 30 min. Bound each attempt with `timeout`
+      # and retry, so a stalled download fails fast instead of eating the entire job.
+      - name: Install Playwright browser (Chromium)
+        if: steps.pw-cache.outputs.cache-hit != 'true'
+        run: |
+          for attempt in 1 2 3; do
+            echo "::group::playwright install chromium (tentative $attempt)"
+            if timeout 5m npx playwright install chromium; then
+              echo "::endgroup::"
+              exit 0
+            fi
+            echo "::endgroup::"
+            echo "::warning::Téléchargement du navigateur Playwright en échec/timeout (tentative $attempt), nouvel essai…"
+          done
+          echo "::error::Échec du téléchargement du navigateur Playwright après 3 tentatives."
+          exit 1
 
       - name: Prepare test env file
         run: cp .env.test.example .env.test
 
       - name: Run Playwright tests
         run: npx playwright test
+        timeout-minutes: 15
         env:
           CI: true
 
