@@ -19,58 +19,27 @@ jobs:
       - name: Initialize database
         run: make database-init
 
-      # Node / Playwright setup (on the host, not inside Docker)
-      - uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          cache: npm
-
-      - name: Install npm dependencies
-        run: npm ci
-
-      - name: Resolve Playwright version
-        id: pw
-        run: echo "version=$(node -p "require('@playwright/test/package.json').version")" >> "$GITHUB_OUTPUT"
-
-      # Cache the browser binaries (keyed on the Playwright version) so most runs skip the
-      # download entirely. The OS deps live on the runner image and are (re)installed below.
-      - name: Cache Playwright browsers
-        id: pw-cache
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/ms-playwright
-          key: ${{ runner.os }}-playwright-${{ steps.pw.outputs.version }}
-
-      - name: Install Playwright OS dependencies
-        run: npx playwright install-deps chromium
-        timeout-minutes: 5
-
-      # The Chromium download from cdn.playwright.dev occasionally stalls with no built-in
-      # timeout and used to hang the whole job for 30 min. Bound each attempt with `timeout`
-      # and retry, so a stalled download fails fast instead of eating the entire job.
-      - name: Install Playwright browser (Chromium)
-        if: steps.pw-cache.outputs.cache-hit != 'true'
-        run: |
-          for attempt in 1 2 3; do
-            echo "::group::playwright install chromium (tentative $attempt)"
-            if timeout 5m npx playwright install chromium; then
-              echo "::endgroup::"
-              exit 0
-            fi
-            echo "::endgroup::"
-            echo "::warning::Téléchargement du navigateur Playwright en échec/timeout (tentative $attempt), nouvel essai…"
-          done
-          echo "::error::Échec du téléchargement du navigateur Playwright après 3 tentatives."
-          exit 1
-
       - name: Prepare test env file
         run: cp .env.test.example .env.test
 
+      # Pin the Playwright image to the version locked in package-lock.json so the
+      # preinstalled browsers match exactly.
+      - name: Resolve Playwright version
+        id: pw
+        run: echo "version=$(jq -r '.packages["node_modules/@playwright/test"].version' package-lock.json)" >> "$GITHUB_OUTPUT"
+
+      # Run the tests inside the official Playwright image: the browsers are preinstalled,
+      # so we avoid the cdn.playwright.dev download that stalls at 100% on GitHub-hosted
+      # runners (it used to hang the job for the full 30 min, tests never running).
+      # --network host lets the tests reach the app started on the host (localhost:8000).
       - name: Run Playwright tests
-        run: npx playwright test
-        timeout-minutes: 15
-        env:
-          CI: true
+        timeout-minutes: 20
+        run: |
+          docker run --rm --network host \
+            -v "${{ github.workspace }}:/work" -w /work \
+            -e CI=true \
+            "mcr.microsoft.com/playwright:v${{ steps.pw.outputs.version }}-noble" \
+            bash -c "npm ci && npx playwright test"
 
       - name: Upload test report
         uses: actions/upload-artifact@v4
