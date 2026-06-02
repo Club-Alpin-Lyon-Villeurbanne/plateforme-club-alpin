@@ -14,18 +14,6 @@ const USERS = [
     password: process.env.TEST_USER_REDACTEUR_PASSWORD || 'test',
     file: STORAGE_STATE.redacteur,
   },
-  {
-    role: 'encadrant',
-    email: process.env.TEST_USER_ENCADRANT_EMAIL || 'encadrant@test-clubalpinlyon.fr',
-    password: process.env.TEST_USER_ENCADRANT_PASSWORD || 'test',
-    file: STORAGE_STATE.encadrant,
-  },
-  {
-    role: 'resp.comm',
-    email: process.env.TEST_USER_RESP_COMM_EMAIL || 'resp.comm@test-clubalpinlyon.fr',
-    password: process.env.TEST_USER_RESP_COMM_PASSWORD || 'test',
-    file: STORAGE_STATE.respComm,
-  },
 ];
 
 for (const user of USERS) {

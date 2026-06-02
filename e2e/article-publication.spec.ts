@@ -31,11 +31,14 @@ test("Publication d'un article (creation + moderation)", async ({ browser }) => 
 
   await adminPage.goto('/gestion-des-articles.html');
 
-  const autoriserPublierBtn = adminPage
-    .locator('input[type="submit"][value="Autoriser & publier"]')
-    .first();
-  await expect(autoriserPublierBtn).toBeVisible({ timeout: 5_000 });
-  await autoriserPublierBtn.click();
+  // Cible par titre unique (pas .first(), qui publierait un autre article en attente).
+  const articleCard = adminPage.locator('.encart_article_small', { hasText: articleTitle });
+  await expect(articleCard).toBeVisible({ timeout: 5_000 });
+
+  await articleCard
+    .locator('xpath=preceding-sibling::div[contains(@class,"article-tools-valid")][1]')
+    .locator('input[value="Autoriser & publier"]')
+    .click();
 
   await expect(adminPage.getByText(/article.*publié/i)).toBeVisible({ timeout: 5_000 });
 
