@@ -32,13 +32,17 @@ jobs:
       # so we avoid the cdn.playwright.dev download that stalls at 100% on GitHub-hosted
       # runners (it used to hang the job for the full 30 min, tests never running).
       # --network host lets the tests reach the app started on the host (localhost:8000).
+      # --ipc=host évite les crashs Chromium dus à un /dev/shm trop petit (reco Playwright).
+      # La version passe par une variable d'env (pas d'interpolation ${{ }} dans le shell).
       - name: Run Playwright tests
         timeout-minutes: 20
+        env:
+          PW_VERSION: ${{ steps.pw.outputs.version }}
         run: |
-          docker run --rm --network host \
-            -v "${{ github.workspace }}:/work" -w /work \
+          docker run --rm --network host --ipc=host \
+            -v "$GITHUB_WORKSPACE:/work" -w /work \
             -e CI=true \
-            "mcr.microsoft.com/playwright:v${{ steps.pw.outputs.version }}-noble" \
+            "mcr.microsoft.com/playwright:v${PW_VERSION}-noble" \
             bash -c "npm ci && npx playwright test"
 
       - name: Upload test report
