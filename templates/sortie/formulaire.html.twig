@@ -82,10 +82,11 @@
             </div>
             <br style="clear:both" />
 
-            <div data-start-lat-field="{{ form.latDepart.vars.id }}" data-start-long-field="{{ form.longDepart.vars.id }}">
+            <div class="place-autocomplete">
                 {{ form_row(form.place) }}
+                <ul id="place_suggestions"></ul>
             </div>
-            <ul id="place_suggestions"></ul>
+            <small id="place_feedback" class="place-feedback"></small>
             {{ form_row(form.latDepart) }}
             {{ form_row(form.longDepart) }}
         </div>
@@ -259,6 +260,53 @@
     <style>
         #map-creersortie {
             margin: 0;
+        }
+
+        /* Autocomplétion du lieu de départ : dropdown flottant */
+        .place-autocomplete {
+            position: relative;
+        }
+
+        #place_suggestions {
+            display: none;
+            position: absolute;
+            /* top / left / width sont positionnés en JS, juste sous l'input */
+            z-index: 1000;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            max-height: 240px;
+            overflow-y: auto;
+            background: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, .12);
+        }
+
+        #place_suggestions li {
+            padding: 6px 10px;
+        }
+
+        #place_suggestions li.is-active,
+        #place_suggestions li:hover {
+            background: #eef;
+        }
+
+        #event_place.place-input--error {
+            border: 2px solid #b00020;
+        }
+
+        .place-feedback {
+            display: block;
+            margin-top: 4px;
+        }
+
+        .place-feedback--ok {
+            color: #1a7f37;
+        }
+
+        .place-feedback--todo {
+            color: #b00020;
+            font-weight: bold;
         }
     </style>
     <link rel="stylesheet" href="/js/ckeditor5/ckeditor5.css">
