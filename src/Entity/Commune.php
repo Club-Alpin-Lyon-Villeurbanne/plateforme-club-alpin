@@ -28,6 +28,11 @@ class Commune
     #[ORM\Column(name: 'libelle_acheminement', type: Types::STRING, nullable: false)]
     private string $libelleAcheminement;
 
+    /**
+     * Ligne 5 de la norme postale AFNOR NF Z10-011 : lieu-dit / hameau (ex. Chamonix → « Argentière »).
+     * Nom hérité du champ `ligne_5` du dataset La Poste hexasmal (cf. ImportCommunesCommand) ;
+     * sert à distinguer les hameaux d'une même commune dans l'autocomplete (cf. self::getLabel).
+     */
     #[ORM\Column(name: 'ligne5', type: Types::STRING, nullable: true)]
     private string $ligne5;
 
