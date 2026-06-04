@@ -157,7 +157,7 @@ class SortieController extends AbstractController
             $originalEntityData['longDepart'] = (float) $event->getLongDepart();
         }
 
-        $form = $this->createForm(EventType::class, $event, ['is_edit' => $isUpdate, 'original_place' => $originalEntityData['place'] ?? null, 'editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink, 'user' => $user]);
+        $form = $this->createForm(EventType::class, $event, ['is_edit' => $isUpdate, 'editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink, 'user' => $user]);
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {

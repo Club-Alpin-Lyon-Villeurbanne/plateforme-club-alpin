@@ -17,7 +17,12 @@ class CommuneController extends AbstractController
         ManagerRegistry $doctrine
     ): JsonResponse {
         $data = json_decode($request->getContent(), true);
-        $requestText = \is_array($data) ? ($data['query'] ?? '') : '';
+        $requestText = \is_array($data) ? trim((string) ($data['query'] ?? '')) : '';
+
+        // une requête vide ferait un LIKE '%' renvoyant tout le référentiel : on court-circuite
+        if ('' === $requestText) {
+            return new JsonResponse([]);
+        }
 
         // Seul le libellé canonique est exposé : les coordonnées sont dérivées côté
         // serveur à la soumission (cf. EventType), le client n'en a plus besoin.

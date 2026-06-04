@@ -6,16 +6,10 @@ function searchCommunes(context) {
         return;
     }
 
-    // En édition réelle (pas duplication/création), la valeur pré-remplie est déjà en base
-    // et le serveur la tolère si elle n'est pas modifiée → on la considère confirmée.
-    // En duplication/création, l'utilisateur doit (re)choisir une commune dans la liste.
-    const wrapper = field.closest('.place-autocomplete');
-    const isEdit = !!wrapper && wrapper.dataset.isEdit === '1';
-
     let timer;
     let items = [];            // suggestions courantes : [{label}]
     let activeIndex = -1;      // élément surligné au clavier
-    let selectedLabel = isEdit ? field.value.trim() : ''; // libellé confirmé
+    let selectedLabel = '';    // libellé confirmé (vide tant qu'aucune commune n'est validée)
 
     field.setAttribute('role', 'combobox');
     field.setAttribute('aria-autocomplete', 'list');
@@ -137,7 +131,14 @@ function searchCommunes(context) {
             .catch(() => {});
     }
 
+    let inFlight;
     function fetchSuggestions(val) {
+        // annule la requête précédente pour garantir un affichage déterministe
+        // (une réponse lente antérieure ne doit pas écraser une plus récente)
+        if (inFlight) {
+            inFlight.abort();
+        }
+        inFlight = new AbortController();
         fetch('/commune/autocompletion', {
             method: 'POST',
             headers: {
@@ -146,13 +147,17 @@ function searchCommunes(context) {
             body: JSON.stringify({
                 query: val,
             }),
+            signal: inFlight.signal,
         })
             .then((response) => (response.ok ? response.json() : []))
             .then((data) => {
                 items = Array.isArray(data) ? data : [];
                 renderList();
             })
-            .catch(() => {
+            .catch((error) => {
+                if (error && error.name === 'AbortError') {
+                    return; // requête remplacée par une plus récente
+                }
                 // échec réseau / réponse non-JSON : on referme proprement
                 closeList();
             });
@@ -233,12 +238,9 @@ function searchCommunes(context) {
         });
     }
 
-    // état initial du champ pré-rempli
-    if (isEdit && selectedLabel !== '') {
-        // édition : la valeur en base est tolérée telle quelle
-        setFeedback('ok');
-    } else if (!isEdit && field.value.trim() !== '') {
-        // duplication / ré-affichage après erreur : confirmer si la valeur résout exactement
+    // valeur pré-remplie (édition, duplication, ré-affichage après erreur) : on la confirme
+    // si — et seulement si — elle correspond exactement à une commune du référentiel.
+    if (field.value.trim() !== '') {
         verifyPrefilled(field.value.trim());
     }
 }

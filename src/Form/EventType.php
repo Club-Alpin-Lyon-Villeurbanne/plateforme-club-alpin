@@ -492,25 +492,24 @@ class EventType extends AbstractType
                     $event->setData($data);
                 }
             })
-            ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use ($options) {
+            ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
                 $form = $event->getForm();
 
-                // lieu de départ : obligatoire et contraint au référentiel des communes.
-                // Le serveur est l'autorité : il re-matche le libellé saisi et dérive lui-même
-                // latDepart/longDepart (le JS ne remplit plus ces coordonnées).
-                // La correspondance stricte n'est imposée qu'en création ou si le lieu a changé,
-                // pour ne pas bloquer l'édition d'anciennes sorties au libellé non normalisé.
-                // Les brouillons (incomplets par nature) sont dispensés de cette validation.
+                // lieu de départ : obligatoire et contraint au référentiel des communes,
+                // y compris en édition. Le serveur est l'autorité : il re-matche le libellé
+                // saisi et dérive lui-même latDepart/longDepart (le JS ne remplit plus ces
+                // coordonnées). Seuls les brouillons (incomplets par nature) en sont dispensés.
                 $isDraftSave = $form->has('eventDraftSave') && $form->get('eventDraftSave')->isClicked();
                 $placeField = $form->get('place');
                 $place = trim((string) $placeField->getData());
+
                 if ($isDraftSave) {
-                    // rien : on laisse le brouillon s'enregistrer en l'état
+                    // brouillon : on laisse s'enregistrer en l'état
                 } elseif ('' === $place) {
                     $placeField->addError(new FormError(
                         'Le lieu de départ est obligatoire, choisissez une commune dans la liste.'
                     ));
-                } elseif (!$options['is_edit'] || $place !== trim((string) $options['original_place'])) {
+                } else {
                     $commune = $this->communeRepository->findOneByLabel($place);
                     if (null === $commune) {
                         $placeField->addError(new FormError(
@@ -550,7 +549,6 @@ class EventType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Evt::class,
             'is_edit' => false,
-            'original_place' => null,
             'editoLineLink' => '',
             'imageRightLink' => '',
             'user' => User::class,
