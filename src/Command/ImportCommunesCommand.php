@@ -21,6 +21,11 @@ class ImportCommunesCommand extends Command
     private const API_URL = 'https://datanova.laposte.fr/data-fair/api/v1/datasets/laposte-hexasmal/lines';
     private const PAGE_SIZE = 1000;
 
+    // On ne récupère que les champs utilisés : le dataset expose aussi
+    // `_contours_commune.geometry` (polygones complets, ~98 % du poids d'une page),
+    // qui faisait exploser la mémoire pendant l'import des ~39 000 communes.
+    private const SELECT_FIELDS = 'code_commune_insee,nom_de_la_commune,code_postal,libelle_d_acheminement,ligne_5,_geopoint';
+
     public function __construct(
         private readonly HttpClientInterface $httpClient,
         private readonly Connection $connection,
@@ -41,7 +46,7 @@ class ImportCommunesCommand extends Command
         $io->comment('Table communes vidée.');
 
         $total = 0;
-        $url = self::API_URL . '?size=' . self::PAGE_SIZE;
+        $url = self::API_URL . '?size=' . self::PAGE_SIZE . '&select=' . self::SELECT_FIELDS;
 
         do {
             $response = $this->httpClient->request('GET', $url);
