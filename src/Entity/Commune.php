@@ -45,6 +45,29 @@ class Commune
         return $this->getNomCommune();
     }
 
+    /**
+     * Format canonique d'un libellé de commune, source unique partagée par l'autocomplétion
+     * (résultats en tableau) et la validation serveur : "{codePostal} {nomCommune}" + " ({ligne5})".
+     */
+    public static function buildLabel(string $codePostal, string $nomCommune, ?string $ligne5): string
+    {
+        $label = $codePostal . ' ' . $nomCommune;
+        if (null !== $ligne5 && '' !== $ligne5) {
+            $label .= ' (' . $ligne5 . ')';
+        }
+
+        return $label;
+    }
+
+    /**
+     * Libellé canonique de cette commune (cf. self::buildLabel).
+     * `ligne5` est typé non-nullable mais la colonne est nullable : garde via isset().
+     */
+    public function getLabel(): string
+    {
+        return self::buildLabel($this->codePostal, $this->nomCommune, isset($this->ligne5) ? $this->ligne5 : null);
+    }
+
     public function getId(): ?int
     {
         return $this->id;

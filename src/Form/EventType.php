@@ -8,6 +8,7 @@ use App\Entity\TransportModeEnum;
 use App\Entity\User;
 use App\Helper\EventFormHelper;
 use App\Repository\CommissionRepository;
+use App\Repository\CommuneRepository;
 use App\Service\HelloAssoService;
 use App\UserRights;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -37,6 +38,7 @@ class EventType extends AbstractType
 {
     public function __construct(
         protected CommissionRepository $commissionRepository,
+        protected CommuneRepository $communeRepository,
         protected UserRights $userRights,
         protected EventFormHelper $eventFormHelper,
         protected HelloAssoService $helloAssoService,
@@ -129,6 +131,7 @@ class EventType extends AbstractType
                     'placeholder' => 'ex : 69510 Messimy, 74400 Chamonix',
                     'class' => 'type2 wide',
                     'maxlength' => 255,
+                    'autocomplete' => 'off',
                 ],
                 'help' => 'Commencez à saisir un code postal ou une ville et choisissez dans la liste qui apparaît ci-dessous. Permet de déduire le massif, nécessaire au calcul du bilan carbone.',
                 'help_attr' => [
@@ -489,8 +492,38 @@ class EventType extends AbstractType
                     $event->setData($data);
                 }
             })
-            ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
+            ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) use ($options) {
                 $form = $event->getForm();
+
+                // lieu de départ : obligatoire et contraint au référentiel des communes.
+                // Le serveur est l'autorité : il re-matche le libellé saisi et dérive lui-même
+                // latDepart/longDepart (le JS ne remplit plus ces coordonnées).
+                // La correspondance stricte n'est imposée qu'en création ou si le lieu a changé,
+                // pour ne pas bloquer l'édition d'anciennes sorties au libellé non normalisé.
+                // Les brouillons (incomplets par nature) sont dispensés de cette validation.
+                $isDraftSave = $form->has('eventDraftSave') && $form->get('eventDraftSave')->isClicked();
+                $placeField = $form->get('place');
+                $place = trim((string) $placeField->getData());
+                if ($isDraftSave) {
+                    // rien : on laisse le brouillon s'enregistrer en l'état
+                } elseif ('' === $place) {
+                    $placeField->addError(new FormError(
+                        'Le lieu de départ est obligatoire, choisissez une commune dans la liste.'
+                    ));
+                } elseif (!$options['is_edit'] || $place !== trim((string) $options['original_place'])) {
+                    $commune = $this->communeRepository->findOneByLabel($place);
+                    if (null === $commune) {
+                        $placeField->addError(new FormError(
+                            'Ce lieu ne correspond à aucune commune connue. Choisissez une suggestion dans la liste.'
+                        ));
+                    } else {
+                        /** @var Evt $evt */
+                        $evt = $form->getData();
+                        $evt->setLatDepart((float) $commune->getLatitude());
+                        $evt->setLongDepart((float) $commune->getLongitude());
+                        $evt->setPlace($commune->getLabel());
+                    }
+                }
 
                 // cohérence dates début et fin
                 $startDate = $form->get('startDate')->getData();
@@ -517,6 +550,7 @@ class EventType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Evt::class,
             'is_edit' => false,
+            'original_place' => null,
             'editoLineLink' => '',
             'imageRightLink' => '',
             'user' => User::class,

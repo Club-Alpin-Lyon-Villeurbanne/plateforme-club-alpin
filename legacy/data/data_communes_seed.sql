@@ -11,7 +11,11 @@ INSERT INTO communes (code_commune_insee, nom_commune, code_postal, libelle_ache
 ('69383', 'Lyon 3e Arrondissement',  '69003', 'LYON',                       NULL, '45.74944,4.85944',  45.74944000, 4.85944000),
 
 -- Massif du Mont-Blanc (Haute-Savoie)
-('74056', 'Chamonix-Mont-Blanc',     '74400', 'CHAMONIX MONT BLANC',         NULL, '45.92375,6.86861',  45.92375000, 6.86861000),
+-- Chamonix : plusieurs entrées par hameau (ligne5) pour tester la désambiguïsation de l'autocomplete
+('74056', 'Chamonix-Mont-Blanc',     '74400', 'CHAMONIX MONT BLANC',         NULL,                   '45.92375,6.86861',  45.92375000, 6.86861000),
+('74056', 'Chamonix-Mont-Blanc',     '74400', 'CHAMONIX MONT BLANC',         'ARGENTIERE',           '45.96806,6.92694',  45.96806000, 6.92694000),
+('74056', 'Chamonix-Mont-Blanc',     '74400', 'CHAMONIX MONT BLANC',         'LES PRAZ DE CHAMONIX', '45.94028,6.89556',  45.94028000, 6.89556000),
+('74056', 'Chamonix-Mont-Blanc',     '74400', 'CHAMONIX MONT BLANC',         'LES BOSSONS',          '45.90611,6.84417',  45.90611000, 6.84417000),
 ('74236', 'Saint-Gervais-les-Bains', '74170', 'ST GERVAIS LES BAINS',        NULL, '45.89139,6.71139',  45.89139000, 6.71139000),
 ('74010', 'Annecy',                  '74000', 'ANNECY',                      NULL, '45.89944,6.12889',  45.89944000, 6.12889000),
 
