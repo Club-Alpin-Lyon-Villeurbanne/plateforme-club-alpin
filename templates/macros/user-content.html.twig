@@ -1,4 +1,4 @@
-{% macro user_content(user, nb_articles, user_articles, nb_events, user_events, type = 'full') %}
+{% macro user_content(user, nb_articles, user_articles, nb_events, user_events, type = 'full', common_events = [], nb_common_events = 0) %}
     {% import 'macros/article-link.html.twig' as article_macro %}
     {% import 'macros/event-line.html.twig' as event_macro %}
 
@@ -19,6 +19,20 @@
     </div>
     <br style="clear:both" />
     <hr  />
+
+    {% if type is same as ('reduced') and app.user is not same as (user) %}
+        <h2 id="user-sorties-communes">Sorties en commun :</h2>
+        <p class="mini">{{ nb_common_events }} sortie(s) en commun</p>
+        <div class="profile-block">
+            <table id="agenda">
+                {% for event in common_events %}
+                    {{ event_macro.event_line(event, user, '', false) }}
+                {% endfor %}
+            </table>
+        </div>
+        <br style="clear:both" />
+        <hr  />
+    {% endif %}
 
     <h2 id="user-articles">
         {% if type is same as ('reduced') %}
