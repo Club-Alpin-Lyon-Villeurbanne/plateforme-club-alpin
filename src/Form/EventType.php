@@ -199,9 +199,12 @@ class EventType extends AbstractType
                     ]),
                 ],
             ])
+            // non mappés : une saisie vide planterait le setter non-nullable (cf. Sentry 1E6) ;
+            // recopiés dans l'entité en POST_SUBMIT si valides.
             ->add('lat', HiddenType::class, [
                 'label' => false,
                 'required' => true,
+                'mapped' => false,
                 'data' => $lat,
                 'constraints' => [
                     new NotBlank(null, 'La latitude est obligatoire. Avez-vous bien cliqué sur le bouton pour placer le marqueur ?'),
@@ -211,6 +214,7 @@ class EventType extends AbstractType
             ->add('long', HiddenType::class, [
                 'label' => false,
                 'required' => true,
+                'mapped' => false,
                 'data' => $long,
                 'constraints' => [
                     new NotBlank(null, 'La longitude est obligatoire. Avez-vous bien cliqué sur le bouton pour placer le marqueur ?'),
@@ -522,6 +526,16 @@ class EventType extends AbstractType
                         $evt->setLongDepart((float) $commune->getLongitude());
                         $evt->setPlace($commune->getLabel());
                     }
+                }
+
+                // marqueur (champ non mappé) : recopié dans l'entité si valide
+                $lat = $form->get('lat')->getData();
+                $long = $form->get('long')->getData();
+                if (is_numeric($lat) && is_numeric($long)) {
+                    /** @var Evt $evt */
+                    $evt = $form->getData();
+                    $evt->setLat((float) $lat);
+                    $evt->setLong((float) $long);
                 }
 
                 // cohérence dates début et fin
