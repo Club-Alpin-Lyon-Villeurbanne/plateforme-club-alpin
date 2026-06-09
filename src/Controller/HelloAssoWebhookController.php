@@ -102,7 +102,8 @@ class HelloAssoWebhookController extends AbstractController
         $event = $this->eventRepository->findOneBy(['helloAssoFormSlug' => $eventSlug]);
 
         if (!$event instanceof Evt) {
-            $this->logger->error('HelloAsso Webhook - Unknown form', [
+            // formulaire non géré par la plateforme (cas attendu, cf. les logs info ci-dessus)
+            $this->logger->info('HelloAsso Webhook - Unknown form', [
                 'eventSlug' => $eventSlug,
             ]);
 
