@@ -155,6 +155,7 @@ class SortieController extends AbstractController
             $originalEntityData['long'] = (float) $event->getLong();
             $originalEntityData['latDepart'] = (float) $event->getLatDepart();
             $originalEntityData['longDepart'] = (float) $event->getLongDepart();
+            $originalEntityData['etranger'] = $event->isEtranger();
         }
 
         $form = $this->createForm(EventType::class, $event, ['is_edit' => $isUpdate, 'editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink, 'user' => $user]);
@@ -286,6 +287,7 @@ class SortieController extends AbstractController
                         || $originalEntityData['paymentAmount'] !== $event->getPaymentAmount()
                         || $originalEntityData['encadrants'] !== $newEncadrants['encadrants']
                         || $originalEntityData['initiateurs'] !== $newEncadrants['initiateurs']
+                        || $originalEntityData['etranger'] !== $event->isEtranger()
                     )
                 ) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
@@ -315,7 +317,10 @@ class SortieController extends AbstractController
                 || (float) $event->getLatDepart() !== $originalEntityData['latDepart']
                 || (float) $event->getLongDepart() !== $originalEntityData['longDepart'];
 
-            if ($coordsChanged || !$event->getNbKm()) {
+            if ($event->isEtranger()) {
+                // à l'étranger : pas de commune de départ, donc pas de bilan carbone
+                $event->setNbKm(null);
+            } elseif ($coordsChanged || !$event->getNbKm()) {
                 $nbKm = $distanceHelper->calculate($event);
                 // Conserver l'ancienne distance si l'appel OSRM échoue (retourne 0)
                 if ($nbKm > 0 || !$isUpdate) {
@@ -994,6 +999,7 @@ class SortieController extends AbstractController
         $newEvent->setIsDraft(true);
         $newEvent->setLatDepart($event->getLatDepart());
         $newEvent->setLongDepart($event->getLongDepart());
+        $newEvent->setEtranger($event->isEtranger());
         $newEvent->setNbVehicules($event->getNbVehicules());
         $newEvent->setModeTransport($event->getModeTransport());
         $newEvent->setNbKm($event->getNbKm());

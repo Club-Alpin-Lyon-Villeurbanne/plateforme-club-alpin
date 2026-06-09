@@ -123,10 +123,17 @@ class EventType extends AbstractType
                     ]),
                 ],
             ])
+            ->add('etranger', CheckboxType::class, [
+                'label' => 'Sortie à l\'étranger',
+                'required' => false,
+                'help' => 'Cochez si le départ de l\'activité est hors de France.',
+                'help_attr' => [
+                    'class' => 'mini',
+                ],
+            ])
             ->add('place', TextType::class, [
-                'label' => 'Lieu de départ de l\'activité encadrée <span class="revalidation">*</span>',
-                'label_html' => true,
-                'required' => true,
+                'label' => 'Commune de départ',
+                'required' => false,
                 'attr' => [
                     'placeholder' => 'ex : 69510 Messimy, 74400 Chamonix',
                     'class' => 'type2 wide',
@@ -499,19 +506,32 @@ class EventType extends AbstractType
             ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
                 $form = $event->getForm();
 
-                // lieu de départ : obligatoire et contraint au référentiel des communes,
-                // y compris en édition. Le serveur est l'autorité : il re-matche le libellé
-                // saisi et dérive lui-même latDepart/longDepart (le JS ne remplit plus ces
-                // coordonnées). Seuls les brouillons (incomplets par nature) en sont dispensés.
+                // commune de départ : le serveur re-matche le libellé et dérive latDepart/longDepart.
+                // Dispensés de la commune : brouillons et sorties à l'étranger.
                 $isDraftSave = $form->has('eventDraftSave') && $form->get('eventDraftSave')->isClicked();
+                $estEtranger = true === $form->get('etranger')->getData();
                 $placeField = $form->get('place');
                 $place = trim((string) $placeField->getData());
 
                 if ($isDraftSave) {
-                    // brouillon : on laisse s'enregistrer en l'état
+                    // brouillon : incomplet par nature
+                } elseif ($estEtranger) {
+                    // commune facultative ; on refuse une commune saisie en même temps
+                    // (incohérence) et on efface un départ résiduel (bascule FR→étranger).
+                    if ('' !== $place) {
+                        $placeField->addError(new FormError(
+                            'Une sortie à l\'étranger ne doit pas indiquer de commune de départ française. Décochez « Sortie à l\'étranger » ou videz la commune.'
+                        ));
+                    } else {
+                        /** @var Evt $evt */
+                        $evt = $form->getData();
+                        $evt->setPlace('');
+                        $evt->setLatDepart(0.0);
+                        $evt->setLongDepart(0.0);
+                    }
                 } elseif ('' === $place) {
                     $placeField->addError(new FormError(
-                        'Le lieu de départ est obligatoire, choisissez une commune dans la liste.'
+                        'La commune de départ est obligatoire, choisissez une commune dans la liste.'
                     ));
                 } else {
                     $commune = $this->communeRepository->findOneByLabel($place);

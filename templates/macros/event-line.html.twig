@@ -92,6 +92,7 @@
                     <h2 class="tw-flex tw-items-center tw-gap-2">
                         {% if event.cancelled %}<span style="padding:1px 3px; color:red; font-family:Arial;white-space: nowrap;">ANNULÉE - </span>{% endif %}
                         {{ event.titre }}
+                        {% if event.etranger %}<span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap" title="Sortie à l'étranger : commune de départ facultative, bilan carbone non calculé">🌍 Étranger</span>{% endif %}
 
                         {% set participation = event.participation(user) %}
                         {% if participation and display_participation_status %}
