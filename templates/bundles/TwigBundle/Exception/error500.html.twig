@@ -7,11 +7,15 @@
         <div style="font-size:64px;">🏔️❄️</div>
         <div style="display:inline-block;margin:8px 0 6px;padding:4px 10px;border-radius:999px;background:#fee2e2;color:#991b1b;font-weight:600;">ERREUR 500</div>
         <h2 style="font-size:28px; margin:8px 0 12px;">Un incident est survenu de notre côté.</h2>
-        <p style="color:#4b5563;">Rassurez‑vous, aucune action n’est requise de votre part.
-            Notre cordée est déjà en route pour sécuriser l’itinéraire. Merci pour votre patience 💙</p>
+        <p style="color:#4b5563;">Vous pouvez réessayer dans un instant. Si le problème persiste,
+            aidez‑nous à le corriger en nous le signalant via le formulaire de support. Précisez‑nous
+            la date et l’heure de l’incident et, idéalement, ce que vous étiez en train de faire. Merci 💙</p>
+        <p style="color:#6b7280;font-size:14px;">Date et heure de l’incident :
+            <strong>{{ "now"|date('d/m/Y \\à H:i', 'Europe/Paris') }}</strong></p>
         <div style="margin-top:20px; display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
             <a href="/" class="nice2" style="min-width:220px;">🏕️ Retour au refuge</a>
             <a href="javascript:location.reload()" class="nice2" style="min-width:220px;">↻ Réessayer l’ascension</a>
+            <a href="https://forms.clickup.com/42653954/f/18np82-775/1BKP6TIKU0RIYXCRWE" target="_blank" rel="noopener" class="nice2" style="min-width:220px;">✉️ Signaler l’incident</a>
         </div>
     </div>
 {% endblock %}
