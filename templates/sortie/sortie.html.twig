@@ -1364,13 +1364,14 @@
             const contact_message = document.getElementById('contact_message');
             const contact_reply_to = document.querySelector('input[name="reply_to_option"]');
 
-            btn1.addEventListener('click', () => {
+            // les contrôles de gestion (btn1/btn2/select) ne sont rendus qu'aux encadrants
+            btn1?.addEventListener('click', () => {
                 contact_subject.required = false;
                 contact_message.required = false;
                 contact_reply_to.required = false;
             });
 
-            btn2.addEventListener('click', (event) => {
+            btn2?.addEventListener('click', (event) => {
                 contact_subject.required = true;
                 contact_message.required = true;
                 contact_reply_to.required = true;
@@ -1417,7 +1418,7 @@
             const checkboxes = document.querySelectorAll('.contact-cb');
             const select = document.getElementById('contact_participants_type');
 
-            select.addEventListener('change', () => {
+            select?.addEventListener('change', () => {
                 // reset la sélection actuelle
                 checkboxes.forEach(checkbox => checkbox.checked = false);
 
