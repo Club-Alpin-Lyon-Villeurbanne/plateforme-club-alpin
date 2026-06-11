@@ -155,6 +155,17 @@ class SortieController extends AbstractController
             $originalEntityData['long'] = (float) $event->getLong();
             $originalEntityData['latDepart'] = (float) $event->getLatDepart();
             $originalEntityData['longDepart'] = (float) $event->getLongDepart();
+            $originalEntityData['commissionTitle'] = $event->getCommission()?->getTitle();
+            $originalEntityData['startDate'] = $event->getStartDate()?->format('d/m/Y H:i');
+            $originalEntityData['endDate'] = $event->getEndDate()?->format('d/m/Y H:i');
+            $originalEntityData['rdv'] = $event->getRdv();
+            $originalEntityData['difficulte'] = $event->getDifficulte();
+            $originalEntityData['denivele'] = $event->getDenivele();
+            $originalEntityData['distance'] = $event->getDistance();
+            $originalEntityData['detailsCaches'] = $event->getDetailsCaches();
+            $originalEntityData['matos'] = $event->getMatos();
+            $originalEntityData['itineraire'] = $event->getItineraire();
+            $originalEntityData['description'] = $event->getDescription();
         }
 
         $form = $this->createForm(EventType::class, $event, ['is_edit' => $isUpdate, 'editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink, 'user' => $user]);
@@ -289,9 +300,12 @@ class SortieController extends AbstractController
                     )
                 ) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
+                    $event->setPendingEmailChanges($this->computeCriticalFieldsEmailChanges($originalEntityData, $event, $newEncadrants));
                 } elseif (!$event->isDraft()) {
-                    // on envoie directement le mail de mise à jour de sortie
-                    $this->sendUpdateNotificationEmail($mailer, $event, false);
+                    $emailChanges = $this->computeEventEmailChanges($originalEntityData, $event);
+                    if (!empty($emailChanges['withValues']) || !empty($emailChanges['linkedChangedFields'])) {
+                        $this->sendUpdateNotificationEmail($mailer, $event, false, $emailChanges['withValues'], $emailChanges['linkedChangedFields']);
+                    }
                 }
             }
 
@@ -487,6 +501,8 @@ class SortieController extends AbstractController
         }
 
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE)->setStatusWho($this->getUser());
+        $pendingEmailChanges = $event->getPendingEmailChanges() ?? ['withValues' => [], 'linkedChangedFields' => []];
+        $event->setPendingEmailChanges(null);
 
         if (!$userRightRepository->hasAnyRoleWithRight('evt_legal_accept')) {
             $event->setStatusLegal(Evt::STATUS_LEGAL_VALIDE)
@@ -519,7 +535,7 @@ class SortieController extends AbstractController
             'event_date' => $event->getStartDate()->format('d/m/Y'),
         ]);
 
-        $this->sendUpdateNotificationEmail($mailer, $event, $event->getCreatedAt() === $event->getUpdatedAt());
+        $this->sendUpdateNotificationEmail($mailer, $event, $event->getCreatedAt() === $event->getUpdatedAt(), $pendingEmailChanges['withValues'], $pendingEmailChanges['linkedChangedFields']);
 
         $this->addFlash('info', 'La sortie est approuvée');
 
@@ -1305,7 +1321,83 @@ class SortieController extends AbstractController
         return $this->slugHelper->generateSlug($eventTitle, 20) . '.' . date('Y-m-d.H-i-s');
     }
 
-    protected function sendUpdateNotificationEmail(Mailer $mailer, ?Evt $event = null, bool $isNewEvent = true): void
+    /**
+     * @param array<string, mixed> $newEncadrants
+     * @return array{withValues: array<array{label: string, old: ?string, new: ?string}>, linkedChangedFields: list<string>}
+     */
+    protected function computeCriticalFieldsEmailChanges(array $originalData, Evt $event, array $newEncadrants): array
+    {
+        $withValues = [];
+        $linkedChangedFields = [];
+
+        if ($originalData['ngensMax'] !== $event->getNgensMax()) {
+            $withValues[] = ['label' => 'Nombre maximum de participants', 'old' => (string) $originalData['ngensMax'], 'new' => (string) $event->getNgensMax()];
+        }
+        if ($originalData['place'] !== $event->getPlace()) {
+            $withValues[] = ['label' => 'Lieu de départ', 'old' => $originalData['place'], 'new' => $event->getPlace()];
+        }
+        if ($originalData['hasPaymentForm'] !== $event->hasPaymentForm()) {
+            $withValues[] = ['label' => 'Événement HelloAsso', 'old' => $originalData['hasPaymentForm'] ? 'Oui' : 'Non', 'new' => $event->hasPaymentForm() ? 'Oui' : 'Non'];
+        }
+        if ($originalData['paymentAmount'] !== $event->getPaymentAmount()) {
+            $oldAmount = $originalData['paymentAmount'] !== null ? number_format((float) $originalData['paymentAmount'], 2) . ' €' : '—';
+            $newAmount = $event->getPaymentAmount() !== null ? number_format($event->getPaymentAmount(), 2) . ' €' : '—';
+            $withValues[] = ['label' => 'Montant HelloAsso', 'old' => $oldAmount, 'new' => $newAmount];
+        }
+        if ($originalData['encadrants'] !== $newEncadrants['encadrants']) {
+            $linkedChangedFields[] = 'encadrants';
+        }
+        if ($originalData['initiateurs'] !== $newEncadrants['initiateurs']) {
+            $linkedChangedFields[] = 'stagiaires';
+        }
+
+        return ['withValues' => $withValues, 'linkedChangedFields' => $linkedChangedFields];
+    }
+
+    /**
+     * @return array{withValues: array<array{label: string, old: ?string, new: ?string}>, linkedChangedFields: list<string>}
+     */
+    protected function computeEventEmailChanges(array $originalData, Evt $event): array
+    {
+        $withValues = [];
+
+        $fieldsToShow = [
+            'commissionTitle' => ['Commission', $event->getCommission()?->getTitle()],
+            'startDate' => ['Date et heure de RDV', $event->getStartDate()?->format('d/m/Y H:i')],
+            'endDate' => ['Date et heure de retour', $event->getEndDate()?->format('d/m/Y H:i')],
+            'rdv' => ['Lieu de RDV covoiturage', $event->getRdv()],
+            'difficulte' => ['Difficulté', $event->getDifficulte()],
+            'denivele' => ['Dénivelé', $event->getDenivele()],
+            'distance' => ['Distance', $event->getDistance()],
+            'detailsCaches' => ['Détails cachés', $event->getDetailsCaches()],
+        ];
+
+        foreach ($fieldsToShow as $key => [$label, $newValue]) {
+            $oldValue = $originalData[$key] ?? null;
+            if (($oldValue ?? '') !== ($newValue ?? '')) {
+                $withValues[] = ['label' => $label, 'old' => $oldValue, 'new' => $newValue];
+            }
+        }
+
+        $linkedChangedFields = [];
+        if (($originalData['description'] ?? '') !== ($event->getDescription() ?? '')) {
+            $linkedChangedFields[] = 'description';
+        }
+        if (($originalData['itineraire'] ?? '') !== ($event->getItineraire() ?? '')) {
+            $linkedChangedFields[] = 'itinéraire';
+        }
+        if (($originalData['matos'] ?? '') !== ($event->getMatos() ?? '')) {
+            $linkedChangedFields[] = 'matériel';
+        }
+
+        return ['withValues' => $withValues, 'linkedChangedFields' => $linkedChangedFields];
+    }
+
+    /**
+     * @param array<array{label: string, old: ?string, new: ?string}> $changesWithValues
+     * @param list<string> $linkedChangedFields
+     */
+    protected function sendUpdateNotificationEmail(Mailer $mailer, ?Evt $event = null, bool $isNewEvent = true, array $changesWithValues = [], array $linkedChangedFields = []): void
     {
         foreach ($event->getParticipations() as $participation) {
             if ($participation->getUser() === $event->getUser()) {
@@ -1329,6 +1421,8 @@ class SortieController extends AbstractController
                     'event_name' => $event->getTitre(),
                     'commission' => $event->getCommission()->getTitle(),
                     'event_date' => $event->getStartDate()->format('d/m/Y'),
+                    'changes_with_values' => $changesWithValues,
+                    'linked_changed_fields' => $linkedChangedFields,
                 ], [], null, $event->getUser()->getEmail());
             }
         }
