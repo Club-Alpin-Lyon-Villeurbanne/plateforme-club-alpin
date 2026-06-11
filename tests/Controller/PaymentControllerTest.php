@@ -34,6 +34,8 @@ class PaymentControllerTest extends WebTestCase
         $client->request('GET', '/paiement');
 
         $this->assertResponseStatusCodeSame(400);
+        $this->assertSelectorTextContains('.pay-badge', 'Lien invalide');
+        $this->assertResponseHeaderSame('X-Frame-Options', 'DENY');
     }
 
     public function testCheckoutWithMissingAmountReturns400(): void
@@ -193,6 +195,8 @@ class PaymentControllerTest extends WebTestCase
         $client->request('GET', '/paiement?reservation_id=42&amount=3500&signature=bad-signature');
 
         $this->assertResponseStatusCodeSame(403);
+        $this->assertSelectorTextContains('.pay-badge', 'Lien invalide');
+        $this->assertResponseHeaderSame('X-Frame-Options', 'DENY');
     }
 
     public function testCheckoutRejectsSignatureWithTamperedAmount(): void

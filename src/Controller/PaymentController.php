@@ -44,7 +44,7 @@ class PaymentController extends AbstractController
         $signature = $request->query->get('signature', '');
 
         if ($reservationId <= 0 || $amount <= 0 || $amount > self::MAX_AMOUNT_CENTS) {
-            return new Response(sprintf('Paramètres reservation_id et amount obligatoires (entiers positifs, max %d€).', (int) (self::MAX_AMOUNT_CENTS / 100)), Response::HTTP_BAD_REQUEST);
+            return $this->invalidLinkResponse(Response::HTTP_BAD_REQUEST);
         }
 
         // Format canonique HMAC convenu avec Loxya : "{reservation_id}|{amount}" (entiers en base 10, séparés par "|").
@@ -55,7 +55,7 @@ class PaymentController extends AbstractController
                 'amount' => $amount,
             ]);
 
-            return new Response('Signature invalide.', Response::HTTP_FORBIDDEN);
+            return $this->invalidLinkResponse(Response::HTTP_FORBIDDEN);
         }
 
         // Risque résiduel assumé : la signature (reservation_id|amount) n'ayant ni timestamp ni nonce,
@@ -223,6 +223,15 @@ class PaymentController extends AbstractController
         $response->headers->set('X-Frame-Options', 'DENY');
 
         return $response;
+    }
+
+    // Page dédiée (≠ error.html.twig « réessaie ») : un lien malformé ne se répare pas en retentant.
+    private function invalidLinkResponse(int $statusCode): Response
+    {
+        $response = $this->render('payment/invalid_link.html.twig');
+        $response->setStatusCode($statusCode);
+
+        return $this->withSecurityHeaders($response);
     }
 
     // Defense in depth : on n'accepte un redirect HelloAsso que si l'URL est en HTTPS,
