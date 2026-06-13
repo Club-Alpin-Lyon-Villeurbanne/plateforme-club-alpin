@@ -64,6 +64,9 @@ class Evt
     #[ORM\Column(name: 'is_draft', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $isDraft = true;
 
+    #[ORM\Column(name: 'is_etranger', type: 'boolean', nullable: false, options: ['default' => false, 'comment' => 'Sortie à l\'étranger : commune de départ non requise'])]
+    private bool $etranger = false;
+
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'status_who_evt', referencedColumnName: 'id_user', nullable: true)]
     private ?User $statusWho;
@@ -316,6 +319,7 @@ class Evt
         $this->articles = new ArrayCollection();
         $this->expenseReports = new ArrayCollection();
         $this->isDraft = false;
+        $this->etranger = false;
         $this->unrecognizedPayers = new ArrayCollection();
         $this->setCreatedAt(new \DateTime());
         $this->setUpdatedAt(new \DateTime());
@@ -883,6 +887,18 @@ class Evt
     public function setIsDraft(bool $isDraft): self
     {
         $this->isDraft = $isDraft;
+
+        return $this;
+    }
+
+    public function isEtranger(): bool
+    {
+        return $this->etranger;
+    }
+
+    public function setEtranger(bool $etranger): self
+    {
+        $this->etranger = $etranger;
 
         return $this;
     }

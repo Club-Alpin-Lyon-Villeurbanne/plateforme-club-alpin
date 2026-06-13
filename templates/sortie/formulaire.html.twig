@@ -87,6 +87,13 @@
                 <ul id="place_suggestions"></ul>
             </div>
             <small id="place_feedback" class="place-feedback"></small>
+            <div>
+                <label for="{{ form.etranger.vars.id }}" class="{% if form.etranger.vars.data %}up{% else %}down{% endif %}">
+                    {{ form_widget(form.etranger) }}
+                    {{ field_label(form.etranger) }}
+                </label>
+                {{ form_help(form.etranger) }}
+            </div>
             {{ form_row(form.latDepart) }}
             {{ form_row(form.longDepart) }}
         </div>

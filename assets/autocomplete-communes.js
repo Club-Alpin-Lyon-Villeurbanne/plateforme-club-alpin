@@ -226,6 +226,11 @@ function searchCommunes(context) {
             if (submitter && /eventDraftSave/.test(submitter.name || submitter.id || '')) {
                 return;
             }
+            // sortie à l'étranger : la commune de départ est facultative
+            const etrangerField = document.getElementById('event_etranger');
+            if (etrangerField && etrangerField.checked) {
+                return;
+            }
             const val = field.value.trim();
             if (val === '' || val !== selectedLabel) {
                 e.preventDefault();
@@ -242,6 +247,34 @@ function searchCommunes(context) {
     // si — et seulement si — elle correspond exactement à une commune du référentiel.
     if (field.value.trim() !== '') {
         verifyPrefilled(field.value.trim());
+    }
+
+    // sortie à l'étranger : on désactive le champ commune (facultatif) et on le vide
+    const etrangerField = document.getElementById('event_etranger');
+    if (etrangerField) {
+        const latDepart = document.getElementById('event_latDepart');
+        const longDepart = document.getElementById('event_longDepart');
+        const defaultPlaceholder = field.placeholder;
+        const syncEtranger = () => {
+            const abroad = etrangerField.checked;
+            field.disabled = abroad;
+            field.placeholder = abroad ? 'Non requis pour une sortie à l\'étranger' : defaultPlaceholder;
+            if (abroad) {
+                field.value = '';
+                selectedLabel = '';
+                closeList();
+                setFeedback('');
+                // 0 = pas de départ (sentinelle numérique, pas '')
+                if (latDepart) {
+                    latDepart.value = '0';
+                }
+                if (longDepart) {
+                    longDepart.value = '0';
+                }
+            }
+        };
+        etrangerField.addEventListener('change', syncEtranger);
+        syncEtranger();
     }
 }
 
