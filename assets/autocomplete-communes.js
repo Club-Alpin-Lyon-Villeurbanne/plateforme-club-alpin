@@ -18,15 +18,12 @@ function searchCommunes(context) {
     list.setAttribute('role', 'listbox');
 
     function setFeedback(state) {
-        // état d'erreur visuel sur l'input (bordure rouge) hors cas « ok »/vide
+        // état d'erreur visuel sur l'input (bordure rouge) hors cas « vide »
         field.classList.toggle('place-input--error', state === 'todo' || state === 'required');
         if (!feedback) {
             return;
         }
-        if (state === 'ok') {
-            feedback.textContent = '✓ Commune reconnue';
-            feedback.className = 'place-feedback place-feedback--ok';
-        } else if (state === 'todo') {
+        if (state === 'todo') {
             feedback.textContent = 'Veuillez choisir une commune dans la liste de suggestions.';
             feedback.className = 'place-feedback place-feedback--todo';
         } else if (state === 'required') {
@@ -67,7 +64,7 @@ function searchCommunes(context) {
         field.value = item.label;
         selectedLabel = item.label;
         closeList();
-        setFeedback('ok');
+        setFeedback('');
     }
 
     function renderList() {
@@ -125,7 +122,6 @@ function searchCommunes(context) {
                 // ne confirmer que si l'utilisateur n'a pas modifié le champ entre-temps
                 if (exists && field.value.trim() === value) {
                     selectedLabel = value;
-                    setFeedback('ok');
                 }
             })
             .catch(() => {});
@@ -165,7 +161,7 @@ function searchCommunes(context) {
 
     field.addEventListener('input', () => {
         clearTimeout(timer);
-        // toute frappe qui s'écarte de la sélection confirmée invalide l'état « ✓ »
+        // toute frappe qui s'écarte de la sélection confirmée efface un éventuel message d'erreur
         if (field.value.trim() !== selectedLabel) {
             setFeedback('');
         }

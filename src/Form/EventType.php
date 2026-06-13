@@ -132,7 +132,7 @@ class EventType extends AbstractType
                 ],
             ])
             ->add('place', TextType::class, [
-                'label' => 'Commune de départ',
+                'label' => 'Commune de départ de l\'activité',
                 'required' => false,
                 'attr' => [
                     'placeholder' => 'ex : 69510 Messimy, 74400 Chamonix',
@@ -140,7 +140,7 @@ class EventType extends AbstractType
                     'maxlength' => 255,
                     'autocomplete' => 'off',
                 ],
-                'help' => 'Commencez à saisir un code postal ou une ville et choisissez dans la liste qui apparaît ci-dessous. Permet de déduire le massif, nécessaire au calcul du bilan carbone.',
+                'help' => 'Commencez à saisir un code postal ou une ville et choisissez dans la liste qui apparaît ci-dessous. Commune de départ de l\'activité : sert à estimer l\'empreinte carbone du transport.',
                 'help_attr' => [
                     'class' => 'mini',
                 ],
