@@ -67,7 +67,7 @@ class FfcamSkillsServiceTest extends TestCase
         $commission = new Commission('Randonnée', 'randonnee', 1);
         $brevets = $this->service->getBrevets($commission);
 
-        $expected = ['BF3-FC-CO', 'BF3-RA-RM', 'BFM-RA-RM', 'BF2-RA-RAL', 'BF1-RA-RM'];
+        $expected = ['BF3-FC-CO', 'BF3-RA-RM', 'BFM-RA-RM', 'BFM-RA-RA', 'BF2-RA-RAL', 'BF1-RA-RM'];
         $this->assertEquals($expected, $brevets);
     }
 
@@ -76,7 +76,7 @@ class FfcamSkillsServiceTest extends TestCase
         $commission = new Commission('Alpinisme', 'alpinisme', 1);
         $brevets = $this->service->getBrevets($commission);
 
-        $expected = ['BF3-AL-AL', 'BFM-AL-GV', 'BFM-AL-CG', 'BF2-AL-GVE', 'BF2-AL-GV', 'BF2-AL-CG', 'BF1-AL-AL'];
+        $expected = ['BF3-AL-AL', 'BFM-AL-GV', 'BFM-AL-CG', 'BFM-AL-GVE', 'BF2-AL-GVE', 'BF2-AL-GV', 'BF2-AL-CG', 'BF1-AL-AL'];
         $this->assertEquals($expected, $brevets);
     }
 
@@ -86,7 +86,7 @@ class FfcamSkillsServiceTest extends TestCase
         $brevets = $this->service->getBrevets($commission);
 
         $this->assertIsArray($brevets);
-        $this->assertCount(11, $brevets);
+        $this->assertCount(12, $brevets);
         $this->assertContains('BF3-ES-ES', $brevets);
         $this->assertContains('BF1-ES-SAE', $brevets);
     }
