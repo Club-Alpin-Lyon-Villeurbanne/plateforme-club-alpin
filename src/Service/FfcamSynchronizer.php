@@ -7,21 +7,32 @@ use App\Repository\UserRepository;
 use App\Utils\MemberMerger;
 use App\Utils\NicknameGenerator;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
 
 class FfcamSynchronizer
 {
     private bool $hasTolerancyPeriodPassed;
 
+    // Reconstruits par recoverEntityManager() si un flush ferme l'EntityManager.
+    private EntityManagerInterface $entityManager;
+    private UserRepository $userRepository;
+    private MemberMerger $memberMerger;
+
     public function __construct(
         private readonly LoggerInterface $logger,
-        private readonly EntityManagerInterface $entityManager,
-        private readonly UserRepository $userRepository,
+        EntityManagerInterface $entityManager,
+        UserRepository $userRepository,
         private readonly FfcamFileParser $fileParser,
-        private readonly MemberMerger $memberMerger,
+        MemberMerger $memberMerger,
         private readonly UserLicenseHelper $userLicenseHelper,
+        private readonly ManagerRegistry $managerRegistry,
         private readonly ?FfcamSyncReportMailer $syncReportMailer = null,
     ) {
+        $this->entityManager = $entityManager;
+        $this->userRepository = $userRepository;
+        $this->memberMerger = $memberMerger;
+
         $today = new \DateTime();
         $endDate = new \DateTime($today->format('Y') . '-' . UserLicenseHelper::LICENSE_TOLERANCY_PERIOD_END);
 
@@ -193,8 +204,7 @@ class FfcamSynchronizer
                     $this->logger->error('Flush error: ' . $exception->getMessage());
                     ++$stats['errors'];
 
-                    // Clear l'entity manager pour continuer le traitement
-                    $this->entityManager->clear();
+                    $this->recoverEntityManager();
                 }
             } catch (\Exception $exception) {
                 $cafnum = $parsedUser->getCafnum() ?? 'inconnu';
@@ -214,12 +224,38 @@ class FfcamSynchronizer
                     'message' => $errorMessage,
                 ];
 
+                $this->recoverEntityManager();
+
                 // Continue avec le prochain membre
                 continue;
             }
         }
 
         return $stats;
+    }
+
+    /**
+     * Un flush en échec ferme l'EntityManager : sans réinitialisation, tous les
+     * adhérents traités ensuite échoueraient en cascade (« The EntityManager is
+     * closed »). On rouvre alors un EntityManager neuf et on reconstruit les
+     * dépendances qui lui étaient liées (repository, merger).
+     */
+    private function recoverEntityManager(): void
+    {
+        if ($this->entityManager->isOpen()) {
+            $this->entityManager->clear();
+
+            return;
+        }
+
+        $this->managerRegistry->resetManager();
+
+        $manager = $this->managerRegistry->getManager();
+        \assert($manager instanceof EntityManagerInterface);
+
+        $this->entityManager = $manager;
+        $this->userRepository = new UserRepository($this->managerRegistry);
+        $this->memberMerger = new MemberMerger($this->userRepository, $this->entityManager);
     }
 
     private function updateExistingUser(User $existingUser, User $parsedUser): void

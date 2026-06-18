@@ -470,4 +470,96 @@ class FfcamSynchronizerTest extends WebTestCase
         // Check that user2 has not been merged (ie cafnum is not changed)
         $this->assertEquals($identifiant2, $user2->getCafnum());
     }
+
+    public function testSynchronizeContinuesAfterDuplicateCafnumFailures(): void
+    {
+        // Reproduit l'incident de juin 2026 : des adhérents « poison » (fusion qui
+        // tente de recréer un cafnum déjà pris) fermaient l'EntityManager et faisaient
+        // échouer en cascade tous les adhérents suivants. Le fichier annuel en contenait
+        // PLUSIEURS (Lagrange puis Blom) : on vérifie la reprise après plusieurs échecs.
+        [$poison1, $old1, $new1] = $this->createPoisonPair();
+        [$poison2, $old2, $new2] = $this->createPoisonPair();
+
+        $nextCafnum = (string) rand(100000000000, 999999999999);
+
+        // Fichier : deux poisons d'affilée PUIS un nouvel adhérent qui doit être créé.
+        $filePath = FfcamTestHelper::generateFile([
+            $poison1,
+            $poison2,
+            [
+                'cafnum' => $nextCafnum,
+                'lastname' => $this->faker->lastName(),
+                'firstname' => $this->faker->firstName(),
+                'email' => 'suivant-' . bin2hex(random_bytes(8)) . '@clubalpinlyon.fr',
+            ],
+        ]);
+
+        $synchronizer = self::getContainer()->get(FfcamSynchronizer::class);
+        $synchronizer->synchronize($filePath);
+
+        $repository = self::getContainer()->get(UserRepository::class);
+
+        // 1) L'adhérent traité après DEUX poisons doit avoir été créé : pas de cascade,
+        //    et la reprise survit à plusieurs échecs consécutifs.
+        $this->assertNotNull(
+            $repository->findOneByLicenseNumber($nextCafnum),
+            "L'adhérent suivant les poisons doit être créé malgré leurs échecs"
+        );
+
+        // 2) Une fusion en échec ne doit pas corrompre les fiches (rollback) :
+        //    chaque fiche conserve son cafnum d'origine.
+        foreach ([[$old1, $new1], [$old2, $new2]] as [$oldCafnum, $newCafnum]) {
+            $this->assertNotNull($repository->findOneByLicenseNumber($oldCafnum), 'La fiche historique doit subsister');
+            $this->assertNotNull($repository->findOneByLicenseNumber($newCafnum), 'La fiche en double doit subsister');
+        }
+    }
+
+    /**
+     * Crée une paire « poison » : une ancienne fiche (email propre) et une nouvelle
+     * fiche au même cafnum que la ligne du fichier (email déjà masqué par le
+     * dédoublonnage). Au traitement de la ligne, la fusion tente de réécrire le
+     * cafnum déjà détenu par la nouvelle fiche -> violation d'unicité.
+     *
+     * @return array{0: array<string, string>, 1: string, 2: string} [ligne fichier, ancien cafnum, nouveau cafnum]
+     */
+    private function createPoisonPair(): array
+    {
+        $oldCafnum = (string) rand(100000000000, 999999999999);
+        $newCafnum = (string) rand(100000000000, 999999999999);
+        $lastname = $this->faker->lastName();
+        $firstname = $this->faker->firstName();
+        $email = 'poison-' . bin2hex(random_bytes(8)) . '@clubalpinlyon.fr';
+
+        $oldUser = $this->signup();
+        $oldUser
+            ->setCafnum($oldCafnum)
+            ->setFirstname($firstname)
+            ->setLastname($lastname)
+            ->setBirthdate(new \DateTimeImmutable('1990-01-01'))
+            ->setEmail($email)
+            ->setDoitRenouveler(true);
+
+        $newUser = $this->signup();
+        $newUser
+            ->setCafnum($newCafnum)
+            ->setFirstname($firstname)
+            ->setLastname($lastname)
+            ->setBirthdate(new \DateTimeImmutable('1990-01-01'))
+            ->setEmail('doublon.' . $newCafnum . '-' . $email);
+
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        $em->persist($oldUser);
+        $em->persist($newUser);
+        $em->flush();
+
+        $row = [
+            'cafnum' => $newCafnum,
+            'lastname' => $lastname,
+            'firstname' => $firstname,
+            'birthday' => '1990-01-01',
+            'email' => $email,
+        ];
+
+        return [$row, $oldCafnum, $newCafnum];
+    }
 }
