@@ -471,21 +471,18 @@ class FfcamSynchronizerTest extends WebTestCase
         $this->assertEquals($identifiant2, $user2->getCafnum());
     }
 
-    public function testSynchronizeContinuesAfterDuplicateCafnumFailures(): void
+    public function testSynchronizeConsolidatesUnmergedDuplicate(): void
     {
-        // Reproduit l'incident de juin 2026 : des adhérents « poison » (fusion qui
-        // tente de recréer un cafnum déjà pris) fermaient l'EntityManager et faisaient
-        // échouer en cascade tous les adhérents suivants. Le fichier annuel en contenait
-        // PLUSIEURS (Lagrange puis Blom) : on vérifie la reprise après plusieurs échecs.
-        [$poison1, $old1, $new1] = $this->createPoisonPair();
-        [$poison2, $old2, $new2] = $this->createPoisonPair();
+        // Incident juin 2026 : une personne avec DEUX fiches vivantes — l'historique
+        // (compte + email propre) et une fiche au cafnum du fichier (sans compte, email
+        // masqué). La fusion réécrivait un cafnum déjà pris -> violation -> EM fermé ->
+        // cascade. Désormais on consolide : la fiche en double est parquée et l'historique
+        // récupère le cafnum du fichier en conservant son compte.
+        [$row, $oldCafnum, $newCafnum, $historicId] = $this->createDuplicatePair(null);
 
         $nextCafnum = (string) rand(100000000000, 999999999999);
-
-        // Fichier : deux poisons d'affilée PUIS un nouvel adhérent qui doit être créé.
         $filePath = FfcamTestHelper::generateFile([
-            $poison1,
-            $poison2,
+            $row,
             [
                 'cafnum' => $nextCafnum,
                 'lastname' => $this->faker->lastName(),
@@ -494,35 +491,57 @@ class FfcamSynchronizerTest extends WebTestCase
             ],
         ]);
 
-        $synchronizer = self::getContainer()->get(FfcamSynchronizer::class);
-        $synchronizer->synchronize($filePath);
+        self::getContainer()->get(FfcamSynchronizer::class)->synchronize($filePath);
 
         $repository = self::getContainer()->get(UserRepository::class);
 
-        // 1) L'adhérent traité après DEUX poisons doit avoir été créé : pas de cascade,
-        //    et la reprise survit à plusieurs échecs consécutifs.
-        $this->assertNotNull(
-            $repository->findOneByLicenseNumber($nextCafnum),
-            "L'adhérent suivant les poisons doit être créé malgré leurs échecs"
-        );
+        // Le cafnum du fichier pointe désormais sur la fiche HISTORIQUE, compte conservé.
+        $survivor = $repository->findOneByLicenseNumber($newCafnum);
+        $this->assertNotNull($survivor);
+        $this->assertSame($historicId, $survivor->getId(), 'La fiche historique doit survivre et porter le cafnum du fichier');
+        $this->assertSame('hashedpassword', $survivor->getPassword(), 'Le compte (mot de passe) doit être conservé');
 
-        // 2) Une fusion en échec ne doit pas corrompre les fiches (rollback) :
-        //    chaque fiche conserve son cafnum d'origine.
-        foreach ([[$old1, $new1], [$old2, $new2]] as [$oldCafnum, $newCafnum]) {
-            $this->assertNotNull($repository->findOneByLicenseNumber($oldCafnum), 'La fiche historique doit subsister');
-            $this->assertNotNull($repository->findOneByLicenseNumber($newCafnum), 'La fiche en double doit subsister');
-        }
+        // L'ancien cafnum n'existe plus, et l'adhérent suivant a bien été traité (pas de cascade).
+        $this->assertNull($repository->findOneByLicenseNumber($oldCafnum));
+        $this->assertNotNull($repository->findOneByLicenseNumber($nextCafnum));
+    }
+
+    public function testSynchronizeDoesNotAutoMergeWhenDuplicateHasAccount(): void
+    {
+        // Garde-fou : si la fiche au cafnum du fichier porte AUSSI un compte, on ne détruit
+        // rien automatiquement (ambigu) — on alerte et on saute, sans casser la suite.
+        [$row, $oldCafnum, $newCafnum] = $this->createDuplicatePair('hashedpassword-dup');
+
+        $nextCafnum = (string) rand(100000000000, 999999999999);
+        $filePath = FfcamTestHelper::generateFile([
+            $row,
+            [
+                'cafnum' => $nextCafnum,
+                'lastname' => $this->faker->lastName(),
+                'firstname' => $this->faker->firstName(),
+                'email' => 'suivant-' . bin2hex(random_bytes(8)) . '@clubalpinlyon.fr',
+            ],
+        ]);
+
+        self::getContainer()->get(FfcamSynchronizer::class)->synchronize($filePath);
+
+        $repository = self::getContainer()->get(UserRepository::class);
+
+        // Aucune fusion automatique : les deux fiches subsistent à leur cafnum d'origine.
+        $this->assertNotNull($repository->findOneByLicenseNumber($oldCafnum));
+        $this->assertNotNull($repository->findOneByLicenseNumber($newCafnum));
+        // La suite du fichier est quand même traitée (skip, pas de cascade).
+        $this->assertNotNull($repository->findOneByLicenseNumber($nextCafnum));
     }
 
     /**
-     * Crée une paire « poison » : une ancienne fiche (email propre) et une nouvelle
-     * fiche au même cafnum que la ligne du fichier (email déjà masqué par le
-     * dédoublonnage). Au traitement de la ligne, la fusion tente de réécrire le
-     * cafnum déjà détenu par la nouvelle fiche -> violation d'unicité.
+     * Crée une personne avec deux fiches vivantes : l'historique (compte + email propre)
+     * et une fiche au cafnum du fichier (email masqué). $duplicatePassword contrôle si la
+     * fiche en double porte un compte (pour tester le garde-fou d'ambiguïté).
      *
-     * @return array{0: array<string, string>, 1: string, 2: string} [ligne fichier, ancien cafnum, nouveau cafnum]
+     * @return array{0: array<string, string>, 1: string, 2: string, 3: int} [ligne fichier, ancien cafnum, nouveau cafnum, id historique]
      */
-    private function createPoisonPair(): array
+    private function createDuplicatePair(?string $duplicatePassword): array
     {
         $oldCafnum = (string) rand(100000000000, 999999999999);
         $newCafnum = (string) rand(100000000000, 999999999999);
@@ -530,8 +549,9 @@ class FfcamSynchronizerTest extends WebTestCase
         $firstname = $this->faker->firstName();
         $email = 'poison-' . bin2hex(random_bytes(8)) . '@clubalpinlyon.fr';
 
-        $oldUser = $this->signup();
-        $oldUser
+        // Fiche historique : possède un compte (mot de passe) et l'email propre.
+        $historic = $this->signup(null, 'hashedpassword');
+        $historic
             ->setCafnum($oldCafnum)
             ->setFirstname($firstname)
             ->setLastname($lastname)
@@ -539,8 +559,9 @@ class FfcamSynchronizerTest extends WebTestCase
             ->setEmail($email)
             ->setDoitRenouveler(true);
 
-        $newUser = $this->signup();
-        $newUser
+        // Fiche en double au cafnum du fichier : email masqué, compte selon le paramètre.
+        $duplicate = $this->signup(null, $duplicatePassword);
+        $duplicate
             ->setCafnum($newCafnum)
             ->setFirstname($firstname)
             ->setLastname($lastname)
@@ -548,8 +569,8 @@ class FfcamSynchronizerTest extends WebTestCase
             ->setEmail('doublon.' . $newCafnum . '-' . $email);
 
         $em = self::getContainer()->get(EntityManagerInterface::class);
-        $em->persist($oldUser);
-        $em->persist($newUser);
+        $em->persist($historic);
+        $em->persist($duplicate);
         $em->flush();
 
         $row = [
@@ -560,6 +581,6 @@ class FfcamSynchronizerTest extends WebTestCase
             'email' => $email,
         ];
 
-        return [$row, $oldCafnum, $newCafnum];
+        return [$row, $oldCafnum, $newCafnum, $historic->getId()];
     }
 }

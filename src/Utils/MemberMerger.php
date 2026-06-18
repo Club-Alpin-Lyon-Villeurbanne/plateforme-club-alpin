@@ -85,6 +85,39 @@ class MemberMerger
         }
     }
 
+    /**
+     * Consolide un doublon détecté pendant la synchro : la personne possède deux fiches
+     * vivantes — celle au cafnum du fichier ($existingDuplicate, sans compte) et la fiche
+     * historique ($oldCafNum, qui porte le compte/l'historique). On parque la première
+     * (ce qui libère le cafnum) puis on fusionne les données du fichier sur la fiche
+     * historique, le tout dans une seule transaction.
+     */
+    public function consolidateDuplicate(User $existingDuplicate, string $oldCafNum, User $parsedUser): void
+    {
+        try {
+            $this->entityManager->beginTransaction();
+
+            $oldCafUser = $this->userRepository->findOneByLicenseNumber($oldCafNum);
+
+            if (!$oldCafUser) {
+                throw new \Exception('Unable to find an user with this cafnum ' . $oldCafNum);
+            }
+
+            $existingDuplicate
+                ->setCafnum('obs_' . $existingDuplicate->getCafnum())
+                ->setEmail('obs_' . time() . '_' . bin2hex(random_bytes(8)))
+                ->setIsDeleted(true);
+            $this->entityManager->flush();
+
+            $this->mergeUser($oldCafUser, $parsedUser);
+            $this->entityManager->flush();
+            $this->entityManager->commit();
+        } catch (\Exception $e) {
+            $this->entityManager->rollback();
+            throw $e;
+        }
+    }
+
     private function mergeUser(User $oldCafUser, User $newCafUser): void
     {
         $oldCafUser->setFirstname($newCafUser->getFirstname())

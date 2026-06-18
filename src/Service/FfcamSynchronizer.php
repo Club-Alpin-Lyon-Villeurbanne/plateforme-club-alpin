@@ -7,32 +7,21 @@ use App\Repository\UserRepository;
 use App\Utils\MemberMerger;
 use App\Utils\NicknameGenerator;
 use Doctrine\ORM\EntityManagerInterface;
-use Doctrine\Persistence\ManagerRegistry;
 use Psr\Log\LoggerInterface;
 
 class FfcamSynchronizer
 {
     private bool $hasTolerancyPeriodPassed;
 
-    // Reconstruits par recoverEntityManager() si un flush ferme l'EntityManager.
-    private EntityManagerInterface $entityManager;
-    private UserRepository $userRepository;
-    private MemberMerger $memberMerger;
-
     public function __construct(
         private readonly LoggerInterface $logger,
-        EntityManagerInterface $entityManager,
-        UserRepository $userRepository,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly UserRepository $userRepository,
         private readonly FfcamFileParser $fileParser,
-        MemberMerger $memberMerger,
+        private readonly MemberMerger $memberMerger,
         private readonly UserLicenseHelper $userLicenseHelper,
-        private readonly ManagerRegistry $managerRegistry,
         private readonly ?FfcamSyncReportMailer $syncReportMailer = null,
     ) {
-        $this->entityManager = $entityManager;
-        $this->userRepository = $userRepository;
-        $this->memberMerger = $memberMerger;
-
         $today = new \DateTime();
         $endDate = new \DateTime($today->format('Y') . '-' . UserLicenseHelper::LICENSE_TOLERANCY_PERIOD_END);
 
@@ -57,11 +46,12 @@ class FfcamSynchronizer
         $this->archiveFile($ffcamFilePath, $stats);
         $this->logResults($ffcamFilePath, $stats);
 
-        $blockedCount = $this->userRepository->blockExpiredAccounts($licenseExpirationDate);
-        $filiationsRemoved = $this->userRepository->removeExpiredFiliations();
-
-        $stats['blocked'] = $blockedCount;
-        $stats['filiations_removed'] = $filiationsRemoved;
+        // Si la synchro a été interrompue (EntityManager fermé), on ne bloque pas les
+        // comptes : sinon on dégraderait des adhérents que la synchro n'a pas pu traiter.
+        if (empty($stats['aborted'])) {
+            $stats['blocked'] = $this->userRepository->blockExpiredAccounts($licenseExpirationDate);
+            $stats['filiations_removed'] = $this->userRepository->removeExpiredFiliations();
+        }
 
         $endTime = new \DateTime();
 
@@ -135,7 +125,35 @@ class FfcamSynchronizer
                         $parsedUser->getCafnum()
                     ));
 
-                    $this->memberMerger->mergeNewMember($oldCafNum, $parsedUser);
+                    // Look-before-write : si une fiche vivante détient déjà le cafnum du
+                    // fichier, la fusion réécrirait ce cafnum -> violation d'unicité (qui
+                    // fermait l'EntityManager et cassait toute la suite du fichier). On
+                    // consolide en parquant cette fiche en double, sauf si elle porte un
+                    // compte : dans ce cas (ambigu) on ne détruit rien, on alerte.
+                    if ($existingUser instanceof User) {
+                        if (!empty($existingUser->getPassword())) {
+                            $errorMessage = sprintf(
+                                'Doublon ambigu %s %s : deux fiches avec compte (cafnum fichier %s, cafnum existant %s) — non fusionné automatiquement',
+                                $parsedUser->getFirstname(),
+                                $parsedUser->getLastname(),
+                                $parsedUser->getCafnum(),
+                                $oldCafNum
+                            );
+                            $this->logger->error($errorMessage);
+                            \Sentry\captureMessage($errorMessage);
+                            ++$stats['errors'];
+                            $stats['error_details'][] = [
+                                'cafnum' => $parsedUser->getCafnum(),
+                                'message' => $errorMessage,
+                            ];
+
+                            continue;
+                        }
+
+                        $this->memberMerger->consolidateDuplicate($existingUser, $oldCafNum, $parsedUser);
+                    } else {
+                        $this->memberMerger->mergeNewMember($oldCafNum, $parsedUser);
+                    }
                     ++$stats['merged'];
 
                     // Stocker les détails de la fusion (tous pour debug)
@@ -202,9 +220,14 @@ class FfcamSynchronizer
                     $this->entityManager->clear();
                 } catch (\Exception $exception) {
                     $this->logger->error('Flush error: ' . $exception->getMessage());
+                    \Sentry\captureException($exception);
                     ++$stats['errors'];
 
-                    $this->recoverEntityManager();
+                    if ($this->abortIfManagerClosed($stats)) {
+                        break;
+                    }
+
+                    $this->entityManager->clear();
                 }
             } catch (\Exception $exception) {
                 $cafnum = $parsedUser->getCafnum() ?? 'inconnu';
@@ -215,6 +238,7 @@ class FfcamSynchronizer
                     $cafnum,
                     $errorMessage
                 ));
+                \Sentry\captureException($exception);
 
                 ++$stats['errors'];
 
@@ -224,7 +248,9 @@ class FfcamSynchronizer
                     'message' => $errorMessage,
                 ];
 
-                $this->recoverEntityManager();
+                if ($this->abortIfManagerClosed($stats)) {
+                    break;
+                }
 
                 // Continue avec le prochain membre
                 continue;
@@ -235,27 +261,22 @@ class FfcamSynchronizer
     }
 
     /**
-     * Un flush en échec ferme l'EntityManager : sans réinitialisation, tous les
-     * adhérents traités ensuite échoueraient en cascade (« The EntityManager is
-     * closed »). On rouvre alors un EntityManager neuf et on reconstruit les
-     * dépendances qui lui étaient liées (repository, merger).
+     * Fail-safe : un flush en échec ferme l'EntityManager. Continuer corromprait le
+     * statut des adhérents suivants (cascade « EntityManager is closed »). On marque
+     * alors la synchro comme interrompue pour arrêter la boucle proprement plutôt que
+     * de poursuivre sur un manager mort. Le look-before-write couvre le cas connu
+     * (collision de cafnum) ; ceci ne se déclenche que sur un échec inattendu.
      */
-    private function recoverEntityManager(): void
+    private function abortIfManagerClosed(array &$stats): bool
     {
         if ($this->entityManager->isOpen()) {
-            $this->entityManager->clear();
-
-            return;
+            return false;
         }
 
-        $this->managerRegistry->resetManager();
+        $this->logger->critical('EntityManager fermé pendant la synchro FFCAM : routine interrompue.');
+        $stats['aborted'] = true;
 
-        $manager = $this->managerRegistry->getManager();
-        \assert($manager instanceof EntityManagerInterface);
-
-        $this->entityManager = $manager;
-        $this->userRepository = new UserRepository($this->managerRegistry);
-        $this->memberMerger = new MemberMerger($this->userRepository, $this->entityManager);
+        return true;
     }
 
     private function updateExistingUser(User $existingUser, User $parsedUser): void
