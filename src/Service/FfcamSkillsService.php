@@ -35,13 +35,13 @@ class FfcamSkillsService
         }
 
         return match ($commission->getCode()) {
-            'randonnee' => ['BF3-FC-CO', 'BF3-RA-RM', 'BFM-RA-RM', 'BFM-RA-RA', 'BF2-RA-RAL', 'BF1-RA-RM'],
-            'alpinisme' => ['BF3-AL-AL', 'BFM-AL-GV', 'BFM-AL-CG', 'BFM-AL-GVE', 'BF2-AL-GVE', 'BF2-AL-GV', 'BF2-AL-CG', 'BF1-AL-AL'],
+            'randonnee' => ['BF3-FC-CO', 'BF3-RA-RM', 'BFM-RA-RM', 'BFM-RA-RA', 'BFM-SN-RN', 'BF2-RA-RAL', 'BF1-RA-RM'],
+            'alpinisme' => ['BF3-AL-AL', 'BFM-AL-GV', 'BFM-AL-CG', 'BFM-AL-GVE', 'BFM-AL-EG', 'BF2-AL-GVE', 'BF2-AL-EG', 'BF2-AL-GV', 'BF2-AL-CG', 'BF1-AL-AL'],
             'snowboard-alpin' => ['BF3-SN-NA', 'BRV-BFSU10', 'BRV-BFST10'],
             'marche-nordique' => ['BRV-QFMN10'],
             'snowboard-rando' => ['BF3-SN-NA', 'BF3-FC-CO', 'BF3-SN-SWA', 'BFM-SN-SWL', 'BF2-SN-SWA', 'BF1-SN-SW'],
             'canyon' => ['BF3-CA-CA', 'BFM-CA-CA', 'BF1-CA-CA'],
-            'escalade' => ['BF3-ES-ES', 'BFM-ES-ES', 'BFM-ES-PF', 'BFM-ES-GVE', 'BFM-ES-GV', 'BF2-ES-VF', 'BF2-ES-PS', 'BF2-ES-GVE', 'BF2-AL-GV', 'BF2-AL-CG', 'BF1-ES-SNE', 'BF1-ES-SAE'],
+            'escalade' => ['BF3-ES-ES', 'BFM-ES-ES', 'BFM-ES-PF', 'BFM-ES-GVE', 'BFM-ES-GV', 'BFM-AL-EG', 'BF2-ES-VF', 'BF2-ES-PS', 'BF2-ES-GVE', 'BF2-AL-EG', 'BF2-AL-GV', 'BF2-AL-CG', 'BF1-ES-SNE', 'BF1-ES-SAE'],
             'raquette' => ['BF3-SN-NA', 'BF3-FC-CO', 'BFM-SN-RN', 'BF2-SN-RQ'],
             'ski-de-randonnee' => ['BF3-SN-NA', 'BF3-FC-CO', 'BF3-SN-SA', 'BFM-SN-SR', 'BF2-SN-SA', 'BF1-SN-SR'],
             'ski-de-piste' => ['BF3-SN-NA', 'BRV-BFSA10', 'BRV-BFST10'],
