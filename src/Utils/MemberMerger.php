@@ -103,6 +103,14 @@ class MemberMerger
                 throw new \Exception('Unable to find an user with this cafnum ' . $oldCafNum);
             }
 
+            // Rattacher les inscriptions aux sorties de la fiche en double à la fiche
+            // gardée : la fiche en double n'est pas supprimée mais parquée, ses
+            // participations resteraient sinon attachées à une fiche invisible.
+            $this->entityManager->getConnection()->executeStatement(
+                'UPDATE caf_evt_join SET user_evt_join = :keep WHERE user_evt_join = :drop',
+                ['keep' => $oldCafUser->getId(), 'drop' => $existingDuplicate->getId()]
+            );
+
             $existingDuplicate
                 ->setCafnum('obs_' . $existingDuplicate->getCafnum())
                 ->setEmail('obs_' . time() . '_' . bin2hex(random_bytes(8)))

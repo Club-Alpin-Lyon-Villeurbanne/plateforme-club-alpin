@@ -534,6 +534,28 @@ class FfcamSynchronizerTest extends WebTestCase
         $this->assertNotNull($repository->findOneByLicenseNumber($nextCafnum));
     }
 
+    public function testSynchronizeConsolidationKeepsDuplicateParticipations(): void
+    {
+        // La consolidation parque la fiche en double : ses inscriptions aux sorties
+        // doivent suivre la fiche gardée, sinon elles deviendraient invisibles.
+        [$row, , $newCafnum, $historicId] = $this->createDuplicatePair(null);
+
+        // La fiche en double a une inscription à une sortie.
+        $duplicate = self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber($newCafnum);
+        $duplicateId = $duplicate->getId();
+        $this->createEvent($duplicate);
+
+        $filePath = FfcamTestHelper::generateFile([$row]);
+        self::getContainer()->get(FfcamSynchronizer::class)->synchronize($filePath);
+
+        $connection = self::getContainer()->get(EntityManagerInterface::class)->getConnection();
+        $onHistoric = (int) $connection->fetchOne('SELECT COUNT(*) FROM caf_evt_join WHERE user_evt_join = ?', [$historicId]);
+        $onDuplicate = (int) $connection->fetchOne('SELECT COUNT(*) FROM caf_evt_join WHERE user_evt_join = ?', [$duplicateId]);
+
+        $this->assertSame(1, $onHistoric, "L'inscription doit être rattachée à la fiche gardée");
+        $this->assertSame(0, $onDuplicate, "La fiche parquée ne doit plus porter d'inscription");
+    }
+
     /**
      * Crée une personne avec deux fiches vivantes : l'historique (compte + email propre)
      * et une fiche au cafnum du fichier (email masqué). $duplicatePassword contrôle si la
