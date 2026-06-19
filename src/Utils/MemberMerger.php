@@ -86,11 +86,9 @@ class MemberMerger
     }
 
     /**
-     * Consolide un doublon détecté pendant la synchro : la personne possède deux fiches
-     * vivantes — celle au cafnum du fichier ($existingDuplicate, sans compte) et la fiche
-     * historique ($oldCafNum, qui porte le compte/l'historique). On parque la première
-     * (ce qui libère le cafnum) puis on fusionne les données du fichier sur la fiche
-     * historique, le tout dans une seule transaction.
+     * Consolide deux fiches vivantes d'une même personne : parque la fiche au cafnum du
+     * fichier ($existingDuplicate, sans compte) pour libérer ce cafnum, puis fusionne les
+     * données du fichier sur la fiche historique ($oldCafNum). En une transaction.
      */
     public function consolidateDuplicate(User $existingDuplicate, string $oldCafNum, User $parsedUser): void
     {
@@ -103,10 +101,16 @@ class MemberMerger
                 throw new \Exception('Unable to find an user with this cafnum ' . $oldCafNum);
             }
 
-            // Rattacher les inscriptions aux sorties de la fiche en double à la fiche
-            // gardée : la fiche en double n'est pas supprimée mais parquée, ses
-            // participations resteraient sinon attachées à une fiche invisible.
-            $this->entityManager->getConnection()->executeStatement(
+            // La fiche en double est parquée (non supprimée) : on rapatrie ses inscriptions
+            // sur la fiche gardée, sans recréer un doublon (evt, user).
+            $connection = $this->entityManager->getConnection();
+            $connection->executeStatement(
+                'DELETE d FROM caf_evt_join d
+                 INNER JOIN caf_evt_join k ON k.evt_evt_join = d.evt_evt_join AND k.user_evt_join = :keep
+                 WHERE d.user_evt_join = :drop',
+                ['keep' => $oldCafUser->getId(), 'drop' => $existingDuplicate->getId()]
+            );
+            $connection->executeStatement(
                 'UPDATE caf_evt_join SET user_evt_join = :keep WHERE user_evt_join = :drop',
                 ['keep' => $oldCafUser->getId(), 'drop' => $existingDuplicate->getId()]
             );

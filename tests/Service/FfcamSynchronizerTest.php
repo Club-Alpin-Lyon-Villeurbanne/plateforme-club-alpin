@@ -556,6 +556,39 @@ class FfcamSynchronizerTest extends WebTestCase
         $this->assertSame(0, $onDuplicate, "La fiche parquée ne doit plus porter d'inscription");
     }
 
+    public function testSynchronizeConsolidationDeduplicatesParticipations(): void
+    {
+        // Si les deux fiches sont déjà inscrites à la MÊME sortie, la consolidation ne doit
+        // pas créer de double inscription sur la fiche gardée.
+        [$row, , $newCafnum, $historicId] = $this->createDuplicatePair(null);
+
+        $repository = self::getContainer()->get(UserRepository::class);
+        $historic = $repository->find($historicId);
+        $duplicate = $repository->findOneByLicenseNumber($newCafnum);
+        $duplicateId = $duplicate->getId();
+
+        // Une sortie où les DEUX fiches sont inscrites.
+        $event = $this->createEvent($historic);
+        $event->addParticipation($duplicate);
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        $em->persist($event);
+        $em->flush();
+        $eventId = $event->getId();
+
+        $filePath = FfcamTestHelper::generateFile([$row]);
+        self::getContainer()->get(FfcamSynchronizer::class)->synchronize($filePath);
+
+        $connection = $em->getConnection();
+        $onEventForHistoric = (int) $connection->fetchOne(
+            'SELECT COUNT(*) FROM caf_evt_join WHERE user_evt_join = ? AND evt_evt_join = ?',
+            [$historicId, $eventId]
+        );
+        $onDuplicate = (int) $connection->fetchOne('SELECT COUNT(*) FROM caf_evt_join WHERE user_evt_join = ?', [$duplicateId]);
+
+        $this->assertSame(1, $onEventForHistoric, 'Pas de double inscription sur la fiche gardée');
+        $this->assertSame(0, $onDuplicate, "La fiche parquée ne porte plus d'inscription");
+    }
+
     /**
      * Crée une personne avec deux fiches vivantes : l'historique (compte + email propre)
      * et une fiche au cafnum du fichier (email masqué). $duplicatePassword contrôle si la

@@ -46,8 +46,7 @@ class FfcamSynchronizer
         $this->archiveFile($ffcamFilePath, $stats);
         $this->logResults($ffcamFilePath, $stats);
 
-        // Si la synchro a été interrompue (EntityManager fermé), on ne bloque pas les
-        // comptes : sinon on dégraderait des adhérents que la synchro n'a pas pu traiter.
+        // Synchro interrompue : ne pas bloquer les comptes, on dégraderait des adhérents non traités.
         if (empty($stats['aborted'])) {
             $stats['blocked'] = $this->userRepository->blockExpiredAccounts($licenseExpirationDate);
             $stats['filiations_removed'] = $this->userRepository->removeExpiredFiliations();
@@ -125,11 +124,9 @@ class FfcamSynchronizer
                         $parsedUser->getCafnum()
                     ));
 
-                    // Look-before-write : si une fiche vivante détient déjà le cafnum du
-                    // fichier, la fusion réécrirait ce cafnum -> violation d'unicité (qui
-                    // fermait l'EntityManager et cassait toute la suite du fichier). On
-                    // consolide en parquant cette fiche en double, sauf si elle porte un
-                    // compte : dans ce cas (ambigu) on ne détruit rien, on alerte.
+                    // Si une fiche vivante détient déjà ce cafnum, la fusion le réécrirait
+                    // -> violation d'unicité (qui fermait l'EM). On consolide, sauf si la
+                    // fiche en double porte un compte (ambigu) : on alerte sans rien détruire.
                     if ($existingUser instanceof User) {
                         if (!empty($existingUser->getPassword())) {
                             $errorMessage = sprintf(
@@ -147,6 +144,7 @@ class FfcamSynchronizer
                                 'message' => $errorMessage,
                             ];
 
+                            $this->entityManager->clear();
                             continue;
                         }
 
@@ -222,6 +220,10 @@ class FfcamSynchronizer
                     $this->logger->error('Flush error: ' . $exception->getMessage());
                     \Sentry\captureException($exception);
                     ++$stats['errors'];
+                    $stats['error_details'][] = [
+                        'cafnum' => $parsedUser->getCafnum(),
+                        'message' => $exception->getMessage(),
+                    ];
 
                     if ($this->abortIfManagerClosed($stats)) {
                         break;
@@ -260,13 +262,9 @@ class FfcamSynchronizer
         return $stats;
     }
 
-    /**
-     * Fail-safe : un flush en échec ferme l'EntityManager. Continuer corromprait le
-     * statut des adhérents suivants (cascade « EntityManager is closed »). On marque
-     * alors la synchro comme interrompue pour arrêter la boucle proprement plutôt que
-     * de poursuivre sur un manager mort. Le look-before-write couvre le cas connu
-     * (collision de cafnum) ; ceci ne se déclenche que sur un échec inattendu.
-     */
+    // Si un flush a fermé l'EntityManager, poursuivre cascaderait sur les adhérents
+    // suivants : on interrompt la routine plutôt que de continuer sur un manager mort.
+    // Ne se déclenche que sur un échec inattendu (le look-before-write couvre le cas connu).
     private function abortIfManagerClosed(array &$stats): bool
     {
         if ($this->entityManager->isOpen()) {
