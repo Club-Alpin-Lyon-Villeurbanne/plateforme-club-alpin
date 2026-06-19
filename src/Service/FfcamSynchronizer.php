@@ -46,11 +46,11 @@ class FfcamSynchronizer
         $this->archiveFile($ffcamFilePath, $stats);
         $this->logResults($ffcamFilePath, $stats);
 
-        $blockedCount = $this->userRepository->blockExpiredAccounts($licenseExpirationDate);
-        $filiationsRemoved = $this->userRepository->removeExpiredFiliations();
-
-        $stats['blocked'] = $blockedCount;
-        $stats['filiations_removed'] = $filiationsRemoved;
+        // Synchro interrompue : ne pas bloquer les comptes, on dégraderait des adhérents non traités.
+        if (empty($stats['aborted'])) {
+            $stats['blocked'] = $this->userRepository->blockExpiredAccounts($licenseExpirationDate);
+            $stats['filiations_removed'] = $this->userRepository->removeExpiredFiliations();
+        }
 
         $endTime = new \DateTime();
 
@@ -124,7 +124,34 @@ class FfcamSynchronizer
                         $parsedUser->getCafnum()
                     ));
 
-                    $this->memberMerger->mergeNewMember($oldCafNum, $parsedUser);
+                    // Si une fiche vivante détient déjà ce cafnum, la fusion le réécrirait
+                    // -> violation d'unicité (qui fermait l'EM). On consolide, sauf si la
+                    // fiche en double porte un compte (ambigu) : on alerte sans rien détruire.
+                    if ($existingUser instanceof User) {
+                        if (!empty($existingUser->getPassword())) {
+                            $errorMessage = sprintf(
+                                'Doublon ambigu %s %s : deux fiches avec compte (cafnum fichier %s, cafnum existant %s) — non fusionné automatiquement',
+                                $parsedUser->getFirstname(),
+                                $parsedUser->getLastname(),
+                                $parsedUser->getCafnum(),
+                                $oldCafNum
+                            );
+                            $this->logger->error($errorMessage);
+                            \Sentry\captureMessage($errorMessage);
+                            ++$stats['errors'];
+                            $stats['error_details'][] = [
+                                'cafnum' => $parsedUser->getCafnum(),
+                                'message' => $errorMessage,
+                            ];
+
+                            $this->entityManager->clear();
+                            continue;
+                        }
+
+                        $this->memberMerger->consolidateDuplicate($existingUser, $oldCafNum, $parsedUser);
+                    } else {
+                        $this->memberMerger->mergeNewMember($oldCafNum, $parsedUser);
+                    }
                     ++$stats['merged'];
 
                     // Stocker les détails de la fusion (tous pour debug)
@@ -191,9 +218,17 @@ class FfcamSynchronizer
                     $this->entityManager->clear();
                 } catch (\Exception $exception) {
                     $this->logger->error('Flush error: ' . $exception->getMessage());
+                    \Sentry\captureException($exception);
                     ++$stats['errors'];
+                    $stats['error_details'][] = [
+                        'cafnum' => $parsedUser->getCafnum(),
+                        'message' => $exception->getMessage(),
+                    ];
 
-                    // Clear l'entity manager pour continuer le traitement
+                    if ($this->abortIfManagerClosed($stats)) {
+                        break;
+                    }
+
                     $this->entityManager->clear();
                 }
             } catch (\Exception $exception) {
@@ -205,6 +240,7 @@ class FfcamSynchronizer
                     $cafnum,
                     $errorMessage
                 ));
+                \Sentry\captureException($exception);
 
                 ++$stats['errors'];
 
@@ -214,12 +250,31 @@ class FfcamSynchronizer
                     'message' => $errorMessage,
                 ];
 
+                if ($this->abortIfManagerClosed($stats)) {
+                    break;
+                }
+
                 // Continue avec le prochain membre
                 continue;
             }
         }
 
         return $stats;
+    }
+
+    // Si un flush a fermé l'EntityManager, poursuivre cascaderait sur les adhérents
+    // suivants : on interrompt la routine plutôt que de continuer sur un manager mort.
+    // Ne se déclenche que sur un échec inattendu (le look-before-write couvre le cas connu).
+    private function abortIfManagerClosed(array &$stats): bool
+    {
+        if ($this->entityManager->isOpen()) {
+            return false;
+        }
+
+        $this->logger->critical('EntityManager fermé pendant la synchro FFCAM : routine interrompue.');
+        $stats['aborted'] = true;
+
+        return true;
     }
 
     private function updateExistingUser(User $existingUser, User $parsedUser): void

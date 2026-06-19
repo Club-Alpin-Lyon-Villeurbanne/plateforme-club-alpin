@@ -470,4 +470,172 @@ class FfcamSynchronizerTest extends WebTestCase
         // Check that user2 has not been merged (ie cafnum is not changed)
         $this->assertEquals($identifiant2, $user2->getCafnum());
     }
+
+    public function testSynchronizeConsolidatesUnmergedDuplicate(): void
+    {
+        // Incident juin 2026 : une personne avec DEUX fiches vivantes — l'historique
+        // (compte + email propre) et une fiche au cafnum du fichier (sans compte, email
+        // masqué). La fusion réécrivait un cafnum déjà pris -> violation -> EM fermé ->
+        // cascade. Désormais on consolide : la fiche en double est parquée et l'historique
+        // récupère le cafnum du fichier en conservant son compte.
+        [$row, $oldCafnum, $newCafnum, $historicId] = $this->createDuplicatePair(null);
+
+        $nextCafnum = (string) rand(100000000000, 999999999999);
+        $filePath = FfcamTestHelper::generateFile([
+            $row,
+            [
+                'cafnum' => $nextCafnum,
+                'lastname' => $this->faker->lastName(),
+                'firstname' => $this->faker->firstName(),
+                'email' => 'suivant-' . bin2hex(random_bytes(8)) . '@clubalpinlyon.fr',
+            ],
+        ]);
+
+        self::getContainer()->get(FfcamSynchronizer::class)->synchronize($filePath);
+
+        $repository = self::getContainer()->get(UserRepository::class);
+
+        // Le cafnum du fichier pointe désormais sur la fiche HISTORIQUE, compte conservé.
+        $survivor = $repository->findOneByLicenseNumber($newCafnum);
+        $this->assertNotNull($survivor);
+        $this->assertSame($historicId, $survivor->getId(), 'La fiche historique doit survivre et porter le cafnum du fichier');
+        $this->assertSame('hashedpassword', $survivor->getPassword(), 'Le compte (mot de passe) doit être conservé');
+
+        // L'ancien cafnum n'existe plus, et l'adhérent suivant a bien été traité (pas de cascade).
+        $this->assertNull($repository->findOneByLicenseNumber($oldCafnum));
+        $this->assertNotNull($repository->findOneByLicenseNumber($nextCafnum));
+    }
+
+    public function testSynchronizeDoesNotAutoMergeWhenDuplicateHasAccount(): void
+    {
+        // Garde-fou : si la fiche au cafnum du fichier porte AUSSI un compte, on ne détruit
+        // rien automatiquement (ambigu) — on alerte et on saute, sans casser la suite.
+        [$row, $oldCafnum, $newCafnum] = $this->createDuplicatePair('hashedpassword-dup');
+
+        $nextCafnum = (string) rand(100000000000, 999999999999);
+        $filePath = FfcamTestHelper::generateFile([
+            $row,
+            [
+                'cafnum' => $nextCafnum,
+                'lastname' => $this->faker->lastName(),
+                'firstname' => $this->faker->firstName(),
+                'email' => 'suivant-' . bin2hex(random_bytes(8)) . '@clubalpinlyon.fr',
+            ],
+        ]);
+
+        self::getContainer()->get(FfcamSynchronizer::class)->synchronize($filePath);
+
+        $repository = self::getContainer()->get(UserRepository::class);
+
+        // Aucune fusion automatique : les deux fiches subsistent à leur cafnum d'origine.
+        $this->assertNotNull($repository->findOneByLicenseNumber($oldCafnum));
+        $this->assertNotNull($repository->findOneByLicenseNumber($newCafnum));
+        // La suite du fichier est quand même traitée (skip, pas de cascade).
+        $this->assertNotNull($repository->findOneByLicenseNumber($nextCafnum));
+    }
+
+    public function testSynchronizeConsolidationKeepsDuplicateParticipations(): void
+    {
+        // La consolidation parque la fiche en double : ses inscriptions aux sorties
+        // doivent suivre la fiche gardée, sinon elles deviendraient invisibles.
+        [$row, , $newCafnum, $historicId] = $this->createDuplicatePair(null);
+
+        // La fiche en double a une inscription à une sortie.
+        $duplicate = self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber($newCafnum);
+        $duplicateId = $duplicate->getId();
+        $this->createEvent($duplicate);
+
+        $filePath = FfcamTestHelper::generateFile([$row]);
+        self::getContainer()->get(FfcamSynchronizer::class)->synchronize($filePath);
+
+        $connection = self::getContainer()->get(EntityManagerInterface::class)->getConnection();
+        $onHistoric = (int) $connection->fetchOne('SELECT COUNT(*) FROM caf_evt_join WHERE user_evt_join = ?', [$historicId]);
+        $onDuplicate = (int) $connection->fetchOne('SELECT COUNT(*) FROM caf_evt_join WHERE user_evt_join = ?', [$duplicateId]);
+
+        $this->assertSame(1, $onHistoric, "L'inscription doit être rattachée à la fiche gardée");
+        $this->assertSame(0, $onDuplicate, "La fiche parquée ne doit plus porter d'inscription");
+    }
+
+    public function testSynchronizeConsolidationDeduplicatesParticipations(): void
+    {
+        // Si les deux fiches sont déjà inscrites à la MÊME sortie, la consolidation ne doit
+        // pas créer de double inscription sur la fiche gardée.
+        [$row, , $newCafnum, $historicId] = $this->createDuplicatePair(null);
+
+        $repository = self::getContainer()->get(UserRepository::class);
+        $historic = $repository->find($historicId);
+        $duplicate = $repository->findOneByLicenseNumber($newCafnum);
+        $duplicateId = $duplicate->getId();
+
+        // Une sortie où les DEUX fiches sont inscrites.
+        $event = $this->createEvent($historic);
+        $event->addParticipation($duplicate);
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        $em->persist($event);
+        $em->flush();
+        $eventId = $event->getId();
+
+        $filePath = FfcamTestHelper::generateFile([$row]);
+        self::getContainer()->get(FfcamSynchronizer::class)->synchronize($filePath);
+
+        $connection = $em->getConnection();
+        $onEventForHistoric = (int) $connection->fetchOne(
+            'SELECT COUNT(*) FROM caf_evt_join WHERE user_evt_join = ? AND evt_evt_join = ?',
+            [$historicId, $eventId]
+        );
+        $onDuplicate = (int) $connection->fetchOne('SELECT COUNT(*) FROM caf_evt_join WHERE user_evt_join = ?', [$duplicateId]);
+
+        $this->assertSame(1, $onEventForHistoric, 'Pas de double inscription sur la fiche gardée');
+        $this->assertSame(0, $onDuplicate, "La fiche parquée ne porte plus d'inscription");
+    }
+
+    /**
+     * Crée une personne avec deux fiches vivantes : l'historique (compte + email propre)
+     * et une fiche au cafnum du fichier (email masqué). $duplicatePassword contrôle si la
+     * fiche en double porte un compte (pour tester le garde-fou d'ambiguïté).
+     *
+     * @return array{0: array<string, string>, 1: string, 2: string, 3: int} [ligne fichier, ancien cafnum, nouveau cafnum, id historique]
+     */
+    private function createDuplicatePair(?string $duplicatePassword): array
+    {
+        $oldCafnum = (string) rand(100000000000, 999999999999);
+        $newCafnum = (string) rand(100000000000, 999999999999);
+        $lastname = $this->faker->lastName();
+        $firstname = $this->faker->firstName();
+        $email = 'poison-' . bin2hex(random_bytes(8)) . '@clubalpinlyon.fr';
+
+        // Fiche historique : possède un compte (mot de passe) et l'email propre.
+        $historic = $this->signup(null, 'hashedpassword');
+        $historic
+            ->setCafnum($oldCafnum)
+            ->setFirstname($firstname)
+            ->setLastname($lastname)
+            ->setBirthdate(new \DateTimeImmutable('1990-01-01'))
+            ->setEmail($email)
+            ->setDoitRenouveler(true);
+
+        // Fiche en double au cafnum du fichier : email masqué, compte selon le paramètre.
+        $duplicate = $this->signup(null, $duplicatePassword);
+        $duplicate
+            ->setCafnum($newCafnum)
+            ->setFirstname($firstname)
+            ->setLastname($lastname)
+            ->setBirthdate(new \DateTimeImmutable('1990-01-01'))
+            ->setEmail('doublon.' . $newCafnum . '-' . $email);
+
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        $em->persist($historic);
+        $em->persist($duplicate);
+        $em->flush();
+
+        $row = [
+            'cafnum' => $newCafnum,
+            'lastname' => $lastname,
+            'firstname' => $firstname,
+            'birthday' => '1990-01-01',
+            'email' => $email,
+        ];
+
+        return [$row, $oldCafnum, $newCafnum, $historic->getId()];
+    }
 }
