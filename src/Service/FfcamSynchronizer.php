@@ -168,13 +168,12 @@ class FfcamSynchronizer
                             $parsedUser->getCafnum()
                         );
                         if ($duplicateEmailUser instanceof User) {
-                            $errorMessage = sprintf('Email %s is already used by Cafnum %s (so it has been deduplicated)', $parsedUser->getEmail(), $duplicateEmailUser->getCafnum());
-                            $this->logger->warning($errorMessage);
-                            ++$stats['errors'];
-                            $stats['error_details'][] = [
-                                'cafnum' => $parsedUser->getCafnum(),
-                                'message' => $errorMessage,
-                            ];
+                            // Email partagé (couple/famille) : neutralisé pour respecter l'unicité.
+                            // Cas légitime et fréquent -> warning, pas erreur.
+                            $warningMessage = sprintf('Email %s is already used by Cafnum %s (so it has been deduplicated)', $parsedUser->getEmail(), $duplicateEmailUser->getCafnum());
+                            $this->logger->warning($warningMessage);
+                            ++$stats['warnings'];
+                            $stats['warning_details'][] = $warningMessage;
 
                             // email unique même si faux
                             $parsedUser->setEmail('doublon.' . $parsedUser->getCafnum() . '-' . $parsedUser->getEmail());
