@@ -544,6 +544,10 @@ class UserController extends AbstractController
             if (!$eventForAuth instanceof Evt || !$this->isGranted('EVENT_JOINING_ADD', $eventForAuth)) {
                 throw $this->createAccessDeniedException('Not allowed');
             }
+            $allowedShows = ['allvalid', 'discovery', 'nomade', 'external', 'all'];
+            if (!in_array($show, $allowedShows, true)) {
+                $show = 'allvalid';
+            }
         } elseif (!$userRights->allowed('user_see_all')) {
             throw $this->createAccessDeniedException('Not allowed');
         }
