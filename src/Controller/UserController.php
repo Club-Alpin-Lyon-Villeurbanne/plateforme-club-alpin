@@ -537,7 +537,14 @@ class UserController extends AbstractController
         string $page = 'users-list',
         ?string $show = null
     ): JsonResponse {
-        if (!$userRights->allowed('user_see_all')) {
+        $eventId = $request->query->getInt('event', 0);
+
+        if ('manual-add' === $page) {
+            $eventForAuth = $eventRepository->find($eventId);
+            if (!$eventForAuth instanceof Evt || !$this->isGranted('EVENT_JOINING_ADD', $eventForAuth)) {
+                throw $this->createAccessDeniedException('Not allowed');
+            }
+        } elseif (!$userRights->allowed('user_see_all')) {
             throw $this->createAccessDeniedException('Not allowed');
         }
 
@@ -548,7 +555,6 @@ class UserController extends AbstractController
         $length = $request->query->getInt('length', 100);
         $searchText = $request->query->all()['search']['value'] ?? null;
         $order = $request->query->all()['order'] ?? null;
-        $eventId = $request->query->getInt('event', 0);
         $usersToIgnore = $this->getEventParticipants($eventId, $eventRepository);
 
         $recordsFiltered = $userRepository->getUsersCount($show, $searchText, $usersToIgnore);
