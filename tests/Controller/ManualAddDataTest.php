@@ -65,6 +65,7 @@ class ManualAddDataTest extends WebTestCase
         $this->assertNotEmpty($payload['data']);
         foreach ($payload['data'] as $line) {
             $this->assertStringContainsString('lock_gray.png', $line['age']);
+            $this->assertDoesNotMatchRegularExpression('/\d+\s*ans/', $line['age']);
         }
     }
 
@@ -81,16 +82,25 @@ class ManualAddDataTest extends WebTestCase
 
     public function testSortieInconnueEstRefusee(): void
     {
-        $this->signin($this->signup());
+        $organizer = $this->signup();
+        $this->signin($organizer);
+        $this->createEvent($organizer);
+
         $this->client->request('GET', '/users/data/manual-add/allvalid', $this->datatablesQuery(0));
 
         $this->assertResponseStatusCodeSame(403);
     }
 
+    /**
+     * Le droit sur une sortie n'ouvre pas la liste des adhérents.
+     */
     public function testListeDesAdherentsResteReserveeAuDroitDedie(): void
     {
-        $this->signin($this->signup());
-        $this->client->request('GET', '/users/data/users-list/allvalid', $this->datatablesQuery(0));
+        $organizer = $this->signup();
+        $this->signin($organizer);
+        $event = $this->createEvent($organizer);
+
+        $this->client->request('GET', '/users/data/users-list/allvalid', $this->datatablesQuery($event->getId()));
 
         $this->assertResponseStatusCodeSame(403);
     }
