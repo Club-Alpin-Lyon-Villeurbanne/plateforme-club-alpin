@@ -46,6 +46,25 @@ class ManualAddDataTest extends WebTestCase
         foreach ($payload['data'] as $line) {
             $this->assertArrayNotHasKey('email', $line);
             $this->assertArrayNotHasKey('tel', $line);
+            $this->assertArrayNotHasKey('tools', $line);
+        }
+    }
+
+    /**
+     * Sans user_read_private, l'âge reste masqué : la sortie ne donne pas accès aux dates de naissance.
+     */
+    public function testLAgeResteMasqueSansDroitSurLesDonneesPrivees(): void
+    {
+        $organizer = $this->signup();
+        $this->signin($organizer);
+        $event = $this->createEvent($organizer);
+
+        $this->client->request('GET', '/users/data/manual-add/allvalid', $this->datatablesQuery($event->getId()));
+
+        $payload = json_decode($this->client->getResponse()->getContent(), true);
+        $this->assertNotEmpty($payload['data']);
+        foreach ($payload['data'] as $line) {
+            $this->assertStringContainsString('lock_gray.png', $line['age']);
         }
     }
 
