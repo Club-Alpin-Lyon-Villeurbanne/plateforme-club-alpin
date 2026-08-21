@@ -69,6 +69,48 @@ class ManualAddDataTest extends WebTestCase
         }
     }
 
+    /**
+     * Les comptes supprimés ne sont proposés que par la liste des adhérents, jamais à l'inscription.
+     */
+    public function testLaVueDesComptesSupprimesEstRefusee(): void
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $supprime = $this->signup();
+        $supprime->setIsDeleted(true);
+        $em->flush();
+
+        $organizer = $this->signup();
+        $this->signin($organizer);
+        $event = $this->createEvent($organizer);
+
+        $this->client->request('GET', '/users/data/manual-add/deleted', $this->datatablesQuery($event->getId()));
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    /**
+     * @dataProvider vuesDeLEcranDInscriptionManuelle
+     */
+    public function testLesVuesDeLEcranRestentAccessibles(string $show): void
+    {
+        $organizer = $this->signup();
+        $this->signin($organizer);
+        $event = $this->createEvent($organizer);
+
+        $this->client->request('GET', '/users/data/manual-add/' . $show, $this->datatablesQuery($event->getId()));
+
+        $this->assertResponseIsSuccessful();
+    }
+
+    public static function vuesDeLEcranDInscriptionManuelle(): iterable
+    {
+        yield 'adhérents club' => ['allvalid'];
+        yield 'cartes découverte' => ['discovery'];
+        yield 'adhérents autres clubs' => ['nomade'];
+        yield 'personnes externes' => ['external'];
+        yield 'tous' => ['all'];
+    }
+
     public function testAdherentSansLienAvecLaSortieEstRefuse(): void
     {
         $organizer = $this->signup();
