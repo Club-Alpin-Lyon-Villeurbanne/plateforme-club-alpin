@@ -1337,6 +1337,7 @@ class SortieController extends AbstractController
 
     /**
      * @param array<string, mixed> $newEncadrants
+     *
      * @return array{withValues: array<array{label: string, old: ?string, new: ?string}>, linkedFields: array<array{key: string, label: string, old: mixed, new: mixed}>}
      */
     protected function computeCriticalFieldsEmailChanges(array $originalData, Evt $event, array $newEncadrants): array
@@ -1418,6 +1419,7 @@ class SortieController extends AbstractController
      *
      * @param ?array{withValues: array<array{label: string, old: ?string, new: ?string}>, linkedFields: array<array{key: string, label: string, old: mixed, new: mixed}>} $existing
      * @param array{withValues: array<array{label: string, old: ?string, new: ?string}>, linkedFields: array<array{key: string, label: string, old: mixed, new: mixed}>} $new
+     *
      * @return array{withValues: array<array{label: string, old: ?string, new: ?string}>, linkedFields: array<array{key: string, label: string, old: mixed, new: mixed}>}
      */
     protected function mergePendingEmailChanges(?array $existing, array $new): array
