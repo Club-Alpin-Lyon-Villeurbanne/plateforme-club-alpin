@@ -1,5 +1,7 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
+{% macro linked_label(fields) %}{% if fields|length == 1 %}{{ fields[0] }}{% elseif fields|length == 2 %}{{ fields[0] }} et {{ fields[1] }}{% else %}{{ fields[0:fields|length - 1]|join(', ') }} et {{ fields|last }}{% endif %}{% endmacro %}
+
 {% block subject -%}
     {% if commission %}[{{ commission }}]{% endif %}[MàJ] {{ event_name }} du {{ event_date }}
 {%- endblock %}
@@ -31,14 +33,7 @@
     {% endif %}
 
     {% if linked_changed_fields is defined and linked_changed_fields is not empty %}
-        {% if linked_changed_fields|length == 1 %}
-            {% set linked_label = linked_changed_fields[0] %}
-        {% elseif linked_changed_fields|length == 2 %}
-            {% set linked_label = linked_changed_fields[0] ~ ' et ' ~ linked_changed_fields[1] %}
-        {% else %}
-            {% set linked_label = linked_changed_fields[0:linked_changed_fields|length - 1]|join(', ') ~ ' et ' ~ linked_changed_fields|last %}
-        {% endif %}
-        <p>Des modifications ont été apportées à la sortie ({{ linked_label }}). <a href="{{ event_url }}">Consultez la sortie</a> pour les voir.</p>
+        <p>Des modifications ont été apportées à la sortie ({{ _self.linked_label(linked_changed_fields) }}). <a href="{{ event_url }}">Consultez la sortie</a> pour les voir.</p>
     {% endif %}
 {% endblock %}
 
@@ -52,8 +47,7 @@ Modifications :
 {% endfor %}
 {% endif %}
 {% if linked_changed_fields is defined and linked_changed_fields is not empty %}
-{% if linked_changed_fields|length == 1 %}{% set linked_label = linked_changed_fields[0] %}{% elseif linked_changed_fields|length == 2 %}{% set linked_label = linked_changed_fields[0] ~ ' et ' ~ linked_changed_fields[1] %}{% else %}{% set linked_label = linked_changed_fields[0:linked_changed_fields|length - 1]|join(', ') ~ ' et ' ~ linked_changed_fields|last %}{% endif %}
 
-Des modifications ont été apportées ({{ linked_label }}). Consultez la sortie pour les voir : {{ event_url }}
+Des modifications ont été apportées ({{ _self.linked_label(linked_changed_fields) }}). Consultez la sortie pour les voir : {{ event_url }}
 {% endif %}
 {% endblock %}

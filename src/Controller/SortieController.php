@@ -288,20 +288,28 @@ class SortieController extends AbstractController
 
                 $event->setUpdatedAt(new \DateTime());
 
-                // sortie dépubliée à l'édition (si certains champs sont modifiés seulement)
-                if (
-                    Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus()
-                    && (
-                        $originalEntityData['ngensMax'] !== $event->getngensMax()
-                        || $originalEntityData['place'] !== $event->getPlace()
-                        || $originalEntityData['hasPaymentForm'] !== $event->hasPaymentForm()
-                        || $originalEntityData['paymentAmount'] !== $event->getPaymentAmount()
-                        || $originalEntityData['encadrants'] !== $newEncadrants['encadrants']
-                        || $originalEntityData['initiateurs'] !== $newEncadrants['initiateurs']
-                    )
-                ) {
+                // sortie dépubliée à l'édition (si certains champs critiques sont modifiés)
+                $criticalFieldsChanged =
+                    $originalEntityData['ngensMax'] !== $event->getngensMax()
+                    || $originalEntityData['place'] !== $event->getPlace()
+                    || $originalEntityData['hasPaymentForm'] !== $event->hasPaymentForm()
+                    || $originalEntityData['paymentAmount'] !== $event->getPaymentAmount()
+                    || $originalEntityData['encadrants'] !== $newEncadrants['encadrants']
+                    || $originalEntityData['initiateurs'] !== $newEncadrants['initiateurs'];
+
+                if (Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus() && $criticalFieldsChanged) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
-                    $event->setPendingEmailChanges($this->computeCriticalFieldsEmailChanges($originalEntityData, $event, $newEncadrants));
+                }
+
+                if (Evt::STATUS_PUBLISHED_UNSEEN === $event->getStatus()) {
+                    // sortie encore non republiée : on accumule tous les changements (critiques et non critiques)
+                    // pour les inclure dans l'email envoyé lors de la republication, sans rien perdre des
+                    // éditions successives faites avant la revalidation
+                    $newChanges = $this->mergePendingEmailChanges(
+                        $this->computeCriticalFieldsEmailChanges($originalEntityData, $event, $newEncadrants),
+                        $this->computeEventEmailChanges($originalEntityData, $event)
+                    );
+                    $event->setPendingEmailChanges($this->mergePendingEmailChanges($event->getPendingEmailChanges(), $newChanges));
                 } elseif (!$event->isDraft()) {
                     $emailChanges = $this->computeEventEmailChanges($originalEntityData, $event);
                     if (!empty($emailChanges['withValues']) || !empty($emailChanges['linkedChangedFields'])) {
@@ -1393,6 +1401,39 @@ class SortieController extends AbstractController
         }
 
         return ['withValues' => $withValues, 'linkedChangedFields' => $linkedChangedFields];
+    }
+
+    /**
+     * Fusionne un nouveau jeu de changements avec les changements déjà en attente, en conservant
+     * pour chaque champ la valeur "old" la plus ancienne et la valeur "new" la plus récente. Permet
+     * d'accumuler correctement les modifications successives faites avant la republication d'une sortie.
+     *
+     * @param ?array{withValues: array<array{label: string, old: ?string, new: ?string}>, linkedChangedFields: list<string>} $existing
+     * @param array{withValues: array<array{label: string, old: ?string, new: ?string}>, linkedChangedFields: list<string>} $new
+     * @return array{withValues: array<array{label: string, old: ?string, new: ?string}>, linkedChangedFields: list<string>}
+     */
+    protected function mergePendingEmailChanges(?array $existing, array $new): array
+    {
+        $existing ??= ['withValues' => [], 'linkedChangedFields' => []];
+
+        $withValuesByLabel = [];
+        foreach ($existing['withValues'] as $change) {
+            $withValuesByLabel[$change['label']] = $change;
+        }
+        foreach ($new['withValues'] as $change) {
+            $old = $withValuesByLabel[$change['label']]['old'] ?? $change['old'];
+            if ($old === $change['new']) {
+                // la valeur est revenue à son état d'origine : plus de changement à signaler
+                unset($withValuesByLabel[$change['label']]);
+            } else {
+                $withValuesByLabel[$change['label']] = ['label' => $change['label'], 'old' => $old, 'new' => $change['new']];
+            }
+        }
+
+        return [
+            'withValues' => array_values($withValuesByLabel),
+            'linkedChangedFields' => array_values(array_unique(array_merge($existing['linkedChangedFields'], $new['linkedChangedFields']))),
+        ];
     }
 
     /**
