@@ -46,6 +46,8 @@ class Evt
     public const int STATUS_LEGAL_VALIDE = 1;
     public const int STATUS_LEGAL_REFUSE = 2;
 
+    public const int EXPENSE_REPORT_DEADLINE_DAYS = 120;
+
     #[ORM\Column(name: 'id_evt', type: 'integer', nullable: false)]
     #[ORM\Id]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
@@ -61,6 +63,9 @@ class Evt
 
     #[ORM\Column(name: 'is_draft', type: 'boolean', nullable: false, options: ['default' => true])]
     private bool $isDraft = true;
+
+    #[ORM\Column(name: 'is_etranger', type: 'boolean', nullable: false, options: ['default' => false, 'comment' => 'Sortie à l\'étranger : commune de départ non requise'])]
+    private bool $etranger = false;
 
     #[ORM\ManyToOne(targetEntity: 'User')]
     #[ORM\JoinColumn(name: 'status_who_evt', referencedColumnName: 'id_user', nullable: true)]
@@ -269,6 +274,11 @@ class Evt
     #[SerializedName('coutCarbone')]
     private ?float $coutCarbone = null;
 
+    #[ORM\Column(name: 'cout_carbone_per_person', type: Types::FLOAT, nullable: true)]
+    #[Groups('event:read')]
+    #[SerializedName('coutCarbonePerPerson')]
+    private ?float $coutCarbonePerPerson = null;
+
     public function __construct(
         ?User $user,
         ?Commission $commission,
@@ -312,6 +322,7 @@ class Evt
         $this->articles = new ArrayCollection();
         $this->expenseReports = new ArrayCollection();
         $this->isDraft = false;
+        $this->etranger = false;
         $this->unrecognizedPayers = new ArrayCollection();
         $this->setCreatedAt(new \DateTime());
         $this->setUpdatedAt(new \DateTime());
@@ -396,7 +407,7 @@ class Evt
         return $this->statusLegalWho;
     }
 
-    public function setStatusLegalWho(User $statusLegalWho): self
+    public function setStatusLegalWho(?User $statusLegalWho): self
     {
         $this->statusLegalWho = $statusLegalWho;
 
@@ -611,6 +622,15 @@ class Evt
         }
 
         return $this->endDate < new \DateTimeImmutable();
+    }
+
+    public function isExpenseReportOpen(): bool
+    {
+        if (null === $this->endDate) {
+            return false;
+        }
+
+        return new \DateTimeImmutable() <= $this->endDate->modify(sprintf('+%d days', self::EXPENSE_REPORT_DEADLINE_DAYS));
     }
 
     public function isStarted(): bool
@@ -874,6 +894,18 @@ class Evt
         return $this;
     }
 
+    public function isEtranger(): bool
+    {
+        return $this->etranger;
+    }
+
+    public function setEtranger(bool $etranger): self
+    {
+        $this->etranger = $etranger;
+
+        return $this;
+    }
+
     public function isAgreeEdito(): bool
     {
         return $this->agreeEdito;
@@ -1002,6 +1034,18 @@ class Evt
     public function setCoutCarbone(?float $coutCarbone): self
     {
         $this->coutCarbone = $coutCarbone;
+
+        return $this;
+    }
+
+    public function getCoutCarbonePerPerson(): ?float
+    {
+        return $this->coutCarbonePerPerson;
+    }
+
+    public function setCoutCarbonePerPerson(?float $coutCarbonePerPerson): self
+    {
+        $this->coutCarbonePerPerson = $coutCarbonePerPerson;
 
         return $this;
     }

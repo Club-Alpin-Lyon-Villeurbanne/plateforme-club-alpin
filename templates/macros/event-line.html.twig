@@ -92,6 +92,7 @@
                     <h2 class="tw-flex tw-items-center tw-gap-2">
                         {% if event.cancelled %}<span style="padding:1px 3px; color:red; font-family:Arial;white-space: nowrap;">ANNULÉE - </span>{% endif %}
                         {{ event.titre }}
+                        {% if event.etranger %}<span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap" title="Sortie à l'étranger : commune de départ facultative, bilan carbone non calculé">🌍 Étranger</span>{% endif %}
 
                         {% set participation = event.participation(user) %}
                         {% if participation and display_participation_status %}
@@ -150,7 +151,7 @@
                         {% if participation and display_notes_de_frais and include_name is same as ('profil-sorties-prev')
                             and event.finished and not event.cancelled and event.statusLegal
                             and (participation.role in constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT')) %}
-                            {% if exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_DRAFT') %}
+                            {% if exp_status and exp_status.value == constant('App\\Entity\\ExpenseReport::STATUS_DRAFT') and event.expenseReportOpen %}
                                 <span class="text-din tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-text-xs tw-font-medium tw-text-orange-600 tw-whitespace-nowrap">
                                     🧾 ✍
                                     NdF brouillon
@@ -175,7 +176,7 @@
                                     🧾 ❌
                                     NdF refusée
                                 </span>
-                            {% else %}
+                            {% elseif not exp_status and event.expenseReportOpen %}
                                 <span class="text-din tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
                                     🧾❓
                                     NdF possible

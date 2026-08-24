@@ -1018,9 +1018,10 @@
                 <hr />
             {% endif %}
 
-            {% set nInscritsValides = event.participationsCount %}
-            {% if event.modeTransport and event.coutCarbone is not null and nInscritsValides > 0 %}
-                {% set coutParPersonne = event.coutCarbone / nInscritsValides %}
+            {# Bilan carbone : indépendant des inscriptions réelles, basé sur ngensMax (cf. décision Jacob).
+               Fallback `coutCarbone / ngensMax` pour les sorties créées avant la migration des champs perPerson. #}
+            {% set coutParPersonne = event.coutCarbonePerPerson ?? (event.coutCarbone and event.ngensMax > 0 ? event.coutCarbone / event.ngensMax : null) %}
+            {% if event.modeTransport and coutParPersonne is not null %}
                 {% set kgCO2 = coutParPersonne / 1000 %}
                 <div style="background: #f0f7f0; border-left: 4px solid #4a9c5b; border-radius: 4px; padding: 12px 16px; margin: 12px 0;">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 4px;">
@@ -1031,10 +1032,25 @@
                         {{ event.modeTransport|trans }}
                         {% if event.nbKm %} · {{ event.nbKm|number_format(0, ',', ' ') }} km A/R{% endif %}
                         {% if event.nbVehicules > 1 %} · {{ event.nbVehicules }} véhicules{% endif %}
-                        {% if nInscritsValides > 1 %} · {{ nInscritsValides }} participants{% endif %}
+                        {% if event.ngensMax > 1 %} · {{ event.ngensMax }} places{% endif %}
                     </div>
                     <div style="font-size: 1.4em; font-weight: bold; color: #2d6a3f; margin-top: 6px;">
                         {{ kgCO2|number_format(1, ',', ' ') }} kg CO₂e <span style="font-size: 0.6em; font-weight: normal; color: #666;">/ personne</span>
+                    </div>
+                    <div style="margin-top: 4px;">
+                        <a href="{{ path('sortie_methodologie_bilan_carbone') }}" style="font-size: 0.85em; color: #2d6a3f;">
+                            ℹ️ Plus d'infos et méthodologie
+                        </a>
+                    </div>
+                </div>
+            {% elseif event.etranger %}
+                <div style="background: #f0f7f0; border-left: 4px solid #4a9c5b; border-radius: 4px; padding: 12px 16px; margin: 12px 0;">
+                    <div style="display: flex; align-items: center; gap: 8px;">
+                        <span style="font-size: 1.3em;">🌍</span>
+                        <b style="color: #2d6a3f;">Sortie à l'étranger</b>
+                    </div>
+                    <div style="color: #444; font-size: 0.95em; margin-top: 4px;">
+                        Le départ de l'activité étant hors de France, l'empreinte carbone du transport n'est pas calculée.
                     </div>
                 </div>
             {% endif %}
@@ -1358,13 +1374,14 @@
             const contact_message = document.getElementById('contact_message');
             const contact_reply_to = document.querySelector('input[name="reply_to_option"]');
 
-            btn1.addEventListener('click', () => {
+            // les contrôles de gestion (btn1/btn2/select) ne sont rendus qu'aux encadrants
+            btn1?.addEventListener('click', () => {
                 contact_subject.required = false;
                 contact_message.required = false;
                 contact_reply_to.required = false;
             });
 
-            btn2.addEventListener('click', (event) => {
+            btn2?.addEventListener('click', (event) => {
                 contact_subject.required = true;
                 contact_message.required = true;
                 contact_reply_to.required = true;
@@ -1411,7 +1428,7 @@
             const checkboxes = document.querySelectorAll('.contact-cb');
             const select = document.getElementById('contact_participants_type');
 
-            select.addEventListener('change', () => {
+            select?.addEventListener('change', () => {
                 // reset la sélection actuelle
                 checkboxes.forEach(checkbox => checkbox.checked = false);
 

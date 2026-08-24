@@ -3,31 +3,28 @@
 namespace App\Service;
 
 use Psr\Log\LoggerInterface;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class HelloAssoClient
 {
     public const string HELLO_ASSO_TOKEN_ENDPOINT = '/oauth2/token';
+    public const string HELLO_ASSO_CHECKOUT_INTENT_ENDPOINT = '/v5/organizations/{organizationSlug}/checkout-intents';
 
     public function __construct(
         protected string $clientId,
         protected string $clientSecret,
         protected string $baseUrl,
         protected readonly HttpClientInterface $httpClient,
-        protected readonly LoggerInterface $logger
+        protected readonly LoggerInterface $logger,
+        protected readonly CacheInterface $cache,
     ) {
     }
 
     public function login(): string
     {
-        $accessToken = '';
-
-        try {
+        return $this->cache->get('helloasso_access_token', function (ItemInterface $item): string {
             $response = $this->httpClient->request(
                 'POST',
                 $this->baseUrl . self::HELLO_ASSO_TOKEN_ENDPOINT,
@@ -43,72 +40,93 @@ class HelloAssoClient
                     ],
                 ],
             );
-            $data = $response->toArray();
-            $accessToken = $data['access_token'];
-        } catch (\Exception $exception) {
-            $this->logger->error($exception->getMessage());
-        }
 
-        return $accessToken;
+            if ($response->getStatusCode() >= 400) {
+                throw new \RuntimeException(sprintf('HelloAsso login failed (HTTP %d)', $response->getStatusCode()));
+            }
+
+            $data = $response->toArray();
+
+            if (empty($data['access_token'])) {
+                throw new \RuntimeException('HelloAsso login failed: no access_token in response');
+            }
+
+            $item->expiresAfter(max(($data['expires_in'] ?? 1800) - 60, 60));
+
+            return $data['access_token'];
+        });
     }
 
-    /**
-     * @throws TransportExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws DecodingExceptionInterface
-     * @throws ClientExceptionInterface
-     */
     public function createForm(string $apiEndpoint, array $params = []): array
     {
-        $return = [];
-        $organizationAccessToken = $this->login();
+        $token = $this->login();
 
-        try {
-            $response = $this->httpClient->request(
-                'POST',
-                $this->baseUrl . $apiEndpoint,
-                [
-                    'headers' => [
-                        'Content-Type' => 'application/*+json',
-                        'accept' => 'application/json',
-                        'Authorization' => 'Bearer ' . $organizationAccessToken,
-                    ],
-                    'json' => $params,
+        $response = $this->httpClient->request(
+            'POST',
+            $this->baseUrl . $apiEndpoint,
+            [
+                'headers' => [
+                    'Content-Type' => 'application/*+json',
+                    'accept' => 'application/json',
+                    'Authorization' => 'Bearer ' . $token,
                 ],
-            );
-            $return = $response->toArray();
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
+                'json' => $params,
+            ],
+        );
+
+        if ($response->getStatusCode() >= 400) {
+            throw new \RuntimeException(sprintf('HelloAsso createForm failed (HTTP %d)', $response->getStatusCode()));
         }
 
-        return $return;
+        return $response->toArray();
     }
 
-    /**
-     * @throws TransportExceptionInterface
-     */
     public function publishForm(string $apiEndpoint): void
     {
-        $organizationAccessToken = $this->login();
+        $token = $this->login();
 
-        try {
-            $this->httpClient->request(
-                'PUT',
-                $this->baseUrl . $apiEndpoint,
-                [
-                    'headers' => [
-                        'Content-Type' => 'application/json',
-                        'Authorization' => 'Bearer ' . $organizationAccessToken,
-                    ],
-                    'json' => [
-                        'state' => 'Private',
-                    ],
+        $response = $this->httpClient->request(
+            'PUT',
+            $this->baseUrl . $apiEndpoint,
+            [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Bearer ' . $token,
                 ],
-            );
-        } catch (\Exception $e) {
-            $this->logger->error($e->getMessage());
+                'json' => [
+                    'state' => 'Private',
+                ],
+            ],
+        );
+
+        if ($response->getStatusCode() >= 400) {
+            throw new \RuntimeException(sprintf('HelloAsso publishForm failed (HTTP %d)', $response->getStatusCode()));
         }
+    }
+
+    public function createCheckoutIntent(string $organizationSlug, array $params): array
+    {
+        $token = $this->login();
+        $endpoint = str_replace('{organizationSlug}', $organizationSlug, self::HELLO_ASSO_CHECKOUT_INTENT_ENDPOINT);
+
+        $response = $this->httpClient->request(
+            'POST',
+            $this->baseUrl . $endpoint,
+            [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'accept' => 'application/json',
+                    'Authorization' => 'Bearer ' . $token,
+                ],
+                'json' => $params,
+            ],
+        );
+
+        if ($response->getStatusCode() >= 400) {
+            throw new \RuntimeException(sprintf('HelloAsso checkout intent failed (HTTP %d)', $response->getStatusCode()));
+        }
+
+        return $response->toArray();
     }
 
     public function areCredentialsSet(): bool

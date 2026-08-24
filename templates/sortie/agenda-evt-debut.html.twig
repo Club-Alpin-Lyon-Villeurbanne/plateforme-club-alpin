@@ -33,6 +33,9 @@
             {% if event.place %}
                 - <b>{{ event.place }}</b>
             {% endif %}
+            {% if event.etranger %}
+                - <b>🌍 À l'étranger</b>
+            {% endif %}
             {% if my_status %}
                 - Votre rôle : <b>{{ my_status.role }}</b>
             {% endif %}

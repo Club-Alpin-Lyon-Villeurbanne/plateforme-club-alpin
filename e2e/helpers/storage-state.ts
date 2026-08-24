@@ -7,6 +7,4 @@ fs.mkdirSync(authDir, { recursive: true });
 export const STORAGE_STATE = {
   admin: path.join(authDir, 'admin.json'),
   redacteur: path.join(authDir, 'redacteur.json'),
-  encadrant: path.join(authDir, 'encadrant.json'),
-  respComm: path.join(authDir, 'resp-comm.json'),
 };

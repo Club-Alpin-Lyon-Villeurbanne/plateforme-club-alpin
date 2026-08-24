@@ -45,9 +45,7 @@ e2e/
 ├── auth.setup.ts            # Setup : authentifie chaque role et sauvegarde les sessions
 ├── .auth/                   # Sessions sauvegardees (gitignored)
 │   ├── admin.json
-│   ├── redacteur.json
-│   ├── encadrant.json
-│   └── resp-comm.json
+│   └── redacteur.json
 ├── helpers/
 │   ├── auth.ts              # loginViaUI() — uniquement pour le test de login
 │   ├── ckeditor.ts          # fillCKEditor() — saisie realiste dans CKEditor5
@@ -55,7 +53,6 @@ e2e/
 ├── login.spec.ts            # Tests de connexion (2 tests)
 ├── article-creation.spec.ts # Creation d'article
 ├── article-publication.spec.ts # Workflow creation + moderation (multi-roles)
-├── sortie-creation.spec.ts  # Creation de sortie famille
 └── README.md
 ```
 

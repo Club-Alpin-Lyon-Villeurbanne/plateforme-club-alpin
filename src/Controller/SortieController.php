@@ -25,6 +25,7 @@ use App\Repository\FormationValidationGroupeCompetenceRepository;
 use App\Repository\FormationValidationNiveauPratiqueRepository;
 use App\Repository\UserAttrRepository;
 use App\Repository\UserRepository;
+use App\Repository\UserRightRepository;
 use App\Service\HelloAssoService;
 use App\Twig\JavascriptGlobalsExtension;
 use App\Utils\Enums\ExpenseReportStatusEnum;
@@ -56,8 +57,6 @@ use Twig\Error\SyntaxError;
 
 class SortieController extends AbstractController
 {
-    public const EXPENSE_REPORT_DEADLINE_DAYS = 120;
-
     public function __construct(
         protected SlugHelper $slugHelper,
         protected float $defaultLat,
@@ -167,6 +166,7 @@ class SortieController extends AbstractController
             $originalEntityData['matos'] = $event->getMatos();
             $originalEntityData['itineraire'] = $event->getItineraire();
             $originalEntityData['description'] = $event->getDescription();
+            $originalEntityData['etranger'] = $event->isEtranger();
         }
 
         $form = $this->createForm(EventType::class, $event, ['is_edit' => $isUpdate, 'editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink, 'user' => $user]);
@@ -295,7 +295,8 @@ class SortieController extends AbstractController
                     || $originalEntityData['hasPaymentForm'] !== $event->hasPaymentForm()
                     || $originalEntityData['paymentAmount'] !== $event->getPaymentAmount()
                     || $originalEntityData['encadrants'] !== $newEncadrants['encadrants']
-                    || $originalEntityData['initiateurs'] !== $newEncadrants['initiateurs'];
+                    || $originalEntityData['initiateurs'] !== $newEncadrants['initiateurs']
+                    || $originalEntityData['etranger'] !== $event->isEtranger();
 
                 if (Evt::STATUS_PUBLISHED_VALIDE === $event->getStatus() && $criticalFieldsChanged) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
@@ -312,8 +313,8 @@ class SortieController extends AbstractController
                     $event->setPendingEmailChanges($this->mergePendingEmailChanges($event->getPendingEmailChanges(), $newChanges));
                 } elseif (!$event->isDraft()) {
                     $emailChanges = $this->computeEventEmailChanges($originalEntityData, $event);
-                    if (!empty($emailChanges['withValues']) || !empty($emailChanges['linkedChangedFields'])) {
-                        $this->sendUpdateNotificationEmail($mailer, $event, false, $emailChanges['withValues'], $emailChanges['linkedChangedFields']);
+                    if (!empty($emailChanges['withValues']) || !empty($emailChanges['linkedFields'])) {
+                        $this->sendUpdateNotificationEmail($mailer, $event, false, $emailChanges['withValues'], array_column($emailChanges['linkedFields'], 'label'));
                     }
                 }
             }
@@ -330,21 +331,27 @@ class SortieController extends AbstractController
             }
             $event->setJoinMax($event->getNgensMax());
 
-            // bilan carbone : ne recalculer la distance que si les coordonnées ont changé
+            // bilan carbone : recalculer la distance si les coordonnées ont changé,
+            // ou si nbKm est vide (échec OSRM antérieur ou sortie d'avant la feature).
             $coordsChanged = !$isUpdate
                 || (float) $event->getLat() !== $originalEntityData['lat']
                 || (float) $event->getLong() !== $originalEntityData['long']
                 || (float) $event->getLatDepart() !== $originalEntityData['latDepart']
                 || (float) $event->getLongDepart() !== $originalEntityData['longDepart'];
 
-            if ($coordsChanged) {
+            if ($event->isEtranger()) {
+                // à l'étranger : pas de commune de départ, donc pas de bilan carbone
+                $event->setNbKm(null);
+            } elseif ($coordsChanged || !$event->getNbKm()) {
                 $nbKm = $distanceHelper->calculate($event);
                 // Conserver l'ancienne distance si l'appel OSRM échoue (retourne 0)
                 if ($nbKm > 0 || !$isUpdate) {
                     $event->setNbKm($nbKm);
                 }
             }
-            $this->calculateCarbonCost($event, $carbonCostHelper);
+            // Bilan carbone basé sur ngensMax — recalculé uniquement à la création/modif
+            // de sortie, pas à chaque inscription (décision Jacob Carbonel).
+            $carbonCostHelper->updateForEvent($event);
             $entityManager->persist($event);
             $entityManager->flush();
 
@@ -440,9 +447,6 @@ class SortieController extends AbstractController
             }
         }
 
-        // Notes de frais must be submitted within EXPENSE_REPORT_DEADLINE_DAYS of the event's end date
-        $expenseReportDeadline = $event->getEndDate()->modify('+' . self::EXPENSE_REPORT_DEADLINE_DAYS . ' days');
-
         // Check if user has a viewable expense report (submitted, approved, or accounted)
         $hasViewableExpenseReport = false;
         if ($user) {
@@ -468,8 +472,8 @@ class SortieController extends AbstractController
             'current_user_has_paid' => $currentUserHasPaid,
             'current_user_accepted' => $currentUserAccepted,
             'accepted_participations' => $participationRepository->getSortedParticipations($event),
-            'is_within_expense_report_deadline' => new \DateTimeImmutable() <= $expenseReportDeadline,
-            'expense_report_deadline_days' => self::EXPENSE_REPORT_DEADLINE_DAYS,
+            'is_within_expense_report_deadline' => $event->isExpenseReportOpen(),
+            'expense_report_deadline_days' => Evt::EXPENSE_REPORT_DEADLINE_DAYS,
             'has_viewable_expense_report' => $hasViewableExpenseReport,
             'groupes_competences' => $groupesCompRefs,
             'niveaux' => $nivRefs,
@@ -499,6 +503,7 @@ class SortieController extends AbstractController
         Mailer $mailer,
         MessageBusInterface $messageBus,
         LoggerInterface $logger,
+        UserRightRepository $userRightRepository,
     ): RedirectResponse {
         if (!$this->isCsrfTokenValid('sortie_validate', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
@@ -509,8 +514,14 @@ class SortieController extends AbstractController
         }
 
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE)->setStatusWho($this->getUser());
-        $pendingEmailChanges = $event->getPendingEmailChanges() ?? ['withValues' => [], 'linkedChangedFields' => []];
+        $pendingEmailChanges = $event->getPendingEmailChanges() ?? ['withValues' => [], 'linkedFields' => []];
         $event->setPendingEmailChanges(null);
+
+        if (!$userRightRepository->hasAnyRoleWithRight('evt_legal_accept')) {
+            $event->setStatusLegal(Evt::STATUS_LEGAL_VALIDE)
+                ->setStatusLegalWho(null)
+                ->setLegalStatusChangeDate(new \DateTimeImmutable());
+        }
 
         // créer la campagne hello asso si nécessaire
         if ($event->hasPaymentForm() && !$event->getHelloAssoFormSlug()) {
@@ -537,7 +548,7 @@ class SortieController extends AbstractController
             'event_date' => $event->getStartDate()->format('d/m/Y'),
         ]);
 
-        $this->sendUpdateNotificationEmail($mailer, $event, $event->getCreatedAt() === $event->getUpdatedAt(), $pendingEmailChanges['withValues'], $pendingEmailChanges['linkedChangedFields']);
+        $this->sendUpdateNotificationEmail($mailer, $event, $event->getCreatedAt() === $event->getUpdatedAt(), $pendingEmailChanges['withValues'], array_column($pendingEmailChanges['linkedFields'], 'label'));
 
         $this->addFlash('info', 'La sortie est approuvée');
 
@@ -552,7 +563,6 @@ class SortieController extends AbstractController
         EntityManagerInterface $em,
         Mailer $mailer,
         RoleHelper $roleHelper,
-        CarbonCostHelper $carbonCostHelper,
     ): RedirectResponse {
         if (!$this->isCsrfTokenValid('sortie_update_inscriptions', $request->request->get('csrf_token_inscriptions'))) {
             $this->addFlash('error', 'Jeton de validation invalide.');
@@ -681,8 +691,6 @@ class SortieController extends AbstractController
         }
 
         if ($flush) {
-            // bilan carbone mis à jour selon nb de participants
-            $this->calculateCarbonCost($event, $carbonCostHelper);
             $em->flush();
         }
 
@@ -931,7 +939,6 @@ class SortieController extends AbstractController
         EventParticipation $participation,
         EntityManagerInterface $em,
         Mailer $mailer,
-        CarbonCostHelper $carbonCostHelper,
     ): RedirectResponse {
         $event = $participation->getEvt();
 
@@ -946,8 +953,6 @@ class SortieController extends AbstractController
         $event->removeParticipation($participation);
         // orphanRemoval: true on Evt::$participations handles the DELETE in DB
 
-        // bilan carbone mis à jour selon nb de participants
-        $this->calculateCarbonCost($event, $carbonCostHelper);
         $em->flush();
 
         /** @var User */
@@ -1018,10 +1023,12 @@ class SortieController extends AbstractController
         $newEvent->setIsDraft(true);
         $newEvent->setLatDepart($event->getLatDepart());
         $newEvent->setLongDepart($event->getLongDepart());
+        $newEvent->setEtranger($event->isEtranger());
         $newEvent->setNbVehicules($event->getNbVehicules());
         $newEvent->setModeTransport($event->getModeTransport());
         $newEvent->setNbKm($event->getNbKm());
         $newEvent->setCoutCarbone($event->getCoutCarbone());
+        $newEvent->setCoutCarbonePerPerson($event->getCoutCarbonePerPerson());
 
         // dupliquer les participants ?
         if ('full' === $mode) {
@@ -1073,7 +1080,6 @@ class SortieController extends AbstractController
         EntityManagerInterface $em,
         Mailer $mailer,
         UserRepository $userRepository,
-        CarbonCostHelper $carbonCostHelper,
     ): RedirectResponse {
         if (!$this->isCsrfTokenValid('join_event', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
@@ -1226,8 +1232,6 @@ class SortieController extends AbstractController
                     }
                 }
 
-                // bilan carbone mis à jour selon nb de participants
-                $this->calculateCarbonCost($event, $carbonCostHelper);
                 $em->flush();
 
                 // E-MAIL À L'ORGANISATEUR ET AUX ENCADRANTS
@@ -1333,12 +1337,12 @@ class SortieController extends AbstractController
 
     /**
      * @param array<string, mixed> $newEncadrants
-     * @return array{withValues: array<array{label: string, old: ?string, new: ?string}>, linkedChangedFields: list<string>}
+     * @return array{withValues: array<array{label: string, old: ?string, new: ?string}>, linkedFields: array<array{key: string, label: string, old: mixed, new: mixed}>}
      */
     protected function computeCriticalFieldsEmailChanges(array $originalData, Evt $event, array $newEncadrants): array
     {
         $withValues = [];
-        $linkedChangedFields = [];
+        $linkedFields = [];
 
         if ($originalData['ngensMax'] !== $event->getNgensMax()) {
             $withValues[] = ['label' => 'Nombre maximum de participants', 'old' => (string) $originalData['ngensMax'], 'new' => (string) $event->getNgensMax()];
@@ -1350,22 +1354,25 @@ class SortieController extends AbstractController
             $withValues[] = ['label' => 'Événement HelloAsso', 'old' => $originalData['hasPaymentForm'] ? 'Oui' : 'Non', 'new' => $event->hasPaymentForm() ? 'Oui' : 'Non'];
         }
         if ($originalData['paymentAmount'] !== $event->getPaymentAmount()) {
-            $oldAmount = $originalData['paymentAmount'] !== null ? number_format((float) $originalData['paymentAmount'], 2) . ' €' : '—';
-            $newAmount = $event->getPaymentAmount() !== null ? number_format($event->getPaymentAmount(), 2) . ' €' : '—';
+            $oldAmount = null !== $originalData['paymentAmount'] ? number_format((float) $originalData['paymentAmount'], 2) . ' €' : '—';
+            $newAmount = null !== $event->getPaymentAmount() ? number_format($event->getPaymentAmount(), 2) . ' €' : '—';
             $withValues[] = ['label' => 'Montant HelloAsso', 'old' => $oldAmount, 'new' => $newAmount];
         }
+        if ($originalData['etranger'] !== $event->isEtranger()) {
+            $withValues[] = ['label' => 'Sortie à l\'étranger', 'old' => $originalData['etranger'] ? 'Oui' : 'Non', 'new' => $event->isEtranger() ? 'Oui' : 'Non'];
+        }
         if ($originalData['encadrants'] !== $newEncadrants['encadrants']) {
-            $linkedChangedFields[] = 'encadrants';
+            $linkedFields[] = ['key' => 'encadrants', 'label' => 'encadrants', 'old' => $originalData['encadrants'], 'new' => $newEncadrants['encadrants']];
         }
         if ($originalData['initiateurs'] !== $newEncadrants['initiateurs']) {
-            $linkedChangedFields[] = 'stagiaires';
+            $linkedFields[] = ['key' => 'stagiaires', 'label' => 'stagiaires', 'old' => $originalData['initiateurs'], 'new' => $newEncadrants['initiateurs']];
         }
 
-        return ['withValues' => $withValues, 'linkedChangedFields' => $linkedChangedFields];
+        return ['withValues' => $withValues, 'linkedFields' => $linkedFields];
     }
 
     /**
-     * @return array{withValues: array<array{label: string, old: ?string, new: ?string}>, linkedChangedFields: list<string>}
+     * @return array{withValues: array<array{label: string, old: ?string, new: ?string}>, linkedFields: array<array{key: string, label: string, old: mixed, new: mixed}>}
      */
     protected function computeEventEmailChanges(array $originalData, Evt $event): array
     {
@@ -1389,39 +1396,40 @@ class SortieController extends AbstractController
             }
         }
 
-        $linkedChangedFields = [];
+        $linkedFields = [];
         if (($originalData['description'] ?? '') !== ($event->getDescription() ?? '')) {
-            $linkedChangedFields[] = 'description';
+            $linkedFields[] = ['key' => 'description', 'label' => 'description', 'old' => $originalData['description'] ?? null, 'new' => $event->getDescription()];
         }
         if (($originalData['itineraire'] ?? '') !== ($event->getItineraire() ?? '')) {
-            $linkedChangedFields[] = 'itinéraire';
+            $linkedFields[] = ['key' => 'itineraire', 'label' => 'itinéraire', 'old' => $originalData['itineraire'] ?? null, 'new' => $event->getItineraire()];
         }
         if (($originalData['matos'] ?? '') !== ($event->getMatos() ?? '')) {
-            $linkedChangedFields[] = 'matériel';
+            $linkedFields[] = ['key' => 'matos', 'label' => 'matériel', 'old' => $originalData['matos'] ?? null, 'new' => $event->getMatos()];
         }
 
-        return ['withValues' => $withValues, 'linkedChangedFields' => $linkedChangedFields];
+        return ['withValues' => $withValues, 'linkedFields' => $linkedFields];
     }
 
     /**
-     * Fusionne un nouveau jeu de changements avec les changements déjà en attente, en conservant
-     * pour chaque champ la valeur "old" la plus ancienne et la valeur "new" la plus récente. Permet
-     * d'accumuler correctement les modifications successives faites avant la republication d'une sortie.
+     * Fusionne un nouveau jeu de changements avec les changements déjà en attente, en conservant pour
+     * chaque champ la valeur "old" la plus ancienne et la valeur "new" la plus récente, et en retirant
+     * les champs revenus à leur état d'origine. Permet d'accumuler correctement les modifications
+     * successives faites avant la republication d'une sortie.
      *
-     * @param ?array{withValues: array<array{label: string, old: ?string, new: ?string}>, linkedChangedFields: list<string>} $existing
-     * @param array{withValues: array<array{label: string, old: ?string, new: ?string}>, linkedChangedFields: list<string>} $new
-     * @return array{withValues: array<array{label: string, old: ?string, new: ?string}>, linkedChangedFields: list<string>}
+     * @param ?array{withValues: array<array{label: string, old: ?string, new: ?string}>, linkedFields: array<array{key: string, label: string, old: mixed, new: mixed}>} $existing
+     * @param array{withValues: array<array{label: string, old: ?string, new: ?string}>, linkedFields: array<array{key: string, label: string, old: mixed, new: mixed}>} $new
+     * @return array{withValues: array<array{label: string, old: ?string, new: ?string}>, linkedFields: array<array{key: string, label: string, old: mixed, new: mixed}>}
      */
     protected function mergePendingEmailChanges(?array $existing, array $new): array
     {
-        $existing ??= ['withValues' => [], 'linkedChangedFields' => []];
+        $existing ??= ['withValues' => [], 'linkedFields' => []];
 
         $withValuesByLabel = [];
         foreach ($existing['withValues'] as $change) {
             $withValuesByLabel[$change['label']] = $change;
         }
         foreach ($new['withValues'] as $change) {
-            $old = $withValuesByLabel[$change['label']]['old'] ?? $change['old'];
+            $old = array_key_exists($change['label'], $withValuesByLabel) ? $withValuesByLabel[$change['label']]['old'] : $change['old'];
             if ($old === $change['new']) {
                 // la valeur est revenue à son état d'origine : plus de changement à signaler
                 unset($withValuesByLabel[$change['label']]);
@@ -1430,9 +1438,23 @@ class SortieController extends AbstractController
             }
         }
 
+        $linkedFieldsByKey = [];
+        foreach ($existing['linkedFields'] as $field) {
+            $linkedFieldsByKey[$field['key']] = $field;
+        }
+        foreach ($new['linkedFields'] as $field) {
+            $old = array_key_exists($field['key'], $linkedFieldsByKey) ? $linkedFieldsByKey[$field['key']]['old'] : $field['old'];
+            if ($old === $field['new']) {
+                // la valeur est revenue à son état d'origine : plus de changement à signaler
+                unset($linkedFieldsByKey[$field['key']]);
+            } else {
+                $linkedFieldsByKey[$field['key']] = ['key' => $field['key'], 'label' => $field['label'], 'old' => $old, 'new' => $field['new']];
+            }
+        }
+
         return [
             'withValues' => array_values($withValuesByLabel),
-            'linkedChangedFields' => array_values(array_unique(array_merge($existing['linkedChangedFields'], $new['linkedChangedFields']))),
+            'linkedFields' => array_values($linkedFieldsByKey),
         ];
     }
 
@@ -1519,14 +1541,9 @@ class SortieController extends AbstractController
         ];
     }
 
-    protected function calculateCarbonCost(Evt $event, CarbonCostHelper $helper): void
+    #[Route(path: '/sorties/methodologie-bilan-carbone', name: 'sortie_methodologie_bilan_carbone', methods: ['GET'])]
+    public function methodologieBilanCarbone(): Response
     {
-        $cost = $helper->calculate(
-            $event->getNbKm() ?: 0,
-            $event->getParticipationsCount(),
-            $event->getNbVehicules() ?: 1,
-            $event->getModeTransport(),
-        );
-        $event->setCoutCarbone($cost);
+        return $this->render('sortie/methodologie-bilan-carbone.html.twig');
     }
 }

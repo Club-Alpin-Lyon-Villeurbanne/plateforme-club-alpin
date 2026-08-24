@@ -5,83 +5,21 @@ namespace App\Service;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class MaterielApiService
 {
-    private string $apiBaseUrl;
-    private string $apiUsername;
-    private string $apiPassword;
-    private ?string $jwtToken = null;
-    private HttpClientInterface $client;
-    private LoggerInterface $logger;
-    private EntityManagerInterface $entityManager;
+    private readonly string $apiBaseUrl;
 
     public function __construct(
-        LoggerInterface $logger,
-        EntityManagerInterface $entityManager,
+        private readonly LoggerInterface $logger,
+        private readonly EntityManagerInterface $entityManager,
+        private readonly LoxyaAuthenticator $authenticator,
+        private readonly HttpClientInterface $client,
         string $apiBaseUrl = '',
-        string $apiUsername = '',
-        string $apiPassword = ''
     ) {
         $this->apiBaseUrl = rtrim($apiBaseUrl, '/');
-        $this->apiUsername = $apiUsername;
-        $this->apiPassword = $apiPassword;
-        $this->client = HttpClient::create();
-        $this->logger = $logger;
-        $this->entityManager = $entityManager;
-    }
-
-    /**
-     * Authenticate with the API and get JWT token.
-     */
-    public function authenticate(): void
-    {
-        try {
-            $this->logger->info('Authentification à l\'API Loxya', [
-                'url' => $this->apiBaseUrl . '/api/session',
-            ]);
-
-            $response = $this->client->request('POST', $this->apiBaseUrl . '/api/session', [
-                'headers' => [
-                    'accept' => 'application/json',
-                    'content-type' => 'application/json',
-                ],
-                'json' => [
-                    'identifier' => $this->apiUsername,
-                    'password' => $this->apiPassword,
-                ],
-            ]);
-
-            $statusCode = $response->getStatusCode();
-
-            if (Response::HTTP_OK === $statusCode) {
-                $data = $response->toArray();
-                $this->jwtToken = $data['token'];
-                $this->logger->info('Authentification réussie');
-            } else {
-                $this->logger->error('Échec de l\'authentification', [
-                    'statusCode' => $statusCode,
-                    'response' => $response->getContent(false),
-                ]);
-                throw new \RuntimeException('Failed to authenticate with Loxya API: Invalid response code ' . $statusCode);
-            }
-        } catch (\Exception $e) {
-            $this->logger->error('Erreur d\'authentification', [
-                'error' => $e->getMessage(),
-            ]);
-            throw new \RuntimeException('Failed to authenticate with Loxya API: ' . $e->getMessage());
-        }
-    }
-
-    /**
-     * Get the JWT token.
-     */
-    public function getJwtToken(): ?string
-    {
-        return $this->jwtToken;
     }
 
     /**
@@ -113,10 +51,6 @@ class MaterielApiService
      */
     public function createUser(User $user): array
     {
-        if (!$this->jwtToken) {
-            $this->authenticate();
-        }
-
         $pseudo = $this->generatePseudo($user->getFirstname(), $user->getLastname());
         $password = $this->generatePassword();
 
@@ -128,7 +62,7 @@ class MaterielApiService
 
             $response = $this->client->request('POST', $this->apiBaseUrl . '/api/beneficiaries', [
                 'headers' => [
-                    'Authorization' => 'Bearer ' . $this->jwtToken,
+                    'Authorization' => 'Bearer ' . $this->authenticator->getToken(),
                 ],
                 'json' => [
                     'first_name' => $user->getFirstname(),
@@ -181,10 +115,6 @@ class MaterielApiService
      */
     private function updateUserGroup(int $userId): void
     {
-        if (!$this->jwtToken) {
-            $this->authenticate();
-        }
-
         try {
             $this->logger->info('Mise à jour des droits utilisateur', [
                 'userId' => $userId,
@@ -193,7 +123,7 @@ class MaterielApiService
             $response = $this->client->request('PUT', $this->apiBaseUrl . '/api/users/' . $userId, [
                 'headers' => [
                     'accept' => 'application/json',
-                    'Authorization' => 'Bearer ' . $this->jwtToken,
+                    'Authorization' => 'Bearer ' . $this->authenticator->getToken(),
                 ],
                 'json' => [
                     'group' => 'readonly-planning-self',
@@ -232,10 +162,6 @@ class MaterielApiService
      */
     public function userExistsOnLoxya(User $user): bool
     {
-        if (!$this->jwtToken) {
-            $this->authenticate();
-        }
-
         $email = $user->getEmail();
         $url = $this->apiBaseUrl . '/api/users?page=1&limit=100&ascending=1&search[]=' . urlencode($email) . '&deleted=0';
 
@@ -243,7 +169,7 @@ class MaterielApiService
             $response = $this->client->request('GET', $url, [
                 'headers' => [
                     'accept' => 'application/json',
-                    'Authorization' => 'Bearer ' . $this->jwtToken,
+                    'Authorization' => 'Bearer ' . $this->authenticator->getToken(),
                 ],
             ]);
 

@@ -48,6 +48,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class UserController extends AbstractController
 {
+    /** Vues de l'écran d'inscription manuelle ; toutes excluent les comptes supprimés. */
+    private const MANUAL_ADD_VIEWS = ['allvalid', 'discovery', 'nomade', 'external', 'all'];
+
     /**
      * @throws NonUniqueResultException
      * @throws NoResultException
@@ -384,11 +387,14 @@ class UserController extends AbstractController
                         'event_date' => $evtDate,
                         'commission' => $commissionTitle,
                         'status' => EventParticipation::STATUS_VALIDE === $status ? 'accepté' : 'pré-inscrit',
+                        'event_rdv' => $event->getRdv(),
+                        'event_rdv_time' => $event->getStartDate()?->format('H:i'),
                     ]);
                 } else {
                     $this->addFlash('error', 'La licence de ' . $user->getFullName() . ' a expiré. L\'adhésion doit être renouvelée avant l\'inscription.');
                 }
             }
+
             $em->flush();
 
             // envoi des mails aux encadrants
@@ -411,6 +417,8 @@ class UserController extends AbstractController
                     'firstname' => ucfirst($this->getUser()->getFirstname()),
                     'lastname' => strtoupper($this->getUser()->getLastname()),
                     'nickname' => $this->getUser()->getNickname(),
+                    'event_rdv' => $event->getRdv(),
+                    'event_rdv_time' => $event->getStartDate()?->format('H:i'),
                 ], [], null, $this->getUser()->getEmail());
             }
 
@@ -532,18 +540,29 @@ class UserController extends AbstractController
         string $page = 'users-list',
         ?string $show = null
     ): JsonResponse {
-        if (!$userRights->allowed('user_see_all')) {
-            throw $this->createAccessDeniedException('Not allowed');
-        }
-
         if (!$show) {
             $show = 'allvalid';
         }
+
+        $eventId = $request->query->getInt('event', 0);
+
+        // la liste d'inscription manuelle suit le droit de la sortie, pas celui de la liste des adhérents
+        if ('manual-add' === $page) {
+            $event = $eventRepository->find($eventId);
+            if (!$event instanceof Evt || !$this->isGranted('EVENT_JOINING_ADD', $event)) {
+                throw $this->createAccessDeniedException('Not allowed');
+            }
+            if (!in_array($show, self::MANUAL_ADD_VIEWS, true)) {
+                throw $this->createAccessDeniedException('Not allowed');
+            }
+        } elseif (!$userRights->allowed('user_see_all')) {
+            throw $this->createAccessDeniedException('Not allowed');
+        }
+
         $start = $request->query->getInt('start', 0);
         $length = $request->query->getInt('length', 100);
         $searchText = $request->query->all()['search']['value'] ?? null;
         $order = $request->query->all()['order'] ?? null;
-        $eventId = $request->query->getInt('event', 0);
         $usersToIgnore = $this->getEventParticipants($eventId, $eventRepository);
 
         $recordsFiltered = $userRepository->getUsersCount($show, $searchText, $usersToIgnore);
@@ -670,12 +689,12 @@ class UserController extends AbstractController
                 'renew' => $renew,
                 'nickname' => '<a href="' . $this->generateUrl('user_profile', ['id' => $user->getId()]) . '" class="fancyframe userlink" title="Voir la fiche">' . $user->getNickname() . '</a>',
                 'age' => $age,
-                'tel' => $tel,
-                'email' => $email,
             ];
             if ('users-list' === $page) {
                 $resultLine = array_merge($resultLine, [
                     'tools' => $tools,
+                    'tel' => $tel,
+                    'email' => $email,
                     'cp' => $user->getCp(),
                     'ville' => $user->getVille(),
                     'license' => $license,

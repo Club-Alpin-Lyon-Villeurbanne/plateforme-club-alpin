@@ -17,7 +17,6 @@ if (isset($_GET['ajx'])) {
         'get_content_html',
         'operations',
         'pages_reorder',
-        'traductions_save'
     ];
 
     // Extraire uniquement le nom du fichier (protection path traversal)
