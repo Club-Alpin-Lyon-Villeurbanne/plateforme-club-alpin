@@ -90,11 +90,16 @@ class MailerLiteAccueilSync extends Command
         }
 
         // Ce depot sert plusieurs clubs et cron.json est partage, mais seul Lyon
-        // utilise MailerLite. La cle API est le seul discriminant fiable : les
-        // identifiants de groupe sont committes dans .env, donc renseignes partout.
-        // Un club sans cle n'est pas en erreur : renvoyer FAILURE ferait echouer
-        // son cron tous les matins, et un cron rouge permanent n'est plus regarde.
-        if (!$this->apiKey) {
+        // utilise MailerLite. La cle API est le premier discriminant, mais elle
+        // seule ne suffit pas : renewalGroupId n'est pose qu'a la main sur la prod
+        // lyonnaise, la ou welcomeGroupId est committe dans .env et donc partout.
+        // Si renewalGroupId est present alors que la cle a disparu, ce ne peut donc
+        // etre qu'une prod lyonnaise amputee, pas un club sans MailerLite : c'est
+        // une panne, pas une absence normale, et ce cas est traite plus bas.
+        // Un club sans cle ni renewalGroupId n'est pas en erreur : renvoyer FAILURE
+        // ferait echouer son cron tous les matins, et un cron rouge permanent n'est
+        // plus regarde.
+        if (!$this->apiKey && !$this->renewalGroupId) {
             $output->writeln('<comment>MailerLite non configure sur cette instance : rien a faire.</comment>');
 
             return Command::SUCCESS;
@@ -105,7 +110,7 @@ class MailerLiteAccueilSync extends Command
         // ce controle joue toute l'annee : une variable perdue en novembre resterait
         // sinon invisible jusqu'a la rentree suivante. On alerte sans renvoyer
         // FAILURE, pour les memes raisons de cron partage que ci-dessus.
-        if (!$this->welcomeGroupId || !$this->renewalGroupId || $this->welcomeGroupId === $this->renewalGroupId) {
+        if (!$this->apiKey || !$this->welcomeGroupId || !$this->renewalGroupId || $this->welcomeGroupId === $this->renewalGroupId) {
             $message = sprintf(
                 "Circuits d'accueil MailerLite : configuration invalide (bienvenue=%s, renouvellement=%s)",
                 $this->welcomeGroupId ?: '(vide)',

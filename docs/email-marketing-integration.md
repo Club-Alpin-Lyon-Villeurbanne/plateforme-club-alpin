@@ -106,10 +106,15 @@ identifiants sont identiques, la commande écrit une erreur, la journalise et en
 Sentry — tout en renvoyant `SUCCESS`, pour ne pas rendre rouge en permanence un cron partagé avec
 Chambéry et Clermont.
 
-C'est la clé API, et non les identifiants de groupe, qui distingue « ce club n'utilise pas
-MailerLite » de « Lyon a perdu sa configuration » : `MAILERLITE_WELCOME_GROUP_ID` est committé dans
-`.env` et donc renseigné partout, tandis que `MAILERLITE_RENEWAL_GROUP_ID` n'est posé qu'à la main
-sur la prod lyonnaise. Ce contrôle joue toute l'année, là où l'alerte de silence est bornée au 15
+La même alerte se déclenche aussi quand `MAILERLITE_API_KEY` est absente mais que
+`MAILERLITE_RENEWAL_GROUP_ID` est renseigné : ce dernier n'est posé qu'à la main sur la prod
+lyonnaise, jamais à Chambéry ni Clermont, donc sa présence sans clé ne peut désigner que Lyon
+amputée de sa clé API — pas un club sans MailerLite.
+
+`MAILERLITE_WELCOME_GROUP_ID` est committé dans `.env` et donc renseigné partout, tandis que
+`MAILERLITE_RENEWAL_GROUP_ID` n'est posé qu'à la main sur la prod lyonnaise — c'est ce qui en fait
+le seul discriminant fiable entre « ce club n'utilise pas MailerLite » et « Lyon a perdu sa
+configuration ». Ce contrôle joue toute l'année, là où l'alerte de silence est bornée au 15
 septembre - 31 octobre : une variable perdue en novembre resterait sinon invisible dix mois.
 
 ## Ce que le dispositif ne détecte pas
@@ -149,10 +154,11 @@ MAILERLITE_WELCOME_GROUP_ID=159667990712813289   # groupe accueil-nouveau
 MAILERLITE_RENEWAL_GROUP_ID=your_group_id_here    # groupe accueil-renouvellement
 ```
 
-Sans `MAILERLITE_API_KEY`, la commande se désactive silencieusement (message « MailerLite non
-configure sur cette instance ») : c'est le cas normal pour Chambéry et Clermont, qui n'ont rien à
-configurer. Avec une clé mais un identifiant de groupe manquant ou dupliqué, elle alerte (voir
-« Alerte de configuration »).
+Sans `MAILERLITE_API_KEY` ni `MAILERLITE_RENEWAL_GROUP_ID`, la commande se désactive
+silencieusement (message « MailerLite non configure sur cette instance ») : c'est le cas normal
+pour Chambéry et Clermont, qui n'ont rien à configurer. Avec une clé mais un identifiant de groupe
+manquant ou dupliqué, ou sans clé mais avec `MAILERLITE_RENEWAL_GROUP_ID` renseigné, elle alerte
+(voir « Alerte de configuration »).
 
 ## Mise en production
 

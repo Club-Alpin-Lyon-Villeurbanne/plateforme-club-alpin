@@ -97,6 +97,24 @@ class MailerLiteAccueilSyncTest extends TestCase
         $this->assertStringNotContainsString('configuration invalide', $tester->getDisplay(), 'Un club sans cle API ne doit declencher aucune alerte');
     }
 
+    public function testAlerteSiLaCleApiManqueAlorsQueLidentifiantDeRenouvellementEstPresent(): void
+    {
+        $repository = $this->createMock(UserRepository::class);
+        $repository->expects($this->never())->method('findForAccueilCircuit');
+
+        $mailerLite = $this->createMock(MailerLiteService::class);
+        $mailerLite->expects($this->never())->method('pushToGroup');
+
+        // renewalGroupId n'existe que sur la prod lyonnaise : sa presence sans cle API
+        // ne peut pas etre Chambery ou Clermont, c'est forcement Lyon amputee de sa cle.
+        $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), '159667990712813289', 'GROUPE_RENOUVELLEMENT', 'production');
+        $tester = new CommandTester($command);
+        $exitCode = $tester->execute(['--execute' => true, '--season' => 2026]);
+
+        $this->assertStringContainsString('configuration invalide', $tester->getDisplay());
+        $this->assertSame(0, $exitCode, 'Le cron partage ne doit pas devenir rouge en permanence');
+    }
+
     public function testAlerteSiUnIdentifiantDeGroupeManqueMalgreLaCleApi(): void
     {
         $repository = $this->createMock(UserRepository::class);
