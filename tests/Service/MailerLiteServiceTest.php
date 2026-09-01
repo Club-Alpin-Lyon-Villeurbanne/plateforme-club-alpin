@@ -429,4 +429,74 @@ class MailerLiteServiceTest extends TestCase
 
         $this->assertSame(1, $requests);
     }
+
+    public function testPushToGroupCibleLeGroupeDemande(): void
+    {
+        $urls = [];
+        $httpClient = new MockHttpClient(function (string $method, string $url) use (&$urls) {
+            $urls[] = $url;
+
+            return new MockResponse('{"imported":1,"updated":0,"failed":0}');
+        });
+
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+        $service->pushToGroup('999', [$this->makeUser('a@example.com')]);
+
+        $this->assertStringContainsString('/groups/999/subscribers/import', $urls[0]);
+    }
+
+    public function testPushToGroupIgnoreLesEmailsDeDoublon(): void
+    {
+        $bodies = [];
+        $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use (&$bodies) {
+            $bodies[] = $options['body'] ?? '';
+
+            return new MockResponse('{"imported":1,"updated":0,"failed":0}');
+        });
+
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+        $results = $service->pushToGroup('999', [
+            $this->makeUser('doublon.690012345678-famille@example.com'),
+            $this->makeUser('vrai@example.com'),
+        ]);
+
+        $this->assertSame(1, $results['skipped']);
+        $this->assertStringNotContainsString('doublon.', $bodies[0]);
+    }
+
+    public function testRemoveFromGroupRechercheParEmailPuisSupprime(): void
+    {
+        $calls = [];
+        $httpClient = new MockHttpClient(function (string $method, string $url) use (&$calls) {
+            $calls[] = $method . ' ' . $url;
+
+            if (str_contains($url, '/subscribers/a%40example.com') || str_contains($url, '/subscribers/a@example.com')) {
+                return new MockResponse('{"data":{"id":"555","groups":[{"id":"999"}]}}');
+            }
+
+            return new MockResponse('', ['http_code' => 204]);
+        });
+
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+
+        $this->assertTrue($service->removeFromGroup('a@example.com', '999'));
+        $this->assertCount(2, $calls);
+        $this->assertStringStartsWith('DELETE ', $calls[1]);
+        $this->assertStringContainsString('/subscribers/555/groups/999', $calls[1]);
+    }
+
+    public function testRemoveFromGroupNeFaitRienSiAbonneInconnu(): void
+    {
+        $calls = 0;
+        $httpClient = new MockHttpClient(function () use (&$calls) {
+            ++$calls;
+
+            return new MockResponse('{"message":"Not found"}', ['http_code' => 404]);
+        });
+
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+
+        $this->assertTrue($service->removeFromGroup('inconnu@example.com', '999'));
+        $this->assertSame(1, $calls, 'Aucun DELETE ne doit suivre un abonne introuvable');
+    }
 }
