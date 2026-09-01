@@ -77,7 +77,7 @@ class MailerLiteService
             } else {
                 $results['imported'] += $batchResults['imported'] ?? 0;
                 $results['updated'] += $batchResults['updated'] ?? 0;
-                $results['failed'] += $batchResults['failed'] ?? 0;
+                $results['failed'] += $batchResults['errored'] ?? 0;
             }
 
             if ($index < \count($batches) - 1) {
