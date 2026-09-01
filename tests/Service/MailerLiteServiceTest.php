@@ -499,4 +499,34 @@ class MailerLiteServiceTest extends TestCase
         $this->assertTrue($service->removeFromGroup('inconnu@example.com', '999'));
         $this->assertSame(1, $calls, 'Aucun DELETE ne doit suivre un abonne introuvable');
     }
+
+    public function testRemoveFromGroupRenvoieFalseSiErreurServeur(): void
+    {
+        $calls = 0;
+        $httpClient = new MockHttpClient(function () use (&$calls) {
+            ++$calls;
+
+            return new MockResponse('{"message":"Internal Server Error"}', ['http_code' => 500]);
+        });
+
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+
+        $this->assertFalse($service->removeFromGroup('a@example.com', '999'));
+        $this->assertSame(1, $calls, 'Aucun DELETE ne doit suivre une erreur serveur sur la recherche');
+    }
+
+    public function testRemoveFromGroupAucunAppelHorsProduction(): void
+    {
+        $requests = 0;
+        $httpClient = new MockHttpClient(function () use (&$requests) {
+            ++$requests;
+
+            return new MockResponse('{}');
+        });
+
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '123', 'staging');
+
+        $this->assertTrue($service->removeFromGroup('test@example.com', '999'));
+        $this->assertSame(0, $requests, 'Aucune requête ne doit partir hors production');
+    }
 }

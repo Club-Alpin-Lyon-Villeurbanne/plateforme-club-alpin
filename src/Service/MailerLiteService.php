@@ -110,9 +110,15 @@ class MailerLiteService
                 'headers' => $this->headers(),
             ]);
 
-            if (200 !== $response->getStatusCode()) {
+            if (404 === $response->getStatusCode()) {
                 // Abonné inconnu de MailerLite : il n'y a rien à retirer.
                 return true;
+            }
+
+            if (200 !== $response->getStatusCode()) {
+                $this->logger->error('MailerLite : échec de la recherche d\'abonné', ['email' => $email, 'groupId' => $groupId, 'statusCode' => $response->getStatusCode()]);
+
+                return false;
             }
 
             $data = $response->toArray(false)['data'] ?? [];
