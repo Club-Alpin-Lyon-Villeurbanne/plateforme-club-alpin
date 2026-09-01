@@ -156,7 +156,9 @@ class MailerLiteAccueilSyncTest extends TestCase
         $mailerLite = $this->createMock(MailerLiteService::class);
         $mailerLite->expects($this->once())->method('removeFromGroup')
             ->with('a@example.com', 'GROUPE_RENOUVELLEMENT')->willReturn(true);
-        $mailerLite->expects($this->once())->method('pushToGroup')
+        // pushToGroup est appele pour chaque groupe cible, y compris le groupe bienvenue
+        // reste vide ici : sans garde sur les tableaux vides, l'appel est sans effet cote API.
+        $mailerLite->expects($this->exactly(2))->method('pushToGroup')
             ->willReturn(['total' => 1, 'imported' => 1, 'updated' => 0, 'failed' => 0, 'skipped' => 0]);
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'GROUPE_BIENVENUE', 'GROUPE_RENOUVELLEMENT', 'production');

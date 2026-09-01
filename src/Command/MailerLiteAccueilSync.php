@@ -131,10 +131,6 @@ class MailerLiteAccueilSync extends Command
         $marked = [];
 
         foreach ($buckets as $groupId => $users) {
-            if (empty($users)) {
-                continue;
-            }
-
             foreach ($users as $user) {
                 // L'automation se declenche sur « subscriber_joins_group » : sans retrait
                 // prealable, un adherent deja present ne recevrait rien.
@@ -147,6 +143,9 @@ class MailerLiteAccueilSync extends Command
             $results = $this->mailerLite->pushToGroup((string) $groupId, $users);
             $output->writeln(sprintf('  groupe %s : %d importe(s), %d echec(s), %d ignore(s)', $groupId, $results['imported'], $results['failed'], $results['skipped']));
 
+            // L'API MailerLite ne renvoie qu'un compteur agrege, pas le detail par adresse :
+            // on ne peut pas savoir qui, dans le groupe, est passe. Entre un doublon
+            // d'envoi (visible, rattrapable) et un oubli silencieux, on choisit le doublon.
             if (0 === $results['failed']) {
                 foreach ($users as $user) {
                     $marked[] = (int) $user->getId();
