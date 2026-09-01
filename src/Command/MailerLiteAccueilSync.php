@@ -131,6 +131,10 @@ class MailerLiteAccueilSync extends Command
         $marked = [];
 
         foreach ($buckets as $groupId => $users) {
+            if ([] === $users) {
+                continue;
+            }
+
             foreach ($users as $user) {
                 // L'automation se declenche sur « subscriber_joins_group » : sans retrait
                 // prealable, un adherent deja present ne recevrait rien.
