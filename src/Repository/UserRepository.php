@@ -447,4 +447,63 @@ SQL;
             ->execute()
         ;
     }
+
+    /**
+     * Adhérents éligibles à un circuit d'accueil : licenciés annuels non supprimés,
+     * ayant pris leur licence pour la saison, joignables, pas encore traités.
+     */
+    public const ACCUEIL_CIRCUIT_DQL = 'SELECT u FROM App\Entity\User u'
+        . ' WHERE u.isDeleted = false'
+        . ' AND u.profileType = ' . User::PROFILE_CLUB_MEMBER
+        . ' AND u.joinDate >= :seasonStart'
+        . ' AND u.radiationDate IS NULL'
+        . ' AND u.email IS NOT NULL'
+        . " AND u.email <> ''"
+        . " AND u.email NOT LIKE 'doublon.%'"
+        . ' AND u.accueilSeason < :season'
+        . ' ORDER BY u.id ASC';
+
+    /**
+     * @return User[]
+     */
+    public function findForAccueilCircuit(int $season): array
+    {
+        return $this->getEntityManager()
+            ->createQuery(self::ACCUEIL_CIRCUIT_DQL)
+            ->setParameter('seasonStart', new \DateTimeImmutable($season . '-09-01 00:00:00'))
+            ->setParameter('season', $season)
+            ->getResult();
+    }
+
+    /**
+     * Marquage de masse en SQL natif : passer par l'ORM déclencherait le trait
+     * Timestampable et modifierait updated_at pour des milliers de fiches.
+     *
+     * @param int[] $userIds
+     */
+    public function markAccueilSeason(array $userIds, int $season): void
+    {
+        if (empty($userIds)) {
+            return;
+        }
+
+        $this->getEntityManager()->getConnection()->executeStatement(
+            'UPDATE caf_user SET accueil_season = :season WHERE id_user IN (:ids)',
+            ['season' => $season, 'ids' => $userIds],
+            ['ids' => \Doctrine\DBAL\ArrayParameterType::INTEGER]
+        );
+    }
+
+    /**
+     * Nombre d'adhérents déjà traités pour une saison, pour l'alerte de silence.
+     * On ne peut pas s'appuyer sur updated_at : le marquage est volontairement
+     * fait en SQL natif, justement pour ne pas y toucher.
+     */
+    public function countAccueilForSeason(int $season): int
+    {
+        return (int) $this->getEntityManager()->getConnection()->fetchOne(
+            'SELECT COUNT(*) FROM caf_user WHERE accueil_season = :season',
+            ['season' => $season]
+        );
+    }
 }
