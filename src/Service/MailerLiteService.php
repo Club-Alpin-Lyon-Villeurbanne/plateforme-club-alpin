@@ -11,6 +11,7 @@ class MailerLiteService
     private const API_URL = 'https://connect.mailerlite.com/api';
     private const BATCH_SIZE = 100;
     private const DEDUP_EMAIL_PREFIX = 'doublon.';
+    private const IMPORT_BATCH_DELAY_SECONDS = 3;
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
@@ -80,7 +81,7 @@ class MailerLiteService
             }
 
             if ($index < \count($batches) - 1) {
-                sleep(1);
+                sleep(self::IMPORT_BATCH_DELAY_SECONDS);
             }
         }
 
@@ -193,7 +194,17 @@ class MailerLiteService
                     'responseData' => $responseData,
                 ]);
 
-                return $responseData;
+                $data = $responseData['data'] ?? null;
+
+                if (!\is_array($data)) {
+                    $this->logger->error('MailerLite import : réponse sans données exploitables', [
+                        'responseData' => $responseData,
+                    ]);
+
+                    return null;
+                }
+
+                return $data;
             }
 
             $this->logger->error('MailerLite import failed', [

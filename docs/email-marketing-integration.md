@@ -59,8 +59,8 @@ Parmi les candidats, une fiche créée pendant la saison (à partir du 1er septe
 `accueil-nouveau` ; une fiche antérieure va vers `accueil-renouvellement`. Avant chaque ajout à un
 groupe, la commande retire l'adhérent du groupe visé : les automations MailerLite se déclenchent
 sur « rejoint le groupe », un ajout sans retrait préalable serait sans effet pour un abonné déjà
-présent. Ces retraits sont espacés de 500 ms : l'API MailerLite plafonne autour de 120 requêtes par
-minute, et un jour de pointe (177 licences sur la journée la plus chargée de 2025) saturerait
+présent. Ces retraits sont espacés d'1 seconde : l'API MailerLite plafonne autour de 120 requêtes
+par minute, et un jour de pointe (177 licences sur la journée la plus chargée de 2025) saturerait
 sinon le quota. Un retrait en échec exclut l'adhérent du marquage : il sera repris à la prochaine
 exécution, quitte à recevoir le circuit deux fois — un doublon est préférable à un oubli définitif.
 

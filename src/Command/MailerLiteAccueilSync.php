@@ -21,7 +21,7 @@ class MailerLiteAccueilSync extends Command
 
     private const SEASON_START_MONTH = 9;
 
-    private const REMOVE_DELAY_US = 500000;
+    private const REMOVE_DELAY_US = 1000000;
 
     public function __construct(
         private readonly UserRepository $userRepository,

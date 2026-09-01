@@ -101,9 +101,12 @@ class MailerLiteServiceTest extends TestCase
         $user3->setEmail('');
 
         $mockResponse = new MockResponse(json_encode([
-            'imported' => 1,
-            'updated' => 0,
-            'failed' => 0,
+            'data' => [
+                'total' => 1,
+                'imported' => 1,
+                'updated' => 0,
+                'errored' => 0,
+            ],
         ]));
 
         $this->httpClient = new MockHttpClient([$mockResponse]);
@@ -145,9 +148,12 @@ class MailerLiteServiceTest extends TestCase
         $user->setLastname('Doe');
 
         $mockResponse = new MockResponse(json_encode([
-            'imported' => 1,
-            'updated' => 0,
-            'failed' => 0,
+            'data' => [
+                'total' => 1,
+                'imported' => 1,
+                'updated' => 0,
+                'errored' => 0,
+            ],
         ]), ['http_code' => 200]);
 
         $this->httpClient = new MockHttpClient([$mockResponse]);
@@ -178,9 +184,12 @@ class MailerLiteServiceTest extends TestCase
         }
 
         $mockResponse = new MockResponse(json_encode([
-            'imported' => 5,
-            'updated' => 0,
-            'failed' => 0,
+            'data' => [
+                'total' => 5,
+                'imported' => 5,
+                'updated' => 0,
+                'errored' => 0,
+            ],
         ]), ['http_code' => 201]);
 
         $this->httpClient = new MockHttpClient([$mockResponse]);
@@ -213,20 +222,29 @@ class MailerLiteServiceTest extends TestCase
         $mockResponses = [];
         // First two batches: 100 users each
         $mockResponses[] = new MockResponse(json_encode([
-            'imported' => 100,
-            'updated' => 0,
-            'failed' => 0,
+            'data' => [
+                'total' => 100,
+                'imported' => 100,
+                'updated' => 0,
+                'errored' => 0,
+            ],
         ]), ['http_code' => 200]);
         $mockResponses[] = new MockResponse(json_encode([
-            'imported' => 100,
-            'updated' => 0,
-            'failed' => 0,
+            'data' => [
+                'total' => 100,
+                'imported' => 100,
+                'updated' => 0,
+                'errored' => 0,
+            ],
         ]), ['http_code' => 200]);
         // Third batch: 50 users
         $mockResponses[] = new MockResponse(json_encode([
-            'imported' => 50,
-            'updated' => 0,
-            'failed' => 0,
+            'data' => [
+                'total' => 50,
+                'imported' => 50,
+                'updated' => 0,
+                'errored' => 0,
+            ],
         ]), ['http_code' => 200]);
 
         $this->httpClient = new MockHttpClient($mockResponses);
@@ -276,9 +294,12 @@ class MailerLiteServiceTest extends TestCase
         $user->setLastname('Doe');
 
         $mockResponse = new MockResponse(json_encode([
-            'imported' => 1,
-            'updated' => 0,
-            'failed' => 0,
+            'data' => [
+                'total' => 1,
+                'imported' => 1,
+                'updated' => 0,
+                'errored' => 0,
+            ],
         ]), ['http_code' => 200]);
 
         $this->httpClient = new MockHttpClient([$mockResponse]);
@@ -308,9 +329,12 @@ class MailerLiteServiceTest extends TestCase
         $user3->setEmail('valid2@example.com');
 
         $mockResponse = new MockResponse(json_encode([
-            'imported' => 2,
-            'updated' => 0,
-            'failed' => 0,
+            'data' => [
+                'total' => 2,
+                'imported' => 2,
+                'updated' => 0,
+                'errored' => 0,
+            ],
         ]), ['http_code' => 200]);
 
         $this->httpClient = new MockHttpClient([$mockResponse]);
@@ -341,9 +365,12 @@ class MailerLiteServiceTest extends TestCase
         }
 
         $mockResponse = new MockResponse(json_encode([
-            'imported' => 2,
-            'updated' => 0,
-            'failed' => 1,
+            'data' => [
+                'total' => 3,
+                'imported' => 2,
+                'updated' => 0,
+                'errored' => 1,
+            ],
         ]), ['http_code' => 200]);
 
         $this->httpClient = new MockHttpClient([$mockResponse]);
@@ -368,9 +395,12 @@ class MailerLiteServiceTest extends TestCase
         $user->setEmail('test@example.com');
 
         $mockResponse = new MockResponse(json_encode([
-            'imported' => 1,
-            'updated' => 0,
-            'failed' => 0,
+            'data' => [
+                'total' => 1,
+                'imported' => 1,
+                'updated' => 0,
+                'errored' => 0,
+            ],
         ]), ['http_code' => 200]);
 
         $this->httpClient = new MockHttpClient([$mockResponse]);
@@ -421,7 +451,7 @@ class MailerLiteServiceTest extends TestCase
         $httpClient = new MockHttpClient(function () use (&$requests) {
             ++$requests;
 
-            return new MockResponse('{"imported":1,"updated":0,"failed":0}');
+            return new MockResponse('{"data":{"total":1,"imported":1,"updated":0,"errored":0}}');
         });
 
         $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '123', 'production');
@@ -436,7 +466,7 @@ class MailerLiteServiceTest extends TestCase
         $httpClient = new MockHttpClient(function (string $method, string $url) use (&$urls) {
             $urls[] = $url;
 
-            return new MockResponse('{"imported":1,"updated":0,"failed":0}');
+            return new MockResponse('{"data":{"total":1,"imported":1,"updated":0,"errored":0}}');
         });
 
         $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
@@ -451,7 +481,7 @@ class MailerLiteServiceTest extends TestCase
         $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use (&$bodies) {
             $bodies[] = $options['body'] ?? '';
 
-            return new MockResponse('{"imported":1,"updated":0,"failed":0}');
+            return new MockResponse('{"data":{"total":1,"imported":1,"updated":0,"errored":0}}');
         });
 
         $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
@@ -528,5 +558,43 @@ class MailerLiteServiceTest extends TestCase
 
         $this->assertTrue($service->removeFromGroup('test@example.com', '999'));
         $this->assertSame(0, $requests, 'Aucune requête ne doit partir hors production');
+    }
+
+    public function testPushToGroupCompteLesErreursDImportCommeEchecs(): void
+    {
+        $httpClient = new MockHttpClient(function () {
+            return new MockResponse(json_encode([
+                'data' => [
+                    'total' => 3,
+                    'imported' => 1,
+                    'updated' => 1,
+                    'errored' => 1,
+                ],
+            ]), ['http_code' => 201]);
+        });
+
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+        $results = $service->pushToGroup('999', [
+            $this->makeUser('a@example.com'),
+            $this->makeUser('b@example.com'),
+            $this->makeUser('c@example.com'),
+        ]);
+
+        $this->assertSame(1, $results['imported']);
+        $this->assertSame(1, $results['updated']);
+        $this->assertSame(1, $results['failed']);
+    }
+
+    public function testPushToGroupSansCleDataEstTraiteCommeUnEchec(): void
+    {
+        $httpClient = new MockHttpClient(function () {
+            return new MockResponse(json_encode(['message' => 'ok']), ['http_code' => 200]);
+        });
+
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+        $results = $service->pushToGroup('999', [$this->makeUser('a@example.com')]);
+
+        $this->assertSame(0, $results['imported']);
+        $this->assertSame(1, $results['failed']);
     }
 }
