@@ -191,7 +191,39 @@ class MailerLiteAccueilSyncTest extends TestCase
         // Au 20 septembre, zero adherent traite sur la saison signale une panne.
         $tester->execute(['--season' => 2026, '--now' => '2026-09-20']);
 
-        $this->assertStringContainsString('Aucun adherent traite', $tester->getDisplay());
+        $this->assertStringContainsString('aucun adherent traite', $tester->getDisplay());
+    }
+
+    public function testAlerteAuSeuilExactDuQuinzeSeptembre(): void
+    {
+        $repository = $this->createMock(UserRepository::class);
+        $repository->method('findForAccueilCircuit')->willReturn([]);
+        $repository->expects($this->once())->method('countAccueilForSeason')->with(2026)->willReturn(0);
+
+        $mailerLite = $this->createMock(MailerLiteService::class);
+
+        $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'production');
+        $tester = new CommandTester($command);
+        // Epingle le seuil exact : un "$day < 16" ferait passer ce test au vert a tort.
+        $tester->execute(['--season' => 2026, '--now' => '2026-09-15']);
+
+        $this->assertStringContainsString('aucun adherent traite', $tester->getDisplay());
+    }
+
+    public function testAlerteLeDernierJourDOctobre(): void
+    {
+        $repository = $this->createMock(UserRepository::class);
+        $repository->method('findForAccueilCircuit')->willReturn([]);
+        $repository->expects($this->once())->method('countAccueilForSeason')->with(2026)->willReturn(0);
+
+        $mailerLite = $this->createMock(MailerLiteService::class);
+
+        $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'production');
+        $tester = new CommandTester($command);
+        // Epingle la presence d'octobre dans la fenetre : un mois limite a [9] manquerait ce cas.
+        $tester->execute(['--season' => 2026, '--now' => '2026-10-31']);
+
+        $this->assertStringContainsString('aucun adherent traite', $tester->getDisplay());
     }
 
     public function testPasDAlerteSiDesEnvoisOntEuLieu(): void
@@ -206,7 +238,7 @@ class MailerLiteAccueilSyncTest extends TestCase
         $tester = new CommandTester($command);
         $tester->execute(['--season' => 2026, '--now' => '2026-09-20']);
 
-        $this->assertStringNotContainsString('Aucun adherent traite', $tester->getDisplay());
+        $this->assertStringNotContainsString('aucun adherent traite', $tester->getDisplay());
     }
 
     public function testPasDAlerteAvantLaMiSeptembre(): void

@@ -188,7 +188,7 @@ class MailerLiteAccueilSync extends Command
             return;
         }
 
-        $message = sprintf('Circuits d\'accueil MailerLite : Aucun adherent traite pour la saison %d', $season);
+        $message = sprintf('Circuits d\'accueil MailerLite : aucun adherent traite pour la saison %d', $season);
         $output->writeln('<error>' . $message . '</error>');
         $this->logger->error($message);
         \Sentry\captureMessage($message);
