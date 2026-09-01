@@ -164,6 +164,12 @@ services:
       $welcomeGroupId: "%env(MAILERLITE_WELCOME_GROUP_ID)%"
       $deployEnv: "%env(DEPLOY_ENV)%"
 
+  App\Command\MailerLiteAccueilSync:
+    arguments:
+      $welcomeGroupId: "%env(MAILERLITE_WELCOME_GROUP_ID)%"
+      $renewalGroupId: "%env(MAILERLITE_RENEWAL_GROUP_ID)%"
+      $deployEnv: "%env(DEPLOY_ENV)%"
+
   App\Service\ExpenseReportCalculator:
     arguments:
       $config: '%expense_report%'
