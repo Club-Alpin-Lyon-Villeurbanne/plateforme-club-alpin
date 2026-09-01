@@ -153,13 +153,28 @@ class MailerLiteAccueilSyncTest extends TestCase
         $repository = $this->createMock(UserRepository::class);
         $repository->method('findForAccueilCircuit')->willReturn([$this->makeUser(1, 'a@example.com', '2019-01-01')]);
 
+        $order = [];
+
         $mailerLite = $this->createMock(MailerLiteService::class);
         $mailerLite->expects($this->once())->method('removeFromGroup')
-            ->with('a@example.com', 'GROUPE_RENOUVELLEMENT')->willReturn(true);
+            ->with('a@example.com', 'GROUPE_RENOUVELLEMENT')
+            ->willReturnCallback(function () use (&$order) {
+                $order[] = 'remove';
+
+                return true;
+            });
         $mailerLite->expects($this->once())->method('pushToGroup')
-            ->willReturn(['total' => 1, 'imported' => 1, 'updated' => 0, 'failed' => 0, 'skipped' => 0]);
+            ->willReturnCallback(function () use (&$order) {
+                $order[] = 'push';
+
+                return ['total' => 1, 'imported' => 1, 'updated' => 0, 'failed' => 0, 'skipped' => 0];
+            });
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'GROUPE_BIENVENUE', 'GROUPE_RENOUVELLEMENT', 'production');
         (new CommandTester($command))->execute(['--execute' => true, '--season' => 2026]);
+
+        // L'automation MailerLite se declenche sur « rejoint le groupe » : inverser ces deux
+        // appels rendrait l'ajout sans effet pour un abonne deja present, sans aucun signal.
+        $this->assertSame(['remove', 'push'], $order);
     }
 }

@@ -98,7 +98,7 @@ class MailerLiteAccueilSync extends Command
         $candidates = $this->userRepository->findForAccueilCircuit($season);
         $output->writeln(sprintf('Saison %d — %d adherent(s) a traiter%s', $season, \count($candidates), $execute ? '' : ' [DRY-RUN]'));
 
-        if (empty($candidates)) {
+        if ([] === $candidates) {
             return Command::SUCCESS;
         }
 
