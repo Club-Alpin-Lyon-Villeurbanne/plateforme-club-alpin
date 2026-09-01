@@ -9,9 +9,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 class UserRepositoryAccueilTest extends KernelTestCase
 {
-    // cafnum synthétiques absents du seed : le test reste isolé et ne détruit
-    // aucune donnée de référence partagée (la base de test n'a pas de rollback transactionnel).
-    // cafnum_user est limité à 20 caractères
     private const CAFNUM_ELIGIBLE = 'TEST-ACC-ELIGIBLE';
     private const CAFNUM_DOUBLON = 'TEST-ACC-DOUBLON';
     private const SEASON = 2026;
@@ -25,16 +22,13 @@ class UserRepositoryAccueilTest extends KernelTestCase
         $this->em = self::getContainer()->get(EntityManagerInterface::class);
         $this->repository = self::getContainer()->get(UserRepository::class);
 
-        // idempotent : on ne nettoie que nos propres adhérents synthétiques
         $this->em->createQuery('DELETE FROM ' . User::class . ' u WHERE u.cafnum IN (:cafnums)')
             ->setParameter('cafnums', [self::CAFNUM_ELIGIBLE, self::CAFNUM_DOUBLON])
             ->execute();
 
         $joinDate = new \DateTimeImmutable(self::SEASON . '-09-15 00:00:00');
 
-        // remplit les six critères
         $this->persistUser(self::CAFNUM_ELIGIBLE, 'eligible.accueil@test-accueil.example', $joinDate);
-        // viole un seul critère : email préfixé doublon. (adresse non routable, dédup FFCAM)
         $this->persistUser(self::CAFNUM_DOUBLON, 'doublon.accueil@test-accueil.example', $joinDate);
 
         $this->em->flush();

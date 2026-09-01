@@ -17,21 +17,12 @@ use Symfony\Component\DependencyInjection\Attribute\Autoconfigure;
 #[Autoconfigure]
 class MailerLiteAccueilSync extends Command
 {
-    /** Au-delà de ce volume sur une seule exécution, on suspecte une erreur de sélection. */
     private const VOLUME_GUARD = 800;
 
-    /** Mois de bascule de la saison sportive. */
     private const SEASON_START_MONTH = 9;
 
-    /**
-     * Le dispositif demarre a la saison 2026-2027 : on ne rattrape pas les adherents
-     * que le circuit casse depuis decembre 2025 a manques. Sans ce plancher, une
-     * execution avant le 1er septembre 2026 selectionnerait les 2 400 licencies de
-     * la saison precedente.
-     */
     private const FIRST_SEASON = 2026;
 
-    /** Pause entre deux retraits : l'API MailerLite plafonne autour de 120 requetes par minute. */
     private const REMOVE_DELAY_US = 500000;
 
     public function __construct(
@@ -47,10 +38,6 @@ class MailerLiteAccueilSync extends Command
         parent::__construct($name);
     }
 
-    /**
-     * La saison bascule le 1er septembre. Ce calcul est volontairement dérivé de la
-     * date courante : rien n'est à reconfigurer d'une année sur l'autre.
-     */
     public static function seasonFor(\DateTimeInterface $date): int
     {
         $year = (int) $date->format('Y');
@@ -75,9 +62,6 @@ class MailerLiteAccueilSync extends Command
             ? (int) $input->getOption('season')
             : self::seasonFor($now);
 
-        // MailerLiteService ignore silencieusement les appels hors production : sans
-        // ce garde-fou, --execute marquerait les adherents comme traites sans qu'aucun
-        // mail ne parte, et ils ne seraient jamais repris.
         if ($execute && 'production' !== $this->deployEnv) {
             $output->writeln(sprintf('<comment>--execute ignore hors production (DEPLOY_ENV=%s) : bascule en dry-run.</comment>', $this->deployEnv));
             $execute = false;
@@ -89,27 +73,12 @@ class MailerLiteAccueilSync extends Command
             return Command::SUCCESS;
         }
 
-        // Ce depot sert plusieurs clubs et cron.json est partage, mais seul Lyon
-        // utilise MailerLite. La cle API est le premier discriminant, mais elle
-        // seule ne suffit pas : renewalGroupId n'est pose qu'a la main sur la prod
-        // lyonnaise, la ou welcomeGroupId est committe dans .env et donc partout.
-        // Si renewalGroupId est present alors que la cle a disparu, ce ne peut donc
-        // etre qu'une prod lyonnaise amputee, pas un club sans MailerLite : c'est
-        // une panne, pas une absence normale, et ce cas est traite plus bas.
-        // Un club sans cle ni renewalGroupId n'est pas en erreur : renvoyer FAILURE
-        // ferait echouer son cron tous les matins, et un cron rouge permanent n'est
-        // plus regarde.
         if (!$this->apiKey && !$this->renewalGroupId) {
             $output->writeln('<comment>MailerLite non configure sur cette instance : rien a faire.</comment>');
 
             return Command::SUCCESS;
         }
 
-        // Sur un club qui a la cle, un identifiant manquant ou duplique est une panne.
-        // Contrairement a l'alerte de silence, bornee au 15 septembre - 31 octobre,
-        // ce controle joue toute l'annee : une variable perdue en novembre resterait
-        // sinon invisible jusqu'a la rentree suivante. On alerte sans renvoyer
-        // FAILURE, pour les memes raisons de cron partage que ci-dessus.
         if (!$this->apiKey || !$this->welcomeGroupId || !$this->renewalGroupId || $this->welcomeGroupId === $this->renewalGroupId) {
             $message = sprintf(
                 "Circuits d'accueil MailerLite : configuration invalide (bienvenue=%s, renouvellement=%s)",
@@ -134,8 +103,6 @@ class MailerLiteAccueilSync extends Command
 
         if (\count($candidates) > self::VOLUME_GUARD && !$input->getOption('force')) {
             $output->writeln(sprintf('<error>%d candidats depassent le plafond de %d. Relancer avec --force apres verification.</error>', \count($candidates), self::VOLUME_GUARD));
-            // Le cron ne passe jamais --force : sans ce signal, la commande echouerait
-            // tous les matins sans que personne ne regarde son code de sortie.
             \Sentry\captureMessage(sprintf("Circuits d'accueil MailerLite : %d candidats depassent le plafond de %d", \count($candidates), self::VOLUME_GUARD));
 
             return Command::FAILURE;
@@ -145,8 +112,6 @@ class MailerLiteAccueilSync extends Command
         $buckets = [$this->welcomeGroupId => [], $this->renewalGroupId => []];
 
         foreach ($candidates as $user) {
-            // Une fiche creee pendant la saison appartient a un nouveau licencie ;
-            // une fiche anterieure a un renouvellement.
             $groupId = $user->getCreatedAt() >= $seasonStart ? $this->welcomeGroupId : $this->renewalGroupId;
             $buckets[$groupId][] = $user;
         }
@@ -170,14 +135,9 @@ class MailerLiteAccueilSync extends Command
             }
 
             foreach ($users as $user) {
-                // L'automation se declenche sur « subscriber_joins_group » : sans retrait
-                // prealable, un adherent deja present ne recevrait rien.
                 if (!$this->mailerLite->removeFromGroup((string) $user->getEmail(), (string) $groupId)) {
                     $this->logger->error('Circuit accueil : retrait de groupe impossible', ['email' => $user->getEmail(), 'groupId' => $groupId]);
                     \Sentry\captureMessage(sprintf('Circuit accueil : retrait impossible pour %s', $user->getEmail()));
-                    // L'adherent est peut-etre reste dans le groupe : l'import qui suit
-                    // reussira sans declencher d'automation, donc sans mail. On ne le
-                    // marque pas, quitte a lui envoyer le circuit deux fois demain.
                     $removalFailures[] = (int) $user->getId();
                 }
 
@@ -187,9 +147,6 @@ class MailerLiteAccueilSync extends Command
             $results = $this->mailerLite->pushToGroup((string) $groupId, $users);
             $output->writeln(sprintf('  groupe %s : %d importe(s), %d echec(s), %d ignore(s)', $groupId, $results['imported'], $results['failed'], $results['skipped']));
 
-            // L'API MailerLite ne renvoie qu'un compteur agrege, pas le detail par adresse :
-            // on ne peut pas savoir qui, dans le groupe, est passe. Entre un doublon
-            // d'envoi (visible, rattrapable) et un oubli silencieux, on choisit le doublon.
             if (0 === $results['failed']) {
                 foreach ($users as $user) {
                     if (!\in_array((int) $user->getId(), $removalFailures, true)) {
@@ -201,20 +158,12 @@ class MailerLiteAccueilSync extends Command
             }
         }
 
-        // Le marquage suit la confirmation de l'API : en cas d'echec, la personne
-        // reste eligible et sera reprise a la prochaine execution.
         $this->userRepository->markAccueilSeason($marked, $season);
         $output->writeln(sprintf('%d adherent(s) marque(s) pour la saison %d.', \count($marked), $season));
 
         return Command::SUCCESS;
     }
 
-    /**
-     * Septembre-octobre concentrent l'essentiel des prises de licence : passe la
-     * mi-septembre, une saison sans le moindre adherent traite signale une panne,
-     * pas un creux d'activite. C'est exactement le signal qui a manque lors de la
-     * panne de decembre 2025.
-     */
     private function alertOnSilence(\DateTimeImmutable $now, int $season, OutputInterface $output): void
     {
         $month = (int) $now->format('n');

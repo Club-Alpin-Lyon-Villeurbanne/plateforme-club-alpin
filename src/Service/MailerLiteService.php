@@ -22,8 +22,6 @@ class MailerLiteService
     }
 
     /**
-     * Synchroniser des membres vers le groupe de bienvenue.
-     *
      * @param User[] $users
      *
      * @return array{total: int, imported: int, updated: int, failed: int, skipped: int}
@@ -34,8 +32,6 @@ class MailerLiteService
     }
 
     /**
-     * Ajouter des membres à un groupe MailerLite, par lots.
-     *
      * @param User[] $users
      *
      * @return array{total: int, imported: int, updated: int, failed: int, skipped: int}
@@ -44,8 +40,6 @@ class MailerLiteService
     {
         $results = ['total' => \count($users), 'imported' => 0, 'updated' => 0, 'failed' => 0, 'skipped' => 0];
 
-        // La staging partage le compte MailerLite de la production : sans ce garde-fou,
-        // un test hors prod déclenche l'automation réelle auprès de vrais adhérents.
         if ('production' !== $this->deployEnv) {
             $this->logger->info('MailerLite sync ignoré hors production', ['deployEnv' => $this->deployEnv]);
             $results['skipped'] = \count($users);
@@ -85,7 +79,6 @@ class MailerLiteService
                 $results['failed'] += $batchResults['failed'] ?? 0;
             }
 
-            // Respecter les limites de débit de l'API entre deux lots.
             if ($index < \count($batches) - 1) {
                 sleep(1);
             }
@@ -94,11 +87,6 @@ class MailerLiteService
         return $results;
     }
 
-    /**
-     * Retirer un abonné d'un groupe. L'automation MailerLite se déclenche sur
-     * « subscriber_joins_group » : sans ce retrait préalable, un adhérent déjà
-     * présent dans le groupe ne recevrait jamais le circuit de la saison suivante.
-     */
     public function removeFromGroup(string $email, string $groupId): bool
     {
         if ('production' !== $this->deployEnv || !$this->apiKey) {
@@ -111,7 +99,6 @@ class MailerLiteService
             ]);
 
             if (404 === $response->getStatusCode()) {
-                // Abonné inconnu de MailerLite : il n'y a rien à retirer.
                 return true;
             }
 
@@ -141,10 +128,6 @@ class MailerLiteService
         }
     }
 
-    /**
-     * Un email vide ou préfixé par « doublon. » n'est pas exploitable : le préfixe est
-     * posé par la déduplication FFCAM sur les adresses partagées en famille.
-     */
     private function hasUsableEmail(User $user): bool
     {
         $email = (string) $user->getEmail();

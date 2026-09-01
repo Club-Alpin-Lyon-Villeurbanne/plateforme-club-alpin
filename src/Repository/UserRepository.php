@@ -448,10 +448,6 @@ SQL;
         ;
     }
 
-    /**
-     * Adhérents éligibles à un circuit d'accueil : licenciés annuels non supprimés,
-     * ayant pris leur licence pour la saison, joignables, pas encore traités.
-     */
     public const ACCUEIL_CIRCUIT_DQL = 'SELECT u FROM App\Entity\User u'
         . ' WHERE u.isDeleted = false'
         . ' AND u.profileType = ' . User::PROFILE_CLUB_MEMBER
@@ -476,9 +472,6 @@ SQL;
     }
 
     /**
-     * Marquage de masse en SQL natif : passer par l'ORM déclencherait le trait
-     * Timestampable et modifierait updated_at pour des milliers de fiches.
-     *
      * @param int[] $userIds
      */
     public function markAccueilSeason(array $userIds, int $season): void
@@ -494,11 +487,6 @@ SQL;
         );
     }
 
-    /**
-     * Nombre d'adhérents déjà traités pour une saison, pour l'alerte de silence.
-     * On ne peut pas s'appuyer sur updated_at : le marquage est volontairement
-     * fait en SQL natif, justement pour ne pas y toucher.
-     */
     public function countAccueilForSeason(int $season): int
     {
         return (int) $this->getEntityManager()->getConnection()->fetchOne(
