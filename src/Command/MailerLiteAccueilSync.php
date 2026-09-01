@@ -99,6 +99,8 @@ class MailerLiteAccueilSync extends Command
         $output->writeln(sprintf('Saison %d — %d adherent(s) a traiter%s', $season, \count($candidates), $execute ? '' : ' [DRY-RUN]'));
 
         if ([] === $candidates) {
+            $this->alertOnSilence($now, $season, $output);
+
             return Command::SUCCESS;
         }
 
@@ -165,5 +167,30 @@ class MailerLiteAccueilSync extends Command
         $output->writeln(sprintf('%d adherent(s) marque(s) pour la saison %d.', \count($marked), $season));
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Septembre-octobre concentrent l'essentiel des prises de licence : passe la
+     * mi-septembre, une saison sans le moindre adherent traite signale une panne,
+     * pas un creux d'activite. C'est exactement le signal qui a manque lors de la
+     * panne de decembre 2025.
+     */
+    private function alertOnSilence(\DateTimeImmutable $now, int $season, OutputInterface $output): void
+    {
+        $month = (int) $now->format('n');
+        $day = (int) $now->format('j');
+
+        if (!\in_array($month, [9, 10], true) || (9 === $month && $day < 15)) {
+            return;
+        }
+
+        if ($this->userRepository->countAccueilForSeason($season) > 0) {
+            return;
+        }
+
+        $message = sprintf('Circuits d\'accueil MailerLite : Aucun adherent traite pour la saison %d', $season);
+        $output->writeln('<error>' . $message . '</error>');
+        $this->logger->error($message);
+        \Sentry\captureMessage($message);
     }
 }

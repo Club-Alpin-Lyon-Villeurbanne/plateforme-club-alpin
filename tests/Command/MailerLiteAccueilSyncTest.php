@@ -177,4 +177,60 @@ class MailerLiteAccueilSyncTest extends TestCase
         // appels rendrait l'ajout sans effet pour un abonne deja present, sans aucun signal.
         $this->assertSame(['remove', 'push'], $order);
     }
+
+    public function testAlerteSiAucunEnvoiEnPleineSaison(): void
+    {
+        $repository = $this->createMock(UserRepository::class);
+        $repository->method('findForAccueilCircuit')->willReturn([]);
+        $repository->expects($this->once())->method('countAccueilForSeason')->with(2026)->willReturn(0);
+
+        $mailerLite = $this->createMock(MailerLiteService::class);
+
+        $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'production');
+        $tester = new CommandTester($command);
+        // Au 20 septembre, zero adherent traite sur la saison signale une panne.
+        $tester->execute(['--season' => 2026, '--now' => '2026-09-20']);
+
+        $this->assertStringContainsString('Aucun adherent traite', $tester->getDisplay());
+    }
+
+    public function testPasDAlerteSiDesEnvoisOntEuLieu(): void
+    {
+        $repository = $this->createMock(UserRepository::class);
+        $repository->method('findForAccueilCircuit')->willReturn([]);
+        $repository->method('countAccueilForSeason')->willReturn(312);
+
+        $mailerLite = $this->createMock(MailerLiteService::class);
+
+        $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'production');
+        $tester = new CommandTester($command);
+        $tester->execute(['--season' => 2026, '--now' => '2026-09-20']);
+
+        $this->assertStringNotContainsString('Aucun adherent traite', $tester->getDisplay());
+    }
+
+    public function testPasDAlerteAvantLaMiSeptembre(): void
+    {
+        $repository = $this->createMock(UserRepository::class);
+        $repository->method('findForAccueilCircuit')->willReturn([]);
+        $repository->expects($this->never())->method('countAccueilForSeason');
+
+        $mailerLite = $this->createMock(MailerLiteService::class);
+
+        $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'production');
+        // Le 3 septembre, il est normal que peu de monde ait renouvele.
+        (new CommandTester($command))->execute(['--season' => 2026, '--now' => '2026-09-03']);
+    }
+
+    public function testPasDAlerteHorsPeriodeDePointe(): void
+    {
+        $repository = $this->createMock(UserRepository::class);
+        $repository->method('findForAccueilCircuit')->willReturn([]);
+        $repository->expects($this->never())->method('countAccueilForSeason');
+
+        $mailerLite = $this->createMock(MailerLiteService::class);
+
+        $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'production');
+        (new CommandTester($command))->execute(['--season' => 2026, '--now' => '2027-02-10']);
+    }
 }
