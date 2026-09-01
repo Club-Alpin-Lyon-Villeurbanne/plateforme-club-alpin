@@ -16,6 +16,7 @@ class MailerLiteService
         private readonly LoggerInterface $logger,
         private readonly ?string $apiKey = null,
         private readonly ?string $welcomeGroupId = null,
+        private readonly string $deployEnv = 'development',
     ) {
     }
 
@@ -31,6 +32,15 @@ class MailerLiteService
             'failed' => 0,
             'skipped' => 0,
         ];
+
+        // La staging partage le compte MailerLite de la production : sans ce garde-fou,
+        // un test hors prod déclenche l'automation réelle auprès de vrais adhérents.
+        if ('production' !== $this->deployEnv) {
+            $this->logger->info('MailerLite sync ignoré hors production', ['deployEnv' => $this->deployEnv]);
+            $results['skipped'] = \count($users);
+
+            return $results;
+        }
 
         // Vérifier la configuration
         if (!$this->apiKey || !$this->welcomeGroupId) {

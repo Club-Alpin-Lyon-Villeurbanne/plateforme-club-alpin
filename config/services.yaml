@@ -162,6 +162,7 @@ services:
     arguments:
       $apiKey: "%env(MAILERLITE_API_KEY)%"
       $welcomeGroupId: "%env(MAILERLITE_WELCOME_GROUP_ID)%"
+      $deployEnv: "%env(DEPLOY_ENV)%"
 
   App\Service\ExpenseReportCalculator:
     arguments:
