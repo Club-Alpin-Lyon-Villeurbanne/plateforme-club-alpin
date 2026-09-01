@@ -168,7 +168,6 @@ services:
     arguments:
       $welcomeGroupId: "%env(MAILERLITE_WELCOME_GROUP_ID)%"
       $renewalGroupId: "%env(MAILERLITE_RENEWAL_GROUP_ID)%"
-      $deployEnv: "%env(DEPLOY_ENV)%"
       $apiKey: "%env(MAILERLITE_API_KEY)%"
 
   App\Service\ExpenseReportCalculator:

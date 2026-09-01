@@ -21,8 +21,6 @@ class MailerLiteAccueilSync extends Command
 
     private const SEASON_START_MONTH = 9;
 
-    private const FIRST_SEASON = 2026;
-
     private const REMOVE_DELAY_US = 500000;
 
     public function __construct(
@@ -31,7 +29,6 @@ class MailerLiteAccueilSync extends Command
         private readonly LoggerInterface $logger,
         private readonly ?string $welcomeGroupId = null,
         private readonly ?string $renewalGroupId = null,
-        private readonly string $deployEnv = 'development',
         private readonly ?string $apiKey = null,
         ?string $name = null,
     ) {
@@ -61,17 +58,6 @@ class MailerLiteAccueilSync extends Command
         $season = null !== $input->getOption('season')
             ? (int) $input->getOption('season')
             : self::seasonFor($now);
-
-        if ($execute && 'production' !== $this->deployEnv) {
-            $output->writeln(sprintf('<comment>--execute ignore hors production (DEPLOY_ENV=%s) : bascule en dry-run.</comment>', $this->deployEnv));
-            $execute = false;
-        }
-
-        if ($season < self::FIRST_SEASON) {
-            $output->writeln(sprintf('<comment>Saison %d anterieure au demarrage du dispositif (%d) : rien a faire.</comment>', $season, self::FIRST_SEASON));
-
-            return Command::SUCCESS;
-        }
 
         if (!$this->apiKey && !$this->renewalGroupId) {
             $output->writeln('<comment>MailerLite non configure sur cette instance : rien a faire.</comment>');
@@ -127,41 +113,58 @@ class MailerLiteAccueilSync extends Command
         }
 
         $marked = [];
-        $removalFailures = [];
 
         foreach ($buckets as $groupId => $users) {
             if ([] === $users) {
                 continue;
             }
 
-            foreach ($users as $user) {
-                if (!$this->mailerLite->removeFromGroup((string) $user->getEmail(), (string) $groupId)) {
-                    $this->logger->error('Circuit accueil : retrait de groupe impossible', ['email' => $user->getEmail(), 'groupId' => $groupId]);
-                    \Sentry\captureMessage(sprintf('Circuit accueil : retrait impossible pour %s', $user->getEmail()));
-                    $removalFailures[] = (int) $user->getId();
-                }
-
-                usleep(self::REMOVE_DELAY_US);
-            }
-
-            $results = $this->mailerLite->pushToGroup((string) $groupId, $users);
-            $output->writeln(sprintf('  groupe %s : %d importe(s), %d echec(s), %d ignore(s)', $groupId, $results['imported'], $results['failed'], $results['skipped']));
-
-            if (0 === $results['failed']) {
-                foreach ($users as $user) {
-                    if (!\in_array((int) $user->getId(), $removalFailures, true)) {
-                        $marked[] = (int) $user->getId();
-                    }
-                }
-            } else {
-                \Sentry\captureMessage(sprintf('Circuit accueil : %d echec(s) sur le groupe %s', $results['failed'], $groupId));
-            }
+            $marked = array_merge($marked, $this->syncGroup((string) $groupId, $users, $output));
         }
 
         $this->userRepository->markAccueilSeason($marked, $season);
         $output->writeln(sprintf('%d adherent(s) marque(s) pour la saison %d.', \count($marked), $season));
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * @param User[] $users
+     *
+     * @return int[]
+     */
+    private function syncGroup(string $groupId, array $users, OutputInterface $output): array
+    {
+        $removalFailures = [];
+
+        foreach ($users as $user) {
+            if (!$this->mailerLite->removeFromGroup((string) $user->getEmail(), $groupId)) {
+                $this->logger->error('Circuit accueil : retrait de groupe impossible', ['email' => $user->getEmail(), 'groupId' => $groupId]);
+                \Sentry\captureMessage(sprintf('Circuit accueil : retrait impossible pour %s', $user->getEmail()));
+                $removalFailures[] = (int) $user->getId();
+            }
+
+            usleep(self::REMOVE_DELAY_US);
+        }
+
+        $results = $this->mailerLite->pushToGroup($groupId, $users);
+        $output->writeln(sprintf('  groupe %s : %d importe(s), %d echec(s), %d ignore(s)', $groupId, $results['imported'], $results['failed'], $results['skipped']));
+
+        if (0 !== $results['failed']) {
+            \Sentry\captureMessage(sprintf('Circuit accueil : %d echec(s) sur le groupe %s', $results['failed'], $groupId));
+
+            return [];
+        }
+
+        $marked = [];
+
+        foreach ($users as $user) {
+            if (!\in_array((int) $user->getId(), $removalFailures, true)) {
+                $marked[] = (int) $user->getId();
+            }
+        }
+
+        return $marked;
     }
 
     private function alertOnSilence(\DateTimeImmutable $now, int $season, OutputInterface $output): void

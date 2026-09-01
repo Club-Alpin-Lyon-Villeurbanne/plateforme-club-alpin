@@ -38,7 +38,7 @@ Options :
 
 | Option      | Effet |
 |-------------|-------|
-| `--execute` | Effectue réellement les envois (sinon dry-run). Neutralisée hors production : `DEPLOY_ENV` doit valoir `production`, sinon la commande bascule en dry-run et l'indique. |
+| `--execute` | Effectue réellement les envois (sinon dry-run). |
 | `--force`   | Passe outre le plafond de volume (voir ci-dessous). |
 | `--season`  | Force la saison traitée (année de septembre), utile pour rejouer une saison ou pour les tests. |
 | `--now`     | Force la date de référence (tests uniquement). |
@@ -48,10 +48,6 @@ Options :
 La saison sportive bascule le 1er septembre : une exécution le 31 août 2026 traite la saison 2025,
 une exécution le 1er septembre 2026 traite la saison 2026. Ce calcul est dérivé de la date
 courante, rien n'est à reconfigurer d'une année sur l'autre.
-
-Le dispositif démarre à la saison 2026-2027 (`FIRST_SEASON = 2026`) : les adhérents que le circuit
-a manqués depuis décembre 2025 ne sont pas rattrapés. Une exécution sur une saison antérieure à
-2026 ne sélectionne personne, même avec `--force`.
 
 ### Sélection et répartition
 
@@ -142,7 +138,7 @@ comptes (`28 7`, 9h28 à Paris), pour ne traiter que des fiches à jour.
 
 Comme les autres crons du dépôt, le script vérifie `DEPLOY_ENV` : seul `web-prod` (où
 `DEPLOY_ENV=production`) exécute réellement la synchro. `web-staging` (`DEPLOY_ENV=staging`) ne
-fait rien, la commande y basculerait de toute façon en dry-run.
+fait rien.
 
 ## Configuration
 
