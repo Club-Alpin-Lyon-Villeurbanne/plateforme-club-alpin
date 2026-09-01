@@ -31,6 +31,9 @@ class MailerLiteAccueilSync extends Command
      */
     private const FIRST_SEASON = 2026;
 
+    /** Pause entre deux retraits : l'API MailerLite plafonne autour de 120 requetes par minute. */
+    private const REMOVE_DELAY_US = 500000;
+
     public function __construct(
         private readonly UserRepository $userRepository,
         private readonly MailerLiteService $mailerLite,
@@ -38,6 +41,7 @@ class MailerLiteAccueilSync extends Command
         private readonly ?string $welcomeGroupId = null,
         private readonly ?string $renewalGroupId = null,
         private readonly string $deployEnv = 'development',
+        private readonly ?string $apiKey = null,
         ?string $name = null,
     ) {
         parent::__construct($name);
@@ -86,11 +90,30 @@ class MailerLiteAccueilSync extends Command
         }
 
         // Ce depot sert plusieurs clubs et cron.json est partage, mais seul Lyon
-        // utilise MailerLite. Un club sans configuration n'est pas en erreur :
-        // renvoyer FAILURE ferait echouer son cron tous les matins, et un cron
-        // rouge permanent finit par n'etre plus regarde du tout.
-        if (!$this->welcomeGroupId || !$this->renewalGroupId) {
+        // utilise MailerLite. La cle API est le seul discriminant fiable : les
+        // identifiants de groupe sont committes dans .env, donc renseignes partout.
+        // Un club sans cle n'est pas en erreur : renvoyer FAILURE ferait echouer
+        // son cron tous les matins, et un cron rouge permanent n'est plus regarde.
+        if (!$this->apiKey) {
             $output->writeln('<comment>MailerLite non configure sur cette instance : rien a faire.</comment>');
+
+            return Command::SUCCESS;
+        }
+
+        // Sur un club qui a la cle, un identifiant manquant ou duplique est une panne.
+        // Contrairement a l'alerte de silence, bornee au 15 septembre - 31 octobre,
+        // ce controle joue toute l'annee : une variable perdue en novembre resterait
+        // sinon invisible jusqu'a la rentree suivante. On alerte sans renvoyer
+        // FAILURE, pour les memes raisons de cron partage que ci-dessus.
+        if (!$this->welcomeGroupId || !$this->renewalGroupId || $this->welcomeGroupId === $this->renewalGroupId) {
+            $message = sprintf(
+                "Circuits d'accueil MailerLite : configuration invalide (bienvenue=%s, renouvellement=%s)",
+                $this->welcomeGroupId ?: '(vide)',
+                $this->renewalGroupId ?: '(vide)',
+            );
+            $output->writeln('<error>' . $message . '</error>');
+            $this->logger->error($message);
+            \Sentry\captureMessage($message);
 
             return Command::SUCCESS;
         }
@@ -106,6 +129,9 @@ class MailerLiteAccueilSync extends Command
 
         if (\count($candidates) > self::VOLUME_GUARD && !$input->getOption('force')) {
             $output->writeln(sprintf('<error>%d candidats depassent le plafond de %d. Relancer avec --force apres verification.</error>', \count($candidates), self::VOLUME_GUARD));
+            // Le cron ne passe jamais --force : sans ce signal, la commande echouerait
+            // tous les matins sans que personne ne regarde son code de sortie.
+            \Sentry\captureMessage(sprintf("Circuits d'accueil MailerLite : %d candidats depassent le plafond de %d", \count($candidates), self::VOLUME_GUARD));
 
             return Command::FAILURE;
         }
@@ -131,6 +157,7 @@ class MailerLiteAccueilSync extends Command
         }
 
         $marked = [];
+        $removalFailures = [];
 
         foreach ($buckets as $groupId => $users) {
             if ([] === $users) {
@@ -143,7 +170,13 @@ class MailerLiteAccueilSync extends Command
                 if (!$this->mailerLite->removeFromGroup((string) $user->getEmail(), (string) $groupId)) {
                     $this->logger->error('Circuit accueil : retrait de groupe impossible', ['email' => $user->getEmail(), 'groupId' => $groupId]);
                     \Sentry\captureMessage(sprintf('Circuit accueil : retrait impossible pour %s', $user->getEmail()));
+                    // L'adherent est peut-etre reste dans le groupe : l'import qui suit
+                    // reussira sans declencher d'automation, donc sans mail. On ne le
+                    // marque pas, quitte a lui envoyer le circuit deux fois demain.
+                    $removalFailures[] = (int) $user->getId();
                 }
+
+                usleep(self::REMOVE_DELAY_US);
             }
 
             $results = $this->mailerLite->pushToGroup((string) $groupId, $users);
@@ -154,7 +187,9 @@ class MailerLiteAccueilSync extends Command
             // d'envoi (visible, rattrapable) et un oubli silencieux, on choisit le doublon.
             if (0 === $results['failed']) {
                 foreach ($users as $user) {
-                    $marked[] = (int) $user->getId();
+                    if (!\in_array((int) $user->getId(), $removalFailures, true)) {
+                        $marked[] = (int) $user->getId();
+                    }
                 }
             } else {
                 \Sentry\captureMessage(sprintf('Circuit accueil : %d echec(s) sur le groupe %s', $results['failed'], $groupId));

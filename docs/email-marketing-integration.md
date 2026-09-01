@@ -22,8 +22,8 @@ supprimé en décembre 2025 ; il est resté en panne, sans que personne ne s'en 
 remplacement.
 
 MailerLite n'est déployé qu'à Lyon. Chambéry et Clermont partagent ce dépôt et son
-`clevercloud/cron.json`, mais n'ont pas de compte MailerLite : la commande le détecte (aucun
-identifiant de groupe configuré) et ne fait rien, sans faire échouer le cron.
+`clevercloud/cron.json`, mais n'ont pas de compte MailerLite : la commande le détecte (pas de
+`MAILERLITE_API_KEY`) et ne fait rien, sans faire échouer le cron.
 
 ## La commande `mailerlite-accueil-sync`
 
@@ -63,16 +63,20 @@ Parmi les candidats, une fiche créée pendant la saison (à partir du 1er septe
 `accueil-nouveau` ; une fiche antérieure va vers `accueil-renouvellement`. Avant chaque ajout à un
 groupe, la commande retire l'adhérent du groupe visé : les automations MailerLite se déclenchent
 sur « rejoint le groupe », un ajout sans retrait préalable serait sans effet pour un abonné déjà
-présent.
+présent. Ces retraits sont espacés de 500 ms : l'API MailerLite plafonne autour de 120 requêtes par
+minute, et un jour de pointe (177 licences sur la journée la plus chargée de 2025) saturerait
+sinon le quota. Un retrait en échec exclut l'adhérent du marquage : il sera repris à la prochaine
+exécution, quitte à recevoir le circuit deux fois — un doublon est préférable à un oubli définitif.
 
 ### Plafond de volume
 
 Au-delà de 800 candidats sur une seule exécution, la commande refuse d'envoyer (code de sortie 1)
-et demande `--force` : ce volume ferait suspecter une erreur de sélection plutôt qu'un pic normal
-d'inscriptions. Sur la saison 2025, le cumul de licences prises atteignait déjà 828 au 10
-septembre — un déploiement tardif peut donc légitimement dépasser ce plafond dès la première
-exécution ; la marche à suivre est alors de vérifier le dry-run puis de relancer une fois avec
-`--execute --force`.
+et demande `--force`, en envoyant aussi un message Sentry (le cron ne passe jamais `--force` : sans
+ce signal, la commande échouerait tous les matins sans que personne ne le voie). Ce volume ferait
+suspecter une erreur de sélection plutôt qu'un pic normal d'inscriptions. Sur la saison 2025, le
+cumul de licences prises atteignait déjà 828 au 10 septembre — un déploiement tardif peut donc
+légitimement dépasser ce plafond dès la première exécution ; la marche à suivre est alors de
+vérifier le dry-run puis de relancer une fois avec `--execute --force`.
 
 ### Colonne `accueil_season`
 
@@ -93,6 +97,36 @@ septembre, un compteur à zéro est normal (peu de renouvellements) et ne décle
 
 C'est la réponse directe à la panne du circuit de bienvenue du 2 décembre 2025, restée invisible
 pendant neuf mois faute d'un signal de ce type.
+
+## Alerte de configuration
+
+Indépendamment de toute fenêtre de dates, si `MAILERLITE_API_KEY` est renseignée (donc si le club
+utilise réellement MailerLite) mais qu'un identifiant de groupe manque, ou que les deux
+identifiants sont identiques, la commande écrit une erreur, la journalise et envoie un message
+Sentry — tout en renvoyant `SUCCESS`, pour ne pas rendre rouge en permanence un cron partagé avec
+Chambéry et Clermont.
+
+C'est la clé API, et non les identifiants de groupe, qui distingue « ce club n'utilise pas
+MailerLite » de « Lyon a perdu sa configuration » : `MAILERLITE_WELCOME_GROUP_ID` est committé dans
+`.env` et donc renseigné partout, tandis que `MAILERLITE_RENEWAL_GROUP_ID` n'est posé qu'à la main
+sur la prod lyonnaise. Ce contrôle joue toute l'année, là où l'alerte de silence est bornée au 15
+septembre - 31 octobre : une variable perdue en novembre resterait sinon invisible dix mois.
+
+## Ce que le dispositif ne détecte pas
+
+**La case `repeatable` des automations MailerLite.** C'est le point unique de défaillance du
+dispositif, et aucun code ne le surveille. Si elle n'est pas cochée, ou si elle saute lors d'une
+refonte des automations, les retraits et les ajouts réussiront, les adhérents seront marqués comme
+traités, et aucun mail ne partira — sans que rien ne l'indique. Une vérification manuelle des
+envois est donc à faire à la mi-septembre 2027 : le mécanisme retrait/ajout n'aura jamais tourné
+pour de vrai avant cette date, puisqu'en 2026 personne n'est encore dans les groupes cibles et que
+tous les retraits sont des no-op.
+
+**L'alerte de silence se désarme dès le premier adhérent traité de la saison.** Elle répond à
+« rien n'est jamais parti cette saison », pas à « ça s'est arrêté en cours de route ». Une panne
+survenant après les premiers envois de septembre n'est pas couverte par elle ; seule l'alerte de
+configuration ci-dessus le serait, et uniquement si la cause est une variable d'environnement
+perdue.
 
 ## Planification
 
@@ -115,9 +149,10 @@ MAILERLITE_WELCOME_GROUP_ID=159667990712813289   # groupe accueil-nouveau
 MAILERLITE_RENEWAL_GROUP_ID=your_group_id_here    # groupe accueil-renouvellement
 ```
 
-Si `MAILERLITE_WELCOME_GROUP_ID` ou `MAILERLITE_RENEWAL_GROUP_ID` n'est pas configuré, la commande
-se désactive silencieusement (message « MailerLite non configure sur cette instance ») : c'est le
-cas normal pour Chambéry et Clermont, qui n'ont rien à configurer.
+Sans `MAILERLITE_API_KEY`, la commande se désactive silencieusement (message « MailerLite non
+configure sur cette instance ») : c'est le cas normal pour Chambéry et Clermont, qui n'ont rien à
+configurer. Avec une clé mais un identifiant de groupe manquant ou dupliqué, elle alerte (voir
+« Alerte de configuration »).
 
 ## Mise en production
 
