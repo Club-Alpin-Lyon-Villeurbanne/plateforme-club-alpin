@@ -139,8 +139,8 @@ class MailerLiteAccueilSync extends Command
 
         foreach ($users as $user) {
             if (!$this->mailerLite->removeFromGroup((string) $user->getEmail(), $groupId)) {
-                $this->logger->error('Circuit accueil : retrait de groupe impossible', ['email' => $user->getEmail(), 'groupId' => $groupId]);
-                \Sentry\captureMessage(sprintf('Circuit accueil : retrait impossible pour %s', $user->getEmail()));
+                $this->logger->error('Circuit accueil : retrait de groupe impossible', ['userId' => $user->getId(), 'groupId' => $groupId]);
+                \Sentry\captureMessage(sprintf('Circuit accueil : retrait impossible pour l\'adherent %d', (int) $user->getId()));
                 $removalFailures[] = (int) $user->getId();
             }
 

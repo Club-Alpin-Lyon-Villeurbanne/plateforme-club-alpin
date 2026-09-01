@@ -132,7 +132,7 @@ perdue.
 ## Planification
 
 Le cron `clevercloud/crons/mailerlite-accueil-sync.sh` appelle `bin/console mailerlite-accueil-sync
---execute` tous les jours à `45 7` (heure UTC de `clevercloud/cron.json`), soit 9h45 à Paris. Ce
+--execute` tous les jours à `45 7` (heure UTC de `clevercloud/cron.json`), soit 9 h 45 à Paris en heure d'été et 8 h 45 en heure d'hiver. Ce
 créneau laisse passer la synchronisation FFCAM (`3 7`, 9h03 à Paris) puis l'anonymisation des
 comptes (`28 7`, 9h28 à Paris), pour ne traiter que des fiches à jour.
 
