@@ -108,7 +108,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[SerializedName('codePostal')]
     private ?string $cp = null;
 
-    #[ORM\Column(name: 'ville_user', type: 'string', length: 30, nullable: true)]
+    #[ORM\Column(name: 'ville_user', type: 'string', length: 50, nullable: true)]
     #[Groups('user:details')]
     private ?string $ville = null;
 
