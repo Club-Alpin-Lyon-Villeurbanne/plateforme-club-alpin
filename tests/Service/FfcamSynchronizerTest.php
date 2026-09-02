@@ -638,4 +638,42 @@ class FfcamSynchronizerTest extends WebTestCase
 
         return [$row, $oldCafnum, $newCafnum, $historic->getId()];
     }
+
+    // Régression prod 02/09/2026 : une ville de 33 caractères dépassait ville_user(30),
+    // le flush fermait l'EntityManager et les 34 adhérents suivants du fichier étaient perdus.
+    public function testSynchronizeImportsMembersFollowingAnOverlongCity(): void
+    {
+        $identifiantVilleLongue = rand(100000000000, 999999999999);
+        $identifiantSuivant = rand(100000000000, 999999999999);
+
+        $filePath = FfcamTestHelper::generateFile([
+            [
+                'cafnum' => $identifiantVilleLongue,
+                'lastname' => $this->faker->lastName(),
+                'firstname' => $this->faker->firstName(),
+                'email' => $this->faker->email(),
+                'ville' => 'VILLENEUVE-LA-GARENNE, 92, FRANCE',
+            ],
+            [
+                'cafnum' => $identifiantSuivant,
+                'lastname' => $this->faker->lastName(),
+                'firstname' => $this->faker->firstName(),
+                'email' => $this->faker->email(),
+            ],
+        ]);
+
+        $synchronizer = self::getContainer()->get(FfcamSynchronizer::class);
+        $synchronizer->synchronize($filePath);
+
+        $userRepository = self::getContainer()->get(UserRepository::class);
+
+        $userVilleLongue = $userRepository->findOneByLicenseNumber($identifiantVilleLongue);
+        $this->assertNotNull($userVilleLongue, "L'adhérent dont la ville dépasse 30 caractères doit être importé");
+        $this->assertEquals('Villeneuve-La-Garenne, 92, France', $userVilleLongue->getVille());
+
+        $this->assertNotNull(
+            $userRepository->findOneByLicenseNumber($identifiantSuivant),
+            'Les adhérents suivants ne doivent pas être perdus'
+        );
+    }
 }
