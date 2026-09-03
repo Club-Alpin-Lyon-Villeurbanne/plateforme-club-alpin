@@ -68,6 +68,8 @@ class MaterielApiService
                     'first_name' => $user->getFirstname(),
                     'last_name' => $user->getLastname(),
                     'can_make_reservation' => true,
+                    // Obligatoire côté Loxya depuis le 01/09/2026 : sans pays, la création renvoie un 400.
+                    'country' => 'FR',
                     'email' => $user->getEmail(),
                     'pseudo' => $pseudo,
                     'password' => $password,
