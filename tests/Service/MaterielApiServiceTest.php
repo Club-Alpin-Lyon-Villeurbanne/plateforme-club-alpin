@@ -26,16 +26,13 @@ class MaterielApiServiceTest extends TestCase
         $groupResponse = $this->createMock(ResponseInterface::class);
         $groupResponse->method('getStatusCode')->willReturn(200);
 
-        $capturedPayload = null;
-        $httpClient->method('request')
-            ->willReturnCallback(function (string $method, string $url, array $options) use (&$capturedPayload, $createResponse, $groupResponse) {
-                if (str_ends_with($url, '/api/beneficiaries')) {
-                    $capturedPayload = $options['json'];
+        $calls = [];
+        $httpClient->expects($this->exactly(2))
+            ->method('request')
+            ->willReturnCallback(function (string $method, string $url, array $options) use (&$calls, $createResponse, $groupResponse) {
+                $calls[] = ['method' => $method, 'url' => $url, 'json' => $options['json']];
 
-                    return $createResponse;
-                }
-
-                return $groupResponse;
+                return str_ends_with($url, '/api/beneficiaries') ? $createResponse : $groupResponse;
             });
 
         $user = (new User())
@@ -53,7 +50,13 @@ class MaterielApiServiceTest extends TestCase
 
         $service->createUser($user);
 
-        // Loxya rejette la création (HTTP 400) si le pays est absent depuis le 01/09/2026.
-        $this->assertSame('FR', $capturedPayload['country'] ?? null);
+        $this->assertSame('POST', $calls[0]['method']);
+        $this->assertSame('https://materiel.example.com/api/beneficiaries', $calls[0]['url']);
+        $this->assertSame('FR', $calls[0]['json']['country'] ?? null);
+        $this->assertSame('jean.dupont@example.com', $calls[0]['json']['email']);
+
+        $this->assertSame('PUT', $calls[1]['method']);
+        $this->assertSame('https://materiel.example.com/api/users/123', $calls[1]['url']);
+        $this->assertSame('readonly-planning-self', $calls[1]['json']['group']);
     }
 }
