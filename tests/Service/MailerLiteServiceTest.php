@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Service\MailerLiteService;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -26,7 +27,8 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId
+            $this->welcomeGroupId,
+            'production'
         );
     }
 
@@ -36,7 +38,8 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             null,
-            $this->welcomeGroupId
+            $this->welcomeGroupId,
+            'production'
         );
 
         $user = new User(1);
@@ -59,7 +62,8 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            null
+            null,
+            'production'
         );
 
         $user = new User(1);
@@ -97,9 +101,12 @@ class MailerLiteServiceTest extends TestCase
         $user3->setEmail('');
 
         $mockResponse = new MockResponse(json_encode([
-            'imported' => 1,
-            'updated' => 0,
-            'failed' => 0,
+            'data' => [
+                'total' => 1,
+                'imported' => 1,
+                'updated' => 0,
+                'errored' => 0,
+            ],
         ]));
 
         $this->httpClient = new MockHttpClient([$mockResponse]);
@@ -107,7 +114,8 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId
+            $this->welcomeGroupId,
+            'production'
         );
 
         $result = $this->service->syncNewMembers([$user1, $user2, $user3]);
@@ -140,9 +148,12 @@ class MailerLiteServiceTest extends TestCase
         $user->setLastname('Doe');
 
         $mockResponse = new MockResponse(json_encode([
-            'imported' => 1,
-            'updated' => 0,
-            'failed' => 0,
+            'data' => [
+                'total' => 1,
+                'imported' => 1,
+                'updated' => 0,
+                'errored' => 0,
+            ],
         ]), ['http_code' => 200]);
 
         $this->httpClient = new MockHttpClient([$mockResponse]);
@@ -150,7 +161,8 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId
+            $this->welcomeGroupId,
+            'production'
         );
 
         $result = $this->service->syncNewMembers([$user]);
@@ -172,9 +184,12 @@ class MailerLiteServiceTest extends TestCase
         }
 
         $mockResponse = new MockResponse(json_encode([
-            'imported' => 5,
-            'updated' => 0,
-            'failed' => 0,
+            'data' => [
+                'total' => 5,
+                'imported' => 5,
+                'updated' => 0,
+                'errored' => 0,
+            ],
         ]), ['http_code' => 201]);
 
         $this->httpClient = new MockHttpClient([$mockResponse]);
@@ -182,7 +197,8 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId
+            $this->welcomeGroupId,
+            'production'
         );
 
         $result = $this->service->syncNewMembers($users);
@@ -206,20 +222,29 @@ class MailerLiteServiceTest extends TestCase
         $mockResponses = [];
         // First two batches: 100 users each
         $mockResponses[] = new MockResponse(json_encode([
-            'imported' => 100,
-            'updated' => 0,
-            'failed' => 0,
+            'data' => [
+                'total' => 100,
+                'imported' => 100,
+                'updated' => 0,
+                'errored' => 0,
+            ],
         ]), ['http_code' => 200]);
         $mockResponses[] = new MockResponse(json_encode([
-            'imported' => 100,
-            'updated' => 0,
-            'failed' => 0,
+            'data' => [
+                'total' => 100,
+                'imported' => 100,
+                'updated' => 0,
+                'errored' => 0,
+            ],
         ]), ['http_code' => 200]);
         // Third batch: 50 users
         $mockResponses[] = new MockResponse(json_encode([
-            'imported' => 50,
-            'updated' => 0,
-            'failed' => 0,
+            'data' => [
+                'total' => 50,
+                'imported' => 50,
+                'updated' => 0,
+                'errored' => 0,
+            ],
         ]), ['http_code' => 200]);
 
         $this->httpClient = new MockHttpClient($mockResponses);
@@ -227,7 +252,8 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId
+            $this->welcomeGroupId,
+            'production'
         );
 
         $result = $this->service->syncNewMembers($users);
@@ -250,7 +276,8 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId
+            $this->welcomeGroupId,
+            'production'
         );
 
         $result = $this->service->syncNewMembers([$user]);
@@ -267,9 +294,12 @@ class MailerLiteServiceTest extends TestCase
         $user->setLastname('Doe');
 
         $mockResponse = new MockResponse(json_encode([
-            'imported' => 1,
-            'updated' => 0,
-            'failed' => 0,
+            'data' => [
+                'total' => 1,
+                'imported' => 1,
+                'updated' => 0,
+                'errored' => 0,
+            ],
         ]), ['http_code' => 200]);
 
         $this->httpClient = new MockHttpClient([$mockResponse]);
@@ -277,7 +307,8 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId
+            $this->welcomeGroupId,
+            'production'
         );
 
         $this->logger->expects($this->atLeastOnce())
@@ -298,9 +329,12 @@ class MailerLiteServiceTest extends TestCase
         $user3->setEmail('valid2@example.com');
 
         $mockResponse = new MockResponse(json_encode([
-            'imported' => 2,
-            'updated' => 0,
-            'failed' => 0,
+            'data' => [
+                'total' => 2,
+                'imported' => 2,
+                'updated' => 0,
+                'errored' => 0,
+            ],
         ]), ['http_code' => 200]);
 
         $this->httpClient = new MockHttpClient([$mockResponse]);
@@ -308,7 +342,8 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId
+            $this->welcomeGroupId,
+            'production'
         );
 
         $result = $this->service->syncNewMembers([$user1, $user2, $user3]);
@@ -330,9 +365,12 @@ class MailerLiteServiceTest extends TestCase
         }
 
         $mockResponse = new MockResponse(json_encode([
-            'imported' => 2,
-            'updated' => 0,
-            'failed' => 1,
+            'data' => [
+                'total' => 3,
+                'imported' => 2,
+                'updated' => 0,
+                'errored' => 1,
+            ],
         ]), ['http_code' => 200]);
 
         $this->httpClient = new MockHttpClient([$mockResponse]);
@@ -340,7 +378,8 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId
+            $this->welcomeGroupId,
+            'production'
         );
 
         $result = $this->service->syncNewMembers($users);
@@ -356,9 +395,12 @@ class MailerLiteServiceTest extends TestCase
         $user->setEmail('test@example.com');
 
         $mockResponse = new MockResponse(json_encode([
-            'imported' => 1,
-            'updated' => 0,
-            'failed' => 0,
+            'data' => [
+                'total' => 1,
+                'imported' => 1,
+                'updated' => 0,
+                'errored' => 0,
+            ],
         ]), ['http_code' => 200]);
 
         $this->httpClient = new MockHttpClient([$mockResponse]);
@@ -366,7 +408,8 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId
+            $this->welcomeGroupId,
+            'production'
         );
 
         $result = $this->service->syncNewMembers([$user]);
@@ -374,5 +417,184 @@ class MailerLiteServiceTest extends TestCase
         // Verify the sync was successful
         $this->assertEquals(1, $result['total']);
         $this->assertEquals(1, $result['imported']);
+    }
+
+    private function makeUser(string $email): User
+    {
+        $user = new User();
+        $user->setEmail($email);
+        $user->setFirstname('Jean');
+        $user->setLastname('Dupont');
+
+        return $user;
+    }
+
+    public function testAucunAppelHorsProduction(): void
+    {
+        $requests = 0;
+        $httpClient = new MockHttpClient(function () use (&$requests) {
+            ++$requests;
+
+            return new MockResponse('{}');
+        });
+
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '123', 'staging');
+        $results = $service->syncNewMembers([$this->makeUser('test@example.com')]);
+
+        $this->assertSame(0, $requests, 'Aucune requête ne doit partir hors production');
+        $this->assertSame(1, $results['skipped']);
+    }
+
+    public function testAppelEnProduction(): void
+    {
+        $requests = 0;
+        $httpClient = new MockHttpClient(function () use (&$requests) {
+            ++$requests;
+
+            return new MockResponse('{"data":{"total":1,"imported":1,"updated":0,"errored":0}}');
+        });
+
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '123', 'production');
+        $service->syncNewMembers([$this->makeUser('test@example.com')]);
+
+        $this->assertSame(1, $requests);
+    }
+
+    public function testPushToGroupCibleLeGroupeDemande(): void
+    {
+        $urls = [];
+        $httpClient = new MockHttpClient(function (string $method, string $url) use (&$urls) {
+            $urls[] = $url;
+
+            return new MockResponse('{"data":{"total":1,"imported":1,"updated":0,"errored":0}}');
+        });
+
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+        $service->pushToGroup('999', [$this->makeUser('a@example.com')]);
+
+        $this->assertStringContainsString('/groups/999/subscribers/import', $urls[0]);
+    }
+
+    public function testPushToGroupIgnoreLesEmailsDeDoublon(): void
+    {
+        $bodies = [];
+        $httpClient = new MockHttpClient(function (string $method, string $url, array $options) use (&$bodies) {
+            $bodies[] = $options['body'] ?? '';
+
+            return new MockResponse('{"data":{"total":1,"imported":1,"updated":0,"errored":0}}');
+        });
+
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+        $results = $service->pushToGroup('999', [
+            $this->makeUser('doublon.690012345678-famille@example.com'),
+            $this->makeUser('vrai@example.com'),
+        ]);
+
+        $this->assertSame(1, $results['skipped']);
+        $this->assertStringNotContainsString('doublon.', $bodies[0]);
+    }
+
+    public function testRemoveFromGroupRechercheParEmailPuisSupprime(): void
+    {
+        $calls = [];
+        $httpClient = new MockHttpClient(function (string $method, string $url) use (&$calls) {
+            $calls[] = $method . ' ' . $url;
+
+            if (str_contains($url, '/subscribers/a%40example.com') || str_contains($url, '/subscribers/a@example.com')) {
+                return new MockResponse('{"data":{"id":"555","groups":[{"id":"999"}]}}');
+            }
+
+            return new MockResponse('', ['http_code' => 204]);
+        });
+
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+
+        $this->assertTrue($service->removeFromGroup('a@example.com', '999'));
+        $this->assertCount(2, $calls);
+        $this->assertStringStartsWith('DELETE ', $calls[1]);
+        $this->assertStringContainsString('/subscribers/555/groups/999', $calls[1]);
+    }
+
+    public function testRemoveFromGroupNeFaitRienSiAbonneInconnu(): void
+    {
+        $calls = 0;
+        $httpClient = new MockHttpClient(function () use (&$calls) {
+            ++$calls;
+
+            return new MockResponse('{"message":"Not found"}', ['http_code' => 404]);
+        });
+
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+
+        $this->assertTrue($service->removeFromGroup('inconnu@example.com', '999'));
+        $this->assertSame(1, $calls, 'Aucun DELETE ne doit suivre un abonne introuvable');
+    }
+
+    public function testRemoveFromGroupRenvoieFalseSiErreurServeur(): void
+    {
+        $calls = 0;
+        $httpClient = new MockHttpClient(function () use (&$calls) {
+            ++$calls;
+
+            return new MockResponse('{"message":"Internal Server Error"}', ['http_code' => 500]);
+        });
+
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+
+        $this->assertFalse($service->removeFromGroup('a@example.com', '999'));
+        $this->assertSame(1, $calls, 'Aucun DELETE ne doit suivre une erreur serveur sur la recherche');
+    }
+
+    public function testRemoveFromGroupAucunAppelHorsProduction(): void
+    {
+        $requests = 0;
+        $httpClient = new MockHttpClient(function () use (&$requests) {
+            ++$requests;
+
+            return new MockResponse('{}');
+        });
+
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '123', 'staging');
+
+        $this->assertTrue($service->removeFromGroup('test@example.com', '999'));
+        $this->assertSame(0, $requests, 'Aucune requête ne doit partir hors production');
+    }
+
+    public function testPushToGroupCompteLesErreursDImportCommeEchecs(): void
+    {
+        $httpClient = new MockHttpClient(function () {
+            return new MockResponse(json_encode([
+                'data' => [
+                    'total' => 3,
+                    'imported' => 1,
+                    'updated' => 1,
+                    'errored' => 1,
+                ],
+            ]), ['http_code' => 201]);
+        });
+
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+        $results = $service->pushToGroup('999', [
+            $this->makeUser('a@example.com'),
+            $this->makeUser('b@example.com'),
+            $this->makeUser('c@example.com'),
+        ]);
+
+        $this->assertSame(1, $results['imported']);
+        $this->assertSame(1, $results['updated']);
+        $this->assertSame(1, $results['failed']);
+    }
+
+    public function testPushToGroupSansCleDataEstTraiteCommeUnEchec(): void
+    {
+        $httpClient = new MockHttpClient(function () {
+            return new MockResponse(json_encode(['message' => 'ok']), ['http_code' => 200]);
+        });
+
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+        $results = $service->pushToGroup('999', [$this->makeUser('a@example.com')]);
+
+        $this->assertSame(0, $results['imported']);
+        $this->assertSame(1, $results['failed']);
     }
 }

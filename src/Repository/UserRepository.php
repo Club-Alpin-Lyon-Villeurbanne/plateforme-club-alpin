@@ -447,4 +447,51 @@ SQL;
             ->execute()
         ;
     }
+
+    public const ACCUEIL_CIRCUIT_DQL = 'SELECT u FROM App\Entity\User u'
+        . ' WHERE u.isDeleted = false'
+        . ' AND u.profileType = ' . User::PROFILE_CLUB_MEMBER
+        . ' AND u.joinDate >= :seasonStart'
+        . ' AND u.radiationDate IS NULL'
+        . ' AND u.email IS NOT NULL'
+        . " AND u.email <> ''"
+        . " AND u.email NOT LIKE 'doublon.%'"
+        . ' AND u.accueilSeason < :season'
+        . ' ORDER BY u.id ASC';
+
+    /**
+     * @return User[]
+     */
+    public function findForAccueilCircuit(int $season): array
+    {
+        return $this->getEntityManager()
+            ->createQuery(self::ACCUEIL_CIRCUIT_DQL)
+            ->setParameter('seasonStart', new \DateTimeImmutable($season . '-09-01 00:00:00'))
+            ->setParameter('season', $season)
+            ->getResult();
+    }
+
+    /**
+     * @param int[] $userIds
+     */
+    public function markAccueilSeason(array $userIds, int $season): void
+    {
+        if (empty($userIds)) {
+            return;
+        }
+
+        $this->getEntityManager()->getConnection()->executeStatement(
+            'UPDATE caf_user SET accueil_season = :season WHERE id_user IN (:ids)',
+            ['season' => $season, 'ids' => $userIds],
+            ['ids' => \Doctrine\DBAL\ArrayParameterType::INTEGER]
+        );
+    }
+
+    public function countAccueilForSeason(int $season): int
+    {
+        return (int) $this->getEntityManager()->getConnection()->fetchOne(
+            'SELECT COUNT(*) FROM caf_user WHERE accueil_season = :season',
+            ['season' => $season]
+        );
+    }
 }

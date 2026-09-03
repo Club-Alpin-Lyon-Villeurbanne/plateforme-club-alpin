@@ -179,6 +179,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[Groups('user:details')]
     private ?\DateTimeInterface $joinDate = null;
 
+    #[ORM\Column(name: 'accueil_season', type: Types::SMALLINT, nullable: false, options: ['default' => 0, 'comment' => "Saison du dernier envoi de circuit d'accueil MailerLite (0 = jamais)"])]
+    private int $accueilSeason = 0;
+
     #[ORM\Column(name: 'radiation_date', type: Types::DATE_IMMUTABLE, nullable: true, options: ['comment' => 'Date de radiation FFCAM'])]
     private ?\DateTimeInterface $radiationDate = null;
 
@@ -791,6 +794,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setJoinDate(?\DateTimeInterface $joinDate): self
     {
         $this->joinDate = $joinDate;
+
+        return $this;
+    }
+
+    public function getAccueilSeason(): int
+    {
+        return $this->accueilSeason;
+    }
+
+    public function setAccueilSeason(int $accueilSeason): self
+    {
+        $this->accueilSeason = $accueilSeason;
 
         return $this;
     }
