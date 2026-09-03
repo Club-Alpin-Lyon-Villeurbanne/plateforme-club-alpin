@@ -2,7 +2,15 @@
 
 {% block title %}Méthodologie du bilan carbone{% endblock %}
 
+{% block meta_description %}Comment le club alpin calcule l'empreinte carbone du transport de ses sorties : distances, modes de transport et facteurs d'émission.{% endblock %}
+
 {% block body %}
-    <h1>Méthodologie du bilan carbone des sorties</h1>
-    <p><em>Cette page sera complétée prochainement avec le détail de la méthode de calcul, les sources des facteurs d'émission et les limites du modèle.</em></p>
+    <style>
+        /* Le thème du site ne style pas les h3. */
+        #methodologie-bilan-carbone h3 { font-size: 1rem; font-family: DINBold; margin: 16px 0 6px; }
+    </style>
+
+    <h1 class="page-h1">Calcul du bilan carbone des sorties</h1>
+
+    {{ easy_include('methodologie-bilan-carbone', 'main-type') }}
 {% endblock %}

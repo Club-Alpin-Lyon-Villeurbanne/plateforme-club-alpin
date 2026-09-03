@@ -723,7 +723,10 @@ class SortieControllerTest extends WebTestCase
     {
         $this->client->request('GET', '/sorties/methodologie-bilan-carbone');
         $this->assertResponseStatusCodeSame(200);
-        $this->assertSelectorTextContains('h1', 'Méthodologie du bilan carbone');
+        $this->assertSelectorTextContains('h1.page-h1', 'Calcul du bilan carbone des sorties');
+
+        // Sans son bloc CMS, la page s'affiche vide sans lever d'erreur.
+        $this->assertSelectorTextContains('#methodologie-bilan-carbone', '281 g/km/véhicule');
     }
 
     /**
