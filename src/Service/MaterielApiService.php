@@ -84,13 +84,25 @@ class MaterielApiService
                     'pseudo' => $pseudo,
                 ]);
 
-                // Mettre à jour les droits utilisateur pour permettre l'accès au planning
-                $this->updateUserGroup($userData['id']);
-
-                // Mettre à jour le statut dans la base de données locale
+                // Le bénéficiaire existe désormais chez Loxya : on l'enregistre avant toute
+                // autre opération. Sinon un échec ultérieur laisse un compte que la
+                // plateforme ignore, et l'adhérent reste bloqué sur le contrôle d'existence
+                // sans jamais avoir reçu son mot de passe.
                 $user->setMaterielAccountCreatedAt(new \DateTime());
                 $this->entityManager->persist($user);
                 $this->entityManager->flush();
+
+                // L'accès au planning n'est pas indispensable pour se connecter : on
+                // journalise l'échec pour le corriger à la main plutôt que de priver
+                // l'adhérent de ses identifiants.
+                try {
+                    $this->updateUserGroup($userData['id']);
+                } catch (\RuntimeException $e) {
+                    $this->logger->error('Bénéficiaire créé sans accès au planning', [
+                        'userId' => $userData['id'],
+                        'error' => $e->getMessage(),
+                    ]);
+                }
 
                 return [
                     'email' => $user->getEmail(),

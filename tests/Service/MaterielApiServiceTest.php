@@ -124,14 +124,51 @@ class MaterielApiServiceTest extends TestCase
         }
     }
 
-    public function testCreateUserThrowsWhenPlanningGroupCannotBeAssigned(): void
+    /**
+     * Le compte existe chez Loxya dès le 201 : l'adhérent doit recevoir ses
+     * identifiants même si l'accès au planning n'a pas pu être attribué, sinon
+     * il reste bloqué sur le contrôle d'existence à chaque nouvelle tentative.
+     */
+    public function testCreateUserReturnsCredentialsEvenIfPlanningGroupCannotBeAssigned(): void
     {
         $calls = [];
         $client = $this->recordingClient($calls, $this->makeResponse(201, ['id' => 123]), $this->makeResponse(500, [], 'Internal error'));
 
-        $this->expectException(\RuntimeException::class);
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->expects($this->once())->method('flush');
 
-        $this->makeService($client)->createUser($this->makeUser());
+        $user = $this->makeUser();
+        $credentials = $this->makeService($client, $entityManager)->createUser($user);
+
+        $this->assertSame('jeandupont', $credentials['pseudo']);
+        $this->assertNotNull($user->getMaterielAccountCreatedAt());
+    }
+
+    public function testCreateUserRecordsTheAccountBeforeAssigningPlanningGroup(): void
+    {
+        $sequence = [];
+
+        $client = $this->createMock(HttpClientInterface::class);
+        $client->method('request')
+            ->willReturnCallback(function (string $method, string $url) use (&$sequence) {
+                $sequence[] = $method . ' ' . parse_url($url, \PHP_URL_PATH);
+
+                return str_ends_with($url, '/api/beneficiaries')
+                    ? $this->makeResponse(201, ['id' => 123])
+                    : $this->makeResponse(200);
+            });
+
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+        $entityManager->method('flush')->willReturnCallback(function () use (&$sequence) {
+            $sequence[] = 'flush';
+        });
+
+        $this->makeService($client, $entityManager)->createUser($this->makeUser());
+
+        $this->assertSame(
+            ['POST /api/beneficiaries', 'flush', 'PUT /api/users/123'],
+            $sequence
+        );
     }
 
     /**
