@@ -18,8 +18,6 @@ final class Version20260903050000 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        // Le contenu est ensuite maintenu par la commission environnement via le CMS.
-        // INSERT conditionnel : ne rien écraser si le bloc a déjà été créé à la main.
         $this->addSql(
             'INSERT INTO caf_content_html
                 (code_content_html, lang_content_html, contenu_content_html, date_content_html, linkedtopage_content_html, current_content_html, vis_content_html)
@@ -37,8 +35,7 @@ final class Version20260903050000 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        // Supprime aussi les révisions saisies depuis le CMS : c'est le prix d'un rollback
-        // sur un contenu éditorial, il n'y a pas d'état antérieur à restaurer.
+        // Emporte aussi les révisions saisies depuis le CMS.
         $this->addSql('DELETE FROM caf_content_html WHERE code_content_html = :code', ['code' => self::CODE]);
     }
 

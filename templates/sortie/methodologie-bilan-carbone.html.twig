@@ -6,14 +6,11 @@
 
 {% block body %}
     <style>
-        /* Le thème ne style que h1.page-h1 et h2.bleucaf : on donne au h3 de quoi se
-           distinguer du corps de texte, les sous-sections étant nombreuses ici. */
+        /* Le thème du site ne style pas les h3. */
         #methodologie-bilan-carbone h3 { font-size: 1rem; font-family: DINBold; margin: 16px 0 6px; }
     </style>
 
     <h1 class="page-h1">Calcul du bilan carbone des sorties</h1>
 
-    {# Contenu éditable par les gestionnaires de contenu (commission environnement),
-       amorcé par la migration Version20260903050000. #}
     {{ easy_include('methodologie-bilan-carbone', 'main-type') }}
 {% endblock %}

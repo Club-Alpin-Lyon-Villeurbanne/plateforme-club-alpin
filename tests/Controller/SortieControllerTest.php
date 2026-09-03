@@ -725,8 +725,7 @@ class SortieControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
         $this->assertSelectorTextContains('h1.page-h1', 'Calcul du bilan carbone des sorties');
 
-        // Le corps de la page vit dans le CMS (bloc easy_include amorcé par migration) :
-        // on vérifie qu'il remonte bien, sinon la page s'affiche vide sans erreur.
+        // Sans son bloc CMS, la page s'affiche vide sans lever d'erreur.
         $this->assertSelectorTextContains('#methodologie-bilan-carbone', '281 g/km/véhicule');
     }
 
