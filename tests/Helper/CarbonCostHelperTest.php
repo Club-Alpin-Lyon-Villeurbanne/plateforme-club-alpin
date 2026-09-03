@@ -19,7 +19,7 @@ class CarbonCostHelperTest extends TestCase
             publicTrainRate: 10,
             publicCoachRate: 122,
             dedicatedCoachRate: 870,
-            minivanRate: 327,
+            minivanRate: 281,
             bikeWalkRate: 0,
             thermicCarpoolingRate: 219,
             electricCarpoolingRate: 102,
@@ -45,10 +45,10 @@ class CarbonCostHelperTest extends TestCase
 
     public function testCalculateMinivanReturnsPerPerson(): void
     {
-        // Minibus: 100 km * 327 gCO2e/km * 1 vehicle = 32700 total ; perPerson = 32700/9 ≈ 3633.33
+        // Minibus: 100 km * 281 gCO2e/km * 1 vehicle = 28100 total ; perPerson = 28100/9 ≈ 3122.22
         $result = $this->helper->calculate(100, 9, 1, TransportModeEnum::MINIVAN);
-        $this->assertEquals(32700.0, $result->total);
-        $this->assertEquals(3633.33, $result->perPerson);
+        $this->assertEquals(28100.0, $result->total);
+        $this->assertEquals(3122.22, $result->perPerson);
     }
 
     public function testCalculateDedicatedCoachReturnsPerPerson(): void
