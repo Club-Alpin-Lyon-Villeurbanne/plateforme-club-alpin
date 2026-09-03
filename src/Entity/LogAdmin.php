@@ -43,6 +43,10 @@ class LogAdmin
     #[ORM\Column(name: 'date_log_admin', type: 'bigint', nullable: false)]
     private $date;
 
+    #[ORM\ManyToOne(targetEntity: 'User')]
+    #[ORM\JoinColumn(name: 'user_log_admin', referencedColumnName: 'id_user', nullable: true, onDelete: 'SET NULL')]
+    private ?User $user = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -92,6 +96,18 @@ class LogAdmin
     public function setDate(string $date): self
     {
         $this->date = $date;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }
