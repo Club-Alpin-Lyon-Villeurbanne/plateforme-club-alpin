@@ -68,6 +68,7 @@ class MaterielApiService
                     'first_name' => $user->getFirstname(),
                     'last_name' => $user->getLastname(),
                     'can_make_reservation' => true,
+                    'country' => 'FR',
                     'email' => $user->getEmail(),
                     'pseudo' => $pseudo,
                     'password' => $password,
@@ -82,13 +83,18 @@ class MaterielApiService
                     'pseudo' => $pseudo,
                 ]);
 
-                // Mettre à jour les droits utilisateur pour permettre l'accès au planning
-                $this->updateUserGroup($userData['id']);
-
-                // Mettre à jour le statut dans la base de données locale
                 $user->setMaterielAccountCreatedAt(new \DateTime());
                 $this->entityManager->persist($user);
                 $this->entityManager->flush();
+
+                try {
+                    $this->updateUserGroup($userData['id']);
+                } catch (\RuntimeException $e) {
+                    $this->logger->error('Bénéficiaire créé sans accès au planning', [
+                        'userId' => $userData['id'],
+                        'error' => $e->getMessage(),
+                    ]);
+                }
 
                 return [
                     'email' => $user->getEmail(),
