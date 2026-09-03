@@ -111,7 +111,7 @@ final class Version20260903050000 extends AbstractMigration
             <h3>Minibus</h3>
             <p>En l'absence de données pour un minibus 9 places, l'impact est recalculé à partir des données et hypothèses de l'Ademe :</p>
             <ul>
-                <li>Impact minibus par km = impact fabrication / km + consommation &times; impact carburant / l</li>
+                <li>Impact minibus par km = impact fabrication / km + (consommation / 100) &times; impact carburant / l = 0,038 + (8 / 100) &times; 3,04 = 0,2812 kg CO2e/km, soit 281 g CO2e/km</li>
                 <li>Impact fabrication / km = masse du véhicule &times; 4 kg CO2e/kg / 200 000 km (hypothèse standard Ademe) = 1 900 &times; 4 / 200 000 = 0,038 kg CO2e/km</li>
                 <li>Consommation : 8 l/100 km avec une conduite douce (11 l si on roule à 130 !)</li>
                 <li>Impact carburant / l pour le gazole : 3,04 kg CO2e/l (incluant le cycle de production du carburant)</li>
