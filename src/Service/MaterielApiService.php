@@ -68,7 +68,6 @@ class MaterielApiService
                     'first_name' => $user->getFirstname(),
                     'last_name' => $user->getLastname(),
                     'can_make_reservation' => true,
-                    // Obligatoire côté Loxya depuis septembre 2026 : sans pays, la création renvoie un 400.
                     'country' => 'FR',
                     'email' => $user->getEmail(),
                     'pseudo' => $pseudo,
@@ -84,17 +83,10 @@ class MaterielApiService
                     'pseudo' => $pseudo,
                 ]);
 
-                // Le bénéficiaire existe désormais chez Loxya : on l'enregistre avant toute
-                // autre opération. Sinon un échec ultérieur laisse un compte que la
-                // plateforme ignore, et l'adhérent reste bloqué sur le contrôle d'existence
-                // sans jamais avoir reçu son mot de passe.
                 $user->setMaterielAccountCreatedAt(new \DateTime());
                 $this->entityManager->persist($user);
                 $this->entityManager->flush();
 
-                // L'accès au planning n'est pas indispensable pour se connecter : on
-                // journalise l'échec pour le corriger à la main plutôt que de priver
-                // l'adhérent de ses identifiants.
                 try {
                     $this->updateUserGroup($userData['id']);
                 } catch (\RuntimeException $e) {

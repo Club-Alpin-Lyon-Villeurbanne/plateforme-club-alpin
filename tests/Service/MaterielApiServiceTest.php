@@ -99,10 +99,6 @@ class MaterielApiServiceTest extends TestCase
         $this->assertNotNull($user->getMaterielAccountCreatedAt());
     }
 
-    /**
-     * Le scénario de la panne de septembre 2026 : sans le champ manquant, Loxya
-     * refuse la création et l'adhérent ne doit surtout pas être marqué équipé.
-     */
     public function testCreateUserThrowsAndRecordsNothingWhenLoxyaRejectsThePayload(): void
     {
         $rejection = '{"success":false,"error":{"code":400,"message":"Validation failed."}}';
@@ -124,11 +120,6 @@ class MaterielApiServiceTest extends TestCase
         }
     }
 
-    /**
-     * Le compte existe chez Loxya dès le 201 : l'adhérent doit recevoir ses
-     * identifiants même si l'accès au planning n'a pas pu être attribué, sinon
-     * il reste bloqué sur le contrôle d'existence à chaque nouvelle tentative.
-     */
     public function testCreateUserReturnsCredentialsEvenIfPlanningGroupCannotBeAssigned(): void
     {
         $calls = [];
@@ -192,7 +183,6 @@ class MaterielApiServiceTest extends TestCase
         yield 'nom simple' => ['Jean', 'DUPONT', 'jeandupont'];
         yield 'prénom composé' => ['Jean-Luc', 'MARTIN', 'jeanlucmartin'];
         yield 'nom à particule' => ['Marie', 'DE LA TOUR', 'mariedelatour'];
-        // Les accents sont retirés et non translittérés : « Éric Béchard » donne « ricbchard ».
         yield 'accents' => ['Éric', 'BÉCHARD', 'ricbchard'];
     }
 
@@ -229,10 +219,6 @@ class MaterielApiServiceTest extends TestCase
         $this->assertFalse($this->makeService($client)->userExistsOnLoxya($this->makeUser()));
     }
 
-    /**
-     * Loxya indisponible ne doit pas bloquer l'adhérent : la création est tentée,
-     * c'est elle qui tranchera.
-     */
     public function testUserExistsOnLoxyaIsFalseWhenApiFails(): void
     {
         $client = $this->createMock(HttpClientInterface::class);

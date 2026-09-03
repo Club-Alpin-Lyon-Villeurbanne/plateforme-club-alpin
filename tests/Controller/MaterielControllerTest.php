@@ -60,10 +60,6 @@ class MaterielControllerTest extends WebTestCase
         $this->assertSelectorTextContains('.erreur', '409');
     }
 
-    /**
-     * Le cas de la panne de septembre 2026 : Loxya refuse la création, l'adhérent
-     * doit voir un message d'erreur et non un compte annoncé comme créé.
-     */
     public function testCreateAccountShowsErrorWhenLoxyaRejectsCreation(): void
     {
         $user = $this->signup();
@@ -98,10 +94,6 @@ class MaterielControllerTest extends WebTestCase
         $this->assertSelectorExists('form[action="/materiel/create-account"]');
     }
 
-    /**
-     * Le contrôle de licence conditionne l'accès au matériel : un adhérent à
-     * renouveler ne doit pas se voir proposer la création de compte.
-     */
     public function testIndexWarnsMemberWhoMustRenew(): void
     {
         $user = $this->signup();
