@@ -6,124 +6,14 @@
 
 {% block body %}
     <style>
-        /* Les h1/h2 du site sont dimensionnés pour les titres de blocs (1.1rem) : on rétablit
-           une hiérarchie lisible sur cette page de contenu long. */
-        #methodo-carbone h1 { font-size: 1.7rem; line-height: 1.3; color: #2d6a3f; margin-bottom: 16px; }
-        #methodo-carbone h2 { font-size: 1.25rem; color: #2d6a3f; margin-top: 28px; }
-        #methodo-carbone h3 { font-size: 1.05rem; margin-top: 20px; }
-        #methodo-carbone ul { margin: 8px 0 8px 18px; list-style: disc; }
-        #methodo-carbone ul ul { list-style: circle; }
-        #methodo-carbone li { margin-bottom: 4px; }
+        /* Le thème ne style que h1.page-h1 et h2.bleucaf : on donne au h3 de quoi se
+           distinguer du corps de texte, les sous-sections étant nombreuses ici. */
+        #methodologie-bilan-carbone h3 { font-size: 1rem; font-family: DINBold; margin: 16px 0 6px; }
     </style>
-    <div id="methodo-carbone" style="max-width: 800px; padding: 10px 30px 40px; line-height: 1.6; color: #333;">
-        <h1>Calcul du bilan carbone des sorties &ndash; Méthodologie</h1>
 
-        <p>
-            Le club s'est engagé, par la charte environnement votée à l'assemblée générale de janvier 2026,
-            à mettre en place des outils de mesure de nos émissions de CO<sub>2</sub>. Les bénévoles des
-            commissions environnement et numérique ont travaillé ensemble pour avoir un outil de calcul
-            automatique du bilan carbone de la partie transport d'une sortie dès son dépôt.
-        </p>
+    <h1 class="page-h1">Calcul du bilan carbone des sorties</h1>
 
-        <h2>Objectifs</h2>
-        <ul>
-            <li>Permettre aux adhérents de connaître l'impact carbone généré par le transport lors d'une sortie dès sa publication</li>
-            <li>Faciliter la mise à jour du bilan carbone du club, et le suivi annuel d'indicateurs sur l'impact du transport</li>
-            <li>À terme, permettre à un adhérent de voir son impact carbone individuel sur l'année pour les sorties club</li>
-        </ul>
-
-        <h2>Méthodologie</h2>
-        <p>L'impact carbone d'une sortie est calculé de la façon suivante :</p>
-        <p style="background: #f0f7f0; border-left: 4px solid #4a9c5b; border-radius: 4px; padding: 12px 16px;">
-            <em>Impact total (kg CO<sub>2</sub>) = distance (km) &times; nombre de véhicules &times; facteur d'émission d'un véhicule (kg CO<sub>2</sub>/km)</em>
-        </p>
-        <p>
-            L'impact par personne est calculé en fonction du nombre maximum théorique de participants :
-            d'une part la plupart de nos sorties sont complètes lorsqu'elles ont lieu, d'autre part c'est
-            le seul moyen d'éviter un recalcul à chaque inscription.
-        </p>
-
-        <h2>Calcul du nombre de km</h2>
-        <ul>
-            <li><b>Lieu de départ :</b> on utilise le point GPS défini lors du dépôt de la sortie.</li>
-            <li>
-                <b>Lieu d'arrivée :</b>
-                <ul>
-                    <li>La commune de pratique de l'activité est définie lors du dépôt de la sortie.</li>
-                    <li>
-                        On définit le point GPS au niveau de la mairie de la commune grâce à la liste
-                        <a href="https://www.data.gouv.fr/datasets/communes-et-villes-de-france-en-csv-excel-json-parquet-et-feather/" target="_blank" rel="noopener">Communes et villes de France de data.gouv.fr</a>,
-                        stockée dans notre base.
-                    </li>
-                    <li>Il s'agit d'une approximation du lieu réel de l'activité, suffisante dans la perspective d'un bilan carbone.</li>
-                </ul>
-            </li>
-            <li>
-                Ensuite on calcule le nombre de km « par la route » avec l'API
-                <a href="https://project-osrm.org/" target="_blank" rel="noopener">OSRM</a>, libre et gratuite.
-            </li>
-        </ul>
-
-        <h2>Modes de transport</h2>
-        <p>Sélection parmi :</p>
-        <ul>
-            <li>🚅 Transports en commun ferroviaire</li>
-            <li>🚌 Transports en commun routier</li>
-            <li>🚌 Car affrété</li>
-            <li>🚐 Minibus</li>
-            <li>🚗 Covoiturage thermique</li>
-            <li>🚙 Covoiturage électrique</li>
-            <li>🚲 Vélo / pédestre</li>
-        </ul>
-        <p>
-            <b>Nombre de véhicules :</b> pour les modes Car affrété, Minibus, Covoiturage électrique et
-            Covoiturage thermique, l'encadrant définit le nombre de véhicules lors du dépôt de la sortie.
-        </p>
-        <ul>
-            <li>En V1, on ne peut sélectionner qu'un seul type de véhicule. <b>L'encadrant qui dépose la sortie sélectionne celui qui est le plus représentatif.</b></li>
-            <li>En V2, on pourra prévoir la sélection d'un nombre pour chaque type de véhicule.</li>
-        </ul>
-
-        <h2>Facteurs d'émission</h2>
-        <ul>
-            <li>Transport en commun ferroviaire : 10 g/km/participant</li>
-            <li>Transport en commun routier : 122 g/km/participant</li>
-            <li>Car affrété : 25 g/km/passager, soit 870 g/km/véhicule</li>
-            <li>Covoiturage thermique : 219 g/km/véhicule</li>
-            <li>Covoiturage électrique : 102 g/km/véhicule</li>
-            <li>Minibus : 281 g/km/véhicule</li>
-        </ul>
-        <p>
-            Les facteurs d'émission sont issus du site
-            <a href="https://impactco2.fr/outils/transport" target="_blank" rel="noopener">impactco2.fr</a>,
-            sauf pour le minibus et le ferroviaire.
-        </p>
-
-        <h3>Ferroviaire</h3>
-        <p>
-            Le choix est fait d'utiliser un facteur d'émission de 10 g CO<sub>2</sub>e/km/passager.
-            L'empreinte affichée par l'Ademe varie entre 2,93 g CO<sub>2</sub>e/km/passager pour le TGV,
-            9,78 pour les Intercités et 27,7 pour le TER. Pourquoi une telle différence ? Le facteur
-            d'émission du TER regroupe des choses très différentes : des TER électriques, des TER
-            thermiques, et même des cars TER au bilan carbone assez mauvais. Nous retenons le facteur
-            des Intercités pour les raisons suivantes :
-        </p>
-        <ul>
-            <li>les trajets réalisés en train lors de nos déplacements correspondent régulièrement à d'anciens trajets Intercités (matériel roulant compris), qui ont presque disparu du paysage ferroviaire pour être remplacés par des TER depuis la régionalisation ;</li>
-            <li>la plupart des lignes passager que nous empruntons dans la région sont électrifiées, à l'exception notable, pour nos trajets favoris, de Saint-Étienne &ndash; Le Puy et Valence &ndash; Briançon ;</li>
-            <li>les trajets en car sont pris en compte de façon séparée dans le transport en commun routier ou le car affrété.</li>
-        </ul>
-
-        <h3>Minibus</h3>
-        <p>
-            En l'absence de données pour un minibus 9 places, l'impact est recalculé à partir des données
-            et hypothèses de l'Ademe :
-        </p>
-        <ul>
-            <li>Impact minibus par km = impact fabrication / km + consommation &times; impact carburant / l</li>
-            <li>Impact fabrication / km = masse du véhicule &times; 4 kg CO<sub>2</sub>e/kg / 200 000 km (hypothèse standard Ademe) = 1 900 &times; 4 / 200 000 = 0,038 kg CO<sub>2</sub>e/km</li>
-            <li>Consommation : 8 l/100 km avec une conduite douce (11 l si on roule à 130 !)</li>
-            <li>Impact carburant / l pour le gazole : 3,04 kg CO<sub>2</sub>e/l (incluant le cycle de production du carburant)</li>
-        </ul>
-    </div>
+    {# Contenu éditable par les gestionnaires de contenu (commission environnement),
+       amorcé par la migration Version20260903050000. #}
+    {{ easy_include('methodologie-bilan-carbone', 'main-type') }}
 {% endblock %}
