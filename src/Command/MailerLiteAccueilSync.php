@@ -55,14 +55,6 @@ class MailerLiteAccueilSync extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $circuit = AccueilCircuitEnum::tryFrom((string) $input->getOption('circuit'));
-
-        if (null === $circuit) {
-            $output->writeln(sprintf('<error>Option --circuit obligatoire : %s.</error>', implode(' ou ', array_column(AccueilCircuitEnum::cases(), 'value'))));
-
-            return Command::FAILURE;
-        }
-
         $execute = (bool) $input->getOption('execute');
         $now = new \DateTimeImmutable((string) ($input->getOption('now') ?: 'now'));
         $season = null !== $input->getOption('season')
@@ -73,6 +65,14 @@ class MailerLiteAccueilSync extends Command
             $output->writeln('<comment>MailerLite non configure sur cette instance : rien a faire.</comment>');
 
             return Command::SUCCESS;
+        }
+
+        $circuit = AccueilCircuitEnum::tryFrom((string) $input->getOption('circuit'));
+
+        if (null === $circuit) {
+            $output->writeln(sprintf('<error>Option --circuit obligatoire : %s.</error>', implode(' ou ', array_column(AccueilCircuitEnum::cases(), 'value'))));
+
+            return Command::FAILURE;
         }
 
         if (!$this->apiKey || !$this->welcomeGroupId || !$this->renewalGroupId || $this->welcomeGroupId === $this->renewalGroupId) {

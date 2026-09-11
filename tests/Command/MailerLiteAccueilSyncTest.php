@@ -92,9 +92,9 @@ class MailerLiteAccueilSyncTest extends TestCase
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), '159667990712813289', '');
         $tester = new CommandTester($command);
-        $exitCode = $tester->execute(['--circuit' => 'nouveaux', '--execute' => true, '--season' => 2026]);
+        $exitCode = $tester->execute(['--execute' => true, '--season' => 2026]);
 
-        $this->assertSame(0, $exitCode, 'Un club sans MailerLite ne doit pas faire echouer le cron');
+        $this->assertSame(0, $exitCode, 'Un club sans MailerLite ne doit rien exiger, meme pas --circuit');
         $this->assertStringContainsString('non configure', $tester->getDisplay());
         $this->assertStringNotContainsString('configuration invalide', $tester->getDisplay(), 'Un club sans cle API ne doit declencher aucune alerte');
     }

@@ -72,10 +72,11 @@ exécution, quitte à recevoir le circuit deux fois — un doublon est préféra
 Au-delà de 800 candidats pour un circuit sur une seule exécution, la commande refuse d'envoyer (code de sortie 1)
 et demande `--force`, en envoyant aussi un message Sentry (le cron ne passe jamais `--force` : sans
 ce signal, la commande échouerait tous les matins sans que personne ne le voie). Ce volume ferait
-suspecter une erreur de sélection plutôt qu'un pic normal d'inscriptions. Sur la saison 2025, le
-cumul de licences prises atteignait déjà 828 au 10 septembre — un déploiement tardif peut donc
-légitimement dépasser ce plafond dès la première exécution ; la marche à suivre est alors de
-vérifier le dry-run puis de relancer une fois avec `--execute --force`.
+suspecter une erreur de sélection plutôt qu'un pic normal d'inscriptions. Le 11 septembre 2026, dix jours
+après le début de saison, le circuit `nouveaux` comptait 234 candidats et `renouvellements` 532 :
+seul un circuit activé tardivement peut légitimement dépasser ce plafond, et uniquement à sa
+première exécution. La marche à suivre est alors de vérifier le dry-run puis de relancer une fois
+avec `--execute --force`.
 
 ### Colonne `accueil_season`
 
@@ -126,6 +127,15 @@ envois est donc à faire à la mi-septembre 2027 : le mécanisme retrait/ajout n
 pour de vrai avant cette date, puisqu'en 2026 personne n'est encore dans les groupes cibles et que
 tous les retraits sont des no-op.
 
+**Un circuit non planifié ne fait aucun bruit.** L'alerte de silence ne joue qu'à l'intérieur
+d'un lancement ; un circuit absent de `cron.json` n'alerte jamais, et ses candidats s'accumulent
+sans signal. C'est l'état voulu du circuit `renouvellements` depuis septembre 2026, à ne pas
+oublier (voir « Mise en production »).
+
+**La frontière nouveau/renouvellement est la date de création de la fiche.** Une carte découverte
+ou un licencié d'un autre club qui prend sa première licence annuelle au club a déjà une fiche :
+il est traité en renouvellement.
+
 **L'alerte de silence se désarme dès le premier adhérent traité de la saison.** Elle répond à
 « rien n'est jamais parti cette saison », pas à « ça s'est arrêté en cours de route ». Une panne
 survenant après les premiers envois de septembre n'est pas couverte par elle ; seule l'alerte de
@@ -134,18 +144,18 @@ perdue.
 
 ## Planification
 
-Chaque circuit a son script dans `clevercloud/crons/` :
+Un seul script, `clevercloud/crons/mailerlite-accueil-sync.sh`, reçoit le circuit en argument :
 
-| Script | Commande | Planifié dans `cron.json` |
-|--------|----------|---------------------------|
-| `mailerlite-accueil-nouveaux.sh` | `mailerlite-accueil-sync --circuit nouveaux --execute` | oui, `45 7 * * *` |
-| `mailerlite-accueil-renouvellements.sh` | `mailerlite-accueil-sync --circuit renouvellements --execute` | **non**, tant que l'automation de renouvellement n'existe pas côté MailerLite |
+| Entrée de `cron.json` | État |
+|-----------------------|------|
+| `45 7 * * * $ROOT/clevercloud/crons/mailerlite-accueil-sync.sh nouveaux` | planifiée |
+| `0 8 * * * $ROOT/clevercloud/crons/mailerlite-accueil-sync.sh renouvellements` | **à ajouter** quand l'automation de renouvellement existera côté MailerLite |
 
-`45 7` est en UTC (heure de `clevercloud/cron.json`), soit 9 h 45 à Paris en heure d'été et 8 h 45
-en heure d'hiver. Ce créneau laisse passer la synchronisation FFCAM (`3 7`, 9h03 à Paris) puis
-l'anonymisation des comptes (`28 7`, 9h28 à Paris), pour ne traiter que des fiches à jour. Le jour
-où le second cron sera planifié, le décaler de quelques minutes (`50 7`) pour que les deux ne
-partagent pas le quota API de MailerLite.
+Les heures sont en UTC : `45 7` est 9 h 45 à Paris en heure d'été, 8 h 45 en heure d'hiver. Ce
+créneau laisse passer la synchronisation FFCAM (`3 7`) puis l'anonymisation des comptes (`28 7`),
+pour ne traiter que des fiches à jour. Le quart d'heure entre les deux circuits suffit tant que le
+premier traite moins de 900 fiches (une seconde par retrait), c'est-à-dire toujours hors
+rattrapage — un rattrapage se fait à la main, hors créneau.
 
 Comme les autres crons du dépôt, le script vérifie `DEPLOY_ENV` : seul `web-prod` (où
 `DEPLOY_ENV=production`) exécute réellement la synchro. `web-staging` (`DEPLOY_ENV=staging`) ne
@@ -185,7 +195,7 @@ le jour où le second cron sera planifié.
    renouvellements attendent, le plafond bloquerait le cron. Lancer une fois
    `bin/console mailerlite-accueil-sync --circuit renouvellements --execute --force`. Compter
    environ une seconde par adhérent.
-4. **Planifier** : ajouter la ligne `"50 7 * * * $ROOT/clevercloud/crons/mailerlite-accueil-renouvellements.sh"`
+4. **Planifier** : ajouter la ligne `"0 8 * * * $ROOT/clevercloud/crons/mailerlite-accueil-sync.sh renouvellements"`
    dans `clevercloud/cron.json`, PR, mise en production.
 
 Une activation différée ne fait perdre personne : la commande est pilotée par la date de prise de

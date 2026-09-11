@@ -460,17 +460,13 @@ SQL;
         . ' AND u.accueilSeason < :season';
 
     /**
-     * Une fiche créée pendant la saison est un nouvel adhérent, une fiche antérieure un renouvellement.
-     *
      * @return User[]
      */
     public function findForAccueilCircuit(int $season, AccueilCircuitEnum $circuit): array
     {
-        $createdAt = AccueilCircuitEnum::NOUVEAUX === $circuit ? 'u.createdAt >= :seasonStart' : 'u.createdAt < :seasonStart';
-
         return $this->getEntityManager()
-            ->createQuery(self::ACCUEIL_CIRCUIT_DQL . ' AND ' . $createdAt . ' ORDER BY u.id ASC')
-            ->setParameter('seasonStart', new \DateTimeImmutable($season . '-09-01 00:00:00'))
+            ->createQuery(self::ACCUEIL_CIRCUIT_DQL . ' AND ' . self::accueilCircuitPredicate($circuit) . ' ORDER BY u.id ASC')
+            ->setParameter('seasonStart', self::seasonStart($season))
             ->setParameter('season', $season)
             ->getResult();
     }
@@ -493,11 +489,23 @@ SQL;
 
     public function countAccueilForSeason(int $season, AccueilCircuitEnum $circuit): int
     {
-        $createdAt = AccueilCircuitEnum::NOUVEAUX === $circuit ? 'created_at >= :seasonStart' : 'created_at < :seasonStart';
+        return (int) $this->getEntityManager()
+            ->createQuery('SELECT COUNT(u) FROM App\Entity\User u WHERE u.accueilSeason = :season AND ' . self::accueilCircuitPredicate($circuit))
+            ->setParameter('seasonStart', self::seasonStart($season))
+            ->setParameter('season', $season)
+            ->getSingleScalarResult();
+    }
 
-        return (int) $this->getEntityManager()->getConnection()->fetchOne(
-            'SELECT COUNT(*) FROM caf_user WHERE accueil_season = :season AND ' . $createdAt,
-            ['season' => $season, 'seasonStart' => $season . '-09-01 00:00:00']
-        );
+    /**
+     * Une fiche créée pendant la saison est un nouvel adhérent, une fiche antérieure un renouvellement.
+     */
+    private static function accueilCircuitPredicate(AccueilCircuitEnum $circuit): string
+    {
+        return AccueilCircuitEnum::NOUVEAUX === $circuit ? 'u.createdAt >= :seasonStart' : 'u.createdAt < :seasonStart';
+    }
+
+    private static function seasonStart(int $season): \DateTimeImmutable
+    {
+        return new \DateTimeImmutable($season . '-09-01 00:00:00');
     }
 }
