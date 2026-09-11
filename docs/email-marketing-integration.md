@@ -28,16 +28,18 @@ MailerLite n'est déployé qu'à Lyon. Chambéry et Clermont partagent ce dépô
 ## La commande `mailerlite-accueil-sync`
 
 ```bash
-bin/console mailerlite-accueil-sync              # dry-run : affiche la répartition, n'envoie rien
-bin/console mailerlite-accueil-sync --execute     # envoie réellement
-bin/console mailerlite-accueil-sync --season 2026 # force la saison traitée (par défaut : saison en cours)
-bin/console mailerlite-accueil-sync --force       # passe outre le plafond de volume
+bin/console mailerlite-accueil-sync --circuit nouveaux                 # dry-run : compte, n'envoie rien
+bin/console mailerlite-accueil-sync --circuit nouveaux --execute       # envoie réellement
+bin/console mailerlite-accueil-sync --circuit renouvellements          # idem pour l'autre circuit
+bin/console mailerlite-accueil-sync --circuit nouveaux --season 2026   # force la saison traitée
+bin/console mailerlite-accueil-sync --circuit nouveaux --force         # passe outre le plafond de volume
 ```
 
 Options :
 
 | Option      | Effet |
 |-------------|-------|
+| `--circuit` | Obligatoire : `nouveaux` (groupe `accueil-nouveau`) ou `renouvellements` (groupe `accueil-renouvellement`). Un lancement traite un seul circuit, pour qu'une commande tapée à la main ne parte jamais sur les deux par accident. |
 | `--execute` | Effectue réellement les envois (sinon dry-run). |
 | `--force`   | Passe outre le plafond de volume (voir ci-dessous). |
 | `--season`  | Force la saison traitée (année de septembre), utile pour rejouer une saison ou pour les tests. |
@@ -55,8 +57,10 @@ Sont éligibles les licenciés annuels non supprimés, dont la licence a été p
 traitée, non radiés, avec un email valide, pas encore traités pour cette saison
 (`UserRepository::findForAccueilCircuit()`).
 
-Parmi les candidats, une fiche créée pendant la saison (à partir du 1er septembre) va vers
-`accueil-nouveau` ; une fiche antérieure va vers `accueil-renouvellement`. Avant chaque ajout à un
+Parmi les candidats, le circuit `nouveaux` ne garde que les fiches créées pendant la saison (à
+partir du 1er septembre) et les envoie vers `accueil-nouveau` ; le circuit `renouvellements` ne
+garde que les fiches antérieures et les envoie vers `accueil-renouvellement`. Chaque circuit a son
+propre cron et peut être planifié ou non indépendamment de l'autre. Avant chaque ajout à un
 groupe, la commande retire l'adhérent du groupe visé : les automations MailerLite se déclenchent
 sur « rejoint le groupe », un ajout sans retrait préalable serait sans effet pour un abonné déjà
 présent. Ces retraits sont espacés d'1 seconde : l'API MailerLite plafonne autour de 120 requêtes
@@ -66,7 +70,7 @@ exécution, quitte à recevoir le circuit deux fois — un doublon est préféra
 
 ### Plafond de volume
 
-Au-delà de 800 candidats sur une seule exécution, la commande refuse d'envoyer (code de sortie 1)
+Au-delà de 800 candidats pour un circuit sur une seule exécution, la commande refuse d'envoyer (code de sortie 1)
 et demande `--force`, en envoyant aussi un message Sentry (le cron ne passe jamais `--force` : sans
 ce signal, la commande échouerait tous les matins sans que personne ne le voie). Ce volume ferait
 suspecter une erreur de sélection plutôt qu'un pic normal d'inscriptions. Sur la saison 2025, le
@@ -131,18 +135,18 @@ perdue.
 
 ## Planification
 
-**Le cron n'est pas planifié pour l'instant** : la ligne correspondante a été retirée de
-`clevercloud/cron.json` tant que les circuits ne sont pas validés. Aucun envoi n'a donc lieu, même
-en production. Pour activer la fonctionnalité, il suffit de remettre cette ligne :
+Chaque circuit a son script dans `clevercloud/crons/` :
 
-```json
-"45 7 * * * $ROOT/clevercloud/crons/mailerlite-accueil-sync.sh"
-```
+| Script | Commande | Planifié dans `cron.json` |
+|--------|----------|---------------------------|
+| `mailerlite-accueil-nouveaux.sh` | `mailerlite-accueil-sync --circuit nouveaux --execute` | oui, `45 7 * * *` |
+| `mailerlite-accueil-renouvellements.sh` | `mailerlite-accueil-sync --circuit renouvellements --execute` | **non**, tant que l'automation de renouvellement n'existe pas côté MailerLite |
 
-Une fois planifié, le cron `clevercloud/crons/mailerlite-accueil-sync.sh` appelle
-`bin/console mailerlite-accueil-sync --execute` tous les jours à `45 7` (heure UTC de `clevercloud/cron.json`), soit 9 h 45 à Paris en heure d'été et 8 h 45 en heure d'hiver. Ce
-créneau laisse passer la synchronisation FFCAM (`3 7`, 9h03 à Paris) puis l'anonymisation des
-comptes (`28 7`, 9h28 à Paris), pour ne traiter que des fiches à jour.
+`45 7` est en UTC (heure de `clevercloud/cron.json`), soit 9 h 45 à Paris en heure d'été et 8 h 45
+en heure d'hiver. Ce créneau laisse passer la synchronisation FFCAM (`3 7`, 9h03 à Paris) puis
+l'anonymisation des comptes (`28 7`, 9h28 à Paris), pour ne traiter que des fiches à jour. Le jour
+où le second cron sera planifié, le décaler de quelques minutes (`50 7`) pour que les deux ne
+partagent pas le quota API de MailerLite.
 
 Comme les autres crons du dépôt, le script vérifie `DEPLOY_ENV` : seul `web-prod` (où
 `DEPLOY_ENV=production`) exécute réellement la synchro. `web-staging` (`DEPLOY_ENV=staging`) ne
@@ -166,25 +170,32 @@ manquant ou dupliqué, ou sans clé mais avec `MAILERLITE_RENEWAL_GROUP_ID` rens
 
 ## Mise en production
 
-L'ordre compte : les groupes doivent exister côté MailerLite avant que la commande ne tourne pour
-de vrai.
+Faite en septembre 2026 avec le seul circuit `nouveaux`. Le groupe `accueil-renouvellement` existe
+et son identifiant est posé sur web-prod, mais l'automation « Renouvellement de licence » reste à
+créer par la communication du club. Les renouvellements s'accumulent comme candidats et partiront
+le jour où le second cron sera planifié.
 
-1. **Côté MailerLite** :
-   - renommer le groupe `adherent` en `accueil-nouveau` (sans effet technique, voir plus haut) ;
-   - créer le groupe `accueil-renouvellement` et son automation « Renouvellement de licence »,
-     déclencheur `subscriber_joins_group` ;
-   - cocher `repeatable` sur les deux automations — sans ce réglage, le circuit ne rejouera pas en
-     2027.
-2. **Variables d'environnement** : `clever env set MAILERLITE_RENEWAL_GROUP_ID <id> --alias
-   web-prod`. Rien à faire pour Chambéry ni Clermont.
-3. **Déployer** et appliquer la migration (colonne `accueil_season`).
-4. **Premier passage à blanc en production** : `bin/console mailerlite-accueil-sync` (sans
-   `--execute`), vérifier que la répartition nouveaux/renouvellements est plausible.
-5. **Premier envoi réel** : laisser le cron tourner un jour, puis vérifier dans MailerLite que les
-   abonnés sont arrivés dans le bon groupe et que l'automation s'est déclenchée.
-6. **Contrôle à J+7** : comparer le nombre d'entrées dans les deux groupes au nombre de licences
-   prises sur la période.
+### Activer le circuit de renouvellement
 
-Une mise en production différée ne fait perdre personne : la commande est pilotée par la date de
-prise de licence (`join_date`) et idempotente, elle rattrapera tous les adhérents qui auront
-renouvelé entre-temps.
+1. **Côté MailerLite** : créer l'automation, déclencheur « rejoint le groupe » sur
+   `accueil-renouvellement`, l'activer, et cocher `repeatable` — sans ce réglage, le circuit ne
+   rejouera pas en 2027.
+2. **Passage à blanc en production** : `bin/console mailerlite-accueil-sync --circuit
+   renouvellements`, vérifier que le nombre est plausible.
+3. **Premier envoi réel à la main** : après quelques semaines de saison, plus de 800
+   renouvellements attendent, le plafond bloquerait le cron. Lancer une fois
+   `bin/console mailerlite-accueil-sync --circuit renouvellements --execute --force`. Compter
+   environ une seconde par adhérent.
+4. **Planifier** : ajouter la ligne `"50 7 * * * $ROOT/clevercloud/crons/mailerlite-accueil-renouvellements.sh"`
+   dans `clevercloud/cron.json`, PR, mise en production.
+
+Une activation différée ne fait perdre personne : la commande est pilotée par la date de prise de
+licence (`join_date`) et idempotente, elle rattrape tous les adhérents qui ont renouvelé
+entre-temps.
+
+### Contrôles après activation d'un circuit
+
+- **J+1** : vérifier dans MailerLite que les abonnés sont arrivés dans le bon groupe et que
+  l'automation s'est déclenchée.
+- **J+7** : comparer le nombre d'entrées dans le groupe au nombre de licences prises sur la
+  période.
