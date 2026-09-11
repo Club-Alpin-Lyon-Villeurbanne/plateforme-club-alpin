@@ -2,6 +2,7 @@
 
 namespace App\Tests\Repository;
 
+use App\Entity\AccueilCircuitEnum;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -51,10 +52,14 @@ class UserRepositoryAccueilTest extends KernelTestCase
         $eligible = $this->repository->findOneBy(['cafnum' => self::CAFNUM_ELIGIBLE]);
         $doublon = $this->repository->findOneBy(['cafnum' => self::CAFNUM_DOUBLON]);
 
-        $ids = array_map(fn (User $u) => $u->getId(), $this->repository->findForAccueilCircuit(self::SEASON));
+        $ids = array_map(fn (User $u) => $u->getId(), $this->repository->findForAccueilCircuit(self::SEASON, AccueilCircuitEnum::NOUVEAUX));
 
         $this->assertContains($eligible->getId(), $ids, 'un adhérent qui remplit les six critères doit être sélectionné');
         $this->assertNotContains($doublon->getId(), $ids, "un email préfixé doublon. n'est pas routable et doit être écarté");
+
+        $renouvellements = array_map(fn (User $u) => $u->getId(), $this->repository->findForAccueilCircuit(self::SEASON, AccueilCircuitEnum::RENOUVELLEMENTS));
+
+        $this->assertNotContains($eligible->getId(), $renouvellements, 'une fiche créée pendant la saison est un nouvel adhérent, pas un renouvellement');
     }
 
     public function testMarkAccueilSeasonRendLAdherentInvisibleEtIncrementeLeCompteur(): void
@@ -66,7 +71,7 @@ class UserRepositoryAccueilTest extends KernelTestCase
 
         $this->assertSame($countAvant + 1, $this->repository->countAccueilForSeason(self::SEASON));
 
-        $idsApres = array_map(fn (User $u) => $u->getId(), $this->repository->findForAccueilCircuit(self::SEASON));
+        $idsApres = array_map(fn (User $u) => $u->getId(), $this->repository->findForAccueilCircuit(self::SEASON, AccueilCircuitEnum::NOUVEAUX));
         $this->assertNotContains($eligible->getId(), $idsApres, 'un adhérent déjà marqué pour la saison ne doit plus ressortir');
     }
 

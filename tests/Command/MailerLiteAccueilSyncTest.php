@@ -3,6 +3,7 @@
 namespace App\Tests\Command;
 
 use App\Command\MailerLiteAccueilSync;
+use App\Entity\AccueilCircuitEnum;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\MailerLiteService;
@@ -35,46 +36,34 @@ class MailerLiteAccueilSyncTest extends TestCase
     }
 
     /**
-     * @param int[]                   $expectedMarked
-     * @param array<string, string[]> $pushed
+     * @return iterable<string, array{AccueilCircuitEnum, string}>
      */
-    private function makeCommandAvecUnNouveauEtUnRenouvelant(array $expectedMarked, array &$pushed): MailerLiteAccueilSync
+    public static function circuits(): iterable
     {
-        $nouveau = $this->makeUser(1, 'nouveau@example.com', '2026-09-10');
-        $renouvelant = $this->makeUser(2, 'ancien@example.com', '2019-03-04');
+        yield 'nouveaux' => [AccueilCircuitEnum::NOUVEAUX, 'GROUPE_BIENVENUE'];
+        yield 'renouvellements' => [AccueilCircuitEnum::RENOUVELLEMENTS, 'GROUPE_RENOUVELLEMENT'];
+    }
+
+    /**
+     * @dataProvider circuits
+     */
+    public function testEnvoieLeCircuitDemandeVersSonGroupe(AccueilCircuitEnum $circuit, string $expectedGroupId): void
+    {
+        $user = $this->makeUser(1, 'a@example.com', '2026-09-10');
 
         $repository = $this->createMock(UserRepository::class);
-        $repository->method('findForAccueilCircuit')->willReturn([$nouveau, $renouvelant]);
-        $repository->expects($this->once())->method('markAccueilSeason')
-            ->with($this->equalTo($expectedMarked), $this->equalTo(2026));
+        $repository->expects($this->once())->method('findForAccueilCircuit')->with(2026, $circuit)->willReturn([$user]);
+        $repository->expects($this->once())->method('markAccueilSeason')->with($this->equalTo([1]), $this->equalTo(2026));
 
         $mailerLite = $this->createMock(MailerLiteService::class);
         $mailerLite->method('removeFromGroup')->willReturn(true);
-        $mailerLite->method('pushToGroup')->willReturnCallback(function (string $groupId, array $users) use (&$pushed) {
-            $pushed[$groupId] = array_map(fn (User $u) => $u->getEmail(), $users);
+        $mailerLite->expects($this->once())->method('pushToGroup')->with($expectedGroupId, [$user])
+            ->willReturn(['total' => 1, 'imported' => 1, 'updated' => 0, 'failed' => 0, 'skipped' => 0]);
 
-            return ['total' => \count($users), 'imported' => \count($users), 'updated' => 0, 'failed' => 0, 'skipped' => 0];
-        });
+        $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'GROUPE_BIENVENUE', 'GROUPE_RENOUVELLEMENT', 'API_KEY');
+        $exitCode = (new CommandTester($command))->execute(['--circuit' => $circuit->value, '--execute' => true, '--season' => 2026]);
 
-        return new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'GROUPE_BIENVENUE', 'GROUPE_RENOUVELLEMENT', 'API_KEY');
-    }
-
-    public function testLeCircuitNouveauxNeTraiteQueLesFichesCreeesDansLaSaison(): void
-    {
-        $pushed = [];
-        $command = $this->makeCommandAvecUnNouveauEtUnRenouvelant([1], $pushed);
-        (new CommandTester($command))->execute(['--circuit' => 'nouveaux', '--execute' => true, '--season' => 2026]);
-
-        $this->assertSame(['GROUPE_BIENVENUE' => ['nouveau@example.com']], $pushed);
-    }
-
-    public function testLeCircuitRenouvellementsNeTraiteQueLesFichesAnterieures(): void
-    {
-        $pushed = [];
-        $command = $this->makeCommandAvecUnNouveauEtUnRenouvelant([2], $pushed);
-        (new CommandTester($command))->execute(['--circuit' => 'renouvellements', '--execute' => true, '--season' => 2026]);
-
-        $this->assertSame(['GROUPE_RENOUVELLEMENT' => ['ancien@example.com']], $pushed);
+        $this->assertSame(0, $exitCode);
     }
 
     public function testRefuseSansCircuit(): void

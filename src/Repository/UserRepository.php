@@ -7,6 +7,7 @@ use App\Entity\Article;
 use App\Entity\Comment;
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
+use App\Entity\AccueilCircuitEnum;
 use App\Entity\User;
 use App\Trait\PaginationRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -456,16 +457,19 @@ SQL;
         . ' AND u.email IS NOT NULL'
         . " AND u.email <> ''"
         . " AND u.email NOT LIKE 'doublon.%'"
-        . ' AND u.accueilSeason < :season'
-        . ' ORDER BY u.id ASC';
+        . ' AND u.accueilSeason < :season';
 
     /**
+     * Une fiche créée pendant la saison est un nouvel adhérent, une fiche antérieure un renouvellement.
+     *
      * @return User[]
      */
-    public function findForAccueilCircuit(int $season): array
+    public function findForAccueilCircuit(int $season, AccueilCircuitEnum $circuit): array
     {
+        $createdAt = AccueilCircuitEnum::NOUVEAUX === $circuit ? 'u.createdAt >= :seasonStart' : 'u.createdAt < :seasonStart';
+
         return $this->getEntityManager()
-            ->createQuery(self::ACCUEIL_CIRCUIT_DQL)
+            ->createQuery(self::ACCUEIL_CIRCUIT_DQL . ' AND ' . $createdAt . ' ORDER BY u.id ASC')
             ->setParameter('seasonStart', new \DateTimeImmutable($season . '-09-01 00:00:00'))
             ->setParameter('season', $season)
             ->getResult();

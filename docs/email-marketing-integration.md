@@ -39,7 +39,7 @@ Options :
 
 | Option      | Effet |
 |-------------|-------|
-| `--circuit` | Obligatoire : `nouveaux` (groupe `accueil-nouveau`) ou `renouvellements` (groupe `accueil-renouvellement`). Un lancement traite un seul circuit, pour qu'une commande tapée à la main ne parte jamais sur les deux par accident. |
+| `--circuit` | Obligatoire : `nouveaux` ou `renouvellements`. Un lancement ne traite qu'un circuit. |
 | `--execute` | Effectue réellement les envois (sinon dry-run). |
 | `--force`   | Passe outre le plafond de volume (voir ci-dessous). |
 | `--season`  | Force la saison traitée (année de septembre), utile pour rejouer une saison ou pour les tests. |
@@ -57,10 +57,9 @@ Sont éligibles les licenciés annuels non supprimés, dont la licence a été p
 traitée, non radiés, avec un email valide, pas encore traités pour cette saison
 (`UserRepository::findForAccueilCircuit()`).
 
-Parmi les candidats, le circuit `nouveaux` ne garde que les fiches créées pendant la saison (à
-partir du 1er septembre) et les envoie vers `accueil-nouveau` ; le circuit `renouvellements` ne
-garde que les fiches antérieures et les envoie vers `accueil-renouvellement`. Chaque circuit a son
-propre cron et peut être planifié ou non indépendamment de l'autre. Avant chaque ajout à un
+Le circuit `nouveaux` prend les fiches créées pendant la saison (à partir du 1er septembre) et les
+envoie vers `accueil-nouveau` ; le circuit `renouvellements` prend les fiches antérieures et les
+envoie vers `accueil-renouvellement`. Chaque circuit a son propre cron. Avant chaque ajout à un
 groupe, la commande retire l'adhérent du groupe visé : les automations MailerLite se déclenchent
 sur « rejoint le groupe », un ajout sans retrait préalable serait sans effet pour un abonné déjà
 présent. Ces retraits sont espacés d'1 seconde : l'API MailerLite plafonne autour de 120 requêtes

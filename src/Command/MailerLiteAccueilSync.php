@@ -2,6 +2,7 @@
 
 namespace App\Command;
 
+use App\Entity\AccueilCircuitEnum;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\MailerLiteService;
@@ -22,8 +23,6 @@ class MailerLiteAccueilSync extends Command
     private const SEASON_START_MONTH = 9;
 
     private const REMOVE_DELAY_US = 1000000;
-
-    private const CIRCUITS = ['nouveaux', 'renouvellements'];
 
     public function __construct(
         private readonly UserRepository $userRepository,
@@ -56,10 +55,10 @@ class MailerLiteAccueilSync extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $circuit = (string) $input->getOption('circuit');
+        $circuit = AccueilCircuitEnum::tryFrom((string) $input->getOption('circuit'));
 
-        if (!\in_array($circuit, self::CIRCUITS, true)) {
-            $output->writeln(sprintf('<error>Option --circuit obligatoire : %s.</error>', implode(' ou ', self::CIRCUITS)));
+        if (null === $circuit) {
+            $output->writeln(sprintf('<error>Option --circuit obligatoire : %s.</error>', implode(' ou ', array_column(AccueilCircuitEnum::cases(), 'value'))));
 
             return Command::FAILURE;
         }
@@ -89,14 +88,13 @@ class MailerLiteAccueilSync extends Command
             return Command::SUCCESS;
         }
 
-        $seasonStart = new \DateTimeImmutable($season . '-09-01 00:00:00');
-        $groupId = 'nouveaux' === $circuit ? $this->welcomeGroupId : $this->renewalGroupId;
-        $users = array_values(array_filter(
-            $this->userRepository->findForAccueilCircuit($season),
-            fn (User $user) => ('nouveaux' === $circuit) === ($user->getCreatedAt() >= $seasonStart),
-        ));
+        $groupId = match ($circuit) {
+            AccueilCircuitEnum::NOUVEAUX => $this->welcomeGroupId,
+            AccueilCircuitEnum::RENOUVELLEMENTS => $this->renewalGroupId,
+        };
+        $users = $this->userRepository->findForAccueilCircuit($season, $circuit);
 
-        $output->writeln(sprintf('Saison %d — circuit %s (groupe %s) : %d adherent(s) a traiter%s', $season, $circuit, $groupId, \count($users), $execute ? '' : ' [DRY-RUN]'));
+        $output->writeln(sprintf('Saison %d — circuit %s (groupe %s) : %d adherent(s) a traiter%s', $season, $circuit->value, $groupId, \count($users), $execute ? '' : ' [DRY-RUN]'));
 
         if ([] === $users) {
             $this->alertOnSilence($now, $season, $output);
@@ -106,7 +104,7 @@ class MailerLiteAccueilSync extends Command
 
         if (\count($users) > self::VOLUME_GUARD && !$input->getOption('force')) {
             $output->writeln(sprintf('<error>%d candidats depassent le plafond de %d. Relancer avec --force apres verification.</error>', \count($users), self::VOLUME_GUARD));
-            \Sentry\captureMessage(sprintf("Circuit d'accueil MailerLite (%s) : %d candidats depassent le plafond de %d", $circuit, \count($users), self::VOLUME_GUARD));
+            \Sentry\captureMessage(sprintf("Circuit d'accueil MailerLite (%s) : %d candidats depassent le plafond de %d", $circuit->value, \count($users), self::VOLUME_GUARD));
 
             return Command::FAILURE;
         }
