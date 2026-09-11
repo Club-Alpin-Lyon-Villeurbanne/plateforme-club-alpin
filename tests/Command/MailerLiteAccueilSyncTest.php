@@ -3,6 +3,7 @@
 namespace App\Tests\Command;
 
 use App\Command\MailerLiteAccueilSync;
+use App\Entity\AccueilCircuitEnum;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\MailerLiteService;
@@ -34,31 +35,51 @@ class MailerLiteAccueilSyncTest extends TestCase
         $this->assertSame(2027, MailerLiteAccueilSync::seasonFor(new \DateTimeImmutable('2027-09-01')));
     }
 
-    public function testOrienteNouveauxEtRenouvellementsVersLesBonsGroupes(): void
+    /**
+     * @return iterable<string, array{AccueilCircuitEnum, string}>
+     */
+    public static function circuits(): iterable
     {
-        $nouveau = $this->makeUser(1, 'nouveau@example.com', '2026-09-10');
-        $renouvelant = $this->makeUser(2, 'ancien@example.com', '2019-03-04');
+        yield 'nouveaux' => [AccueilCircuitEnum::NOUVEAUX, 'GROUPE_BIENVENUE'];
+        yield 'renouvellements' => [AccueilCircuitEnum::RENOUVELLEMENTS, 'GROUPE_RENOUVELLEMENT'];
+    }
+
+    /**
+     * @dataProvider circuits
+     */
+    public function testEnvoieLeCircuitDemandeVersSonGroupe(AccueilCircuitEnum $circuit, string $expectedGroupId): void
+    {
+        $user = $this->makeUser(1, 'a@example.com', '2026-09-10');
 
         $repository = $this->createMock(UserRepository::class);
-        $repository->method('findForAccueilCircuit')->willReturn([$nouveau, $renouvelant]);
-        $repository->expects($this->once())->method('markAccueilSeason')
-            ->with($this->equalTo([1, 2]), $this->equalTo(2026));
+        $repository->expects($this->once())->method('findForAccueilCircuit')->with(2026, $circuit)->willReturn([$user]);
+        $repository->expects($this->once())->method('markAccueilSeason')->with($this->equalTo([1]), $this->equalTo(2026));
 
-        $pushed = [];
         $mailerLite = $this->createMock(MailerLiteService::class);
         $mailerLite->method('removeFromGroup')->willReturn(true);
-        $mailerLite->method('pushToGroup')->willReturnCallback(function (string $groupId, array $users) use (&$pushed) {
-            $pushed[$groupId] = array_map(fn (User $u) => $u->getEmail(), $users);
-
-            return ['total' => \count($users), 'imported' => \count($users), 'updated' => 0, 'failed' => 0, 'skipped' => 0];
-        });
+        $mailerLite->expects($this->once())->method('pushToGroup')->with($expectedGroupId, [$user])
+            ->willReturn(['total' => 1, 'imported' => 1, 'updated' => 0, 'failed' => 0, 'skipped' => 0]);
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'GROUPE_BIENVENUE', 'GROUPE_RENOUVELLEMENT', 'API_KEY');
-        $tester = new CommandTester($command);
-        $tester->execute(['--execute' => true, '--season' => 2026]);
+        $exitCode = (new CommandTester($command))->execute(['--circuit' => $circuit->value, '--execute' => true, '--season' => 2026]);
 
-        $this->assertSame(['nouveau@example.com'], $pushed['GROUPE_BIENVENUE']);
-        $this->assertSame(['ancien@example.com'], $pushed['GROUPE_RENOUVELLEMENT']);
+        $this->assertSame(0, $exitCode);
+    }
+
+    public function testRefuseSansCircuit(): void
+    {
+        $repository = $this->createMock(UserRepository::class);
+        $repository->expects($this->never())->method('findForAccueilCircuit');
+
+        $mailerLite = $this->createMock(MailerLiteService::class);
+        $mailerLite->expects($this->never())->method('pushToGroup');
+
+        $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'API_KEY');
+        $tester = new CommandTester($command);
+
+        $this->assertSame(1, $tester->execute(['--execute' => true, '--season' => 2026]), 'Sans circuit, rien ne doit partir : un lancement a la main ne doit pas traiter les deux par accident');
+        $this->assertSame(1, $tester->execute(['--circuit' => 'tous', '--execute' => true, '--season' => 2026]));
+        $this->assertStringContainsString('--circuit', $tester->getDisplay());
     }
 
     public function testNeFaitRienSiMailerLiteNestPasConfigure(): void
@@ -73,7 +94,7 @@ class MailerLiteAccueilSyncTest extends TestCase
         $tester = new CommandTester($command);
         $exitCode = $tester->execute(['--execute' => true, '--season' => 2026]);
 
-        $this->assertSame(0, $exitCode, 'Un club sans MailerLite ne doit pas faire echouer le cron');
+        $this->assertSame(0, $exitCode, 'Un club sans MailerLite ne doit rien exiger, meme pas --circuit');
         $this->assertStringContainsString('non configure', $tester->getDisplay());
         $this->assertStringNotContainsString('configuration invalide', $tester->getDisplay(), 'Un club sans cle API ne doit declencher aucune alerte');
     }
@@ -88,7 +109,7 @@ class MailerLiteAccueilSyncTest extends TestCase
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), '159667990712813289', 'GROUPE_RENOUVELLEMENT');
         $tester = new CommandTester($command);
-        $exitCode = $tester->execute(['--execute' => true, '--season' => 2026]);
+        $exitCode = $tester->execute(['--circuit' => 'nouveaux', '--execute' => true, '--season' => 2026]);
 
         $this->assertStringContainsString('configuration invalide', $tester->getDisplay());
         $this->assertSame(0, $exitCode, 'Le cron partage ne doit pas devenir rouge en permanence');
@@ -104,7 +125,7 @@ class MailerLiteAccueilSyncTest extends TestCase
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), '159667990712813289', '', 'API_KEY');
         $tester = new CommandTester($command);
-        $exitCode = $tester->execute(['--execute' => true, '--season' => 2026, '--now' => '2026-11-20']);
+        $exitCode = $tester->execute(['--circuit' => 'nouveaux', '--execute' => true, '--season' => 2026, '--now' => '2026-11-20']);
 
         $this->assertStringContainsString('configuration invalide', $tester->getDisplay());
         $this->assertSame(0, $exitCode, 'Le cron partage ne doit pas devenir rouge en permanence');
@@ -120,7 +141,7 @@ class MailerLiteAccueilSyncTest extends TestCase
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'MEME_GROUPE', 'MEME_GROUPE', 'API_KEY');
         $tester = new CommandTester($command);
-        $exitCode = $tester->execute(['--execute' => true, '--season' => 2026, '--now' => '2026-11-20']);
+        $exitCode = $tester->execute(['--circuit' => 'nouveaux', '--execute' => true, '--season' => 2026, '--now' => '2026-11-20']);
 
         $this->assertStringContainsString('configuration invalide', $tester->getDisplay());
         $this->assertSame(0, $exitCode);
@@ -145,7 +166,7 @@ class MailerLiteAccueilSyncTest extends TestCase
         );
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'GROUPE_BIENVENUE', 'GROUPE_RENOUVELLEMENT', 'API_KEY');
-        (new CommandTester($command))->execute(['--execute' => true, '--season' => 2026]);
+        (new CommandTester($command))->execute(['--circuit' => 'renouvellements', '--execute' => true, '--season' => 2026]);
     }
 
     public function testDryRunNEnvoieRien(): void
@@ -159,7 +180,7 @@ class MailerLiteAccueilSyncTest extends TestCase
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'API_KEY');
         $tester = new CommandTester($command);
-        $tester->execute(['--season' => 2026]);
+        $tester->execute(['--circuit' => 'nouveaux', '--season' => 2026]);
 
         $this->assertStringContainsString('DRY-RUN', $tester->getDisplay());
     }
@@ -179,7 +200,7 @@ class MailerLiteAccueilSyncTest extends TestCase
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'API_KEY');
         $tester = new CommandTester($command);
-        $exitCode = $tester->execute(['--execute' => true, '--season' => 2026]);
+        $exitCode = $tester->execute(['--circuit' => 'nouveaux', '--execute' => true, '--season' => 2026]);
 
         $this->assertSame(1, $exitCode);
         $this->assertStringContainsString('--force', $tester->getDisplay());
@@ -208,7 +229,7 @@ class MailerLiteAccueilSyncTest extends TestCase
             });
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'GROUPE_BIENVENUE', 'GROUPE_RENOUVELLEMENT', 'API_KEY');
-        (new CommandTester($command))->execute(['--execute' => true, '--season' => 2026]);
+        (new CommandTester($command))->execute(['--circuit' => 'renouvellements', '--execute' => true, '--season' => 2026]);
 
         $this->assertSame(['remove', 'push'], $order);
     }
@@ -217,13 +238,13 @@ class MailerLiteAccueilSyncTest extends TestCase
     {
         $repository = $this->createMock(UserRepository::class);
         $repository->method('findForAccueilCircuit')->willReturn([]);
-        $repository->expects($this->once())->method('countAccueilForSeason')->with(2026)->willReturn(0);
+        $repository->expects($this->once())->method('countAccueilForSeason')->with(2026, AccueilCircuitEnum::NOUVEAUX)->willReturn(0);
 
         $mailerLite = $this->createMock(MailerLiteService::class);
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'API_KEY');
         $tester = new CommandTester($command);
-        $tester->execute(['--season' => 2026, '--now' => '2026-09-20']);
+        $tester->execute(['--circuit' => 'nouveaux', '--season' => 2026, '--now' => '2026-09-20']);
 
         $this->assertStringContainsString('aucun adherent traite', $tester->getDisplay());
     }
@@ -232,13 +253,13 @@ class MailerLiteAccueilSyncTest extends TestCase
     {
         $repository = $this->createMock(UserRepository::class);
         $repository->method('findForAccueilCircuit')->willReturn([]);
-        $repository->expects($this->once())->method('countAccueilForSeason')->with(2026)->willReturn(0);
+        $repository->expects($this->once())->method('countAccueilForSeason')->with(2026, AccueilCircuitEnum::NOUVEAUX)->willReturn(0);
 
         $mailerLite = $this->createMock(MailerLiteService::class);
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'API_KEY');
         $tester = new CommandTester($command);
-        $tester->execute(['--season' => 2026, '--now' => '2026-09-15']);
+        $tester->execute(['--circuit' => 'nouveaux', '--season' => 2026, '--now' => '2026-09-15']);
 
         $this->assertStringContainsString('aucun adherent traite', $tester->getDisplay());
     }
@@ -247,15 +268,32 @@ class MailerLiteAccueilSyncTest extends TestCase
     {
         $repository = $this->createMock(UserRepository::class);
         $repository->method('findForAccueilCircuit')->willReturn([]);
-        $repository->expects($this->once())->method('countAccueilForSeason')->with(2026)->willReturn(0);
+        $repository->expects($this->once())->method('countAccueilForSeason')->with(2026, AccueilCircuitEnum::NOUVEAUX)->willReturn(0);
 
         $mailerLite = $this->createMock(MailerLiteService::class);
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'API_KEY');
         $tester = new CommandTester($command);
-        $tester->execute(['--season' => 2026, '--now' => '2026-10-31']);
+        $tester->execute(['--circuit' => 'nouveaux', '--season' => 2026, '--now' => '2026-10-31']);
 
         $this->assertStringContainsString('aucun adherent traite', $tester->getDisplay());
+    }
+
+    public function testLeSilenceDUnCircuitNestPasMasqueParLesEnvoisDeLAutre(): void
+    {
+        $repository = $this->createMock(UserRepository::class);
+        $repository->method('findForAccueilCircuit')->willReturn([]);
+        $repository->method('countAccueilForSeason')->willReturnCallback(
+            fn (int $season, AccueilCircuitEnum $circuit) => AccueilCircuitEnum::NOUVEAUX === $circuit ? 312 : 0,
+        );
+
+        $mailerLite = $this->createMock(MailerLiteService::class);
+
+        $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'API_KEY');
+        $tester = new CommandTester($command);
+        $tester->execute(['--circuit' => 'renouvellements', '--season' => 2026, '--now' => '2026-09-20']);
+
+        $this->assertStringContainsString('(renouvellements) : aucun adherent traite', $tester->getDisplay());
     }
 
     public function testPasDAlerteSiDesEnvoisOntEuLieu(): void
@@ -268,7 +306,7 @@ class MailerLiteAccueilSyncTest extends TestCase
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'API_KEY');
         $tester = new CommandTester($command);
-        $tester->execute(['--season' => 2026, '--now' => '2026-09-20']);
+        $tester->execute(['--circuit' => 'nouveaux', '--season' => 2026, '--now' => '2026-09-20']);
 
         $this->assertStringNotContainsString('aucun adherent traite', $tester->getDisplay());
     }
@@ -282,7 +320,7 @@ class MailerLiteAccueilSyncTest extends TestCase
         $mailerLite = $this->createMock(MailerLiteService::class);
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'API_KEY');
-        (new CommandTester($command))->execute(['--season' => 2026, '--now' => '2026-09-03']);
+        (new CommandTester($command))->execute(['--circuit' => 'nouveaux', '--season' => 2026, '--now' => '2026-09-03']);
     }
 
     public function testPasDAlerteHorsPeriodeDePointe(): void
@@ -294,6 +332,6 @@ class MailerLiteAccueilSyncTest extends TestCase
         $mailerLite = $this->createMock(MailerLiteService::class);
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'API_KEY');
-        (new CommandTester($command))->execute(['--season' => 2026, '--now' => '2027-02-10']);
+        (new CommandTester($command))->execute(['--circuit' => 'nouveaux', '--season' => 2026, '--now' => '2027-02-10']);
     }
 }

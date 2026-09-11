@@ -6,5 +6,5 @@
 
 cd "${APP_HOME}" || exit 1
 if [ "$DEPLOY_ENV" = "production" ]; then
-    bin/console mailerlite-accueil-sync --execute
+    bin/console mailerlite-accueil-sync --circuit "$1" --execute
 fi
