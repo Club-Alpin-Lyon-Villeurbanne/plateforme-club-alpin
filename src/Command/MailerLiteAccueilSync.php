@@ -97,7 +97,7 @@ class MailerLiteAccueilSync extends Command
         $output->writeln(sprintf('Saison %d — circuit %s (groupe %s) : %d adherent(s) a traiter%s', $season, $circuit->value, $groupId, \count($users), $execute ? '' : ' [DRY-RUN]'));
 
         if ([] === $users) {
-            $this->alertOnSilence($now, $season, $output);
+            $this->alertOnSilence($now, $season, $circuit, $output);
 
             return Command::SUCCESS;
         }
@@ -161,7 +161,7 @@ class MailerLiteAccueilSync extends Command
         return $marked;
     }
 
-    private function alertOnSilence(\DateTimeImmutable $now, int $season, OutputInterface $output): void
+    private function alertOnSilence(\DateTimeImmutable $now, int $season, AccueilCircuitEnum $circuit, OutputInterface $output): void
     {
         $month = (int) $now->format('n');
         $day = (int) $now->format('j');
@@ -170,11 +170,11 @@ class MailerLiteAccueilSync extends Command
             return;
         }
 
-        if ($this->userRepository->countAccueilForSeason($season) > 0) {
+        if ($this->userRepository->countAccueilForSeason($season, $circuit) > 0) {
             return;
         }
 
-        $message = sprintf('Circuits d\'accueil MailerLite : aucun adherent traite pour la saison %d', $season);
+        $message = sprintf('Circuit d\'accueil MailerLite (%s) : aucun adherent traite pour la saison %d', $circuit->value, $season);
         $output->writeln('<error>' . $message . '</error>');
         $this->logger->error($message);
         \Sentry\captureMessage($message);

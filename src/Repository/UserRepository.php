@@ -491,11 +491,13 @@ SQL;
         );
     }
 
-    public function countAccueilForSeason(int $season): int
+    public function countAccueilForSeason(int $season, AccueilCircuitEnum $circuit): int
     {
+        $createdAt = AccueilCircuitEnum::NOUVEAUX === $circuit ? 'created_at >= :seasonStart' : 'created_at < :seasonStart';
+
         return (int) $this->getEntityManager()->getConnection()->fetchOne(
-            'SELECT COUNT(*) FROM caf_user WHERE accueil_season = :season',
-            ['season' => $season]
+            'SELECT COUNT(*) FROM caf_user WHERE accueil_season = :season AND ' . $createdAt,
+            ['season' => $season, 'seasonStart' => $season . '-09-01 00:00:00']
         );
     }
 }

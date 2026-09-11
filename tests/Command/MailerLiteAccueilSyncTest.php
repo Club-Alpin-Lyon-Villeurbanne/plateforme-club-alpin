@@ -238,7 +238,7 @@ class MailerLiteAccueilSyncTest extends TestCase
     {
         $repository = $this->createMock(UserRepository::class);
         $repository->method('findForAccueilCircuit')->willReturn([]);
-        $repository->expects($this->once())->method('countAccueilForSeason')->with(2026)->willReturn(0);
+        $repository->expects($this->once())->method('countAccueilForSeason')->with(2026, AccueilCircuitEnum::NOUVEAUX)->willReturn(0);
 
         $mailerLite = $this->createMock(MailerLiteService::class);
 
@@ -253,7 +253,7 @@ class MailerLiteAccueilSyncTest extends TestCase
     {
         $repository = $this->createMock(UserRepository::class);
         $repository->method('findForAccueilCircuit')->willReturn([]);
-        $repository->expects($this->once())->method('countAccueilForSeason')->with(2026)->willReturn(0);
+        $repository->expects($this->once())->method('countAccueilForSeason')->with(2026, AccueilCircuitEnum::NOUVEAUX)->willReturn(0);
 
         $mailerLite = $this->createMock(MailerLiteService::class);
 
@@ -268,7 +268,7 @@ class MailerLiteAccueilSyncTest extends TestCase
     {
         $repository = $this->createMock(UserRepository::class);
         $repository->method('findForAccueilCircuit')->willReturn([]);
-        $repository->expects($this->once())->method('countAccueilForSeason')->with(2026)->willReturn(0);
+        $repository->expects($this->once())->method('countAccueilForSeason')->with(2026, AccueilCircuitEnum::NOUVEAUX)->willReturn(0);
 
         $mailerLite = $this->createMock(MailerLiteService::class);
 
@@ -277,6 +277,23 @@ class MailerLiteAccueilSyncTest extends TestCase
         $tester->execute(['--circuit' => 'nouveaux', '--season' => 2026, '--now' => '2026-10-31']);
 
         $this->assertStringContainsString('aucun adherent traite', $tester->getDisplay());
+    }
+
+    public function testLeSilenceDUnCircuitNestPasMasqueParLesEnvoisDeLAutre(): void
+    {
+        $repository = $this->createMock(UserRepository::class);
+        $repository->method('findForAccueilCircuit')->willReturn([]);
+        $repository->method('countAccueilForSeason')->willReturnCallback(
+            fn (int $season, AccueilCircuitEnum $circuit) => AccueilCircuitEnum::NOUVEAUX === $circuit ? 312 : 0,
+        );
+
+        $mailerLite = $this->createMock(MailerLiteService::class);
+
+        $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'API_KEY');
+        $tester = new CommandTester($command);
+        $tester->execute(['--circuit' => 'renouvellements', '--season' => 2026, '--now' => '2026-09-20']);
+
+        $this->assertStringContainsString('(renouvellements) : aucun adherent traite', $tester->getDisplay());
     }
 
     public function testPasDAlerteSiDesEnvoisOntEuLieu(): void

@@ -89,7 +89,7 @@ prochaine exécution.
 ## Alerte de silence
 
 Septembre et octobre concentrent l'essentiel des prises de licence (1 501 rien qu'en septembre sur
-la saison 2025). Passé le 15 septembre et jusqu'au 31 octobre, si aucun adhérent n'a été traité
+la saison 2025). Passé le 15 septembre et jusqu'au 31 octobre, si aucun adhérent du circuit lancé n'a été traité
 pour la saison en cours (`UserRepository::countAccueilForSeason()` renvoie 0), la commande écrit
 une alerte sur la sortie, la journalise en erreur et envoie un message Sentry. Avant le 15
 septembre, un compteur à zéro est normal (peu de renouvellements) et ne déclenche rien.

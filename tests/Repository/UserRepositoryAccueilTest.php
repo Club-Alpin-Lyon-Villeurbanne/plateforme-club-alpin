@@ -65,11 +65,13 @@ class UserRepositoryAccueilTest extends KernelTestCase
     public function testMarkAccueilSeasonRendLAdherentInvisibleEtIncrementeLeCompteur(): void
     {
         $eligible = $this->repository->findOneBy(['cafnum' => self::CAFNUM_ELIGIBLE]);
-        $countAvant = $this->repository->countAccueilForSeason(self::SEASON);
+        $nouveauxAvant = $this->repository->countAccueilForSeason(self::SEASON, AccueilCircuitEnum::NOUVEAUX);
+        $renouvellementsAvant = $this->repository->countAccueilForSeason(self::SEASON, AccueilCircuitEnum::RENOUVELLEMENTS);
 
         $this->repository->markAccueilSeason([$eligible->getId()], self::SEASON);
 
-        $this->assertSame($countAvant + 1, $this->repository->countAccueilForSeason(self::SEASON));
+        $this->assertSame($nouveauxAvant + 1, $this->repository->countAccueilForSeason(self::SEASON, AccueilCircuitEnum::NOUVEAUX));
+        $this->assertSame($renouvellementsAvant, $this->repository->countAccueilForSeason(self::SEASON, AccueilCircuitEnum::RENOUVELLEMENTS), 'le compteur du circuit renouvellements ne doit pas bouger');
 
         $idsApres = array_map(fn (User $u) => $u->getId(), $this->repository->findForAccueilCircuit(self::SEASON, AccueilCircuitEnum::NOUVEAUX));
         $this->assertNotContains($eligible->getId(), $idsApres, 'un adhérent déjà marqué pour la saison ne doit plus ressortir');
