@@ -2,12 +2,12 @@
 
 namespace App\Repository;
 
+use App\Entity\AccueilCircuitEnum;
 use App\Entity\AlertType;
 use App\Entity\Article;
 use App\Entity\Comment;
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
-use App\Entity\AccueilCircuitEnum;
 use App\Entity\User;
 use App\Trait\PaginationRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
