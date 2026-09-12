@@ -386,7 +386,8 @@ class MailerLiteServiceTest extends TestCase
 
         $this->assertEquals(3, $result['total']);
         $this->assertEquals(2, $result['imported']);
-        $this->assertEquals(1, $result['failed']);
+        $this->assertEquals(1, $result['rejected']);
+        $this->assertEquals(0, $result['failed']);
     }
 
     public function testSyncNewMembersConfigurationLogging(): void
@@ -560,7 +561,7 @@ class MailerLiteServiceTest extends TestCase
         $this->assertSame(0, $requests, 'Aucune requête ne doit partir hors production');
     }
 
-    public function testPushToGroupCompteLesErreursDImportCommeEchecs(): void
+    public function testPushToGroupCompteLesAbonnesRefusesCommeRejets(): void
     {
         $httpClient = new MockHttpClient(function () {
             return new MockResponse(json_encode([
@@ -582,7 +583,8 @@ class MailerLiteServiceTest extends TestCase
 
         $this->assertSame(1, $results['imported']);
         $this->assertSame(1, $results['updated']);
-        $this->assertSame(1, $results['failed']);
+        $this->assertSame(1, $results['rejected']);
+        $this->assertSame(0, $results['failed'], 'Un abonne refuse par MailerLite n\'est pas une fournee en echec');
     }
 
     public function testPushToGroupSansCleDataEstTraiteCommeUnEchec(): void
@@ -596,5 +598,6 @@ class MailerLiteServiceTest extends TestCase
 
         $this->assertSame(0, $results['imported']);
         $this->assertSame(1, $results['failed']);
+        $this->assertSame(0, $results['rejected']);
     }
 }

@@ -58,7 +58,7 @@ class MailerLiteAccueilSyncTest extends TestCase
         $mailerLite = $this->createMock(MailerLiteService::class);
         $mailerLite->method('removeFromGroup')->willReturn(true);
         $mailerLite->expects($this->once())->method('pushToGroup')->with($expectedGroupId, [$user])
-            ->willReturn(['total' => 1, 'imported' => 1, 'updated' => 0, 'failed' => 0, 'skipped' => 0]);
+            ->willReturn(['total' => 1, 'imported' => 1, 'updated' => 0, 'failed' => 0, 'rejected' => 0, 'skipped' => 0]);
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'GROUPE_BIENVENUE', 'GROUPE_RENOUVELLEMENT', 'API_KEY');
         $exitCode = (new CommandTester($command))->execute(['--circuit' => $circuit->value, '--execute' => true, '--season' => 2026]);
@@ -162,11 +162,51 @@ class MailerLiteAccueilSyncTest extends TestCase
             fn (string $email) => 'echec@example.com' !== $email,
         );
         $mailerLite->method('pushToGroup')->willReturn(
-            ['total' => 2, 'imported' => 2, 'updated' => 0, 'failed' => 0, 'skipped' => 0],
+            ['total' => 2, 'imported' => 2, 'updated' => 0, 'failed' => 0, 'rejected' => 0, 'skipped' => 0],
         );
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'GROUPE_BIENVENUE', 'GROUPE_RENOUVELLEMENT', 'API_KEY');
         (new CommandTester($command))->execute(['--circuit' => 'renouvellements', '--execute' => true, '--season' => 2026]);
+    }
+
+    public function testUnAbonneRejeteParMailerLiteNEmpechePasLeMarquageDesAutres(): void
+    {
+        $users = [$this->makeUser(1, 'a@example.com', '2026-09-10'), $this->makeUser(2, 'b@example.com', '2026-09-10'), $this->makeUser(3, 'c@example.com', '2026-09-10')];
+
+        $repository = $this->createMock(UserRepository::class);
+        $repository->method('findForAccueilCircuit')->willReturn($users);
+        $repository->expects($this->once())->method('markAccueilSeason')
+            ->with($this->equalTo([1, 2, 3]), $this->equalTo(2026));
+
+        $mailerLite = $this->createMock(MailerLiteService::class);
+        $mailerLite->method('removeFromGroup')->willReturn(true);
+        $mailerLite->method('pushToGroup')->willReturn(
+            ['total' => 3, 'imported' => 2, 'updated' => 0, 'failed' => 0, 'rejected' => 1, 'skipped' => 0],
+        );
+
+        $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'API_KEY');
+        $tester = new CommandTester($command);
+        $tester->execute(['--circuit' => 'nouveaux', '--execute' => true, '--season' => 2026]);
+
+        $this->assertStringContainsString('1 rejete(s)', $tester->getDisplay());
+    }
+
+    public function testUneFourneeEnEchecNeMarquePersonne(): void
+    {
+        $users = [$this->makeUser(1, 'a@example.com', '2026-09-10'), $this->makeUser(2, 'b@example.com', '2026-09-10')];
+
+        $repository = $this->createMock(UserRepository::class);
+        $repository->method('findForAccueilCircuit')->willReturn($users);
+        $repository->expects($this->once())->method('markAccueilSeason')->with($this->equalTo([]), $this->equalTo(2026));
+
+        $mailerLite = $this->createMock(MailerLiteService::class);
+        $mailerLite->method('removeFromGroup')->willReturn(true);
+        $mailerLite->method('pushToGroup')->willReturn(
+            ['total' => 2, 'imported' => 0, 'updated' => 0, 'failed' => 2, 'rejected' => 0, 'skipped' => 0],
+        );
+
+        $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'API_KEY');
+        (new CommandTester($command))->execute(['--circuit' => 'nouveaux', '--execute' => true, '--season' => 2026]);
     }
 
     public function testDryRunNEnvoieRien(): void
@@ -225,7 +265,7 @@ class MailerLiteAccueilSyncTest extends TestCase
             ->willReturnCallback(function () use (&$order) {
                 $order[] = 'push';
 
-                return ['total' => 1, 'imported' => 1, 'updated' => 0, 'failed' => 0, 'skipped' => 0];
+                return ['total' => 1, 'imported' => 1, 'updated' => 0, 'failed' => 0, 'rejected' => 0, 'skipped' => 0];
             });
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'GROUPE_BIENVENUE', 'GROUPE_RENOUVELLEMENT', 'API_KEY');

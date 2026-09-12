@@ -142,12 +142,16 @@ class MailerLiteAccueilSync extends Command
         }
 
         $results = $this->mailerLite->pushToGroup($groupId, $users);
-        $output->writeln(sprintf('  groupe %s : %d importe(s), %d echec(s), %d ignore(s)', $groupId, $results['imported'], $results['failed'], $results['skipped']));
+        $output->writeln(sprintf('  groupe %s : %d importe(s), %d mis a jour, %d rejete(s), %d echec(s), %d ignore(s)', $groupId, $results['imported'], $results['updated'], $results['rejected'], $results['failed'], $results['skipped']));
 
         if (0 !== $results['failed']) {
             \Sentry\captureMessage(sprintf('Circuit accueil : %d echec(s) sur le groupe %s', $results['failed'], $groupId));
 
             return [];
+        }
+
+        if (0 !== $results['rejected']) {
+            \Sentry\captureMessage(sprintf('Circuit accueil : %d abonne(s) rejete(s) par MailerLite sur le groupe %s', $results['rejected'], $groupId));
         }
 
         $marked = [];

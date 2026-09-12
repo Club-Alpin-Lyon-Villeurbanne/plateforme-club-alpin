@@ -67,6 +67,17 @@ par minute, et un jour de pointe (177 licences sur la journée la plus chargée 
 sinon le quota. Un retrait en échec exclut l'adhérent du marquage : il sera repris à la prochaine
 exécution, quitte à recevoir le circuit deux fois — un doublon est préférable à un oubli définitif.
 
+L'import se fait ensuite par fournées de 100. Deux issues sont distinguées :
+
+- **fournée en échec** (l'API n'a rien reçu : panne, quota) : personne n'est marqué, tout le
+  circuit est rejoué le lendemain ;
+- **abonné rejeté** (MailerLite refuse une adresse ou un désinscrit) : les autres sont marqués
+  normalement, le rejeté aussi — le rejouer ne changerait rien pour lui, alors qu'un rejet non
+  marqué ferait rejouer tout le circuit chaque jour. Sentry reçoit le nombre de rejets.
+
+C'est ce second cas qui a frappé le premier envoi réel, le 12 septembre 2026 : un seul rejet sur
+246, et la version d'alors ne marquait personne. Les 246 ont été marqués à la main.
+
 ### Plafond de volume
 
 Au-delà de 800 candidats pour un circuit sur une seule exécution, la commande refuse d'envoyer (code de sortie 1)
@@ -84,8 +95,8 @@ La table `caf_user` porte une colonne `accueil_season` (0 par défaut) qui retie
 saison pour laquelle un adhérent a été traité. Le marquage se fait en SQL natif
 (`UserRepository::markAccueilSeason()`) pour ne pas déclencher le trait `Timestampable` de l'ORM,
 qui modifierait `updated_at` pour des milliers de fiches. Il n'a lieu qu'après confirmation par
-l'API MailerLite ; en cas d'échec d'import, l'adhérent reste éligible et sera repris à la
-prochaine exécution.
+l'API MailerLite ; si une fournée n'a pas été reçue, ses adhérents restent éligibles et seront
+repris à la prochaine exécution.
 
 ## Alerte de silence
 
