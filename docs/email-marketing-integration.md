@@ -69,8 +69,10 @@ exécution, quitte à recevoir le circuit deux fois — un doublon est préféra
 
 L'import se fait ensuite par fournées de 100. Deux issues sont distinguées :
 
-- **fournée en échec** (l'API n'a rien reçu : panne, quota) : personne n'est marqué, tout le
-  circuit est rejoué le lendemain ;
+- **fournée non confirmée** (panne, quota, réponse illisible : l'API n'a pas confirmé la
+  fournée, sans preuve qu'elle ne l'a pas reçue) : aucun adhérent du circuit n'est marqué, même
+  ceux des fournées confirmées, et tout le circuit est rejoué le lendemain — un doublon est
+  préférable à un oubli ;
 - **abonné rejeté** (MailerLite refuse une adresse ou un désinscrit) : les autres sont marqués
   normalement, le rejeté aussi — le rejouer ne changerait rien pour lui, alors qu'un rejet non
   marqué ferait rejouer tout le circuit chaque jour. Sentry reçoit le nombre de rejets.
@@ -95,8 +97,8 @@ La table `caf_user` porte une colonne `accueil_season` (0 par défaut) qui retie
 saison pour laquelle un adhérent a été traité. Le marquage se fait en SQL natif
 (`UserRepository::markAccueilSeason()`) pour ne pas déclencher le trait `Timestampable` de l'ORM,
 qui modifierait `updated_at` pour des milliers de fiches. Il n'a lieu qu'après confirmation par
-l'API MailerLite ; si une fournée n'a pas été reçue, ses adhérents restent éligibles et seront
-repris à la prochaine exécution.
+l'API MailerLite ; si une fournée n'est pas confirmée, les adhérents du circuit restent éligibles
+et seront repris à la prochaine exécution.
 
 ## Alerte de silence
 

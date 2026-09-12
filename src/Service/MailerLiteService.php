@@ -33,7 +33,7 @@ class MailerLiteService
     }
 
     /**
-     * `failed` compte les fournées que l'API n'a pas reçues (à rejouer), `rejected` les abonnés
+     * `failed` compte les fournées non confirmées par l'API (à rejouer), `rejected` les abonnés
      * refusés un à un par MailerLite (adresse invalide, désinscrit), que rejouer ne changerait pas.
      *
      * @param User[] $users
