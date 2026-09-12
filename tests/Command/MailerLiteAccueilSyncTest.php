@@ -27,6 +27,14 @@ class MailerLiteAccueilSyncTest extends TestCase
         return $user;
     }
 
+    /**
+     * @return array{total: int, imported: int, updated: int, failed: int, rejected: int, skipped: int}
+     */
+    private static function resultat(int $imported, int $failed = 0, int $rejected = 0): array
+    {
+        return ['total' => $imported + $failed + $rejected, 'imported' => $imported, 'updated' => 0, 'failed' => $failed, 'rejected' => $rejected, 'skipped' => 0];
+    }
+
     public function testLaSaisonBasculeAuPremierSeptembre(): void
     {
         $this->assertSame(2025, MailerLiteAccueilSync::seasonFor(new \DateTimeImmutable('2026-08-31')));
@@ -58,7 +66,7 @@ class MailerLiteAccueilSyncTest extends TestCase
         $mailerLite = $this->createMock(MailerLiteService::class);
         $mailerLite->method('removeFromGroup')->willReturn(true);
         $mailerLite->expects($this->once())->method('pushToGroup')->with($expectedGroupId, [$user])
-            ->willReturn(['total' => 1, 'imported' => 1, 'updated' => 0, 'failed' => 0, 'rejected' => 0, 'skipped' => 0]);
+            ->willReturn(self::resultat(1));
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'GROUPE_BIENVENUE', 'GROUPE_RENOUVELLEMENT', 'API_KEY');
         $exitCode = (new CommandTester($command))->execute(['--circuit' => $circuit->value, '--execute' => true, '--season' => 2026]);
@@ -162,7 +170,7 @@ class MailerLiteAccueilSyncTest extends TestCase
             fn (string $email) => 'echec@example.com' !== $email,
         );
         $mailerLite->method('pushToGroup')->willReturn(
-            ['total' => 2, 'imported' => 2, 'updated' => 0, 'failed' => 0, 'rejected' => 0, 'skipped' => 0],
+            self::resultat(2),
         );
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'GROUPE_BIENVENUE', 'GROUPE_RENOUVELLEMENT', 'API_KEY');
@@ -181,14 +189,14 @@ class MailerLiteAccueilSyncTest extends TestCase
         $mailerLite = $this->createMock(MailerLiteService::class);
         $mailerLite->method('removeFromGroup')->willReturn(true);
         $mailerLite->method('pushToGroup')->willReturn(
-            ['total' => 3, 'imported' => 2, 'updated' => 0, 'failed' => 0, 'rejected' => 1, 'skipped' => 0],
+            self::resultat(2, rejected: 1),
         );
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'API_KEY');
         $tester = new CommandTester($command);
         $tester->execute(['--circuit' => 'nouveaux', '--execute' => true, '--season' => 2026]);
 
-        $this->assertStringContainsString('1 rejete(s)', $tester->getDisplay());
+        $this->assertStringContainsString('1 non importe(s)', $tester->getDisplay());
     }
 
     public function testUneFourneeEnEchecNeMarquePersonne(): void
@@ -202,7 +210,7 @@ class MailerLiteAccueilSyncTest extends TestCase
         $mailerLite = $this->createMock(MailerLiteService::class);
         $mailerLite->method('removeFromGroup')->willReturn(true);
         $mailerLite->method('pushToGroup')->willReturn(
-            ['total' => 2, 'imported' => 0, 'updated' => 0, 'failed' => 2, 'rejected' => 0, 'skipped' => 0],
+            self::resultat(0, failed: 2),
         );
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'G1', 'G2', 'API_KEY');
@@ -246,6 +254,20 @@ class MailerLiteAccueilSyncTest extends TestCase
         $this->assertStringContainsString('--force', $tester->getDisplay());
     }
 
+    public function testNeRetireJamaisUnNouvelAdherentDeSonGroupe(): void
+    {
+        $repository = $this->createMock(UserRepository::class);
+        $repository->method('findForAccueilCircuit')->willReturn([$this->makeUser(1, 'a@example.com', '2026-09-10')]);
+        $repository->expects($this->once())->method('markAccueilSeason')->with($this->equalTo([1]), $this->equalTo(2026));
+
+        $mailerLite = $this->createMock(MailerLiteService::class);
+        $mailerLite->expects($this->never())->method('removeFromGroup');
+        $mailerLite->expects($this->once())->method('pushToGroup')->willReturn(self::resultat(1));
+
+        $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'GROUPE_BIENVENUE', 'GROUPE_RENOUVELLEMENT', 'API_KEY');
+        (new CommandTester($command))->execute(['--circuit' => 'nouveaux', '--execute' => true, '--season' => 2026]);
+    }
+
     public function testRetireDuGroupeAvantDAjouter(): void
     {
         $repository = $this->createMock(UserRepository::class);
@@ -265,7 +287,7 @@ class MailerLiteAccueilSyncTest extends TestCase
             ->willReturnCallback(function () use (&$order) {
                 $order[] = 'push';
 
-                return ['total' => 1, 'imported' => 1, 'updated' => 0, 'failed' => 0, 'rejected' => 0, 'skipped' => 0];
+                return self::resultat(1);
             });
 
         $command = new MailerLiteAccueilSync($repository, $mailerLite, new NullLogger(), 'GROUPE_BIENVENUE', 'GROUPE_RENOUVELLEMENT', 'API_KEY');

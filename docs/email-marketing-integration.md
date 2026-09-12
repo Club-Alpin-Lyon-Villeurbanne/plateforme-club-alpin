@@ -59,13 +59,20 @@ traitée, non radiés, avec un email valide, pas encore traités pour cette sais
 
 Le circuit `nouveaux` prend les fiches créées pendant la saison (à partir du 1er septembre) et les
 envoie vers `accueil-nouveau` ; le circuit `renouvellements` prend les fiches antérieures et les
-envoie vers `accueil-renouvellement`. Chaque circuit a son propre cron. Avant chaque ajout à un
-groupe, la commande retire l'adhérent du groupe visé : les automations MailerLite se déclenchent
-sur « rejoint le groupe », un ajout sans retrait préalable serait sans effet pour un abonné déjà
-présent. Ces retraits sont espacés d'1 seconde : l'API MailerLite plafonne autour de 120 requêtes
-par minute, et un jour de pointe (177 licences sur la journée la plus chargée de 2025) saturerait
-sinon le quota. Un retrait en échec exclut l'adhérent du marquage : il sera repris à la prochaine
-exécution, quitte à recevoir le circuit deux fois — un doublon est préférable à un oubli définitif.
+envoie vers `accueil-renouvellement`. Chaque circuit a son propre cron.
+
+Les automations MailerLite se déclenchent sur « rejoint le groupe » : un ajout est sans effet pour
+un abonné déjà présent. Pour le circuit `renouvellements`, la commande retire donc chaque adhérent
+du groupe avant de l'ajouter, sinon un renouvelant de la saison précédente ne recevrait rien. Ces
+retraits sont espacés d'1 seconde : l'API MailerLite plafonne autour de 120 requêtes par minute, et
+un jour de pointe (177 licences sur la journée la plus chargée de 2025) saturerait sinon le quota.
+Un retrait en échec exclut l'adhérent du marquage : il sera repris à la prochaine exécution, quitte
+à recevoir le circuit deux fois — un doublon est préférable à un oubli définitif.
+
+Pour le circuit `nouveaux`, pas de retrait : un nouvel adhérent n'a jamais été dans son groupe.
+C'est ce qui rend ce circuit rejouable sans risque : après un incident (fournée non confirmée,
+plantage entre l'import et le marquage), un rejeu retrouve les adhérents déjà présents dans le
+groupe et ne redéclenche rien.
 
 L'import se fait ensuite par fournées de 100. Deux issues sont distinguées :
 
@@ -73,12 +80,14 @@ L'import se fait ensuite par fournées de 100. Deux issues sont distinguées :
   fournée, sans preuve qu'elle ne l'a pas reçue) : aucun adhérent du circuit n'est marqué, même
   ceux des fournées confirmées, et tout le circuit est rejoué le lendemain — un doublon est
   préférable à un oubli ;
-- **abonné rejeté** (MailerLite refuse une adresse ou un désinscrit) : les autres sont marqués
-  normalement, le rejeté aussi — le rejouer ne changerait rien pour lui, alors qu'un rejet non
-  marqué ferait rejouer tout le circuit chaque jour. Sentry reçoit le nombre de rejets.
+- **abonné non importé** (le compteur `errored` de MailerLite : adresse refusée, désinscrit,
+  inchangé…) : les autres sont marqués normalement, lui aussi — le rejouer ne changerait rien,
+  alors qu'un non-importé non marqué ferait rejouer tout le circuit chaque jour. Sentry reçoit le
+  nombre, et le journal d'erreur la réponse MailerLite, qui contient un échantillon des adresses
+  en cause.
 
-C'est ce second cas qui a frappé le premier envoi réel, le 12 septembre 2026 : un seul rejet sur
-246, et la version d'alors ne marquait personne. Les 246 ont été marqués à la main.
+C'est ce second cas qui a frappé le premier envoi réel, le 12 septembre 2026 : un seul non-importé
+sur 246, et la version d'alors ne marquait personne. Les 246 ont été marqués à la main.
 
 ### Plafond de volume
 

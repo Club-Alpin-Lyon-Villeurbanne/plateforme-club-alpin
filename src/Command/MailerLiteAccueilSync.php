@@ -115,7 +115,7 @@ class MailerLiteAccueilSync extends Command
             return Command::SUCCESS;
         }
 
-        $marked = $this->syncGroup((string) $groupId, $users, $output);
+        $marked = $this->syncGroup($circuit, (string) $groupId, $users, $output);
         $this->userRepository->markAccueilSeason($marked, $season);
         $output->writeln(sprintf('%d adherent(s) marque(s) pour la saison %d.', \count($marked), $season));
 
@@ -127,22 +127,15 @@ class MailerLiteAccueilSync extends Command
      *
      * @return int[]
      */
-    private function syncGroup(string $groupId, array $users, OutputInterface $output): array
+    private function syncGroup(AccueilCircuitEnum $circuit, string $groupId, array $users, OutputInterface $output): array
     {
-        $removalFailures = [];
-
-        foreach ($users as $user) {
-            if (!$this->mailerLite->removeFromGroup((string) $user->getEmail(), $groupId)) {
-                $this->logger->error('Circuit accueil : retrait de groupe impossible', ['userId' => $user->getId(), 'groupId' => $groupId]);
-                \Sentry\captureMessage(sprintf('Circuit accueil : retrait impossible pour l\'adherent %d', (int) $user->getId()));
-                $removalFailures[] = (int) $user->getId();
-            }
-
-            usleep(self::REMOVE_DELAY_US);
-        }
+        // Un nouvel adhérent n'a jamais été dans son groupe : sans retrait, un rejeu après incident
+        // le laisse « déjà présent » et ne redéclenche pas l'automation. Le retrait n'a de sens que
+        // pour un renouvelant, présent depuis une saison précédente.
+        $removalFailures = AccueilCircuitEnum::RENOUVELLEMENTS === $circuit ? $this->removeAllFromGroup($groupId, $users) : [];
 
         $results = $this->mailerLite->pushToGroup($groupId, $users);
-        $output->writeln(sprintf('  groupe %s : %d importe(s), %d mis a jour, %d rejete(s), %d echec(s), %d ignore(s)', $groupId, $results['imported'], $results['updated'], $results['rejected'], $results['failed'], $results['skipped']));
+        $output->writeln(sprintf('  groupe %s : %d importe(s), %d mis a jour, %d non importe(s), %d echec(s), %d ignore(s)', $groupId, $results['imported'], $results['updated'], $results['rejected'], $results['failed'], $results['skipped']));
 
         if (0 !== $results['failed']) {
             \Sentry\captureMessage(sprintf('Circuit accueil : %d echec(s) sur le groupe %s', $results['failed'], $groupId));
@@ -151,7 +144,8 @@ class MailerLiteAccueilSync extends Command
         }
 
         if (0 !== $results['rejected']) {
-            \Sentry\captureMessage(sprintf('Circuit accueil : %d abonne(s) rejete(s) par MailerLite sur le groupe %s', $results['rejected'], $groupId));
+            $this->logger->error('Circuit accueil : abonnes non importes par MailerLite', ['groupId' => $groupId, 'rejected' => $results['rejected']]);
+            \Sentry\captureMessage(sprintf('Circuit accueil : %d abonne(s) non importe(s) par MailerLite sur le groupe %s', $results['rejected'], $groupId));
         }
 
         $marked = [];
@@ -163,6 +157,31 @@ class MailerLiteAccueilSync extends Command
         }
 
         return $marked;
+    }
+
+    /**
+     * @param User[] $users
+     *
+     * @return int[] identifiants des adhérents dont le retrait a échoué
+     */
+    private function removeAllFromGroup(string $groupId, array $users): array
+    {
+        $failures = [];
+
+        foreach ($users as $user) {
+            if (!$this->mailerLite->removeFromGroup((string) $user->getEmail(), $groupId)) {
+                $failures[] = (int) $user->getId();
+            }
+
+            usleep(self::REMOVE_DELAY_US);
+        }
+
+        if ([] !== $failures) {
+            $this->logger->error('Circuit accueil : retraits de groupe impossibles', ['groupId' => $groupId, 'userIds' => $failures]);
+            \Sentry\captureMessage(sprintf('Circuit accueil : %d retrait(s) impossible(s) sur le groupe %s', \count($failures), $groupId));
+        }
+
+        return $failures;
     }
 
     private function alertOnSilence(\DateTimeImmutable $now, int $season, AccueilCircuitEnum $circuit, OutputInterface $output): void
