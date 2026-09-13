@@ -50,9 +50,10 @@ class EmailMarketingSyncService
             try {
                 $results = $this->mailerLiteService->syncNewMembers($usersWithEmail);
                 $this->logger->info(sprintf(
-                    'MailerLite sync: %d imported, %d updated, %d failed',
+                    'MailerLite sync: %d imported, %d updated, %d rejected, %d failed',
                     $results['imported'] ?? 0,
                     $results['updated'] ?? 0,
+                    $results['rejected'] ?? 0,
                     $results['failed'] ?? 0
                 ));
             } catch (\Exception $e) {

@@ -54,6 +54,7 @@ class EmailMarketingSyncServiceTest extends TestCase
                 'imported' => 1,
                 'updated' => 0,
                 'failed' => 0,
+                'rejected' => 0,
             ]);
 
         $this->logger->expects($this->atLeastOnce())
@@ -76,6 +77,7 @@ class EmailMarketingSyncServiceTest extends TestCase
                 'imported' => 2,
                 'updated' => 0,
                 'failed' => 0,
+                'rejected' => 0,
             ]);
 
         $this->logger->expects($this->atLeastOnce())
@@ -103,6 +105,7 @@ class EmailMarketingSyncServiceTest extends TestCase
                 'imported' => 1,
                 'updated' => 0,
                 'failed' => 0,
+                'rejected' => 0,
             ]);
 
         $this->logger->expects($this->atLeastOnce())
@@ -159,6 +162,7 @@ class EmailMarketingSyncServiceTest extends TestCase
                 'imported' => 1,
                 'updated' => 1,
                 'failed' => 0,
+                'rejected' => 0,
             ]);
 
         $this->logger->expects($this->exactly(2))
@@ -188,6 +192,7 @@ class EmailMarketingSyncServiceTest extends TestCase
                 'imported' => 1,
                 'updated' => 0,
                 'failed' => 0,
+                'rejected' => 0,
             ]);
 
         $this->logger->expects($this->atLeastOnce())
@@ -211,6 +216,7 @@ class EmailMarketingSyncServiceTest extends TestCase
                 'imported' => 50,
                 'updated' => 0,
                 'failed' => 0,
+                'rejected' => 0,
             ]);
 
         $this->logger->expects($this->atLeastOnce())

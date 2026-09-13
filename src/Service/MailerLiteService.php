@@ -25,7 +25,7 @@ class MailerLiteService
     /**
      * @param User[] $users
      *
-     * @return array{total: int, imported: int, updated: int, failed: int, skipped: int}
+     * @return array{total: int, imported: int, updated: int, failed: int, rejected: int, skipped: int}
      */
     public function syncNewMembers(array $users): array
     {
@@ -33,13 +33,17 @@ class MailerLiteService
     }
 
     /**
+     * `failed` compte les fournées non confirmées par l'API (à rejouer), `rejected` les abonnés que
+     * MailerLite n'a ni importés ni mis à jour (son compteur `errored` : adresse refusée, désinscrit,
+     * inchangé…), que rejouer ne changerait pas.
+     *
      * @param User[] $users
      *
-     * @return array{total: int, imported: int, updated: int, failed: int, skipped: int}
+     * @return array{total: int, imported: int, updated: int, failed: int, rejected: int, skipped: int}
      */
     public function pushToGroup(string $groupId, array $users): array
     {
-        $results = ['total' => \count($users), 'imported' => 0, 'updated' => 0, 'failed' => 0, 'skipped' => 0];
+        $results = ['total' => \count($users), 'imported' => 0, 'updated' => 0, 'failed' => 0, 'rejected' => 0, 'skipped' => 0];
 
         if ('production' !== $this->deployEnv) {
             $this->logger->info('MailerLite sync ignoré hors production', ['deployEnv' => $this->deployEnv]);
@@ -77,7 +81,7 @@ class MailerLiteService
             } else {
                 $results['imported'] += $batchResults['imported'] ?? 0;
                 $results['updated'] += $batchResults['updated'] ?? 0;
-                $results['failed'] += $batchResults['errored'] ?? 0;
+                $results['rejected'] += $batchResults['errored'] ?? 0;
             }
 
             if ($index < \count($batches) - 1) {
