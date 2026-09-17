@@ -1,0 +1,973 @@
+parameters:
+	ignoreErrors:
+		-
+			message: '#^Call to an undefined method App\\Repository\\UserRepository\<App\\Entity\\User\>\:\:findOneByEmail\(\)\.$#'
+			identifier: method.notFound
+			count: 10
+			path: src/Command/Dev/FixturesLoadCommand.php
+
+		-
+			message: '#^Method App\\Controller\\AgendaController\:\:buildAgendaTab\(\) should return array\<int, array\<string, array\<App\\Entity\\Evt\>\>\> but returns array\<int\<1, max\>, array\<string, list\<array\<string, App\\Entity\\Evt\|int\>\>\>\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Controller/AgendaController.php
+
+		-
+			message: '#^Cannot cast Symfony\\Component\\Validator\\ConstraintViolationListInterface to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: src/Controller/Api/ExpenseAttachmentController.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:getEmail\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: src/Controller/MaterielController.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:getFirstname\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Controller/MaterielController.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:getLastname\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Controller/MaterielController.php
+
+		-
+			message: '#^Cannot cast Symfony\\Component\\Validator\\ConstraintViolationListInterface to string\.$#'
+			identifier: cast.string
+			count: 1
+			path: src/Controller/MediaUploadController.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:getEmail\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Controller/UserController.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:getFirstname\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Controller/UserController.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:getFullname\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Controller/UserController.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:getId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Controller/UserController.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:getLastname\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Controller/UserController.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:getNickname\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: src/Controller/UserController.php
+
+		-
+			message: '#^Call to an undefined method ApiPlatform\\Metadata\\Operation\:\:getUriTemplate\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Doctrine/ExpenseReportExtension.php
+
+		-
+			message: '#^Property App\\Entity\\Article\:\:\$nbVues \(int\) does not accept default value of type string\.$#'
+			identifier: property.defaultValue
+			count: 1
+			path: src/Entity/Article.php
+
+		-
+			message: '#^Property App\\Entity\\Article\:\:\$status \(int\) does not accept default value of type string\.$#'
+			identifier: property.defaultValue
+			count: 1
+			path: src/Entity/Article.php
+
+		-
+			message: '#^Method App\\Entity\\ChronLaunch\:\:getTsp\(\) should return string\|null but returns int\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Entity/ChronLaunch.php
+
+		-
+			message: '#^Property App\\Entity\\ChronLaunch\:\:\$tsp \(int\) does not accept string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Entity/ChronLaunch.php
+
+		-
+			message: '#^Property App\\Entity\\ChronLaunch\:\:\$tsp type mapping mismatch\: database can contain string but property expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ChronLaunch.php
+
+		-
+			message: '#^Method App\\Entity\\ChronOperation\:\:getTsp\(\) should return string\|null but returns int\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Entity/ChronOperation.php
+
+		-
+			message: '#^Property App\\Entity\\ChronOperation\:\:\$tsp \(int\) does not accept string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Entity/ChronOperation.php
+
+		-
+			message: '#^Property App\\Entity\\ChronOperation\:\:\$tsp type mapping mismatch\: database can contain string but property expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ChronOperation.php
+
+		-
+			message: '#^Property App\\Entity\\Commission\:\:\$googleDriveId type mapping mismatch\: database can contain string\|null but property expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Commission.php
+
+		-
+			message: '#^Property App\\Entity\\Commune\:\:\$ligne5 type mapping mismatch\: database can contain string\|null but property expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Commune.php
+
+		-
+			message: '#^Method App\\Entity\\ContentHtml\:\:getDate\(\) should return string\|null but returns int\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Entity/ContentHtml.php
+
+		-
+			message: '#^Property App\\Entity\\ContentHtml\:\:\$current \(bool\) does not accept default value of type string\.$#'
+			identifier: property.defaultValue
+			count: 1
+			path: src/Entity/ContentHtml.php
+
+		-
+			message: '#^Property App\\Entity\\ContentHtml\:\:\$date \(int\) does not accept string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Entity/ContentHtml.php
+
+		-
+			message: '#^Property App\\Entity\\ContentHtml\:\:\$date type mapping mismatch\: database can contain string but property expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ContentHtml.php
+
+		-
+			message: '#^Method App\\Entity\\ContentInline\:\:getDate\(\) should return string\|null but returns int\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Entity/ContentInline.php
+
+		-
+			message: '#^Property App\\Entity\\ContentInline\:\:\$date \(int\) does not accept string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Entity/ContentInline.php
+
+		-
+			message: '#^Property App\\Entity\\ContentInline\:\:\$date type mapping mismatch\: database can contain string but property expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ContentInline.php
+
+		-
+			message: '#^Property App\\Entity\\EventParticipation\:\:\$evt type mapping mismatch\: property can contain App\\Entity\\Evt\|null but database expects App\\Entity\\Evt\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/EventParticipation.php
+
+		-
+			message: '#^Method App\\Entity\\Evt\:\:getAllParticipations\(\) should return array\<App\\Entity\\EventParticipation\> but returns Doctrine\\Common\\Collections\\Collection\|null\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Entity/Evt.php
+
+		-
+			message: '#^Method App\\Entity\\Evt\:\:getEncadrants\(\) should return array\<App\\Entity\\EventParticipation\> but returns Doctrine\\Common\\Collections\\Collection\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Entity/Evt.php
+
+		-
+			message: '#^PHPDoc tag @return with type array\<App\\Entity\\EventParticipation\> is incompatible with native type Doctrine\\Common\\Collections\\Collection\.$#'
+			identifier: return.phpDocType
+			count: 1
+			path: src/Entity/Evt.php
+
+		-
+			message: '#^Property App\\Entity\\Evt\:\:\$articles type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection\|null but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\Article\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Evt.php
+
+		-
+			message: '#^Property App\\Entity\\Evt\:\:\$code type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Evt.php
+
+		-
+			message: '#^Property App\\Entity\\Evt\:\:\$commission type mapping mismatch\: property can contain App\\Entity\\Commission\|null but database expects App\\Entity\\Commission\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Evt.php
+
+		-
+			message: '#^Property App\\Entity\\Evt\:\:\$description type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Evt.php
+
+		-
+			message: '#^Property App\\Entity\\Evt\:\:\$expenseReports type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection\|null but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\ExpenseReport\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Evt.php
+
+		-
+			message: '#^Property App\\Entity\\Evt\:\:\$joinMax type mapping mismatch\: property can contain int\|null but database expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Evt.php
+
+		-
+			message: '#^Property App\\Entity\\Evt\:\:\$ngensMax type mapping mismatch\: property can contain int\|null but database expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Evt.php
+
+		-
+			message: '#^Property App\\Entity\\Evt\:\:\$participations type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection\|null but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\EventParticipation\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Evt.php
+
+		-
+			message: '#^Property App\\Entity\\Evt\:\:\$place type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Evt.php
+
+		-
+			message: '#^Property App\\Entity\\Evt\:\:\$rdv type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Evt.php
+
+		-
+			message: '#^Property App\\Entity\\Evt\:\:\$titre type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Evt.php
+
+		-
+			message: '#^Property App\\Entity\\Evt\:\:\$unrecognizedPayers type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection\|null but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\EventUnrecognizedPayer\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Evt.php
+
+		-
+			message: '#^Property App\\Entity\\Evt\:\:\$user type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/Evt.php
+
+		-
+			message: '#^Property App\\Entity\\ExpenseAttachment\:\:\$expenseReport type mapping mismatch\: property can contain App\\Entity\\ExpenseReport\|null but database expects App\\Entity\\ExpenseReport\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/ExpenseAttachment.php
+
+		-
+			message: '#^Property App\\Entity\\ExpenseAttachment\:\:\$user type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/ExpenseAttachment.php
+
+		-
+			message: '#^Property App\\Entity\\ExpenseReport\:\:\$attachments type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\ExpenseAttachment\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/ExpenseReport.php
+
+		-
+			message: '#^Property App\\Entity\\ExpenseReport\:\:\$createdAt type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ExpenseReport.php
+
+		-
+			message: '#^Property App\\Entity\\ExpenseReport\:\:\$event type mapping mismatch\: property can contain App\\Entity\\Evt\|null but database expects App\\Entity\\Evt\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/ExpenseReport.php
+
+		-
+			message: '#^Property App\\Entity\\ExpenseReport\:\:\$refundRequired type mapping mismatch\: property can contain bool\|null but database expects bool\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ExpenseReport.php
+
+		-
+			message: '#^Property App\\Entity\\ExpenseReport\:\:\$status type mapping mismatch\: property can contain App\\Utils\\Enums\\ExpenseReportStatusEnum\|null but database expects App\\Utils\\Enums\\ExpenseReportStatusEnum\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ExpenseReport.php
+
+		-
+			message: '#^Property App\\Entity\\ExpenseReport\:\:\$updatedAt type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ExpenseReport.php
+
+		-
+			message: '#^Property App\\Entity\\ExpenseReport\:\:\$user type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/ExpenseReport.php
+
+		-
+			message: '#^Property App\\Entity\\ExpenseReportStatusHistory\:\:\$changedAt type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/ExpenseReportStatusHistory.php
+
+		-
+			message: '#^Property App\\Entity\\ExpenseReportStatusHistory\:\:\$changedBy type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/ExpenseReportStatusHistory.php
+
+		-
+			message: '#^Property App\\Entity\\ExpenseReportStatusHistory\:\:\$expenseReport type mapping mismatch\: property can contain App\\Entity\\ExpenseReport\|null but database expects App\\Entity\\ExpenseReport\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/ExpenseReportStatusHistory.php
+
+		-
+			message: '#^Property App\\Entity\\FormationValidationBrevet\:\:\$user type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/FormationValidationBrevet.php
+
+		-
+			message: '#^Property App\\Entity\\FormationValidationFormation\:\:\$formation type mapping mismatch\: property can contain App\\Entity\\FormationReferentielFormation\|null but database expects App\\Entity\\FormationReferentielFormation\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/FormationValidationFormation.php
+
+		-
+			message: '#^Method App\\Entity\\LogAdmin\:\:getDate\(\) should return string\|null but returns int\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Entity/LogAdmin.php
+
+		-
+			message: '#^Property App\\Entity\\LogAdmin\:\:\$date \(int\) does not accept string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Entity/LogAdmin.php
+
+		-
+			message: '#^Property App\\Entity\\LogAdmin\:\:\$date type mapping mismatch\: database can contain string but property expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/LogAdmin.php
+
+		-
+			message: '#^Property App\\Entity\\MediaUpload\:\:\$createdAt type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/MediaUpload.php
+
+		-
+			message: '#^Property App\\Entity\\MediaUpload\:\:\$filename type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/MediaUpload.php
+
+		-
+			message: '#^Property App\\Entity\\MediaUpload\:\:\$uploadedBy type mapping mismatch\: property can contain App\\Entity\\User\|null but database expects App\\Entity\\User\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/MediaUpload.php
+
+		-
+			message: '#^Method App\\Entity\\Message\:\:getDate\(\) should return string\|null but returns int\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Entity/Message.php
+
+		-
+			message: '#^Property App\\Entity\\Message\:\:\$date \(int\) does not accept string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Entity/Message.php
+
+		-
+			message: '#^Property App\\Entity\\Message\:\:\$date type mapping mismatch\: database can contain string but property expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Message.php
+
+		-
+			message: '#^Method App\\Entity\\Page\:\:getCreated\(\) should return string\|null but returns int\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Entity/Page.php
+
+		-
+			message: '#^Property App\\Entity\\Page\:\:\$created \(int\) does not accept string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Entity/Page.php
+
+		-
+			message: '#^Property App\\Entity\\Page\:\:\$created type mapping mismatch\: database can contain string but property expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Page.php
+
+		-
+			message: '#^Property App\\Entity\\Page\:\:\$metaDescription \(bool\) does not accept default value of type string\.$#'
+			identifier: property.defaultValue
+			count: 1
+			path: src/Entity/Page.php
+
+		-
+			message: '#^Property App\\Entity\\Page\:\:\$metaTitle \(bool\) does not accept default value of type string\.$#'
+			identifier: property.defaultValue
+			count: 1
+			path: src/Entity/Page.php
+
+		-
+			message: '#^Property App\\Entity\\Page\:\:\$pagelibre \(bool\) does not accept default value of type string\.$#'
+			identifier: property.defaultValue
+			count: 1
+			path: src/Entity/Page.php
+
+		-
+			message: '#^Property App\\Entity\\Page\:\:\$superadmin \(bool\) does not accept default value of type string\.$#'
+			identifier: property.defaultValue
+			count: 1
+			path: src/Entity/Page.php
+
+		-
+			message: '#^Method App\\Entity\\Partenaire\:\:getEnabled\(\) should return bool\|null but returns int\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Entity/Partenaire.php
+
+		-
+			message: '#^Property App\\Entity\\Partenaire\:\:\$enabled \(int\) does not accept bool\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Entity/Partenaire.php
+
+		-
+			message: '#^Property App\\Entity\\Partenaire\:\:\$enabled \(int\) does not accept default value of type true\.$#'
+			identifier: property.defaultValue
+			count: 1
+			path: src/Entity/Partenaire.php
+
+		-
+			message: '#^Method App\\Entity\\Token\:\:getTime\(\) should return string\|null but returns int\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Entity/Token.php
+
+		-
+			message: '#^Property App\\Entity\\Token\:\:\$time \(int\) does not accept string\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Entity/Token.php
+
+		-
+			message: '#^Property App\\Entity\\Token\:\:\$time type mapping mismatch\: database can contain string but property expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Token.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$attrs type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\UserAttr\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$birthdate type mapping mismatch\: property can contain DateTimeInterface\|null but database expects DateTimeImmutable\|null\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$discoveryEndDatetime type mapping mismatch\: property can contain DateTimeInterface\|null but database expects DateTimeImmutable\|null\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$expenseReports type mapping mismatch\: property can contain Doctrine\\Common\\Collections\\Collection but database expects Doctrine\\Common\\Collections\\Collection&iterable\<App\\Entity\\ExpenseReport\>\.$#'
+			identifier: doctrine.associationType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$firstname type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$id type mapping mismatch\: database can contain string but property expects int\|null\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$joinDate type mapping mismatch\: property can contain DateTimeInterface\|null but database expects DateTimeImmutable\|null\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$lastname type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\User\:\:\$radiationDate type mapping mismatch\: property can contain DateTimeInterface\|null but database expects DateTimeImmutable\|null\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/User.php
+
+		-
+			message: '#^Property App\\Entity\\UserAttr\:\:\$details type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/UserAttr.php
+
+		-
+			message: '#^Property App\\Entity\\UserMailchange\:\:\$time \(DateTime\) does not accept DateTimeInterface\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Entity/UserMailchange.php
+
+		-
+			message: '#^Property App\\Entity\\UserMailchange\:\:\$time \(DateTime\) does not accept default value of type string\.$#'
+			identifier: property.defaultValue
+			count: 1
+			path: src/Entity/UserMailchange.php
+
+		-
+			message: '#^Property App\\Entity\\UserMdpchange\:\:\$time \(DateTime\) does not accept DateTimeInterface\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Entity/UserMdpchange.php
+
+		-
+			message: '#^Property App\\Entity\\UserMdpchange\:\:\$time \(DateTime\) does not accept default value of type string\.$#'
+			identifier: property.defaultValue
+			count: 1
+			path: src/Entity/UserMdpchange.php
+
+		-
+			message: '#^Property App\\Entity\\UserRight\:\:\$code type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/UserRight.php
+
+		-
+			message: '#^Property App\\Entity\\UserRight\:\:\$ordre type mapping mismatch\: property can contain int\|null but database expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/UserRight.php
+
+		-
+			message: '#^Property App\\Entity\\UserRight\:\:\$parent type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/UserRight.php
+
+		-
+			message: '#^Property App\\Entity\\UserRight\:\:\$title type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/UserRight.php
+
+		-
+			message: '#^Property App\\Entity\\Usertype\:\:\$code type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Usertype.php
+
+		-
+			message: '#^Property App\\Entity\\Usertype\:\:\$hierarchie type mapping mismatch\: property can contain int\|null but database expects int\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Usertype.php
+
+		-
+			message: '#^Property App\\Entity\\Usertype\:\:\$limitedToComm type mapping mismatch\: property can contain bool\|null but database expects bool\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Usertype.php
+
+		-
+			message: '#^Property App\\Entity\\Usertype\:\:\$title type mapping mismatch\: property can contain string\|null but database expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Usertype.php
+
+		-
+			message: '#^Property App\\EventListener\\ForceHttpsListener\:\:\$deployedOnCleverCloud \(string\) does not accept bool\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/EventListener/ForceHttpsListener.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:getEmail\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/EventListener/JWTCreatedListener.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:getId\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/EventListener/JWTCreatedListener.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:getNickname\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/EventListener/JWTCreatedListener.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Form\\FormInterface\:\:isClicked\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: src/Form/EventType.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(array   Attributes\(if any\) in ''attrName'' \=\> ''attrValue'' format\)\: Unexpected token "Attributes", expected variable at offset 173 on line 6$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedItem.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(array   array of elements in ''tagName'' \=\> ''tagContent'' format\)\: Unexpected token "array", expected variable at offset 155 on line 5$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedItem.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(contant     \(RSS1/RSS2/ATOM\) RSS2 is default\)\: Unexpected token "\(", expected variable at offset 60 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedItem.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(srting  The content of tag\)\: Unexpected token "The", expected variable at offset 129 on line 5$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedItem.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(srting  The tag name of an element\)\: Unexpected token "The", expected variable at offset 77 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedItem.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(string  The content of ''date'' element\)\: Unexpected token "The", expected variable at offset 80 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedItem.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(string  The content of ''description'' element\)\: Unexpected token "The", expected variable at offset 86 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedItem.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(string  The content of ''link'' element\)\: Unexpected token "The", expected variable at offset 80 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedItem.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(string  The content of ''title'' element\)\: Unexpected token "The", expected variable at offset 90 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedItem.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(string  The length attribute of encloser tag\)\: Unexpected token "The", expected variable at offset 167 on line 6$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedItem.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(string  The type attribute of encloser tag\)\: Unexpected token "The", expected variable at offset 229 on line 7$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedItem.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(string  The url attribute of encloser tag\)\: Unexpected token "The", expected variable at offset 108 on line 5$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedItem.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(array   Attributes\(if any\) in ''attrName'' \=\> ''attrValue'' format\)\: Unexpected token "Attributes", expected variable at offset 215 on line 6$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedWriter.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(array   array of channels\)\: Unexpected token "array", expected variable at offset 159 on line 5$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedWriter.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(constant    the version constant \(RSS1/RSS2/ATOM\)\)\: Unexpected token "the", expected variable at offset 57 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedWriter.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(mixed   tag value as string or array of nested tags in ''tagName'' \=\> ''tagValue'' format\)\: Unexpected token "tag", expected variable at offset 115 on line 5$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedWriter.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(object  instance of FeedItem class\)\: Unexpected token "instance", expected variable at offset 74 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedWriter.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(string  The vale of about tag which is used for only RSS 1\.0\)\: Unexpected token "The", expected variable at offset 75 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedWriter.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(string  an optional prefix\)\: Unexpected token "an", expected variable at offset 59 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedWriter.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(string  content of the channel tag\)\: Unexpected token "content", expected variable at offset 109 on line 5$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedWriter.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(string  link url of the imahe\)\: Unexpected token "link", expected variable at offset 110 on line 5$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedWriter.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(string  name of the channel tag\)\: Unexpected token "name", expected variable at offset 63 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedWriter.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(string  name of the tag\)\: Unexpected token "name", expected variable at offset 77 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedWriter.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(string  path url of the image\)\: Unexpected token "path", expected variable at offset 154 on line 6$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedWriter.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(string  title of image\)\: Unexpected token "title", expected variable at offset 73 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedWriter.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(string  value of ''about'' channel tag\)\: Unexpected token "value", expected variable at offset 91 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedWriter.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(string  value of ''description'' channel tag\)\: Unexpected token "value", expected variable at offset 79 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedWriter.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(string  value of ''link'' channel tag\)\: Unexpected token "value", expected variable at offset 72 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedWriter.php
+
+		-
+			message: '#^PHPDoc tag @param has invalid value \(string  value of ''title'' channel tag\)\: Unexpected token "value", expected variable at offset 73 on line 4$#'
+			identifier: phpDoc.parseError
+			count: 1
+			path: src/Legacy/Rss/FeedWriter.php
+
+		-
+			message: '#^Method App\\Repository\\EventParticipationRepository\:\:getEmpietements\(\) should return array\<array\<App\\Entity\\EventParticipation\>\> but returns list\<App\\Entity\\EventParticipation\>\.$#'
+			identifier: return.type
+			count: 1
+			path: src/Repository/EventParticipationRepository.php
+
+		-
+			message: '#^Property App\\Service\\PushNotificationService\:\:\$messaging \(Kreait\\Firebase\\Messaging\) does not accept Kreait\\Firebase\\Contract\\Messaging\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Service/PushNotificationService.php
+
+		-
+			message: '#^Method Symfony\\Component\\PasswordHasher\\PasswordHasherInterface\:\:verify\(\) invoked with 3 parameters, 2 required\.$#'
+			identifier: arguments.count
+			count: 1
+			path: src/Validator/UserPasswordValidator.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\MailerLiteService\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 8
+			path: tests/Service/EmailMarketingSyncServiceTest.php
+
+		-
+			message: '#^Call to an undefined method Psr\\Log\\LoggerInterface\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 10
+			path: tests/Service/EmailMarketingSyncServiceTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Contracts\\Cache\\CacheInterface\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Service/HelloAssoClientTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Contracts\\HttpClient\\HttpClientInterface\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Service/HelloAssoClientTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Contracts\\HttpClient\\HttpClientInterface\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 5
+			path: tests/Service/HelloAssoClientTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\HelloAssoClient\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 9
+			path: tests/Service/HelloAssoServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Service\\HelloAssoClient\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 6
+			path: tests/Service/HelloAssoServiceTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Routing\\Generator\\UrlGeneratorInterface\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 5
+			path: tests/Service/HelloAssoServiceTest.php
+
+		-
+			message: '#^Call to an undefined method Psr\\Log\\LoggerInterface\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Service/LoxyaReservationServiceTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Contracts\\HttpClient\\HttpClientInterface\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Service/LoxyaReservationServiceTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Contracts\\HttpClient\\HttpClientInterface\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Service/LoxyaReservationServiceTest.php
+
+		-
+			message: '#^Call to an undefined method Psr\\Log\\LoggerInterface\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: tests/Service/MailerLiteServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\UserAttrRepository\:\:expects\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Service/ParticipantServiceTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\UserAttrRepository\:\:method\(\)\.$#'
+			identifier: method.notFound
+			count: 4
+			path: tests/Service/ParticipantServiceTest.php
+
+		-
+			message: '#^Trying to mock an undefined method getRole\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 1
+			path: tests/Utils/ExcelExportTest.php
+
+		-
+			message: '#^Trying to mock an undefined method getStatus\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 1
+			path: tests/Utils/ExcelExportTest.php
+
+		-
+			message: '#^Trying to mock an undefined method getUser\(\) on class stdClass\.$#'
+			identifier: phpunit.mockMethod
+			count: 1
+			path: tests/Utils/ExcelExportTest.php
+
+		-
+			message: '#^Call to an undefined method App\\Repository\\UserRepository\:\:findOneByEmail\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/WebTestCase.php
+
+		-
+			message: '#^Method App\\Tests\\WebTestCase\:\:createSession\(\) should return Symfony\\Component\\HttpFoundation\\Session\\Session but returns Symfony\\Component\\HttpFoundation\\Session\\SessionInterface\.$#'
+			identifier: return.type
+			count: 1
+			path: tests/WebTestCase.php
