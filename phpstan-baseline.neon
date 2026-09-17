@@ -13,12 +13,6 @@ parameters:
 			path: src/Controller/AgendaController.php
 
 		-
-			message: '#^Cannot cast Symfony\\Component\\Validator\\ConstraintViolationListInterface to string\.$#'
-			identifier: cast.string
-			count: 1
-			path: src/Controller/Api/ExpenseAttachmentController.php
-
-		-
 			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:getEmail\(\)\.$#'
 			identifier: method.notFound
 			count: 3
@@ -35,12 +29,6 @@ parameters:
 			identifier: method.notFound
 			count: 2
 			path: src/Controller/MaterielController.php
-
-		-
-			message: '#^Cannot cast Symfony\\Component\\Validator\\ConstraintViolationListInterface to string\.$#'
-			identifier: cast.string
-			count: 1
-			path: src/Controller/MediaUploadController.php
 
 		-
 			message: '#^Call to an undefined method Symfony\\Component\\Security\\Core\\User\\UserInterface\:\:getEmail\(\)\.$#'
