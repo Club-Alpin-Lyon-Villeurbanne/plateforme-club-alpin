@@ -44,12 +44,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Pour l'analyse différentielle
-      
+
       - name: Prepare environment
         uses: ./.github/actions/prepare-for-quality
-      
+
       - name: Cache PHPStan result cache
         uses: actions/cache@v4
         with:
@@ -59,28 +57,44 @@ jobs:
             ${{ runner.os }}-phpstan-
             ${{ runner.os }}-
 
-      # - name: Install PHPStan
-      #   run: |
-      #     mkdir -p bin/tools
-      #     curl -L https://github.com/phpstan/phpstan/releases/latest/download/phpstan.phar -o bin/tools/phpstan
-      #     chmod +x bin/tools/phpstan
+      # phpstan-symfony lit le conteneur compilé pour typer les services.
+      - name: Warm up the Symfony container
+        run: bin/console cache:warmup --env=dev
 
-      # Pour les PR : analyse seulement les fichiers modifiés
-      - name: Get changed PHP files for PHPStan
-        id: changed-php-files
-        run: ./.github/scripts/get-changed-php-files.sh ${{ github.event.pull_request.base.sha }}
-      
-      # - name: Run PHPStan on changed files
-      #   if: github.event_name == 'pull_request' && steps.changed-php-files.outputs.has_changes == 'true'
-      #   run: |
-      #     echo "Running PHPStan on changed files with parallel processing..."
-      #     make phpstan-files FILES="${{ steps.changed-php-files.outputs.files }}"
-      
-      - name: Skip PHPStan (no changes)
-        if: steps.changed-php-files.outputs.has_changes == 'false'
-        run: echo "✅ No relevant PHP files to analyze"
+      # L'analyse porte sur tout le projet : la baseline absorbe la dette existante,
+      # seules les nouvelles erreurs font échouer le job.
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse -c phpstan.dist.neon --no-progress --memory-limit=-1
 
-      - name: Run PHPStan (full analysis)
-        if: steps.changed-php-files.outputs.has_changes == 'true'
-        run: ./bin/tools/phpstan -vvv analyse legacy public src tests -c phpstan.neon -l 1
-      
+  rector:
+    name: Rector
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare environment
+        uses: ./.github/actions/prepare-for-quality
+
+      - name: Run Rector (dry-run)
+        run: vendor/bin/rector process --dry-run --no-progress-bar
+
+  security:
+    name: Dépendances vulnérables
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      # N'installe rien : lit composer.lock et interroge la base d'advisories.
+      # `--abandoned=report` signale les paquets abandonnés sans faire échouer le job :
+      # les trois concernés (doctrine/cache, package-versions-deprecated,
+      # php-http/message-factory) sont des dépendances transitives.
+      - name: composer audit
+        run: composer audit --locked --abandoned=report --no-interaction

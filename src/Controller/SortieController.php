@@ -561,7 +561,7 @@ class SortieController extends AbstractController
         }
 
         $flush = true;
-        foreach ($request->request->all('id_evt_join', []) as $participationId) {
+        foreach ($request->request->all('id_evt_join') as $participationId) {
             $status = $request->request->get('status_evt_join_' . $participationId);
             $role = $request->request->get('role_evt_join_' . $participationId);
 

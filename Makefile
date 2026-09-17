@@ -52,13 +52,25 @@ php-cs-fix-changed: bin/tools/php-cs-fixer ## Fix only changed PHP files
 	@git diff --name-only --cached --diff-filter=ACMRTUXB | grep -E '\.php$$' | xargs -r $(PHP) -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php || echo "No PHP files to fix"
 .PHONY: php-cs-fix-changed
 
-phpstan: bin/tools/phpstan ## Analyze PHP code with phpstan
-	$(PHP) -dmemory_limit=-1 ./bin/tools/phpstan analyse legacy public src tests -c phpstan.neon -l 1
+phpstan: ## Analyze PHP code with phpstan (niveau et chemins définis dans phpstan.dist.neon)
+	$(PHP) -dmemory_limit=-1 vendor/bin/phpstan analyse -c phpstan.dist.neon
 .PHONY: phpstan
 
-phpstan-files: bin/tools/phpstan ## Analyze specific PHP files with phpstan
-	$(PHP) -dmemory_limit=-1 ./bin/tools/phpstan analyse $(FILES) -c phpstan.neon
+phpstan-files: ## Analyze specific PHP files with phpstan
+	$(PHP) -dmemory_limit=-1 vendor/bin/phpstan analyse $(FILES) -c phpstan.dist.neon
 .PHONY: phpstan-files
+
+phpstan-baseline: ## Regenerate the phpstan baseline (to run after fixing a batch of errors)
+	$(PHP) -dmemory_limit=-1 vendor/bin/phpstan analyse -c phpstan.dist.neon --generate-baseline=phpstan-baseline.neon
+.PHONY: phpstan-baseline
+
+rector: ## Show the changes Rector would make (dry-run)
+	$(PHP) -dmemory_limit=-1 vendor/bin/rector process --dry-run
+.PHONY: rector
+
+rector-fix: ## Apply Rector changes
+	$(PHP) -dmemory_limit=-1 vendor/bin/rector process
+.PHONY: rector-fix
 
 
 ## —— ✅ Test ——
@@ -216,8 +228,8 @@ logs: ## View output from containers (services="")
 	@$(DOCKER_COMPOSE) logs -f $(services)
 .PHONY: logs
 
-phive: bin/tools/phpstan bin/tools/php-cs-fixer
-bin/tools/phpstan bin/tools/php-cs-fixer: phive.xml
+phive: bin/tools/php-cs-fixer
+bin/tools/php-cs-fixer: phive.xml
 	@$(PHP) -d memory_limit=1G /usr/local/bin/phive install --copy --trust-gpg-keys 8E730BA25823D8B5,CF1A108D0E7AE720,E82B2FB314E9906E,CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0
 
 phive-update:

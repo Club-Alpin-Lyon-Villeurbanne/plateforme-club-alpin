@@ -61,3 +61,7 @@ public/dev.txt
 AGENTS.md
 
 .clever.json
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###

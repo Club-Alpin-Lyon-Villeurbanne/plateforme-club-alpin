@@ -22,8 +22,8 @@ CHANGED_FILES=$(git diff --name-only --diff-filter=ACMRTUXB "$BASE_SHA" | grep -
 # Filtrer les fichiers exclus par PHPStan
 FILTERED_FILES=""
 for file in $CHANGED_FILES; do
-    # Exclure les fichiers/dossiers configurés dans phpstan.neon
-    # Cette liste doit correspondre à excludePaths dans phpstan.neon
+    # Exclure les fichiers/dossiers configurés dans phpstan.dist.neon
+    # Cette liste doit correspondre à excludePaths dans phpstan.dist.neon
     if echo "$file" | grep -qE '^(legacy/pages/|legacy/includes/|legacy/index\.php|legacy/app/ajax/pages_reorder\.php|legacy/app/ajax/get_content_html\.php|legacy/admin/ftp\.php|var/cache/)'; then
         echo "Excluding from PHPStan: $file" >&2
     else

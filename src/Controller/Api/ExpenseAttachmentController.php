@@ -2,13 +2,11 @@
 
 namespace App\Controller\Api;
 
-use App\Entity\Attachment;
 use App\Entity\ExpenseAttachment;
 use App\Repository\ExpenseAttachmentRepository;
 use App\Repository\ExpenseReportRepository;
 use App\Utils\FileUploader;
 use Doctrine\ORM\EntityManagerInterface;
-use Proxies\__CG__\App\Entity\Expense;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;

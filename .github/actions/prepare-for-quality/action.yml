@@ -50,9 +50,4 @@ runs:
       if: ${{ steps.cache-quality-tools.outputs.cache-hit != 'true' }}
       run: phive install --copy --trust-gpg-keys 8E730BA25823D8B5,CF1A108D0E7AE720,E82B2FB314E9906E,CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0
 
-      # Installation is done automatically by Symfony when the script is run
-    - name: Install PHPUnit for assertions autoloading
-      shell: bash
-      run: ./bin/phpunit --version
-
   

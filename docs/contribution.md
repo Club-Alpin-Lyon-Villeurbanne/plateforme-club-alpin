@@ -71,8 +71,9 @@ Nous maintenons des standards de qualité élevés pour garantir la pérennité 
    - Pas de duplication de code
    - Gestion appropriée des erreurs
    - Les tests unitaires doivent passer sur GitHub Actions
-   - PHPStan doit passer sans erreurs
-   - PHP-CS doit valider le style de code
+   - PHPStan doit passer sans erreurs (`make phpstan`)
+   - PHP-CS doit valider le style de code (`make php-cs`)
+   - Rector ne doit rien avoir à corriger (`make rector`)
 
 3. **Sécurité**
    - Pas d'exposition de données sensibles
@@ -86,6 +87,32 @@ Nous maintenons des standards de qualité élevés pour garantir la pérennité 
    - Nommage explicite
    - Architecture cohérente
    - Pas de dette technique
+
+## Outillage qualité
+
+| Commande | Rôle |
+|---|---|
+| `make php-cs` / `make php-cs-fix` | Style de code (PHP-CS-Fixer, préréglage Symfony) |
+| `make phpstan` | Analyse statique, **niveau 3** |
+| `make phpstan-baseline` | Régénère la baseline après avoir corrigé un lot d'erreurs |
+| `make rector` / `make rector-fix` | Modernisation automatique du code |
+| `make tests` | Suite PHPUnit |
+
+### La baseline PHPStan
+
+`phpstan-baseline.neon` fige les erreurs qui existaient au moment où le niveau 3 a
+été activé : elles n'échouent pas en CI, mais **toute nouvelle erreur échoue**.
+
+La bonne façon de la faire baisser est d'en corriger un lot, puis de lancer
+`make phpstan-baseline` et de committer la baseline réduite. Il ne faut jamais
+régénérer la baseline pour y faire entrer une erreur qu'on vient d'introduire.
+
+### Monter les niveaux
+
+PHPStan comme Rector sont volontairement réglés bas pour que la CI soit verte
+dès maintenant. Les monter d'un cran (`level` dans `phpstan.dist.neon`,
+`withDeadCodeLevel()` / `withCodeQualityLevel()` dans `rector.php`) se fait dans
+une PR dédiée, pour que le diff reste relisible.
 
 ## Processus de Contribution
 
