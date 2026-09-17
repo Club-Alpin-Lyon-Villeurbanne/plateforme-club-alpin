@@ -1,16 +1,5 @@
 name: 'Prepare Environment for Quality'
 description: 'Prepares the environment for quality checks'
-
-inputs:
-  install-phive-tools:
-    description: >
-      Installe les outils Phive (bin/tools). Seul PHP-CS-Fixer en dépend encore :
-      PHPStan et Rector sont des dépendances Composer. Phive télécharge depuis
-      l'API GitHub, qui rate-limite les runners et renvoie des 403 aléatoires —
-      autant ne pas le faire tourner pour les jobs qui n'en ont pas besoin.
-    required: false
-    default: 'false'
-
 runs:
   using: 'composite'
   steps:
@@ -20,7 +9,7 @@ runs:
         php-version: '8.3'
         extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite
         coverage: none
-        tools: cs2pr, phive
+        tools: cs2pr
 
     - name: Get Composer Cache Directory
       shell: bash
@@ -34,17 +23,6 @@ runs:
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: ${{ runner.os }}-composer-
 
-    # Quality tools are cached without suffix because Phive decides the version to install
-    # Updating them would need to invalidate the cache manually on Github Actions
-    - name: Cache quality tools
-      id: cache-quality-tools
-      if: ${{ inputs.install-phive-tools == 'true' }}
-      uses: actions/cache@v4
-      with:
-        path: ./bin/tools
-        key: ${{ runner.os }}-quality-tools
-        restore-keys: ${{ runner.os }}-quality-tools-
-
     - name: Cache Vendor
       id: cache-vendor
       uses: actions/cache@v4
@@ -52,26 +30,9 @@ runs:
         path: vendor
         key: ${{ runner.os }}-vendor-${{ hashFiles('composer.lock') }}
 
+    # Installe aussi les outils qualité : PHPStan, Rector et PHP-CS-Fixer sont
+    # tous les trois des dépendances de dev, versionnées dans composer.lock.
     - name: Install dependencies
       shell: bash
       if: ${{ steps.cache-vendor.outputs.cache-hit != 'true' }}
       run: composer install --prefer-dist --no-progress --no-interaction --ignore-platform-req=ext-uopz
-
-    # Le token authentifie les appels à l'API GitHub : en anonyme, Phive se prend
-    # des 403 quand le quota du runner est épuisé.
-    - name: Authenticate Phive against the GitHub API
-      shell: bash
-      if: ${{ inputs.install-phive-tools == 'true' && steps.cache-quality-tools.outputs.cache-hit != 'true' }}
-      run: |
-        mkdir -p "$HOME/.phive"
-        cat > "$HOME/.phive/auth.xml" <<XML
-        <?xml version="1.0" encoding="UTF-8"?>
-        <auth xmlns="https://phar.io/auth">
-            <token hostname="api.github.com" token="${{ github.token }}"/>
-        </auth>
-        XML
-
-    - name: Install PHP tools
-      shell: bash
-      if: ${{ inputs.install-phive-tools == 'true' && steps.cache-quality-tools.outputs.cache-hit != 'true' }}
-      run: phive install --copy --trust-gpg-keys 8E730BA25823D8B5,CF1A108D0E7AE720,E82B2FB314E9906E,CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0

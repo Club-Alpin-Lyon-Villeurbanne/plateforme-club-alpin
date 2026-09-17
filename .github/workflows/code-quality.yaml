@@ -13,8 +13,6 @@ jobs:
 
       - name: Prepare environment
         uses: ./.github/actions/prepare-for-quality
-        with:
-          install-phive-tools: 'true'
 
       - name: Cache PHP-CS-Fixer
         uses: actions/cache@v4
@@ -34,7 +32,7 @@ jobs:
         if: steps.changed-php-files.outputs.has_changes == 'true'
         run: |
           echo "Running PHP-CS-Fixer with parallel processing..."
-          ./bin/tools/php-cs-fixer fix --dry-run --diff --format=checkstyle --config=.php-cs-fixer.dist.php ${{ steps.changed-php-files.outputs.files }} | cs2pr
+          vendor/bin/php-cs-fixer fix --dry-run --diff --format=checkstyle --config=.php-cs-fixer.dist.php ${{ steps.changed-php-files.outputs.files }} | cs2pr
 
       - name: Run PHP-CS-Fixer (no changes)
         if: steps.changed-php-files.outputs.has_changes == 'false'
