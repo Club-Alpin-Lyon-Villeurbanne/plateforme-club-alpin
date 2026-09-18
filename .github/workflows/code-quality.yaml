@@ -23,16 +23,25 @@ jobs:
             ${{ runner.os }}-php-cs-fixer-
             ${{ runner.os }}-
 
-      # Pour les PR : analyse seulement les fichiers modifiés
+      # Pour les PR : analyse seulement les fichiers modifiés.
+      # Les valeurs `${{ }}` passent par `env:` et jamais dans le corps du `run:` :
+      # interpolées dans le script, elles y seraient exécutées comme du shell.
       - name: Get changed PHP files
         id: changed-php-files
-        run: ./.github/scripts/get-changed-php-files.sh ${{ github.event.pull_request.base.sha }}
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: ./.github/scripts/get-changed-php-files.sh "$BASE_SHA"
 
+      # Les chemins viennent d'un fichier NUL-séparé et sont passés comme arguments
+      # distincts : un fichier nommé `src/a;id;#.php` reste un nom de fichier.
       - name: Run PHP-CS-Fixer on changed files
         if: steps.changed-php-files.outputs.has_changes == 'true'
+        env:
+          FILES_PATH: ${{ steps.changed-php-files.outputs.files_path }}
         run: |
           echo "Running PHP-CS-Fixer with parallel processing..."
-          vendor/bin/php-cs-fixer fix --dry-run --diff --format=checkstyle --config=.php-cs-fixer.dist.php ${{ steps.changed-php-files.outputs.files }} | cs2pr
+          mapfile -d '' files < "$FILES_PATH"
+          vendor/bin/php-cs-fixer fix --dry-run --diff --format=checkstyle --config=.php-cs-fixer.dist.php "${files[@]}" | cs2pr
 
       - name: Run PHP-CS-Fixer (no changes)
         if: steps.changed-php-files.outputs.has_changes == 'false'
