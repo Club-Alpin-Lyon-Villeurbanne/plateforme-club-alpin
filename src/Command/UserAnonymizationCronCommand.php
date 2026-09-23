@@ -66,10 +66,12 @@ class UserAnonymizationCronCommand extends Command
 
             $this->userRepository->anonymizeUser($user);
 
-            // image de profil
-            if (null !== $user->getProfilePicture()) {
-                $imagePath = $this->params->get('public_dir') . '/ftp/uploads/files/' . $user->getProfilePicture()->getFilename();
+            // image de profil : fichier sur disque puis ligne en base (la référence a déjà été mise à null)
+            $profilePicture = $user->getProfilePicture();
+            if (null !== $profilePicture) {
+                $imagePath = $this->params->get('public_dir') . '/ftp/uploads/files/' . $profilePicture->getFilename();
                 $filesystem->remove($imagePath);
+                $this->manager->remove($profilePicture);
             }
 
             ++$anonymized;

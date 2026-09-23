@@ -376,6 +376,7 @@ SQL;
             ->leftJoin(Evt::class, 'e', Join::WITH, 'u.id = e.user')
             ->leftJoin(EventParticipation::class, 'p', Join::WITH, 'u.id = p.user')
             ->where('u.id != 1')     // super admin
+            ->andWhere('u.isDeleted = false')
             ->andWhere('a.id is null')
             ->andWhere('c.id is null')
             ->andWhere('e.id is null')
@@ -401,6 +402,7 @@ SQL;
             ->leftJoin(Evt::class, 'e', Join::WITH, 'u.id = e.user')
             ->leftJoin(EventParticipation::class, 'p', Join::WITH, 'u.id = p.user')
             ->where('u.id != 1')     // super admin
+            ->andWhere('u.isDeleted = false')
             ->andWhere('(a.id is not null or c.id is not null or e.id is not null or p.id is not null)')
         ;
         if (null !== $end) {
@@ -435,6 +437,7 @@ SQL;
             ->set('u.cookietoken', ':nullValue')
             ->set('u.doitRenouveler', ':falseValue')
             ->set('u.alerteRenouveler', ':falseValue')
+            ->set('u.profilePicture', ':nullValue')
             ->set('u.updatedAt', ':updatedAt')
             ->where('u.id = :user')
             ->setParameter('user', $user)
