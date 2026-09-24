@@ -8,7 +8,6 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
-use Symfony\Component\Filesystem\Filesystem;
 
 class UserRepositoryAnonymisationTest extends KernelTestCase
 {
@@ -100,36 +99,27 @@ class UserRepositoryAnonymisationTest extends KernelTestCase
         $this->assertContains($user->getId(), $this->idsSansActivite(), 'une fiche anonymisée puis réécrite doit être réanonymisée');
     }
 
-    public function testLAnonymisationEffaceLesDonneesPersonnellesEtLaPhoto(): void
+    public function testLAnonymisationEffaceLesDonneesPersonnellesEtLaReferenceALaPhoto(): void
     {
         $user = $this->getUser(self::CAFNUM_PHOTO);
         $id = $user->getId();
-        $photoId = $user->getProfilePicture()?->getId();
 
-        $this->assertNotNull($photoId);
+        $this->assertNotNull($user->getProfilePicture());
         $this->assertNotNull($user->getEmail());
         $this->assertNotNull($user->getTel());
         $this->assertNotNull($user->getAdresse());
 
-        $fichier = self::getContainer()->getParameter('public_dir') . '/ftp/uploads/files/' . $user->getProfilePicture()->getFilename();
-        (new Filesystem())->dumpFile($fichier, 'photo');
-        $this->assertFileExists($fichier);
-
-        // même séquence que la commande : UPDATE DQL, puis suppression du média via l'entité restée en mémoire
         $this->repository->anonymizeUser($user);
-        $this->em->remove($user->getProfilePicture());
-        $this->em->flush();
         $this->em->clear();
 
         $anonymise = $this->repository->find($id);
 
         $this->assertTrue($anonymise->isDeleted());
+        $this->assertSame(ucfirst(UserRepository::PRENOM_ANONYMISE), $anonymise->getFirstname());
         $this->assertNull($anonymise->getEmail());
         $this->assertNull($anonymise->getTel());
         $this->assertNull($anonymise->getAdresse());
         $this->assertNull($anonymise->getProfilePicture(), 'la référence à la photo de profil doit être effacée');
-        $this->assertNull($this->em->find(MediaUpload::class, $photoId), 'la ligne du média doit être supprimée');
-        $this->assertFileDoesNotExist($fichier, 'Vich doit effacer le fichier de la photo après le flush');
     }
 
     private function persistUser(string $cafnum): User

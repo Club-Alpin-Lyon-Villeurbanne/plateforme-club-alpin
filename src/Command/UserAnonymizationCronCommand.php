@@ -54,6 +54,15 @@ class UserAnonymizationCronCommand extends Command
 
         /** @var User $user */
         foreach ($usersToAnonymize as $user) {
+            // photo d'abord (Vich efface le fichier au flush) : si la commande s'interrompt, le compte n'est pas encore
+            // anonymisé et sera repris le lendemain ; anonymisé, il ne serait plus jamais resélectionné
+            $photo = $user->getProfilePicture();
+            if (null !== $photo) {
+                $user->setProfilePicture(null);
+                $this->manager->remove($photo);
+                $this->manager->flush();
+            }
+
             // nettoyage des tables liées
             $this->brevetAdherentRepository->deleteByUser($user);
             $this->userNotificationRepository->deleteByUser($user);
@@ -61,16 +70,9 @@ class UserAnonymizationCronCommand extends Command
 
             $this->userRepository->anonymizeUser($user);
 
-            // Vich efface le fichier après le flush (delete_on_remove) ; l'entité en mémoire garde la photo malgré l'UPDATE DQL
-            if (null !== $user->getProfilePicture()) {
-                $this->manager->remove($user->getProfilePicture());
-            }
-
             ++$anonymized;
         }
         $this->logger->info('User anonymization: ' . $anonymized . ' users anonymized');
-
-        $this->manager->flush();
 
         $this->logger->info('User anonymization: no (more) users to anonymize');
 
