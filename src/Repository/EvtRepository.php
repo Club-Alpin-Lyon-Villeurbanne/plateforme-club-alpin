@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Commission;
+use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\ExpenseReport;
 use App\Entity\User;
@@ -270,6 +271,42 @@ class EvtRepository extends ServiceEntityRepository
             ->select('count(e)')
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * Sorties auxquelles $user ET $otherUser participent tous deux (participation validée).
+     *
+     * Pas de filtre de date : on reste cohérent avec « Dernières sorties »
+     * (getUserEvents), qui liste aussi bien les sorties passées que futures.
+     *
+     * @return Evt[]
+     */
+    public function getCommonEvents(User $user, User $otherUser, int $first, int $perPage): array
+    {
+        return $this->getPaginatedResults($this->getCommonEventsDql($user, $otherUser), $first, $perPage);
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getCommonEventsCount(User $user, User $otherUser): int
+    {
+        return (int) $this
+            ->getCommonEventsDql($user, $otherUser)
+            ->select('count(DISTINCT e)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    private function getCommonEventsDql(User $user, User $otherUser): QueryBuilder
+    {
+        return $this->getEventsByUserDql($user, [Evt::STATUS_PUBLISHED_VALIDE], [EventParticipation::STATUS_VALIDE])
+            ->innerJoin('e.participations', 'p2', 'WITH', 'p2.user = :otherUser AND p2.status = :validStatus')
+            ->setParameter('otherUser', $otherUser)
+            ->setParameter('validStatus', EventParticipation::STATUS_VALIDE)
+            ->orderBy('e.startDate', 'desc')
+        ;
     }
 
     public function getRecentPastEvents(?Commission $commission = null): array
