@@ -29,6 +29,10 @@ class SortiePublieeHandler
             return;
         }
 
+        if ($evt->isSkipNewSortieAlert()) {
+            return;
+        }
+
         $commissionCode = $evt->getCommission()->getCode();
 
         foreach ($this->userRepository->findUsersIdWithAlert($commissionCode, AlertType::Sortie) as $userId) {
