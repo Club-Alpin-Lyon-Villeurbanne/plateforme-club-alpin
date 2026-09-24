@@ -1,8 +1,12 @@
+includes:
+    - phpstan-baseline.neon
+
 parameters:
   tmpDir: ./.phpstan-tmp
-  level: 0
+  level: 3
   paths:
     - legacy
+    - public
     - src
     - tests
 
@@ -10,9 +14,17 @@ parameters:
   bootstrapFiles:
     - vendor/autoload.php
 
+  # Contexte Symfony : permet à phpstan-symfony de typer le conteneur,
+  # les services et les retours de `$this->getUser()`.
+  symfony:
+    containerXmlPath: var/cache/dev/App_KernelDevDebugContainer.xml
+
+  doctrine:
+    objectManagerLoader: tests/object-manager.php
+
   # Cache pour améliorer les performances
   resultCachePath: %tmpDir%/resultCache.php
-  
+
   # Traitement parallèle
   parallel:
     maximumNumberOfProcesses: 4
@@ -29,4 +41,3 @@ parameters:
     - legacy/app/ajax/get_content_html.php
     - legacy/admin/ftp.php
     - var/cache
-
