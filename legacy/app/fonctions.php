@@ -212,9 +212,11 @@ function mylog($code, $desc, $connectme = true)
     $desc_log_admin = LegacyContainer::get('legacy_mysqli_handler')->escapeString(trim($desc));
     $date_log_admin = time();
     $ip_log_admin = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_SERVER['REMOTE_ADDR']);
+    $user_log_admin = getUser()?->getId();
+    $user_log_admin_sql = $user_log_admin ? (int) $user_log_admin : 'NULL';
 
-    $req = "INSERT INTO `caf_log_admin` (`code_log_admin` ,`desc_log_admin` ,`date_log_admin`, `ip_log_admin`)
-        VALUES ('$code_log_admin',  '$desc_log_admin',  '$date_log_admin', '$ip_log_admin')";
+    $req = "INSERT INTO `caf_log_admin` (`code_log_admin` ,`desc_log_admin` ,`date_log_admin`, `ip_log_admin`, `user_log_admin`)
+        VALUES ('$code_log_admin',  '$desc_log_admin',  '$date_log_admin', '$ip_log_admin', $user_log_admin_sql)";
     if (!LegacyContainer::get('legacy_mysqli_handler')->query($req)) {
         $errTab[] = 'Erreur SQL lors du log';
     }
