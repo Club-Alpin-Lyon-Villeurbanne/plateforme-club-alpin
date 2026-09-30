@@ -1318,8 +1318,8 @@ class SortieController extends AbstractController
                 // mail already sent
                 continue;
             }
-            //Pas de mail aux participants autre que encadrant si la sortie n'est pas publiée
-            if (!$event->isPublicStatusValide() && $participation->getRole() != EventParticipation::ROLE_ENCADRANT) {
+            // Pas de mail aux participants autre que encadrant si la sortie n'est pas publiée
+            if (!$event->isPublicStatusValide() && EventParticipation::ROLE_ENCADRANT != $participation->getRole()) {
                 continue;
             }
 
