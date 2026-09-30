@@ -32,6 +32,17 @@ Lors de la création de la campagne (= form dans le jargon Hello Asso), on stock
 Lors d'un paiement, Hello Asso appelle un webhook (à configurer dans Hello Asso) qui valide le paiement (si l'email correspond). Les paiements sont stockés dans la table `caf_evt_join` (`has_paid`). \
 Pour cela, il faut définir la variable d'environnement `HELLO_ASSO_WEBHOOK_SIGNATURE_KEY` ainsi que l'IP d'origine de l'appel webhook (`HELLO_ASSO_SERVER_IP`).
 
+### Règles de gestion
+
+- La campagne est créée et publiée **au moment de la validation (publication) de la sortie**, si la sortie a une billetterie et n'a pas encore de campagne (`SortieController::validate`). En cas d'échec, l'erreur est journalisée et la sortie est publiée quand même.
+- La campagne est créée **sans limite de places** (`maxPayers` absent) : la jauge est gérée par la plateforme (`ngensMax`). Le prix est envoyé en centimes.
+- Le webhook (`HelloAssoWebhookController`) rattache un paiement :
+  - à la **sortie**, par le slug de la campagne (`formSlug`) ; une campagne inconnue est ignorée ;
+  - à l'**adhérent**, par l'**e-mail du payeur**. S'il ne correspond à aucun compte, le paiement est enregistré comme « payeur non reconnu » (`EventUnrecognizedPayer`) et visible sur la sortie. Si l'adhérent existe mais n'est pas inscrit à la sortie, rien n'est coché (erreur journalisée).
+- Le webhook répond toujours 200, pour éviter que HelloAsso renvoie la notification.
+- Les paiements de réservation de matériel (`metadata.reservation_id`) arrivent sur le même webhook, car HelloAsso n'accepte qu'une URL de notification par organisation.
+- Modifier la billetterie ou son montant sur une sortie publiée la renvoie en validation (voir [Validation des sorties](validation-sorties.md)), mais la campagne existante n'est pas modifiée (voir limitations ci-dessous).
+
 ### Limitations connues
 1. Il ne semble pas possible de supprimer une campagne ou de la modifier via API, que faire en cas de modification de sortie si on souhaite enlever la billetterie ou modifier le montant des frais ?
 

@@ -45,7 +45,10 @@ Application web permettant de gérer un Club Alpin Francais! Ce projet est utili
 - [Décision Open Source](docs/decisions/2025.05.29-rendre_le_repo_publique.md)
 
 ### Fonctionnalités
+- [Validation des sorties](docs/validation-sorties.md)
+- [Inscriptions aux sorties](docs/inscriptions-sorties.md)
 - [Notes de frais](docs/notes-de-frais.md)
+- [Hello Asso](docs/hello-asso.md)
 - [Synchronisation des adhérents](docs/synchronisation.md)
 
 ### Infrastructure

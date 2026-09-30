@@ -30,10 +30,46 @@ Système permettant aux encadrants de soumettre leurs frais de sortie et à la c
 ### Synchronisation des adhérents
 Processus automatique qui met à jour la base de données avec les nouveaux adhérents de la FFCAM.
 
+### Validation de publication / validation légale
+Deux étapes indépendantes : la publication rend la sortie visible, la validation légale la reconnaît comme sortie officielle du club. Voir [Validation des sorties](validation-sorties.md).
+
+### Pré-inscription
+Demande d'inscription en attente de validation par l'encadrement (statut « non confirmé »). Voir [Inscriptions aux sorties](inscriptions-sorties.md).
+
+### Liste d'attente
+Places supplémentaires proposées quand une sortie est complète (`waitingSeat`).
+
+### Carte découverte
+Adhésion FFCAM de courte durée, avec une date de début et de fin, synchronisée par un fichier séparé.
+
+### Filiation / affiliés
+Lien familial déclaré à la FFCAM (référent familial) qui permet d'inscrire ses proches à une sortie.
+
+### Nomade
+Ancien nom des personnes ajoutées manuellement à une sortie par l'encadrement : licenciés d'un autre club (profil 3) ou personnes extérieures, par exemple un formateur (profil 4). La colonne `nomade_user` n'est plus utilisée ; le créateur est conservé dans `nomade_parent_user`.
+
+### À renouveler
+Compte dont la licence a expiré (après la tolérance du 30 septembre) : il ne peut plus s'inscrire aux sorties.
+
+### Payeur non reconnu
+Paiement HelloAsso dont l'e-mail ne correspond à aucun compte du site. Voir [Hello Asso](hello-asso.md).
+
+### Moulinette
+Nom courant des traitements automatiques (synchronisations FFCAM et Google, envois d'alertes). Voir [Tâches planifiées](taches-planifiees.md).
+
 ## Outils
 
 ### ClickUp
 Plateforme de gestion de projet utilisée pour suivre les tickets et les tâches.
+
+### compta-club
+Application séparée (NextJS) utilisée par la comptabilité pour valider les notes de frais.
+
+### Loxya
+Plateforme externe de réservation du matériel du club.
+
+### Metabase
+Outil de tableaux de bord statistiques branché sur la base du site.
 
 ### Sentry
 Outil de monitoring des erreurs en production.
