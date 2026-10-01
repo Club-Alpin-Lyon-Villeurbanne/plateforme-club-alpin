@@ -243,10 +243,6 @@ services:
     arguments:
       $syncReportMailer: '@App\Service\FfcamSyncReportMailer'
 
-  App\EventListener\ExpenseReportStatusListener:
-    tags:
-      - { name: doctrine.event_listener, event: preUpdate }
-
   App\Service\LoxyaAuthenticator:
     arguments:
       $apiBaseUrl: '%materiel_api_base_url%'

@@ -60,7 +60,7 @@ use Symfony\Component\Validator\Constraints as Assert;
         new Patch(
             uriTemplate: '/notes-de-frais/{id}',
             security: 'object.getUser() == user or is_granted("manage_expense_reports")',
-            denormalizationContext: ['groups' => ['report:read']],
+            denormalizationContext: ['groups' => ['report:write']],
         ),
     ],
     security: "is_granted('ROLE_USER')",
@@ -99,12 +99,12 @@ class ExpenseReport
         callback: [ExpenseReportStatusEnum::class, 'cases'],
         message: 'Invalid status',
     )]
-    #[Groups(['report:read'])]
+    #[Groups(['report:read', 'report:write'])]
 
     private ?ExpenseReportStatusEnum $status = null;
 
     #[ORM\Column]
-    #[Groups(['report:read'])]
+    #[Groups(['report:read', 'report:write'])]
     private ?bool $refundRequired = true;
 
     #[ORM\ManyToOne(inversedBy: 'expenseReports')]
@@ -129,12 +129,12 @@ class ExpenseReport
     private ?\DateTimeImmutable $updatedAt = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    #[Groups(['report:read'])]
+    #[Groups(['report:read', 'report:write'])]
     #[SerializedName('commentaireStatut')]
     private ?string $statusComment = null;
 
     #[ORM\Column(type: Types::JSON, nullable: true)]
-    #[Groups(['report:read'])]
+    #[Groups(['report:read', 'report:write'])]
 
     private ?string $details = null;
 
