@@ -36,8 +36,11 @@ Deux étapes indépendantes : la publication rend la sortie visible, la validati
 ### Pré-inscription
 Demande d'inscription en attente de validation par l'encadrement (statut « non confirmé »). Voir [Inscriptions aux sorties](inscriptions-sorties.md).
 
+### Jauge
+Nombre de places d'une sortie (`join_max_evt`), sans compter les places en liste d'attente. Voir [Inscriptions aux sorties](inscriptions-sorties.md#jauge-et-liste-dattente).
+
 ### Liste d'attente
-Places supplémentaires proposées quand une sortie est complète (`waitingSeat`).
+Places supplémentaires (nombre fixé sur la sortie, `waitingSeat`) ouvertes une fois la jauge atteinte. Quand la liste d'attente est pleine, plus aucune inscription n'est possible.
 
 ### Carte découverte
 Adhésion FFCAM de courte durée, avec une date de début et de fin, synchronisée par un fichier séparé.
