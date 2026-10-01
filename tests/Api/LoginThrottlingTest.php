@@ -2,33 +2,69 @@
 
 namespace App\Tests\Api;
 
+use App\Entity\User;
 use App\Tests\WebTestCase;
+use Symfony\Component\PasswordHasher\Hasher\PasswordHasherFactoryInterface;
 
 /**
- * Limite de tentatives sur POST /api/auth : 5 échecs, puis refus même avec le bon mot de passe.
+ * Limite de tentatives de connexion : sur le formulaire du site, pas sur l'API.
+ *
+ * L'API reçoit toutes les connexions de compta-club depuis les IP de Vercel : y limiter par IP
+ * permettrait à n'importe qui de bloquer les connexions compta.
  */
 class LoginThrottlingTest extends WebTestCase
 {
-    public function testLoginIsThrottledAfterFiveFailedAttempts(): void
+    private const PASSWORD = 'Bon-mot-de-passe-1';
+
+    public function testSiteLoginIsThrottledAfterFiveFailedAttempts(): void
     {
         $this->client->disableReboot();
-        $email = 'throttle-' . bin2hex(random_bytes(6)) . '@clubalpinlyon.fr';
-        $user = $this->signup($email);
-        $hasher = $this->getContainer()->get('security.user_password_hasher');
-        $user->setMdp($hasher->hashPassword($user, 'Bon-mot-de-passe-1'));
-        $this->getContainer()->get('doctrine')->getManager()->flush();
+        $user = $this->userWithPassword();
 
         for ($i = 0; $i < 5; ++$i) {
-            $this->assertSame(401, $this->login($email, 'mauvais'));
+            $this->siteLogin($user, 'mauvais');
         }
+        $this->siteLogin($user, self::PASSWORD);
 
-        $this->assertSame(401, $this->login($email, 'Bon-mot-de-passe-1'), 'Le bon mot de passe doit être refusé pendant le blocage.');
-        $this->assertStringContainsString('Trop de tentatives', json_decode((string) $this->client->getResponse()->getContent(), true)['message'] ?? '');
+        $this->assertResponseRedirects('http://localhost/login');
+        $this->client->followRedirect();
+        $this->assertSelectorTextContains('body', 'Trop de tentatives');
     }
 
-    private function login(string $email, string $password): int
+    public function testApiLoginIsNotThrottled(): void
     {
-        $this->client->request('POST', '/api/auth', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode(['email' => $email, 'password' => $password]));
+        $this->client->disableReboot();
+        $user = $this->userWithPassword();
+
+        for ($i = 0; $i < 5; ++$i) {
+            $this->assertSame(401, $this->apiLogin($user, 'mauvais'));
+        }
+
+        $this->assertSame(200, $this->apiLogin($user, self::PASSWORD));
+    }
+
+    private function userWithPassword(): User
+    {
+        $user = $this->signup('throttle-' . bin2hex(random_bytes(6)) . '@clubalpinlyon.fr');
+        $hasher = self::getContainer()->get(PasswordHasherFactoryInterface::class)->getPasswordHasher('login_form');
+        $user->setPassword($hasher->hash(self::PASSWORD));
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        return $user;
+    }
+
+    private function siteLogin(User $user, string $password): void
+    {
+        $this->client->request('GET', '/login');
+        $this->client->submitForm('connect-button', [
+            '_username' => $user->getEmail(),
+            '_password' => $password,
+        ]);
+    }
+
+    private function apiLogin(User $user, string $password): int
+    {
+        $this->client->request('POST', '/api/auth', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode(['email' => $user->getEmail(), 'password' => $password]));
 
         return $this->client->getResponse()->getStatusCode();
     }

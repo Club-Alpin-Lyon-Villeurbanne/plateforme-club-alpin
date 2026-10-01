@@ -37,10 +37,8 @@ security:
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
-            # 5 échecs par compte et par IP sur 15 minutes (anti force brute)
-            login_throttling:
-                max_attempts: 5
-                interval: '15 minutes'
+            # Pas de login_throttling ici : compta-club appelle /api/auth depuis les IP de Vercel,
+            # une limite par IP permettrait de bloquer toutes ses connexions.
             logout:
                 path: api_token_invalidate
             jwt: ~
@@ -66,6 +64,7 @@ security:
                 use_referer: true
                 enable_csrf: true
 
+            # 5 échecs par compte et par IP sur 15 minutes (anti force brute)
             login_throttling:
                 max_attempts: 5
                 interval: '15 minutes'
