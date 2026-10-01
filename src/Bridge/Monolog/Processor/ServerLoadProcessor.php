@@ -11,7 +11,7 @@ class ServerLoadProcessor implements ProcessorInterface
 
     public function __construct()
     {
-        // Désactiver si la fonction n'est pas disponible   
+        // Désactiver si la fonction n'est pas disponible
         $this->enabled = \PHP_SAPI === 'cli' && \function_exists('sys_getloadavg');
     }
 
