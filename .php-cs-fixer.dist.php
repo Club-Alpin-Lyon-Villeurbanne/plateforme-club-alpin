@@ -16,6 +16,14 @@ return (new PhpCsFixer\Config())
     ->setRules([
         '@Symfony' => true,
         '@Symfony:risky' => true,
+        // À partir de PHP-CS-Fixer 3.95, `@Symfony:risky` embarque
+        // `declare_strict_types` en stratégie `remove` : le preset retire
+        // `declare(strict_types=1)` des fichiers qui en ont un, ce qui bascule leur
+        // exécution en coercition de types. 16 fichiers du projet sont concernés.
+        // La règle est neutralisée ici pour que la version de l'outil ne change pas
+        // la sémantique du code ; c'est aussi pourquoi la contrainte Composer est
+        // épinglée en 3.87.*.
+        'declare_strict_types' => false,
         '@DoctrineAnnotation' => true,
         'trailing_comma_in_multiline' => false, // Désactive l'ajout de virgules en fin d'array
         'native_function_invocation' => false, // Désactive l'ajout de \ devant les fonctions natives

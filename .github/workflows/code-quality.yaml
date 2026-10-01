@@ -23,16 +23,25 @@ jobs:
             ${{ runner.os }}-php-cs-fixer-
             ${{ runner.os }}-
 
-      # Pour les PR : analyse seulement les fichiers modifiés
+      # Pour les PR : analyse seulement les fichiers modifiés.
+      # Les valeurs `${{ }}` passent par `env:` et jamais dans le corps du `run:` :
+      # interpolées dans le script, elles y seraient exécutées comme du shell.
       - name: Get changed PHP files
         id: changed-php-files
-        run: ./.github/scripts/get-changed-php-files.sh ${{ github.event.pull_request.base.sha }}
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: ./.github/scripts/get-changed-php-files.sh "$BASE_SHA"
 
+      # Les chemins viennent d'un fichier NUL-séparé et sont passés comme arguments
+      # distincts : un fichier nommé `src/a;id;#.php` reste un nom de fichier.
       - name: Run PHP-CS-Fixer on changed files
         if: steps.changed-php-files.outputs.has_changes == 'true'
+        env:
+          FILES_PATH: ${{ steps.changed-php-files.outputs.files_path }}
         run: |
           echo "Running PHP-CS-Fixer with parallel processing..."
-          ./bin/tools/php-cs-fixer fix --dry-run --diff --format=checkstyle --config=.php-cs-fixer.dist.php ${{ steps.changed-php-files.outputs.files }} | cs2pr
+          mapfile -d '' files < "$FILES_PATH"
+          vendor/bin/php-cs-fixer fix --dry-run --diff --format=checkstyle --config=.php-cs-fixer.dist.php "${files[@]}" | cs2pr
 
       - name: Run PHP-CS-Fixer (no changes)
         if: steps.changed-php-files.outputs.has_changes == 'false'
@@ -44,12 +53,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0  # Pour l'analyse différentielle
-      
+
       - name: Prepare environment
         uses: ./.github/actions/prepare-for-quality
-      
+
       - name: Cache PHPStan result cache
         uses: actions/cache@v4
         with:
@@ -59,28 +66,44 @@ jobs:
             ${{ runner.os }}-phpstan-
             ${{ runner.os }}-
 
-      # - name: Install PHPStan
-      #   run: |
-      #     mkdir -p bin/tools
-      #     curl -L https://github.com/phpstan/phpstan/releases/latest/download/phpstan.phar -o bin/tools/phpstan
-      #     chmod +x bin/tools/phpstan
+      # phpstan-symfony lit le conteneur compilé pour typer les services.
+      - name: Warm up the Symfony container
+        run: bin/console cache:warmup --env=dev
 
-      # Pour les PR : analyse seulement les fichiers modifiés
-      - name: Get changed PHP files for PHPStan
-        id: changed-php-files
-        run: ./.github/scripts/get-changed-php-files.sh ${{ github.event.pull_request.base.sha }}
-      
-      # - name: Run PHPStan on changed files
-      #   if: github.event_name == 'pull_request' && steps.changed-php-files.outputs.has_changes == 'true'
-      #   run: |
-      #     echo "Running PHPStan on changed files with parallel processing..."
-      #     make phpstan-files FILES="${{ steps.changed-php-files.outputs.files }}"
-      
-      - name: Skip PHPStan (no changes)
-        if: steps.changed-php-files.outputs.has_changes == 'false'
-        run: echo "✅ No relevant PHP files to analyze"
+      # L'analyse porte sur tout le projet : la baseline absorbe la dette existante,
+      # seules les nouvelles erreurs font échouer le job.
+      - name: Run PHPStan
+        run: vendor/bin/phpstan analyse -c phpstan.dist.neon --no-progress --memory-limit=-1
 
-      - name: Run PHPStan (full analysis)
-        if: steps.changed-php-files.outputs.has_changes == 'true'
-        run: ./bin/tools/phpstan -vvv analyse legacy public src tests -c phpstan.neon -l 1
-      
+  rector:
+    name: Rector
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare environment
+        uses: ./.github/actions/prepare-for-quality
+
+      - name: Run Rector (dry-run)
+        run: vendor/bin/rector process --dry-run --no-progress-bar
+
+  security:
+    name: Dépendances vulnérables
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          coverage: none
+
+      # N'installe rien : lit composer.lock et interroge la base d'advisories.
+      # `--abandoned=report` signale les paquets abandonnés sans faire échouer le job :
+      # les trois concernés (doctrine/cache, package-versions-deprecated,
+      # php-http/message-factory) sont des dépendances transitives.
+      - name: composer audit
+        run: composer audit --locked --abandoned=report --no-interaction

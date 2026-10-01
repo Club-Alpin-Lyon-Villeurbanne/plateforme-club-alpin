@@ -321,7 +321,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
 
     public function getId(): ?int
     {
-        return null !== $this->id ? (int) $this->id : null;
+        return null !== $this->id ? $this->id : null;
     }
 
     public function getEmail(): ?string

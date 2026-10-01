@@ -32,33 +32,45 @@ cache-clear: ## Clear cache
 .PHONY: cache-clear
 
 ## —— ✅ Linting ——
-php-cs: bin/tools/php-cs-fixer ## Just analyze PHP code with php-cs-fixer
+php-cs: ## Just analyze PHP code with php-cs-fixer
 	$(eval args ?= )
-	@$(PHP) -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run $(args)
+	@$(PHP) -dmemory_limit=-1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run $(args)
 .PHONY: php-cs
 
-php-cs-fix: bin/tools/php-cs-fixer ## Analyze and fix PHP code with php-cs-fixer
+php-cs-fix: ## Analyze and fix PHP code with php-cs-fixer
 	$(eval args ?= )
-	@$(PHP) -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php $(args)
+	@$(PHP) -dmemory_limit=-1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php $(args)
 .PHONY: php-cs-fix
 
-php-cs-changed: bin/tools/php-cs-fixer ## Check only changed PHP files (for PRs)
+php-cs-changed: ## Check only changed PHP files (for PRs)
 	@echo "Checking changed PHP files..."
-	@git diff --name-only --cached --diff-filter=ACMRTUXB | grep -E '\.php$$' | xargs -r $(PHP) -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff || echo "No PHP files to check"
+	@git diff --name-only --cached --diff-filter=ACMRTUXB | grep -E '\.php$$' | xargs -r $(PHP) -dmemory_limit=-1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff || echo "No PHP files to check"
 .PHONY: php-cs-changed
 
-php-cs-fix-changed: bin/tools/php-cs-fixer ## Fix only changed PHP files
+php-cs-fix-changed: ## Fix only changed PHP files
 	@echo "Fixing changed PHP files..."
-	@git diff --name-only --cached --diff-filter=ACMRTUXB | grep -E '\.php$$' | xargs -r $(PHP) -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php || echo "No PHP files to fix"
+	@git diff --name-only --cached --diff-filter=ACMRTUXB | grep -E '\.php$$' | xargs -r $(PHP) -dmemory_limit=-1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php || echo "No PHP files to fix"
 .PHONY: php-cs-fix-changed
 
-phpstan: bin/tools/phpstan ## Analyze PHP code with phpstan
-	$(PHP) -dmemory_limit=-1 ./bin/tools/phpstan analyse legacy public src tests -c phpstan.neon -l 1
+phpstan: ## Analyze PHP code with phpstan (niveau et chemins définis dans phpstan.dist.neon)
+	$(PHP) -dmemory_limit=-1 vendor/bin/phpstan analyse -c phpstan.dist.neon
 .PHONY: phpstan
 
-phpstan-files: bin/tools/phpstan ## Analyze specific PHP files with phpstan
-	$(PHP) -dmemory_limit=-1 ./bin/tools/phpstan analyse $(FILES) -c phpstan.neon
+phpstan-files: ## Analyze specific PHP files with phpstan
+	$(PHP) -dmemory_limit=-1 vendor/bin/phpstan analyse $(FILES) -c phpstan.dist.neon
 .PHONY: phpstan-files
+
+phpstan-baseline: ## Regenerate the phpstan baseline (to run after fixing a batch of errors)
+	$(PHP) -dmemory_limit=-1 vendor/bin/phpstan analyse -c phpstan.dist.neon --generate-baseline=phpstan-baseline.neon
+.PHONY: phpstan-baseline
+
+rector: ## Show the changes Rector would make (dry-run)
+	$(PHP) -dmemory_limit=-1 vendor/bin/rector process --dry-run
+.PHONY: rector
+
+rector-fix: ## Apply Rector changes
+	$(PHP) -dmemory_limit=-1 vendor/bin/rector process
+.PHONY: rector-fix
 
 
 ## —— ✅ Test ——
@@ -103,7 +115,7 @@ database-init-test: ## Init database for test
 ## —— 🐳 Docker ——
 docker-start: 
 	$(eval profile ?= dev)
-	@mkdir -p ~/.phive ~/.composer ~/.ssh
+	@mkdir -p ~/.composer ~/.ssh
 	$(DOCKER_COMPOSE) --profile $(profile) up -d
 .PHONY: docker-start
 
@@ -215,14 +227,6 @@ exec: ## Execute a command in a container (container="cafsite", cmd="bash", user
 logs: ## View output from containers (services="")
 	@$(DOCKER_COMPOSE) logs -f $(services)
 .PHONY: logs
-
-phive: bin/tools/phpstan bin/tools/php-cs-fixer
-bin/tools/phpstan bin/tools/php-cs-fixer: phive.xml
-	@$(PHP) -d memory_limit=1G /usr/local/bin/phive install --copy --trust-gpg-keys 8E730BA25823D8B5,CF1A108D0E7AE720,E82B2FB314E9906E,CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0
-
-phive-update:
-	$(PHP) -d memory_limit=1G /usr/local/bin/phive update
-.PHONY: phive-update
 
 ## —— 🛠️  Others ——
 help: ## List of commands
