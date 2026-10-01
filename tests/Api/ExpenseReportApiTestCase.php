@@ -121,6 +121,33 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
         return $this->lastResponse();
     }
 
+    /**
+     * @return array{status: int, body: array}
+     */
+    protected function cloneReport(User $as, ExpenseReport $report, array $body = []): array
+    {
+        $this->client->request('POST', '/api/notes-de-frais/' . $report->getId() . '/clone', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_ACCEPT' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $this->jwt($as),
+        ], json_encode($body));
+
+        return $this->lastResponse();
+    }
+
+    /**
+     * @return array{status: int, body: array}
+     */
+    protected function listAttachments(User $as, ExpenseReport $report): array
+    {
+        $this->client->request('GET', '/api/notes-de-frais/' . $report->getId() . '/pieces-jointes', [], [], [
+            'HTTP_ACCEPT' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $this->jwt($as),
+        ]);
+
+        return $this->lastResponse();
+    }
+
     protected function assertResponseStatus(int $expected, array $response): void
     {
         $this->assertSame($expected, $response['status'], json_encode($response['body'], \JSON_UNESCAPED_UNICODE));

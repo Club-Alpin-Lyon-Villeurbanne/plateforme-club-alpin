@@ -43,6 +43,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             uriTemplate: '/notes-de-frais/{id}/clone',
             processor: ExpenseReportCloneProcessor::class,
             security: "is_granted('ROLE_USER')",
+            deserialize: false,
             name: 'clone',
         ),
         new GetCollection(
