@@ -37,6 +37,10 @@ security:
                 password_path: password
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            # 5 échecs par compte et par IP sur 15 minutes (anti force brute)
+            login_throttling:
+                max_attempts: 5
+                interval: '15 minutes'
             logout:
                 path: api_token_invalidate
             jwt: ~
@@ -61,6 +65,10 @@ security:
                 check_path: login
                 use_referer: true
                 enable_csrf: true
+
+            login_throttling:
+                max_attempts: 5
+                interval: '15 minutes'
 
             login_link:
                 check_route: session_email_check
