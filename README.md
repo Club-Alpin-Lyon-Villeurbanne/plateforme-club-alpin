@@ -50,6 +50,7 @@ Application web permettant de gérer un Club Alpin Francais! Ce projet est utili
 - [Notes de frais](docs/notes-de-frais.md)
 - [Hello Asso](docs/hello-asso.md)
 - [Synchronisation des adhérents](docs/synchronisation.md)
+- [Contenu éditable sans dev](docs/contenu-editable.md)
 
 ### Infrastructure
 - [Déploiement et CI/CD](docs/deploiement.md)
