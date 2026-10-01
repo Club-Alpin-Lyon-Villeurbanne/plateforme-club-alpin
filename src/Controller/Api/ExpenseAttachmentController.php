@@ -15,6 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\AsController;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -39,6 +40,11 @@ class ExpenseAttachmentController extends AbstractController
         $expenseReport = $this->expenseReportRepository->findOneBy(['id' => $expenseReportId, 'user' => $user]);
         if (!$expenseReport) {
             throw $this->createNotFoundException('ExpenseReport not found');
+        }
+
+        // Avant toute écriture sur disque : une fois la note soumise, ses justificatifs sont figés.
+        if (!$expenseReport->getStatus()?->isEditableByOwner()) {
+            throw new UnprocessableEntityHttpException('Attachments cannot be modified once the expense report is submitted.');
         }
 
         $file = $request->files->get('file');
