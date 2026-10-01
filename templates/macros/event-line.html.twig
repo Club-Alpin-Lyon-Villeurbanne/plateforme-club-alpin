@@ -96,51 +96,47 @@
 
                         {% set participation = event.participation(user) %}
                         {% if participation and display_participation_status %}
-                            <div class="tw-flex tw-flex-col tw-items-end tw-ml-auto">
-                                {% set is_orga = false %}
-                                {% if app.user == event.user %}
-                                    {% set is_orga = true %}
-                                {% endif %}
-
-                                {% if participation.status == constant('App\\Entity\\EventParticipation::STATUS_REFUSE') %}
-                                    <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
-                                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
-                                        </svg>
-                                        Refusé
-                                    </span>
-                                {% elseif participation.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') %}
-                                    {% if participation.role and participation.role in constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT') %}
+                            {% set is_orga = app.user == event.user %}
+                            <div class="tw-flex tw-flex-col tw-items-end tw-ml-auto tw-gap-0.5">
+                                    {% if participation.role and participation.role in constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT_ETENDU') %}
                                         <span class="tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
                                             {% if is_orga %}
                                                 ✍️
                                             {% endif %}
                                             {{ participation.role|trans }}
                                         </span>
-                                    {% else %}
+                                    {% endif %}
+
+                                    {% if participation.status == constant('App\\Entity\\EventParticipation::STATUS_REFUSE') %}
+                                        <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-red-600 tw-whitespace-nowrap">
+                                            <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                            </svg>
+                                            Refusé
+                                        </span>
+                                    {% elseif participation.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') %}
                                         <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
                                             <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
                                             </svg>
                                             Accepté
                                         </span>
+                                    {% elseif participation.status == constant('App\\Entity\\EventParticipation::STATUS_ABSENT') %}
+                                        <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
+                                            <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            Absent
+                                        </span>
+                                    {% else %}
+                                        <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-orange-600 tw-whitespace-nowrap">
+                                            <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                            </svg>
+                                            En attente
+                                        </span>
                                     {% endif %}
-                                {% elseif participation.status == constant('App\\Entity\\EventParticipation::STATUS_ABSENT') %}
-                                    <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
-                                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                        Absent
-                                    </span>
-                                {% else %}
-                                    <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-orange-600 tw-whitespace-nowrap">
-                                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                        </svg>
-                                        En attente
-                                    </span>
-                                {% endif %}
-                            </div>
+                                </div>                            
                         {% endif %}
                     </h2>
 
