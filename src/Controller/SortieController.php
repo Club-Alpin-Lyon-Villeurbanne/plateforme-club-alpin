@@ -285,8 +285,9 @@ class SortieController extends AbstractController
                         || $originalEntityData['place'] !== $event->getPlace()
                         || $originalEntityData['hasPaymentForm'] !== $event->hasPaymentForm()
                         || $originalEntityData['paymentAmount'] !== $event->getPaymentAmount()
-                        || $originalEntityData['encadrants'] !== $newEncadrants['encadrants']
-                        || $originalEntityData['initiateurs'] !== $newEncadrants['initiateurs']
+                        // != et non !== : l'ordre du formulaire diffère de celui de la base
+                        || $originalEntityData['encadrants'] != $newEncadrants['encadrants']
+                        || $originalEntityData['initiateurs'] != $newEncadrants['initiateurs']
                         || $originalEntityData['etranger'] !== $event->isEtranger()
                     )
                 ) {
@@ -442,6 +443,7 @@ class SortieController extends AbstractController
             'event' => $event,
             'participations' => $participationRepository->getSortedParticipations($event, null, null),
             'unrecognized_payers' => $unrecognizedPayerRepository->findBy(['event' => $event, 'hasPaid' => true], ['lastname' => 'asc']),
+            'unrecognized_payers_emails' => $unrecognizedPayersEmails,
             'filiations' => $user ? $repository->getFiliations($user) : null,
             'empietements' => $participationRepository->getEmpietements($event),
             'current_commission' => $event->getCommission(),

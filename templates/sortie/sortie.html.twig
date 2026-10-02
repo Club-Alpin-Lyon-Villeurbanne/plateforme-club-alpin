@@ -771,7 +771,7 @@
 
                                     {% if event.hasPaymentForm %}
                                         <td class="event-manage-user">
-                                            {% if participation.hasPaid or participation.user.email in unrecognized_payers %}
+                                            {% if participation.hasPaid or (participation.user.email and participation.user.email in unrecognized_payers_emails) %}
                                                 <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
                                                     <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>

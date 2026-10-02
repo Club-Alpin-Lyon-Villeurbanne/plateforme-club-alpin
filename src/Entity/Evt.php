@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Serializer\Filter\GroupFilter;
+use App\Utils\StringUtils;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -514,6 +515,29 @@ class Evt
         }
 
         return null;
+    }
+
+    /**
+     * Null si aucun ou plusieurs inscrits non payés portent ce nom : on ne devine pas.
+     */
+    public function findUnpaidParticipationByName(string $firstname, string $lastname): ?EventParticipation
+    {
+        $normalize = static fn (?string $name): string => preg_replace('/[^a-z]/', '', strtolower(StringUtils::removeDiacritics($name ?? '')));
+        $firstname = $normalize($firstname);
+        $lastname = $normalize($lastname);
+        if ('' === $firstname || '' === $lastname) {
+            return null;
+        }
+
+        $matches = $this->getParticipations(
+            EventParticipation::ROLES_SIMPLES,
+            [EventParticipation::STATUS_VALIDE, EventParticipation::STATUS_NON_CONFIRME],
+        )->filter(fn (EventParticipation $participation) => !$participation->hasPaid()
+            && $normalize($participation->getUser()->getFirstname()) === $firstname
+            && $normalize($participation->getUser()->getLastname()) === $lastname
+        );
+
+        return 1 === $matches->count() ? $matches->first() : null;
     }
 
     public function getParticipationById(int $id): ?EventParticipation
