@@ -33,6 +33,19 @@ class ManualAddDataTest extends WebTestCase
         $this->assertResponseHeaderSame('Content-Type', 'application/json');
     }
 
+    public function testLeTableauSeChargeSansParametresDeTriNiDeRecherche(): void
+    {
+        $organizer = $this->signup();
+        $this->signin($organizer);
+        $event = $this->createEvent($organizer);
+        $query = $this->datatablesQuery($event->getId());
+        unset($query['order'], $query['search']);
+
+        $this->client->request('GET', '/users/data/manual-add/allvalid', $query);
+
+        $this->assertResponseIsSuccessful();
+    }
+
     public function testLeTableauNExposePasLesCoordonneesDesAdherents(): void
     {
         $organizer = $this->signup();

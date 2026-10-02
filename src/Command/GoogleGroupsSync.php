@@ -601,6 +601,7 @@ class GoogleGroupsSync extends Command
             $email = $user->getGdriveEmail();
         }
 
-        return $email;
+        // les membres renvoyés par Google sont en minuscules
+        return mb_strtolower($email);
     }
 }
