@@ -77,26 +77,21 @@ class ExpenseAttachmentController extends AbstractController
         // Check if an attachment already exists for this expense
         $existingAttachments = $this->attachmentRepository->findByExpenseReportAndExpenseId($expenseReport, $body['expenseId']);
         $existingAttachment = array_shift($existingAttachments);
+        // fichiers supprimés seulement après le flush, pour ne pas perdre un justificatif si l'enregistrement échoue
+        $filesToDelete = [];
 
         // un double envoi simultané a pu créer des doublons, qui faisaient échouer tout nouvel envoi
         foreach ($existingAttachments as $duplicate) {
-            if (file_exists($duplicate->getFilePath())) {
-                unlink($duplicate->getFilePath());
-            }
+            $filesToDelete[] = $duplicate->getFilePath();
             $this->entityManager->remove($duplicate);
         }
 
         if ($existingAttachment) {
             // Update existing attachment
-            $oldFilePath = $existingAttachment->getFilePath();
+            $filesToDelete[] = $existingAttachment->getFilePath();
             $existingAttachment->setFileName($file->getFilename());
             $existingAttachment->setFilePath($file->getPathname());
             $attachment = $existingAttachment;
-
-            // Remove old file if it exists
-            if (file_exists($oldFilePath)) {
-                unlink($oldFilePath);
-            }
         } else {
             // Create new attachment
             $attachment = new ExpenseAttachment();
@@ -109,6 +104,12 @@ class ExpenseAttachmentController extends AbstractController
 
         $this->entityManager->persist($attachment);
         $this->entityManager->flush();
+
+        foreach ($filesToDelete as $path) {
+            if (file_exists($path)) {
+                unlink($path);
+            }
+        }
 
         return $this->json($attachment, Response::HTTP_CREATED, [], ['groups' => 'attachment:read']);
     }

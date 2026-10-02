@@ -33,13 +33,13 @@ class ManualAddDataTest extends WebTestCase
         $this->assertResponseHeaderSame('Content-Type', 'application/json');
     }
 
-    public function testLeTableauSeChargeSansParametreDeTri(): void
+    public function testLeTableauSeChargeSansParametresDeTriNiDeRecherche(): void
     {
         $organizer = $this->signup();
         $this->signin($organizer);
         $event = $this->createEvent($organizer);
         $query = $this->datatablesQuery($event->getId());
-        unset($query['order']);
+        unset($query['order'], $query['search']);
 
         $this->client->request('GET', '/users/data/manual-add/allvalid', $query);
 

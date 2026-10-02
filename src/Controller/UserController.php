@@ -561,7 +561,7 @@ class UserController extends AbstractController
 
         $start = $request->query->getInt('start', 0);
         $length = $request->query->getInt('length', 100);
-        $searchText = $request->query->all()['search']['value'] ?? null;
+        $searchText = $request->query->all()['search']['value'] ?? '';
         $order = $request->query->all()['order'] ?? [];
         $usersToIgnore = $this->getEventParticipants($eventId, $eventRepository);
 

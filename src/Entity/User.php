@@ -791,7 +791,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this->joinDate;
     }
 
-    public function setJoinDate(?\DateTimeInterface $joinDate): self
+    public function setJoinDate(?\DateTimeImmutable $joinDate): self
     {
         $this->joinDate = $joinDate;
 
