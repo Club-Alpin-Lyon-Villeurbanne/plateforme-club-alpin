@@ -28,12 +28,49 @@ class Commune
     #[ORM\Column(name: 'libelle_acheminement', type: Types::STRING, nullable: false)]
     private string $libelleAcheminement;
 
+    /**
+     * Ligne 5 de la norme postale AFNOR NF Z10-011 : lieu-dit / hameau (ex. Chamonix → « Argentière »).
+     * Nom hérité du champ `ligne_5` du dataset La Poste hexasmal (cf. ImportCommunesCommand) ;
+     * sert à distinguer les hameaux d'une même commune dans l'autocomplete (cf. self::getLabel).
+     */
     #[ORM\Column(name: 'ligne5', type: Types::STRING, nullable: true)]
     private string $ligne5;
+
+    #[ORM\Column(name: 'geopoint', type: Types::STRING, nullable: true)]
+    private ?string $geopoint = null;
+
+    #[ORM\Column(name: 'latitude', type: Types::DECIMAL, precision: 11, scale: 8, nullable: false)]
+    private string|float $latitude = 0;
+
+    #[ORM\Column(name: 'longitude', type: Types::DECIMAL, precision: 11, scale: 8, nullable: false)]
+    private string|float $longitude = 0;
 
     public function __toString(): string
     {
         return $this->getNomCommune();
+    }
+
+    /**
+     * Format canonique d'un libellé de commune, source unique partagée par l'autocomplétion
+     * (résultats en tableau) et la validation serveur : "{codePostal} {nomCommune}" + " ({ligne5})".
+     */
+    public static function buildLabel(string $codePostal, string $nomCommune, ?string $ligne5): string
+    {
+        $label = $codePostal . ' ' . $nomCommune;
+        if (null !== $ligne5 && '' !== $ligne5) {
+            $label .= ' (' . $ligne5 . ')';
+        }
+
+        return $label;
+    }
+
+    /**
+     * Libellé canonique de cette commune (cf. self::buildLabel).
+     * `ligne5` est typé non-nullable mais la colonne est nullable : garde via isset().
+     */
+    public function getLabel(): string
+    {
+        return self::buildLabel($this->codePostal, $this->nomCommune, isset($this->ligne5) ? $this->ligne5 : null);
     }
 
     public function getId(): ?int
@@ -97,6 +134,42 @@ class Commune
     public function setLigne5(string $ligne5): self
     {
         $this->ligne5 = $ligne5;
+
+        return $this;
+    }
+
+    public function getGeopoint(): ?string
+    {
+        return $this->geopoint;
+    }
+
+    public function setGeopoint(?string $geopoint): self
+    {
+        $this->geopoint = $geopoint;
+
+        return $this;
+    }
+
+    public function getLatitude(): string|float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(string|float $latitude): self
+    {
+        $this->latitude = $latitude;
+
+        return $this;
+    }
+
+    public function getLongitude(): string|float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(string|float $longitude): self
+    {
+        $this->longitude = $longitude;
 
         return $this;
     }

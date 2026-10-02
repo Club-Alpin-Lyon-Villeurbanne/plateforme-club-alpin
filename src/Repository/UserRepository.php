@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\AccueilCircuitEnum;
 use App\Entity\AlertType;
 use App\Entity\Article;
 use App\Entity\Comment;
@@ -29,6 +30,9 @@ use Symfony\Component\Security\Core\User\UserInterface;
 class UserRepository extends ServiceEntityRepository implements PasswordUpgraderInterface
 {
     use PaginationRepositoryTrait;
+
+    // Seul anonymizeUser() écrit ce prénom : la suppression admin et la fusion de doublons posent isDeleted sans anonymiser.
+    public const string PRENOM_ANONYMISE = 'compte';
 
     public function __construct(ManagerRegistry $registry)
     {
@@ -375,6 +379,8 @@ SQL;
             ->leftJoin(Evt::class, 'e', Join::WITH, 'u.id = e.user')
             ->leftJoin(EventParticipation::class, 'p', Join::WITH, 'u.id = p.user')
             ->where('u.id != 1')     // super admin
+            ->andWhere('(u.isDeleted = false OR u.firstname <> :prenomAnonymise)')
+            ->setParameter('prenomAnonymise', self::PRENOM_ANONYMISE)
             ->andWhere('a.id is null')
             ->andWhere('c.id is null')
             ->andWhere('e.id is null')
@@ -400,6 +406,8 @@ SQL;
             ->leftJoin(Evt::class, 'e', Join::WITH, 'u.id = e.user')
             ->leftJoin(EventParticipation::class, 'p', Join::WITH, 'u.id = p.user')
             ->where('u.id != 1')     // super admin
+            ->andWhere('(u.isDeleted = false OR u.firstname <> :prenomAnonymise)')
+            ->setParameter('prenomAnonymise', self::PRENOM_ANONYMISE)
             ->andWhere('(a.id is not null or c.id is not null or e.id is not null or p.id is not null)')
         ;
         if (null !== $end) {
@@ -434,17 +442,78 @@ SQL;
             ->set('u.cookietoken', ':nullValue')
             ->set('u.doitRenouveler', ':falseValue')
             ->set('u.alerteRenouveler', ':falseValue')
+            ->set('u.profilePicture', ':nullValue')
             ->set('u.updatedAt', ':updatedAt')
             ->where('u.id = :user')
             ->setParameter('user', $user)
             ->setParameter('nullValue', null)
             ->setParameter('falseValue', false)
-            ->setParameter('firstname', 'compte')
+            ->setParameter('firstname', self::PRENOM_ANONYMISE)
             ->setParameter('lastname', 'supprimé ' . $user->getId())
             ->setParameter('nickname', 'Csuppr' . $user->getId())
             ->setParameter('updatedAt', (new \DateTime())->format('Y-m-d H:i:s'))
             ->getQuery()
             ->execute()
         ;
+    }
+
+    public const ACCUEIL_CIRCUIT_DQL = 'SELECT u FROM App\Entity\User u'
+        . ' WHERE u.isDeleted = false'
+        . ' AND u.profileType = ' . User::PROFILE_CLUB_MEMBER
+        . ' AND u.joinDate >= :seasonStart'
+        . ' AND u.radiationDate IS NULL'
+        . ' AND u.email IS NOT NULL'
+        . " AND u.email <> ''"
+        . " AND u.email NOT LIKE 'doublon.%'"
+        . ' AND u.accueilSeason < :season';
+
+    /**
+     * @return User[]
+     */
+    public function findForAccueilCircuit(int $season, AccueilCircuitEnum $circuit): array
+    {
+        return $this->getEntityManager()
+            ->createQuery(self::ACCUEIL_CIRCUIT_DQL . ' AND ' . self::accueilCircuitPredicate($circuit) . ' ORDER BY u.id ASC')
+            ->setParameter('seasonStart', self::seasonStart($season))
+            ->setParameter('season', $season)
+            ->getResult();
+    }
+
+    /**
+     * @param int[] $userIds
+     */
+    public function markAccueilSeason(array $userIds, int $season): void
+    {
+        if (empty($userIds)) {
+            return;
+        }
+
+        $this->getEntityManager()->getConnection()->executeStatement(
+            'UPDATE caf_user SET accueil_season = :season WHERE id_user IN (:ids)',
+            ['season' => $season, 'ids' => $userIds],
+            ['ids' => \Doctrine\DBAL\ArrayParameterType::INTEGER]
+        );
+    }
+
+    public function countAccueilForSeason(int $season, AccueilCircuitEnum $circuit): int
+    {
+        return (int) $this->getEntityManager()
+            ->createQuery('SELECT COUNT(u) FROM App\Entity\User u WHERE u.accueilSeason = :season AND ' . self::accueilCircuitPredicate($circuit))
+            ->setParameter('seasonStart', self::seasonStart($season))
+            ->setParameter('season', $season)
+            ->getSingleScalarResult();
+    }
+
+    /**
+     * Une fiche créée pendant la saison est un nouvel adhérent, une fiche antérieure un renouvellement.
+     */
+    private static function accueilCircuitPredicate(AccueilCircuitEnum $circuit): string
+    {
+        return AccueilCircuitEnum::NOUVEAUX === $circuit ? 'u.createdAt >= :seasonStart' : 'u.createdAt < :seasonStart';
+    }
+
+    private static function seasonStart(int $season): \DateTimeImmutable
+    {
+        return new \DateTimeImmutable($season . '-09-01 00:00:00');
     }
 }

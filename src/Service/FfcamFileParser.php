@@ -6,6 +6,21 @@ use App\Entity\User;
 
 class FfcamFileParser
 {
+    // La FFCAM livre des valeurs parfois plus longues que nos colonnes (ville sur 33 caractères,
+    // adresse concaténée depuis 4 champs...). Sans troncature, le flush échoue, ferme
+    // l'EntityManager et la synchro s'interrompt pour tous les adhérents suivants du fichier.
+    private const COLUMN_MAX_LENGTHS = [
+        'firstname' => 50,
+        'lastname' => 50,
+        'civ' => 10,
+        'cp' => 10,
+        'ville' => 50,
+        'adresse' => 100,
+        'tel' => 100,
+        'tel2' => 100,
+        'email' => 200,
+    ];
+
     /**
      * @throws \Exception
      */
@@ -59,21 +74,21 @@ class FfcamFileParser
 
         $email = null;
         if (!empty(trim($line[28]))) {
-            $email = strtolower(trim($line[28]));
+            $email = $this->truncate(strtolower(trim($line[28])), 'email');
         }
 
         $user
             ->setCafnum(trim($line[0]))
-            ->setFirstname($firstname)
-            ->setLastname($lastname)
+            ->setFirstname($this->truncate($firstname, 'firstname'))
+            ->setLastname($this->truncate($lastname, 'lastname'))
             ->setBirthdate($birthdate)
-            ->setCiv($this->normalizeNames(str_replace('MLLE', 'MME', trim($line[8]))))
+            ->setCiv($this->truncate($this->normalizeNames(str_replace('MLLE', 'MME', trim($line[8]))), 'civ'))
             ->setCafnumParent((int) $line[5] > 0 ? trim($line[1] . $line[5]) : null)
-            ->setTel(trim($line[27]) ?: trim($line[29]))
-            ->setTel2(trim($line[26]))
-            ->setAdresse(trim($line[11] . " \n" . $line[12] . " \n" . $line[13] . " \n" . $line[14]))
-            ->setCp($this->normalizeNames(trim($line[15])))
-            ->setVille($this->normalizeNames(trim($line[16])))
+            ->setTel($this->truncate(trim($line[27]) ?: trim($line[29]), 'tel'))
+            ->setTel2($this->truncate(trim($line[26]), 'tel2'))
+            ->setAdresse($this->truncate(trim($line[11] . " \n" . $line[12] . " \n" . $line[13] . " \n" . $line[14]), 'adresse'))
+            ->setCp($this->truncate($this->normalizeNames(trim($line[15])), 'cp'))
+            ->setVille($this->truncate($this->normalizeNames(trim($line[16])), 'ville'))
             ->setDoitRenouveler($isLicenceExpired)
             ->setAlerteRenouveler($isLicenceExpired)
             ->setJoinDate($joinDate)
@@ -119,21 +134,21 @@ class FfcamFileParser
 
         $email = null;
         if (!empty(trim($line[16]))) {
-            $email = strtolower(trim($line[16]));
+            $email = $this->truncate(strtolower(trim($line[16])), 'email');
         }
 
         $user
             ->setCafnum(trim($line[0]))
-            ->setFirstname($firstname)
-            ->setLastname($lastname)
+            ->setFirstname($this->truncate($firstname, 'firstname'))
+            ->setLastname($this->truncate($lastname, 'lastname'))
             ->setBirthdate($birthdate)
-            ->setCiv($this->normalizeNames(str_replace('MLLE', 'MME', trim($line[5]))))
+            ->setCiv($this->truncate($this->normalizeNames(str_replace('MLLE', 'MME', trim($line[5]))), 'civ'))
             ->setCafnumParent(null)
-            ->setTel(trim($line[17]) ?: trim($line[14]))
-            ->setTel2(trim($line[18]))
-            ->setAdresse(trim($line[8]) . " \n" . trim($line[9]) . " \n" . trim($line[10]) . " \n" . trim($line[11]))
-            ->setCp($this->normalizeNames(trim($line[12])))
-            ->setVille($this->normalizeNames(trim($line[13])))
+            ->setTel($this->truncate(trim($line[17]) ?: trim($line[14]), 'tel'))
+            ->setTel2($this->truncate(trim($line[18]), 'tel2'))
+            ->setAdresse($this->truncate(trim($line[8]) . " \n" . trim($line[9]) . " \n" . trim($line[10]) . " \n" . trim($line[11]), 'adresse'))
+            ->setCp($this->truncate($this->normalizeNames(trim($line[12])), 'cp'))
+            ->setVille($this->truncate($this->normalizeNames(trim($line[13])), 'ville'))
             ->setDoitRenouveler($doitRenouveler)
             ->setAlerteRenouveler($doitRenouveler)
             ->setJoinDate($joinDate)
@@ -194,6 +209,11 @@ class FfcamFileParser
         ) {
             throw new \Exception("Can't process line $lineNumber : Multiple values are wrong");
         }
+    }
+
+    private function truncate(string $value, string $field): string
+    {
+        return mb_substr($value, 0, self::COLUMN_MAX_LENGTHS[$field]);
     }
 
     private function normalizeNames(string $name): string

@@ -3,37 +3,43 @@
 namespace App\Validator\ExpenseReport;
 
 use App\Entity\ExpenseReport;
+use App\Security\ExpenseReportActor;
 use App\Utils\Enums\ExpenseReportStatusEnum;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class StatusTransitionValidator
 {
-    private $entityManager;
+    /**
+     * Le propriétaire ne peut que soumettre (ou resoumettre après un rejet).
+     */
+    private const OWNER_TRANSITIONS = [
+        ExpenseReportStatusEnum::DRAFT->value => [ExpenseReportStatusEnum::SUBMITTED],
+        ExpenseReportStatusEnum::REJECTED->value => [ExpenseReportStatusEnum::SUBMITTED],
+    ];
 
-    public function __construct(EntityManagerInterface $entityManager)
-    {
-        $this->entityManager = $entityManager;
+    /**
+     * Un gestionnaire, sur la note d'un autre, décide puis comptabilise.
+     * ACCOUNTED est un état terminal.
+     */
+    private const MANAGER_TRANSITIONS = [
+        ExpenseReportStatusEnum::SUBMITTED->value => [ExpenseReportStatusEnum::APPROVED, ExpenseReportStatusEnum::REJECTED],
+        ExpenseReportStatusEnum::APPROVED->value => [ExpenseReportStatusEnum::ACCOUNTED],
+    ];
+
+    public function __construct(
+        private readonly ExpenseReportActor $actor,
+    ) {
     }
 
-    public function validate(ExpenseReport $expenseReport, ExecutionContextInterface $context)
+    public function validate(ExpenseReport $expenseReport, ExpenseReportStatusEnum $oldStatus, ExecutionContextInterface $context): void
     {
-        $oldStatus = $this->getOldStatus($expenseReport);
         $newStatus = $expenseReport->getStatus();
 
         if ($oldStatus === $newStatus) {
             return;
         }
 
-        $validTransitions = [
-            ExpenseReportStatusEnum::DRAFT->value => [ExpenseReportStatusEnum::SUBMITTED->value],
-            ExpenseReportStatusEnum::SUBMITTED->value => [ExpenseReportStatusEnum::APPROVED->value, ExpenseReportStatusEnum::REJECTED->value],
-            ExpenseReportStatusEnum::APPROVED->value => [ExpenseReportStatusEnum::ACCOUNTED->value],
-            ExpenseReportStatusEnum::REJECTED->value => [ExpenseReportStatusEnum::SUBMITTED->value],
-            // ACCOUNTED is a terminal state
-        ];
-
-        if (!isset($validTransitions[$oldStatus->value]) || !\in_array($newStatus->value, $validTransitions[$oldStatus->value], true)) {
+        if (!\in_array($newStatus, $this->allowedTargets($expenseReport, $oldStatus), true)) {
             $context->buildViolation('Invalid status transition from "{{ oldStatus }}" to "{{ newStatus }}".')
                 ->setParameter('{{ oldStatus }}', $oldStatus->value)
                 ->setParameter('{{ newStatus }}', $newStatus->value)
@@ -42,14 +48,19 @@ class StatusTransitionValidator
         }
     }
 
-    private function getOldStatus(ExpenseReport $expenseReport): ExpenseReportStatusEnum
+    /**
+     * @return list<ExpenseReportStatusEnum>
+     */
+    private function allowedTargets(ExpenseReport $expenseReport, ExpenseReportStatusEnum $oldStatus): array
     {
-        if (null === $expenseReport->getId()) {
-            return ExpenseReportStatusEnum::DRAFT;
+        if ($this->actor->isManagerOf($expenseReport)) {
+            return self::MANAGER_TRANSITIONS[$oldStatus->value] ?? [];
         }
 
-        $originalEntity = $this->entityManager->getUnitOfWork()->getOriginalEntityData($expenseReport);
+        if ($this->actor->isOwnerOf($expenseReport)) {
+            return self::OWNER_TRANSITIONS[$oldStatus->value] ?? [];
+        }
 
-        return $originalEntity['status'] ?? ExpenseReportStatusEnum::DRAFT;
+        return [];
     }
 }

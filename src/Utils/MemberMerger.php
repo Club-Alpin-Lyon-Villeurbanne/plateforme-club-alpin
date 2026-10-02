@@ -85,6 +85,51 @@ class MemberMerger
         }
     }
 
+    /**
+     * Consolide deux fiches vivantes d'une même personne : parque la fiche au cafnum du
+     * fichier ($existingDuplicate, sans compte) pour libérer ce cafnum, puis fusionne les
+     * données du fichier sur la fiche historique ($oldCafNum). En une transaction.
+     */
+    public function consolidateDuplicate(User $existingDuplicate, string $oldCafNum, User $parsedUser): void
+    {
+        try {
+            $this->entityManager->beginTransaction();
+
+            $oldCafUser = $this->userRepository->findOneByLicenseNumber($oldCafNum);
+
+            if (!$oldCafUser) {
+                throw new \Exception('Unable to find an user with this cafnum ' . $oldCafNum);
+            }
+
+            // La fiche en double est parquée (non supprimée) : on rapatrie ses inscriptions
+            // sur la fiche gardée, sans recréer un doublon (evt, user).
+            $connection = $this->entityManager->getConnection();
+            $connection->executeStatement(
+                'DELETE d FROM caf_evt_join d
+                 INNER JOIN caf_evt_join k ON k.evt_evt_join = d.evt_evt_join AND k.user_evt_join = :keep
+                 WHERE d.user_evt_join = :drop',
+                ['keep' => $oldCafUser->getId(), 'drop' => $existingDuplicate->getId()]
+            );
+            $connection->executeStatement(
+                'UPDATE caf_evt_join SET user_evt_join = :keep WHERE user_evt_join = :drop',
+                ['keep' => $oldCafUser->getId(), 'drop' => $existingDuplicate->getId()]
+            );
+
+            $existingDuplicate
+                ->setCafnum('obs_' . $existingDuplicate->getCafnum())
+                ->setEmail('obs_' . time() . '_' . bin2hex(random_bytes(8)))
+                ->setIsDeleted(true);
+            $this->entityManager->flush();
+
+            $this->mergeUser($oldCafUser, $parsedUser);
+            $this->entityManager->flush();
+            $this->entityManager->commit();
+        } catch (\Exception $e) {
+            $this->entityManager->rollback();
+            throw $e;
+        }
+    }
+
     private function mergeUser(User $oldCafUser, User $newCafUser): void
     {
         $oldCafUser->setFirstname($newCafUser->getFirstname())

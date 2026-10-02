@@ -34,7 +34,14 @@ class SortieLegalValidationVoter extends Voter
             throw new \InvalidArgumentException(sprintf('The voter "%s" requires an event subject', __CLASS__));
         }
 
-        if ($this->userRights->allowed('evt_legal_accept') && $subject->isLegalStatusUnseen() && $subject->isPublicStatusValide()) {
+        $commission = $subject->getCommission();
+        if (!$commission) {
+            return false;
+        }
+        $hasRight = $this->userRights->allowedOnCommission('evt_legal_accept', $commission)
+            || $this->userRights->allowedOnCommission('evt_legal_refuse', $commission);
+
+        if ($hasRight && $subject->isLegalStatusUnseen() && $subject->isPublicStatusValide()) {
             return true;
         }
 

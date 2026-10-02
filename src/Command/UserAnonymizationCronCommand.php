@@ -14,8 +14,6 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
-use Symfony\Component\Filesystem\Filesystem;
 
 #[AsCommand(
     name: 'user-anonymization-cron',
@@ -31,7 +29,6 @@ class UserAnonymizationCronCommand extends Command
         protected UserLicenseHelper $userLicenseHelper,
         protected LoggerInterface $logger,
         protected readonly EntityManagerInterface $manager,
-        protected ParameterBagInterface $params,
     ) {
         parent::__construct();
     }
@@ -39,8 +36,6 @@ class UserAnonymizationCronCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->logger->info('User anonymization: find users to anonymize');
-
-        $filesystem = new Filesystem();
 
         // date max d'adhésion qu'on conserve : 31/08 de la saison N-2
         // ex : pour la saison 2026-2027 (1ère occurrence de ce traitement), on conserve jusqu'au 31/08/2024 inclus
@@ -59,6 +54,15 @@ class UserAnonymizationCronCommand extends Command
 
         /** @var User $user */
         foreach ($usersToAnonymize as $user) {
+            // photo d'abord (Vich efface le fichier au flush) : si la commande s'interrompt, le compte n'est pas encore
+            // anonymisé et sera repris le lendemain ; anonymisé, il ne serait plus jamais resélectionné
+            $photo = $user->getProfilePicture();
+            if (null !== $photo) {
+                $user->setProfilePicture(null);
+                $this->manager->remove($photo);
+                $this->manager->flush();
+            }
+
             // nettoyage des tables liées
             $this->brevetAdherentRepository->deleteByUser($user);
             $this->userNotificationRepository->deleteByUser($user);
@@ -66,17 +70,9 @@ class UserAnonymizationCronCommand extends Command
 
             $this->userRepository->anonymizeUser($user);
 
-            // image de profil
-            if (null !== $user->getProfilePicture()) {
-                $imagePath = $this->params->get('public_dir') . '/ftp/uploads/files/' . $user->getProfilePicture()->getFilename();
-                $filesystem->remove($imagePath);
-            }
-
             ++$anonymized;
         }
         $this->logger->info('User anonymization: ' . $anonymized . ' users anonymized');
-
-        $this->manager->flush();
 
         $this->logger->info('User anonymization: no (more) users to anonymize');
 

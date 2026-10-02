@@ -32,6 +32,22 @@ LINE;
         unlink($filePath);
     }
 
+    public function testParseTruncatesValuesLongerThanColumns()
+    {
+        $ville = str_repeat('A', 80);
+        $line = str_replace(';75000;Paris;;;', ';75000;' . $ville . ';;;', $this->validLine);
+
+        $filePath = tempnam(sys_get_temp_dir(), 'ffcam_test_');
+        file_put_contents($filePath, $line . \PHP_EOL);
+
+        $parser = new FfcamFileParser();
+        $user = $parser->parse($filePath)->current();
+
+        $this->assertEquals(50, mb_strlen($user->getVille()));
+
+        unlink($filePath);
+    }
+
     public function testParseInvalidLineSkipped()
     {
         $filePath = tempnam(sys_get_temp_dir(), 'ffcam_test_');

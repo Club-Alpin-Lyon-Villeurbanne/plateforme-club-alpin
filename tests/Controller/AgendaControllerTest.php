@@ -55,4 +55,11 @@ class AgendaControllerTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
     }
+
+    public function testAgendaWithInvalidYearDoesNotCrash(): void
+    {
+        $this->client->request('GET', '/agenda.html?year=20250&month=9');
+
+        $this->assertResponseIsSuccessful();
+    }
 }

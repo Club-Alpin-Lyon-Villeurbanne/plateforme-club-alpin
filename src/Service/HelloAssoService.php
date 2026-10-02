@@ -3,39 +3,27 @@
 namespace App\Service;
 
 use App\Entity\Evt;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\DecodingExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\RedirectionExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
-use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class HelloAssoService
 {
     protected const string HELLO_ASSO_CAMPAIGN_ENDPOINT = '/v5/organizations/{organizationSlug}/forms/Event/action/quick-create';
     protected const string HELLO_ASSO_CAMPAIGN_PUBLISH_ENDPOINT = '/v5/organizations/{organizationSlug}/forms/Event/{formSlug}/state';
-    protected const string HELLO_ASSO_PAYMENT_INFO_ENDPOINT = '/v5/organizations/{organizationSlug}/forms/Event/{formSlug}/payments';
 
+    /**
+     * @param string $organizationSlug Slug de l'organisation HelloAsso
+     * @param string $baseUrl          URL de base de l'API HelloAsso
+     * @param int    $activityTypeId   Identifiant du type d'activité HelloAsso (ex. "Sortie")
+     */
     public function __construct(
         protected string $organizationSlug,
         protected string $baseUrl,
         protected int $activityTypeId,
-        protected readonly HttpClientInterface $httpClient,
-        protected readonly LoggerInterface $logger,
         protected readonly UrlGeneratorInterface $urlGenerator,
         protected HelloAssoClient $helloAssoClient,
     ) {
     }
 
-    /**
-     * @throws TransportExceptionInterface
-     * @throws ServerExceptionInterface
-     * @throws RedirectionExceptionInterface
-     * @throws DecodingExceptionInterface
-     * @throws ClientExceptionInterface
-     */
     public function createFormForEvent(Evt $event): array
     {
         $eventDate = $event->getStartDate();
@@ -44,8 +32,16 @@ class HelloAssoService
             'code' => $event->getCode(),
             'id' => $event->getId(),
         ], UrlGeneratorInterface::ABSOLUTE_URL);
+        $commissionTitle = trim((string) $event->getCommission()?->getTitle());
+        $organizerLastname = trim((string) $event->getUser()?->getLastname());
+        $departurePlace = trim((string) $event->getPlace());
+
+        if ('' === $commissionTitle || '' === $organizerLastname || '' === $departurePlace) {
+            throw new \InvalidArgumentException('Impossible de créer le titre HelloAsso: commission, organisateur et lieu de départ sont obligatoires.');
+        }
+
         $params = [
-            'title' => '[' . $eventDate->format('Y-m-d') . '] ' . $event->getTitre(),
+            'title' => sprintf('[%s] %s - %s - %s', $eventDate->format('Y-m-d'), $commissionTitle, $organizerLastname, $departurePlace),
             'description' => $description,
             'amountVisible' => true,
             'generateTickets' => false,
@@ -56,6 +52,8 @@ class HelloAssoService
                 [
                     'label' => 'Frais d\'inscription',
                     'price' => (int) ($event->getPaymentAmount() * 100),        // prix en centimes
+                    // maxPayers volontairement absent : le formulaire HelloAsso est illimité,
+                    // la gestion des places est assurée par ngensMax côté plateforme.
                 ],
             ],
         ];
@@ -66,9 +64,6 @@ class HelloAssoService
         return $this->helloAssoClient->createForm($apiEndpoint, $params);
     }
 
-    /**
-     * @throws TransportExceptionInterface
-     */
     public function publishFormForEvent(Evt $event): void
     {
         $organizationSlug = $this->organizationSlug;
@@ -83,6 +78,9 @@ class HelloAssoService
         }
     }
 
+    /**
+     * Vérifie que les paramètres de configuration HelloAsso sont tous renseignés.
+     */
     public function isConfigSet(): bool
     {
         return $this->helloAssoClient->areCredentialsSet()

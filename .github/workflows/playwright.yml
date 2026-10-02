@@ -19,25 +19,27 @@ jobs:
       - name: Initialize database
         run: make database-init
 
-      # Node / Playwright setup (on the host, not inside Docker)
-      - uses: actions/setup-node@v4
-        with:
-          node-version: lts/*
-          cache: npm
-
-      - name: Install npm dependencies
-        run: npm ci
-
-      - name: Install Playwright (Chromium only)
-        run: npx playwright install --with-deps chromium
-
       - name: Prepare test env file
         run: cp .env.test.example .env.test
 
+      # Version épinglée sur package-lock.json pour matcher les navigateurs de l'image.
+      - name: Resolve Playwright version
+        id: pw
+        run: echo "version=$(jq -r '.packages["node_modules/@playwright/test"].version' package-lock.json)" >> "$GITHUB_OUTPUT"
+
+      # Image officielle Playwright : navigateurs pré-installés → aucun download (celui de
+      # cdn.playwright.dev hangeait le job). --network host pour joindre l'app sur :8000,
+      # --ipc=host pour éviter les crashs Chromium (/dev/shm).
       - name: Run Playwright tests
-        run: npx playwright test
+        timeout-minutes: 20
         env:
-          CI: true
+          PW_VERSION: ${{ steps.pw.outputs.version }}
+        run: |
+          docker run --rm --network host --ipc=host \
+            -v "$GITHUB_WORKSPACE:/work" -w /work \
+            -e CI=true \
+            "mcr.microsoft.com/playwright:v${PW_VERSION}-noble" \
+            bash -c "npm ci && npx playwright test"
 
       - name: Upload test report
         uses: actions/upload-artifact@v4

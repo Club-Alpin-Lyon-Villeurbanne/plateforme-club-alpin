@@ -4,9 +4,11 @@ namespace App\Form;
 
 use App\Entity\Commission;
 use App\Entity\Evt;
+use App\Entity\TransportModeEnum;
 use App\Entity\User;
 use App\Helper\EventFormHelper;
 use App\Repository\CommissionRepository;
+use App\Repository\CommuneRepository;
 use App\Service\HelloAssoService;
 use App\UserRights;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -14,6 +16,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\EnumType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -28,12 +31,14 @@ use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Constraints\Type;
 
 class EventType extends AbstractType
 {
     public function __construct(
         protected CommissionRepository $commissionRepository,
+        protected CommuneRepository $communeRepository,
         protected UserRights $userRights,
         protected EventFormHelper $eventFormHelper,
         protected HelloAssoService $helloAssoService,
@@ -75,6 +80,11 @@ class EventType extends AbstractType
         $lat = $event->getLat();
         $long = $event->getLong();
 
+        // bilan carbone
+        $latDepart = $event->getLatDepart();
+        $longDepart = $event->getLongDepart();
+        $nbVehicules = $event->getNbVehicules();
+
         $builder
             ->add('commission', EntityType::class, [
                 'class' => Commission::class,
@@ -113,16 +123,24 @@ class EventType extends AbstractType
                     ]),
                 ],
             ])
+            ->add('etranger', CheckboxType::class, [
+                'label' => 'Sortie à l\'étranger',
+                'required' => false,
+                'help' => 'Cochez si le départ de l\'activité est hors de France.',
+                'help_attr' => [
+                    'class' => 'mini',
+                ],
+            ])
             ->add('place', TextType::class, [
-                'label' => 'Lieu de départ de l\'activité encadrée <span class="revalidation">*</span>',
-                'label_html' => true,
-                'required' => true,
+                'label' => 'Commune de départ de l\'activité',
+                'required' => false,
                 'attr' => [
                     'placeholder' => 'ex : 69510 Messimy, 74400 Chamonix',
                     'class' => 'type2 wide',
                     'maxlength' => 255,
+                    'autocomplete' => 'off',
                 ],
-                'help' => 'Commencez à saisir un code postal ou une ville et choisissez dans la liste qui apparaît ci-dessous. Permet de déduire le massif, nécessaire au calcul du bilan carbone.',
+                'help' => 'Commencez à saisir un code postal ou une ville et choisissez dans la liste qui apparaît ci-dessous. Commune de départ de l\'activité : sert à estimer l\'empreinte carbone du transport.',
                 'help_attr' => [
                     'class' => 'mini',
                 ],
@@ -130,6 +148,41 @@ class EventType extends AbstractType
                     new Length([
                         'max' => 255,
                     ]),
+                ],
+            ])
+            ->add('modeTransport', EnumType::class, [
+                'label' => 'Mode de transport principal',
+                'required' => false,
+                'class' => TransportModeEnum::class,
+                'choice_filter' => static fn (?TransportModeEnum $mode): bool => null !== $mode && !$mode->isObsolete(),
+                'attr' => [
+                    'class' => 'type2 wide',
+                    'style' => 'width: 97%',
+                ],
+                'placeholder' => 'Choisissez un mode de transport principal',
+                'help' => 'Permet d\'aider au calcul du bilan carbone.',
+                'help_attr' => [
+                    'class' => 'mini',
+                ],
+            ])
+            ->add('nbVehicules', NumberType::class, [
+                'label' => 'Nombre de véhicules',
+                'required' => true,
+                'html5' => true,
+                'attr' => [
+                    'placeholder' => 'ex : 2',
+                    'class' => 'type2',
+                    'min' => 1,
+                ],
+                'data' => $nbVehicules,
+                'scale' => 0,
+                'constraints' => [
+                    new Type(['type' => 'numeric', 'message' => 'Veuillez saisir un nombre valide.']),
+                    new GreaterThanOrEqual(1),
+                ],
+                'help' => 'Permet d\'aider au calcul du bilan carbone.',
+                'help_attr' => [
+                    'class' => 'mini',
                 ],
             ])
             ->add('rdv', TextType::class, [
@@ -153,24 +206,26 @@ class EventType extends AbstractType
                     ]),
                 ],
             ])
+            // non mappés : une saisie vide planterait le setter non-nullable (cf. Sentry 1E6) ;
+            // recopiés dans l'entité en POST_SUBMIT si valides.
             ->add('lat', HiddenType::class, [
                 'label' => false,
                 'required' => true,
+                'mapped' => false,
                 'data' => $lat,
                 'constraints' => [
                     new NotBlank(null, 'La latitude est obligatoire. Avez-vous bien cliqué sur le bouton pour placer le marqueur ?'),
                     new Type(['type' => 'numeric', 'message' => 'La latitude doit être un nombre valide.']),
-                    new GreaterThan(0),
                 ],
             ])
             ->add('long', HiddenType::class, [
                 'label' => false,
                 'required' => true,
+                'mapped' => false,
                 'data' => $long,
                 'constraints' => [
                     new NotBlank(null, 'La longitude est obligatoire. Avez-vous bien cliqué sur le bouton pour placer le marqueur ?'),
                     new Type(['type' => 'numeric', 'message' => 'La longitude doit être un nombre valide.']),
-                    new GreaterThan(0),
                 ],
             ])
             ->add('startDate', DateTimeType::class, [
@@ -357,6 +412,24 @@ class EventType extends AbstractType
                 ],
                 'help_html' => true,
             ])
+            ->add('latDepart', HiddenType::class, [
+                'label' => false,
+                'required' => false,
+                'data' => $latDepart,
+                'constraints' => [
+                    new Type(['type' => 'numeric', 'message' => 'La latitude de départ doit être un nombre valide.']),
+                    new Range(min: -90, max: 90, notInRangeMessage: 'La latitude doit être comprise entre -90 et 90.'),
+                ],
+            ])
+            ->add('longDepart', HiddenType::class, [
+                'label' => false,
+                'required' => false,
+                'data' => $longDepart,
+                'constraints' => [
+                    new Type(['type' => 'numeric', 'message' => 'La longitude de départ doit être un nombre valide.']),
+                    new Range(min: -180, max: 180, notInRangeMessage: 'La longitude doit être comprise entre -180 et 180.'),
+                ],
+            ])
         ;
         if ($displayHelloAssoFields && $isUserAuthorizeToUseHelloAsso) {
             $builder
@@ -412,8 +485,78 @@ class EventType extends AbstractType
                     'class' => 'mediumlink btn-blue blanc',
                 ],
             ])
+            ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) {
+                // Modes sans champ "nombre de véhicules" (train, bus, vélo) :
+                // on force la valeur à 1 pour éviter une donnée polluée envoyée hors UI.
+                // Si le mode n'est pas renseigné, on ne touche pas — l'utilisateur n'a pas validé son choix.
+                $data = $event->getData();
+                if (!\is_array($data)) {
+                    return;
+                }
+                $rawMode = $data['modeTransport'] ?? null;
+                if (null === $rawMode || '' === $rawMode) {
+                    return;
+                }
+                $mode = TransportModeEnum::tryFrom((string) $rawMode);
+                if (null !== $mode && !$mode->requiresVehicleCount()) {
+                    $data['nbVehicules'] = 1;
+                    $event->setData($data);
+                }
+            })
             ->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
                 $form = $event->getForm();
+
+                // commune de départ : le serveur re-matche le libellé et dérive latDepart/longDepart.
+                // Dispensés de la commune : brouillons et sorties à l'étranger.
+                $isDraftSave = $form->has('eventDraftSave') && $form->get('eventDraftSave')->isClicked();
+                $estEtranger = true === $form->get('etranger')->getData();
+                $placeField = $form->get('place');
+                $place = trim((string) $placeField->getData());
+
+                if ($isDraftSave) {
+                    // brouillon : incomplet par nature
+                } elseif ($estEtranger) {
+                    // commune facultative ; on refuse une commune saisie en même temps
+                    // (incohérence) et on efface un départ résiduel (bascule FR→étranger).
+                    if ('' !== $place) {
+                        $placeField->addError(new FormError(
+                            'Une sortie à l\'étranger ne doit pas indiquer de commune de départ française. Décochez « Sortie à l\'étranger » ou videz la commune.'
+                        ));
+                    } else {
+                        /** @var Evt $evt */
+                        $evt = $form->getData();
+                        $evt->setPlace('');
+                        $evt->setLatDepart(0.0);
+                        $evt->setLongDepart(0.0);
+                    }
+                } elseif ('' === $place) {
+                    $placeField->addError(new FormError(
+                        'La commune de départ est obligatoire, choisissez une commune dans la liste.'
+                    ));
+                } else {
+                    $commune = $this->communeRepository->findOneByLabel($place);
+                    if (null === $commune) {
+                        $placeField->addError(new FormError(
+                            'Ce lieu ne correspond à aucune commune connue. Choisissez une suggestion dans la liste.'
+                        ));
+                    } else {
+                        /** @var Evt $evt */
+                        $evt = $form->getData();
+                        $evt->setLatDepart((float) $commune->getLatitude());
+                        $evt->setLongDepart((float) $commune->getLongitude());
+                        $evt->setPlace($commune->getLabel());
+                    }
+                }
+
+                // marqueur (champ non mappé) : recopié dans l'entité si valide
+                $lat = $form->get('lat')->getData();
+                $long = $form->get('long')->getData();
+                if (is_numeric($lat) && is_numeric($long)) {
+                    /** @var Evt $evt */
+                    $evt = $form->getData();
+                    $evt->setLat((float) $lat);
+                    $evt->setLong((float) $long);
+                }
 
                 // cohérence dates début et fin
                 $startDate = $form->get('startDate')->getData();

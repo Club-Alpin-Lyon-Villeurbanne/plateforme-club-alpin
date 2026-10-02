@@ -47,7 +47,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'id_user', type: 'bigint', nullable: false)]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     #[Groups(['user:read'])]
-    private ?int $id;
+    private ?int $id = null;
 
     #[ORM\Column(name: 'profile_type', type: Types::SMALLINT, nullable: false, options: ['default' => self::PROFILE_UNKNOWN, 'comment' => '1 licencié annuel du club, 2 carte découverte du club, 3 licencié autre club, 4 personne extérieure (ex formateur)'])]
     private int $profileType;
@@ -108,7 +108,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[SerializedName('codePostal')]
     private ?string $cp = null;
 
-    #[ORM\Column(name: 'ville_user', type: 'string', length: 30, nullable: true)]
+    #[ORM\Column(name: 'ville_user', type: 'string', length: 50, nullable: true)]
     #[Groups('user:details')]
     private ?string $ville = null;
 
@@ -178,6 +178,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'join_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'Date de dernière prise de licence annuelle ou date de début de validité carte découverte'])]
     #[Groups('user:details')]
     private ?\DateTimeInterface $joinDate = null;
+
+    #[ORM\Column(name: 'accueil_season', type: Types::SMALLINT, nullable: false, options: ['default' => 0, 'comment' => "Saison du dernier envoi de circuit d'accueil MailerLite (0 = jamais)"])]
+    private int $accueilSeason = 0;
 
     #[ORM\Column(name: 'radiation_date', type: Types::DATE_IMMUTABLE, nullable: true, options: ['comment' => 'Date de radiation FFCAM'])]
     private ?\DateTimeInterface $radiationDate = null;
@@ -613,6 +616,27 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         // $this->plainPassword = null;
     }
 
+    public function __serialize(): array
+    {
+        return [
+            'id' => isset($this->id) ? $this->id : null,
+            'email' => $this->email,
+            'mdp' => $this->mdp,
+        ];
+    }
+
+    public function __unserialize(array $data): void
+    {
+        // Support both new format (from __serialize) and legacy native PHP
+        // serialization format where private property keys are mangled as
+        // "\0ClassName\0propertyName" and bigint $id is stored as string.
+        $p = "\0" . self::class . "\0";
+        $id = $data['id'] ?? $data[$p . 'id'] ?? null;
+        $this->id = null !== $id ? (int) $id : null;
+        $this->email = $data['email'] ?? $data[$p . 'email'] ?? null;
+        $this->mdp = $data['mdp'] ?? $data[$p . 'mdp'] ?? null;
+    }
+
     /**
      * A visual identifier that represents this user.
      *
@@ -770,6 +794,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setJoinDate(?\DateTimeInterface $joinDate): self
     {
         $this->joinDate = $joinDate;
+
+        return $this;
+    }
+
+    public function getAccueilSeason(): int
+    {
+        return $this->accueilSeason;
+    }
+
+    public function setAccueilSeason(int $accueilSeason): self
+    {
+        $this->accueilSeason = $accueilSeason;
 
         return $this;
     }

@@ -5,7 +5,9 @@ namespace App\Tests\Controller;
 use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\ExpenseReport;
+use App\Entity\TransportModeEnum;
 use App\Entity\UserAttr;
+use App\Helper\CarbonCostHelper;
 use App\Messenger\Message\SortiePubliee;
 use App\Tests\WebTestCase;
 use App\Utils\Enums\ExpenseReportStatusEnum;
@@ -564,9 +566,9 @@ class SortieControllerTest extends WebTestCase
 
     /**
      * Test that a user with a submitted expense report can see the form
-     * even if the event is past the cutoff date.
+     * even if the event is past the 120-day deadline.
      */
-    public function testExpenseReportFormVisibleForSubmittedReportPastCutoff()
+    public function testExpenseReportFormVisibleForSubmittedReportPastDeadline()
     {
         $user = $this->signup();
         $this->signin($user);
@@ -584,9 +586,9 @@ class SortieControllerTest extends WebTestCase
 
     /**
      * Test that a user with an approved expense report can see the form
-     * even if the event is past the cutoff date.
+     * even if the event is past the 120-day deadline.
      */
-    public function testExpenseReportFormVisibleForApprovedReportPastCutoff()
+    public function testExpenseReportFormVisibleForApprovedReportPastDeadline()
     {
         $user = $this->signup();
         $this->signin($user);
@@ -604,9 +606,9 @@ class SortieControllerTest extends WebTestCase
 
     /**
      * Test that a user with an accounted expense report can see the form
-     * even if the event is past the cutoff date.
+     * even if the event is past the 120-day deadline.
      */
-    public function testExpenseReportFormVisibleForAccountedReportPastCutoff()
+    public function testExpenseReportFormVisibleForAccountedReportPastDeadline()
     {
         $user = $this->signup();
         $this->signin($user);
@@ -624,9 +626,9 @@ class SortieControllerTest extends WebTestCase
 
     /**
      * Test that a user with a draft expense report cannot see the form
-     * if the event is past the cutoff date.
+     * if the event is past the 120-day deadline.
      */
-    public function testExpenseReportFormNotVisibleForDraftReportPastCutoff()
+    public function testExpenseReportFormNotVisibleForDraftReportPastDeadline()
     {
         $user = $this->signup();
         $this->signin($user);
@@ -644,9 +646,9 @@ class SortieControllerTest extends WebTestCase
 
     /**
      * Test that a user with a rejected expense report cannot see the form
-     * if the event is past the cutoff date.
+     * if the event is past the 120-day deadline.
      */
-    public function testExpenseReportFormNotVisibleForRejectedReportPastCutoff()
+    public function testExpenseReportFormNotVisibleForRejectedReportPastDeadline()
     {
         $user = $this->signup();
         $this->signin($user);
@@ -664,9 +666,9 @@ class SortieControllerTest extends WebTestCase
 
     /**
      * Test that a user without any expense report cannot see the form
-     * if the event is past the cutoff date.
+     * if the event is past the 120-day deadline.
      */
-    public function testExpenseReportFormNotVisibleWithoutReportPastCutoff()
+    public function testExpenseReportFormNotVisibleWithoutReportPastDeadline()
     {
         $user = $this->signup();
         $this->signin($user);
@@ -683,14 +685,14 @@ class SortieControllerTest extends WebTestCase
     }
 
     /**
-     * Helper method to create a past event (before cutoff date).
+     * Helper method to create a past event (ended more than 120 days ago).
      */
     protected function createPastEvent($user): Evt
     {
         $em = $this->getContainer()->get('doctrine')->getManager();
         $commission = $this->createCommission();
 
-        // Create an event that ended 2 years ago (definitely past any cutoff)
+        // Create an event that ended 2 years ago (definitely past the 120-day deadline)
         $event = new Evt(
             $user,
             $commission,
@@ -715,6 +717,138 @@ class SortieControllerTest extends WebTestCase
         $em->flush();
 
         return $event;
+    }
+
+    public function testMethodologieBilanCarboneIsPubliclyAccessible(): void
+    {
+        $this->client->request('GET', '/sorties/methodologie-bilan-carbone');
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertSelectorTextContains('h1.page-h1', 'Calcul du bilan carbone des sorties');
+
+        // Sans son bloc CMS, la page s'affiche vide sans lever d'erreur.
+        $this->assertSelectorTextContains('#methodologie-bilan-carbone', '281 g/km/véhicule');
+    }
+
+    /**
+     * Le bilan carbone est figé sur le nombre max de places prévues (ngensMax), pas
+     * sur les inscrits réels. Ajouter un participant ne doit donc rien recalculer.
+     * Décision Jacob Carbonel : éviter les valeurs très élevées à l'ouverture des
+     * inscriptions et la fluctuation à chaque join.
+     */
+    public function testManualAddDoesNotChangeCarbonCost(): void
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $helper = $this->getContainer()->get(CarbonCostHelper::class);
+
+        $organizer = $this->signup();
+        $this->signin($organizer);
+        $this->addAttribute($organizer, UserAttr::ENCADRANT, 'commission:*');
+
+        $event = $this->createEvent($organizer);
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($organizer);
+        $event->setModeTransport(TransportModeEnum::THERMIC_CARPOOLING);
+        $event->setNbVehicules(1);
+        $event->setNbKm(100.0);
+        $helper->updateForEvent($event);
+        $em->flush();
+
+        // ngensMax=12 (cf. WebTestCase::createEvent), 100 km × 219 g/km × 1 véhicule = 21900 ;
+        // perPerson = 21900 / 12 = 1825.
+        $this->assertSame(21900.0, $event->getCoutCarbone());
+        $this->assertSame(1825.0, $event->getCoutCarbonePerPerson());
+
+        // Ajout manuel d'un second participant via /ajouter-manuel
+        $other = $this->signup();
+        $this->client->request('POST', sprintf('/ajouter-manuel/%d', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'event_manual_add'),
+            'id_user' => [$other->getId()],
+            'role_evt_join' => [EventParticipation::ROLE_MANUEL],
+            'civ_user' => [''],
+            'lastname_user' => [$other->getLastname()],
+            'firstname_user' => [$other->getFirstname()],
+        ]);
+
+        $em->refresh($event);
+
+        $this->assertSame(21900.0, $event->getCoutCarbone(), 'total inchangé par une inscription');
+        $this->assertSame(1825.0, $event->getCoutCarbonePerPerson(), 'perPerson inchangé par une inscription');
+    }
+
+    /**
+     * Symétrique : le retrait d'un participant ne doit pas modifier le bilan
+     * (figé sur ngensMax).
+     */
+    public function testRemoveParticipantDoesNotChangeCarbonCost(): void
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $helper = $this->getContainer()->get(CarbonCostHelper::class);
+
+        $organizer = $this->signup();
+        $this->signin($organizer);
+        $this->addAttribute($organizer, UserAttr::ENCADRANT, 'commission:*');
+
+        $event = $this->createEvent($organizer);
+        $event->setModeTransport(TransportModeEnum::THERMIC_CARPOOLING);
+        $event->setNbVehicules(1);
+        $event->setNbKm(100.0);
+
+        $other = $this->signup();
+        $event->addParticipation($other, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $helper->updateForEvent($event);
+        $em->flush();
+
+        // 21900 / 12 = 1825 (toujours basé sur ngensMax, pas sur les 2 inscrits)
+        $this->assertSame(1825.0, $event->getCoutCarbonePerPerson());
+
+        $otherParticipation = $event->getParticipation($other);
+
+        // Le voter PARTICIPANT_ANNULATION n'autorise que le titulaire à retirer
+        // sa propre participation (auto-désinscription).
+        $this->signin($other);
+
+        $this->client->request('POST', sprintf('/sortie/remove-participant/%d', $otherParticipation->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'remove_participant'),
+        ]);
+
+        $em->refresh($event);
+
+        $this->assertSame(1825.0, $event->getCoutCarbonePerPerson(), 'perPerson inchangé par un retrait');
+    }
+
+    /**
+     * Symétrique : valider une inscription en attente ne doit rien recalculer.
+     */
+    public function testUpdateInscriptionsDoesNotChangeCarbonCost(): void
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $helper = $this->getContainer()->get(CarbonCostHelper::class);
+
+        $organizer = $this->signup();
+        $this->signin($organizer);
+        $this->addAttribute($organizer, UserAttr::ENCADRANT, 'commission:*');
+
+        $event = $this->createEvent($organizer);
+        $event->setModeTransport(TransportModeEnum::THERMIC_CARPOOLING);
+        $event->setNbVehicules(1);
+        $event->setNbKm(100.0);
+
+        $pending = $this->signup();
+        $pendingParticipation = $event->addParticipation($pending, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_NON_CONFIRME);
+        $helper->updateForEvent($event);
+        $em->flush();
+
+        $this->assertSame(1825.0, $event->getCoutCarbonePerPerson());
+
+        $this->client->request('POST', sprintf('/sortie/%d/update-inscriptions', $event->getId()), [
+            'csrf_token_inscriptions' => $this->generateCsrfToken($this->client, 'sortie_update_inscriptions'),
+            'id_evt_join' => [(string) $pendingParticipation->getId()],
+            'status_evt_join_' . $pendingParticipation->getId() => (string) EventParticipation::STATUS_VALIDE,
+        ]);
+
+        $em->refresh($event);
+
+        $this->assertSame(1825.0, $event->getCoutCarbonePerPerson(), 'perPerson inchangé par la validation');
     }
 
     /**

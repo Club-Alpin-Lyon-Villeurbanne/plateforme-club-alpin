@@ -47,13 +47,19 @@ class Notifications
      */
     public function getValidationSortiePresident(): int
     {
-        if (!$this->userRights->allowed('evt_legal_accept')) {
+        if (!$this->userRights->allowed('evt_legal_accept') && !$this->userRights->allowed('evt_legal_refuse')) {
             return 0;
         }
 
+        $commissionCodes = array_unique(array_merge(
+            $this->userRights->getCommissionListForRight('evt_legal_accept'),
+            $this->userRights->getCommissionListForRight('evt_legal_refuse'),
+        ));
+        $commissions = $this->commissionRepository->findBy(['code' => $commissionCodes]);
+
         $dateMax = (int) strtotime($this->maxTimestampForLegalValidation);
 
-        return $this->evtRepository->getEventsToLegalValidateCount($dateMax);
+        return $this->evtRepository->getEventsToLegalValidateCount($dateMax, $commissions);
     }
 
     public function getValidationArticle(): int

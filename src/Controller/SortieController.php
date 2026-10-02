@@ -10,6 +10,8 @@ use App\Entity\FormationValidationNiveauPratique;
 use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Form\EventType;
+use App\Helper\CarbonCostHelper;
+use App\Helper\DistanceHelper;
 use App\Helper\RoleHelper;
 use App\Helper\SlugHelper;
 use App\Legacy\LegacyContainer;
@@ -23,8 +25,8 @@ use App\Repository\FormationValidationGroupeCompetenceRepository;
 use App\Repository\FormationValidationNiveauPratiqueRepository;
 use App\Repository\UserAttrRepository;
 use App\Repository\UserRepository;
+use App\Repository\UserRightRepository;
 use App\Service\HelloAssoService;
-use App\Service\UserLicenseHelper;
 use App\Twig\JavascriptGlobalsExtension;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use App\Utils\ExcelExport;
@@ -74,6 +76,8 @@ class SortieController extends AbstractController
         ManagerRegistry $doctrine,
         CommissionRepository $commissionRepository,
         Mailer $mailer,
+        CarbonCostHelper $carbonCostHelper,
+        DistanceHelper $distanceHelper,
         ?Evt $event = null,
         ?string $mode = null,
     ): array|RedirectResponse {
@@ -83,6 +87,7 @@ class SortieController extends AbstractController
         $isDuplicate = false;
         $hasErrors = false;
         $commission = $event?->getCommission();
+        $sourceEventId = null;
 
         if (!$event instanceof Evt) {
             $commission = $commissionRepository->findOneBy(['code' => $request->query->get('commission')]);
@@ -105,6 +110,7 @@ class SortieController extends AbstractController
             $event->setJoinStartDate(new \DateTimeImmutable());
             $isUpdate = false;
         } elseif (!empty($mode)) {
+            $sourceEventId = 'full' === $mode ? $event->getId() : null;
             $event = $this->duplicate($request, $event, $mode);
             $commission = $event->getCommission();
             $isUpdate = false;
@@ -145,6 +151,11 @@ class SortieController extends AbstractController
             $currentBenevoles = $event->getEncadrants([EventParticipation::ROLE_BENEVOLE]);
             $originalEntityData['hasPaymentForm'] = $event->hasPaymentForm();
             $originalEntityData['paymentAmount'] = $event->getPaymentAmount();
+            $originalEntityData['lat'] = (float) $event->getLat();
+            $originalEntityData['long'] = (float) $event->getLong();
+            $originalEntityData['latDepart'] = (float) $event->getLatDepart();
+            $originalEntityData['longDepart'] = (float) $event->getLongDepart();
+            $originalEntityData['etranger'] = $event->isEtranger();
         }
 
         $form = $this->createForm(EventType::class, $event, ['is_edit' => $isUpdate, 'editoLineLink' => $this->editoLineLink, 'imageRightLink' => $this->imageRightLink, 'user' => $user]);
@@ -188,6 +199,24 @@ class SortieController extends AbstractController
                             ;
                         } else {
                             $event->addParticipation($participant, $role, EventParticipation::STATUS_VALIDE);
+                        }
+                    }
+                }
+            }
+
+            // participants depuis duplication "avec le groupe"
+            $sourceEventIdFromRequest = (int) $request->request->get('source_event_id');
+            if (!$isUpdate && $sourceEventIdFromRequest > 0) {
+                $sourceEvent = $entityManager->getRepository(Evt::class)->find($sourceEventIdFromRequest);
+                if ($sourceEvent && $this->isGranted('SORTIE_DUPLICATE', $sourceEvent)) {
+                    $rolesImportedOutsideForm = [
+                        EventParticipation::ROLE_INSCRIT,
+                        EventParticipation::ROLE_MANUEL,
+                        EventParticipation::BENEVOLE,
+                    ];
+                    foreach ($sourceEvent->getParticipations($rolesImportedOutsideForm, EventParticipation::STATUS_VALIDE) as $participation) {
+                        if (!$event->getParticipation($participation->getUser())) {
+                            $event->addParticipation($participation->getUser(), $participation->getRole(), EventParticipation::STATUS_VALIDE);
                         }
                     }
                 }
@@ -258,6 +287,7 @@ class SortieController extends AbstractController
                         || $originalEntityData['paymentAmount'] !== $event->getPaymentAmount()
                         || $originalEntityData['encadrants'] !== $newEncadrants['encadrants']
                         || $originalEntityData['initiateurs'] !== $newEncadrants['initiateurs']
+                        || $originalEntityData['etranger'] !== $event->isEtranger()
                     )
                 ) {
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
@@ -279,6 +309,27 @@ class SortieController extends AbstractController
             }
             $event->setJoinMax($event->getNgensMax());
 
+            // bilan carbone : recalculer la distance si les coordonnées ont changé,
+            // ou si nbKm est vide (échec OSRM antérieur ou sortie d'avant la feature).
+            $coordsChanged = !$isUpdate
+                || (float) $event->getLat() !== $originalEntityData['lat']
+                || (float) $event->getLong() !== $originalEntityData['long']
+                || (float) $event->getLatDepart() !== $originalEntityData['latDepart']
+                || (float) $event->getLongDepart() !== $originalEntityData['longDepart'];
+
+            if ($event->isEtranger()) {
+                // à l'étranger : pas de commune de départ, donc pas de bilan carbone
+                $event->setNbKm(null);
+            } elseif ($coordsChanged || !$event->getNbKm()) {
+                $nbKm = $distanceHelper->calculate($event);
+                // Conserver l'ancienne distance si l'appel OSRM échoue (retourne 0)
+                if ($nbKm > 0 || !$isUpdate) {
+                    $event->setNbKm($nbKm);
+                }
+            }
+            // Bilan carbone basé sur ngensMax — recalculé uniquement à la création/modif
+            // de sortie, pas à chaque inscription (décision Jacob Carbonel).
+            $carbonCostHelper->updateForEvent($event);
             $entityManager->persist($event);
             $entityManager->flush();
 
@@ -286,6 +337,7 @@ class SortieController extends AbstractController
         }
         if ($form->isSubmitted() && !$form->isValid()) {
             $hasErrors = true;
+            $sourceEventId = (int) $request->request->get('source_event_id') ?: null;
         }
 
         return [
@@ -298,6 +350,7 @@ class SortieController extends AbstractController
             'form_action' => $isUpdate ? $this->generateUrl('modifier_sortie', ['event' => $event->getId()]) : $this->generateUrl('creer_sortie'),
             'is_duplicate' => $isDuplicate,
             'has_errors' => $hasErrors,
+            'source_event_id' => $sourceEventId,
         ];
     }
 
@@ -372,12 +425,6 @@ class SortieController extends AbstractController
             }
         }
 
-        // Date cutoff: September 30 of current year if after Dec 1, otherwise September 30 of previous year
-        $currentMonth = date('m');
-        $currentYear = date('Y');
-        $cutoffYear = $currentMonth >= 12 ? $currentYear : $currentYear - 1;
-        $cutoffDate = \DateTimeImmutable::createFromFormat('Y-m-d H:i:s', $cutoffYear . '-' . UserLicenseHelper::LICENSE_TOLERANCY_PERIOD_END);
-
         // Check if user has a viewable expense report (submitted, approved, or accounted)
         $hasViewableExpenseReport = false;
         if ($user) {
@@ -403,8 +450,8 @@ class SortieController extends AbstractController
             'current_user_has_paid' => $currentUserHasPaid,
             'current_user_accepted' => $currentUserAccepted,
             'accepted_participations' => $participationRepository->getSortedParticipations($event),
-            'is_event_after_cutoff' => $event->getEndDate() >= $cutoffDate,
-            'cutoff_year' => $cutoffYear,
+            'is_within_expense_report_deadline' => $event->isExpenseReportOpen(),
+            'expense_report_deadline_days' => Evt::EXPENSE_REPORT_DEADLINE_DAYS,
             'has_viewable_expense_report' => $hasViewableExpenseReport,
             'groupes_competences' => $groupesCompRefs,
             'niveaux' => $nivRefs,
@@ -434,6 +481,7 @@ class SortieController extends AbstractController
         Mailer $mailer,
         MessageBusInterface $messageBus,
         LoggerInterface $logger,
+        UserRightRepository $userRightRepository,
     ): RedirectResponse {
         if (!$this->isCsrfTokenValid('sortie_validate', $request->request->get('csrf_token'))) {
             throw new BadRequestException('Jeton de validation invalide.');
@@ -444,6 +492,12 @@ class SortieController extends AbstractController
         }
 
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE)->setStatusWho($this->getUser());
+
+        if (!$userRightRepository->hasAnyRoleWithRight('evt_legal_accept')) {
+            $event->setStatusLegal(Evt::STATUS_LEGAL_VALIDE)
+                ->setStatusLegalWho(null)
+                ->setLegalStatusChangeDate(new \DateTimeImmutable());
+        }
 
         // créer la campagne hello asso si nécessaire
         if ($event->hasPaymentForm() && !$event->getHelloAssoFormSlug()) {
@@ -523,7 +577,7 @@ class SortieController extends AbstractController
             }
 
             if ($status < 0) {
-                $em->remove($participation);
+                $event->removeParticipation($participation);
 
                 continue;
             }
@@ -561,7 +615,7 @@ class SortieController extends AbstractController
                 continue;
             }
 
-            if ($event->isFinished() && !\in_array($status, [EventParticipation::STATUS_ABSENT], true)) {
+            if ($event->isStarted() && !\in_array($status, [EventParticipation::STATUS_ABSENT], true)) {
                 continue;
             }
 
@@ -856,8 +910,12 @@ class SortieController extends AbstractController
     }
 
     #[Route(path: '/sortie/remove-participant/{id}', name: 'sortie_remove_participant', requirements: ['id' => '\d+'], methods: ['POST'], priority: '10')]
-    public function removeParticipant(Request $request, EventParticipation $participation, EntityManagerInterface $em, Mailer $mailer): RedirectResponse
-    {
+    public function removeParticipant(
+        Request $request,
+        EventParticipation $participation,
+        EntityManagerInterface $em,
+        Mailer $mailer,
+    ): RedirectResponse {
         $event = $participation->getEvt();
 
         if (!$this->isCsrfTokenValid('remove_participant', $request->request->get('csrf_token'))) {
@@ -868,7 +926,9 @@ class SortieController extends AbstractController
             throw new AccessDeniedHttpException('Vous n\'êtes pas autorisé à cela.');
         }
 
-        $em->remove($participation);
+        $event->removeParticipation($participation);
+        // orphanRemoval: true on Evt::$participations handles the DELETE in DB
+
         $em->flush();
 
         /** @var User */
@@ -937,6 +997,14 @@ class SortieController extends AbstractController
         $newEvent->setJoinStartDate(new \DateTimeImmutable());
         $newEvent->setAutoAccept($event->isAutoAccept());
         $newEvent->setIsDraft(true);
+        $newEvent->setLatDepart($event->getLatDepart());
+        $newEvent->setLongDepart($event->getLongDepart());
+        $newEvent->setEtranger($event->isEtranger());
+        $newEvent->setNbVehicules($event->getNbVehicules());
+        $newEvent->setModeTransport($event->getModeTransport());
+        $newEvent->setNbKm($event->getNbKm());
+        $newEvent->setCoutCarbone($event->getCoutCarbone());
+        $newEvent->setCoutCarbonePerPerson($event->getCoutCarbonePerPerson());
 
         // dupliquer les participants ?
         if ('full' === $mode) {
@@ -1139,6 +1207,7 @@ class SortieController extends AbstractController
                         }
                     }
                 }
+
                 $em->flush();
 
                 // E-MAIL À L'ORGANISATEUR ET AUX ENCADRANTS
@@ -1317,5 +1386,11 @@ class SortieController extends AbstractController
             'hideBlankLines' => ('y' === $request->query->get('hide_blank')),
             'pdf' => $isPdf,
         ];
+    }
+
+    #[Route(path: '/sorties/methodologie-bilan-carbone', name: 'sortie_methodologie_bilan_carbone', methods: ['GET'])]
+    public function methodologieBilanCarbone(): Response
+    {
+        return $this->render('sortie/methodologie-bilan-carbone.html.twig');
     }
 }

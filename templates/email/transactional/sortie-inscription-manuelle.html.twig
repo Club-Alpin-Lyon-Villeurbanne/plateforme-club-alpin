@@ -16,6 +16,12 @@
             </li>
         {% endfor %}
     </ul>
+    {% if event_rdv_time or event_rdv %}
+    <p>
+        {% if event_rdv_time %}<b>Heure de rendez-vous :</b> {{ event_rdv_time }}<br>{% endif %}
+        {% if event_rdv %}<b>Lieu de rendez-vous :</b> {{ event_rdv }}{% endif %}
+    </p>
+    {% endif %}
     <p>
         Vous recevez ce message car vous êtes encadrant ou organisateur de cette sortie.
     </p>
@@ -28,6 +34,12 @@
     {% for inscrit in inscrits %}
         Nom : {{ inscrit.firstname }} {{ inscrit.lastname }} - {{ inscrit.profile_url }}
     {% endfor %}
+{% if event_rdv_time %}
+    Heure de rendez-vous : {{ event_rdv_time }}
+{% endif %}
+{% if event_rdv %}
+    Lieu de rendez-vous : {{ event_rdv }}
+{% endif %}
 
     Vous recevez ce message car vous êtes encadrant ou organisateur de cette sortie.
 {% endblock %}

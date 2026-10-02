@@ -2,6 +2,7 @@
 
 namespace App\Tests\Security\Voter;
 
+use App\Entity\Commission;
 use App\Entity\Evt;
 use App\Entity\User;
 use App\Security\Voter\SortieLegalValidationVoter;
@@ -27,12 +28,14 @@ class SortieLegalValidationVoterTest extends TestCase
     public function testGrantsWhenRightAndCorrectStatus(): void
     {
         $user = $this->createMock(User::class);
+        $commission = $this->createMock(Commission::class);
 
         $userRights = $this->createMock(UserRights::class);
-        $userRights->method('allowed')->with('evt_legal_accept')->willReturn(true);
+        $userRights->method('allowedOnCommission')->with('evt_legal_accept', $commission)->willReturn(true);
         $voter = new SortieLegalValidationVoter($userRights);
 
         $event = $this->createEvent(
+            commission: $commission,
             publicStatus: Evt::STATUS_PUBLISHED_VALIDE,
             legalStatus: Evt::STATUS_LEGAL_UNSEEN,
         );
@@ -43,12 +46,52 @@ class SortieLegalValidationVoterTest extends TestCase
     public function testDeniesWhenNoRight(): void
     {
         $user = $this->createMock(User::class);
+        $commission = $this->createMock(Commission::class);
 
         $userRights = $this->createMock(UserRights::class);
-        $userRights->method('allowed')->willReturn(false);
+        $userRights->method('allowedOnCommission')->willReturn(false);
         $voter = new SortieLegalValidationVoter($userRights);
 
-        $event = $this->createEvent();
+        $event = $this->createEvent(commission: $commission);
+        $res = $voter->vote($this->getToken($user), $event, ['SORTIE_LEGAL_VALIDATION']);
+        $this->assertSame(Voter::ACCESS_DENIED, $res);
+    }
+
+    public function testGrantsWhenRefuseRightAndCorrectStatus(): void
+    {
+        $user = $this->createMock(User::class);
+        $commission = $this->createMock(Commission::class);
+
+        $userRights = $this->createMock(UserRights::class);
+        $userRights->method('allowedOnCommission')
+            ->willReturnCallback(fn ($right, $comm) => 'evt_legal_refuse' === $right && $comm === $commission);
+        $voter = new SortieLegalValidationVoter($userRights);
+
+        $event = $this->createEvent(
+            commission: $commission,
+            publicStatus: Evt::STATUS_PUBLISHED_VALIDE,
+            legalStatus: Evt::STATUS_LEGAL_UNSEEN,
+        );
+        $res = $voter->vote($this->getToken($user), $event, ['SORTIE_LEGAL_VALIDATION']);
+        $this->assertSame(Voter::ACCESS_GRANTED, $res);
+    }
+
+    public function testDeniesWhenRightOnOtherCommission(): void
+    {
+        $user = $this->createMock(User::class);
+        $commission = $this->createMock(Commission::class);
+        $otherCommission = $this->createMock(Commission::class);
+
+        $userRights = $this->createMock(UserRights::class);
+        $userRights->method('allowedOnCommission')
+            ->willReturnCallback(fn ($right, $comm) => $comm === $otherCommission);
+        $voter = new SortieLegalValidationVoter($userRights);
+
+        $event = $this->createEvent(
+            commission: $commission,
+            publicStatus: Evt::STATUS_PUBLISHED_VALIDE,
+            legalStatus: Evt::STATUS_LEGAL_UNSEEN,
+        );
         $res = $voter->vote($this->getToken($user), $event, ['SORTIE_LEGAL_VALIDATION']);
         $this->assertSame(Voter::ACCESS_DENIED, $res);
     }
@@ -56,12 +99,14 @@ class SortieLegalValidationVoterTest extends TestCase
     public function testDeniesWhenNotPublicStatusValide(): void
     {
         $user = $this->createMock(User::class);
+        $commission = $this->createMock(Commission::class);
 
         $userRights = $this->createMock(UserRights::class);
-        $userRights->method('allowed')->with('evt_legal_accept')->willReturn(true);
+        $userRights->method('allowedOnCommission')->with('evt_legal_accept', $commission)->willReturn(true);
         $voter = new SortieLegalValidationVoter($userRights);
 
         $event = $this->createEvent(
+            commission: $commission,
             publicStatus: Evt::STATUS_PUBLISHED_UNSEEN,
             legalStatus: Evt::STATUS_LEGAL_UNSEEN,
         );
@@ -72,12 +117,14 @@ class SortieLegalValidationVoterTest extends TestCase
     public function testDeniesWhenWrongLegalStatus(): void
     {
         $user = $this->createMock(User::class);
+        $commission = $this->createMock(Commission::class);
 
         $userRights = $this->createMock(UserRights::class);
-        $userRights->method('allowed')->with('evt_legal_accept')->willReturn(true);
+        $userRights->method('allowedOnCommission')->with('evt_legal_accept', $commission)->willReturn(true);
         $voter = new SortieLegalValidationVoter($userRights);
 
         $event = $this->createEvent(
+            commission: $commission,
             publicStatus: Evt::STATUS_PUBLISHED_VALIDE,
             legalStatus: Evt::STATUS_LEGAL_VALIDE,
         );
@@ -96,6 +143,7 @@ class SortieLegalValidationVoterTest extends TestCase
     }
 
     private function createEvent(
+        ?Commission $commission = null,
         int $publicStatus = Evt::STATUS_PUBLISHED_VALIDE,
         int $legalStatus = Evt::STATUS_LEGAL_UNSEEN,
     ): Evt {
@@ -110,7 +158,7 @@ class SortieLegalValidationVoterTest extends TestCase
             ->getMock();
 
         $event->method('getUser')->willReturn(null);
-        $event->method('getCommission')->willReturn(null);
+        $event->method('getCommission')->willReturn($commission);
         $event->method('getCancelled')->willReturn(false);
         $event->method('isFinished')->willReturn(false);
         $event->method('isPublicStatusValide')->willReturn(Evt::STATUS_PUBLISHED_VALIDE === $publicStatus);

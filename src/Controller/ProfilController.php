@@ -198,13 +198,18 @@ class ProfilController extends AbstractController
     {
         /** @var User $user */
         $user = $this->getUser();
-        $filesystem->remove($this->getParameter('kernel.project_dir') . '/public/ftp/uploads/files/' . $user->getProfilePicture()->getFilename());
-        $manager->remove($user->getProfilePicture());
-        $user->setProfilePicture(null);
-        $manager->persist($user);
-        $manager->flush();
+        $profilePicture = $user->getProfilePicture();
 
-        $this->addFlash('success', 'Photo de profil supprimée avec succès !');
+        if ($profilePicture) {
+            $filesystem->remove($this->getParameter('kernel.project_dir') . '/public/ftp/uploads/files/' . $profilePicture->getFilename());
+            $manager->remove($profilePicture);
+            $user->setProfilePicture(null);
+            $manager->persist($user);
+            $manager->flush();
+            $this->addFlash('success', 'Photo de profil supprimée avec succès !');
+        } else {
+            $this->addFlash('info', 'Aucune photo de profil à supprimer.');
+        }
 
         return $this->redirectToRoute('my_profile');
     }
