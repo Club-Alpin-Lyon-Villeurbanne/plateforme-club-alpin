@@ -285,8 +285,9 @@ class SortieController extends AbstractController
                         || $originalEntityData['place'] !== $event->getPlace()
                         || $originalEntityData['hasPaymentForm'] !== $event->hasPaymentForm()
                         || $originalEntityData['paymentAmount'] !== $event->getPaymentAmount()
-                        || $originalEntityData['encadrants'] !== $newEncadrants['encadrants']
-                        || $originalEntityData['initiateurs'] !== $newEncadrants['initiateurs']
+                        // != et non !== : l'ordre du formulaire diffère de celui de la base
+                        || $originalEntityData['encadrants'] != $newEncadrants['encadrants']
+                        || $originalEntityData['initiateurs'] != $newEncadrants['initiateurs']
                         || $originalEntityData['etranger'] !== $event->isEtranger()
                     )
                 ) {
