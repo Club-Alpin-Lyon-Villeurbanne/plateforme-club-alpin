@@ -4,6 +4,7 @@ namespace App\State;
 
 use ApiPlatform\Metadata\Operation;
 use ApiPlatform\State\ProcessorInterface;
+use App\Entity\Evt;
 use App\Entity\ExpenseAttachment;
 use App\Entity\ExpenseReport;
 use App\Entity\User;
@@ -38,6 +39,12 @@ class ExpenseReportCloneProcessor implements ProcessorInterface
         $currentUser = $this->security->getUser();
         if (!$currentUser) {
             throw new AccessDeniedHttpException('User not authenticated');
+        }
+
+        // Réutiliser la note d'un co-encadrant : réservé aux encadrants de la même sortie.
+        $event = $originalReport->getEvent();
+        if (!$this->isEncadrantOf($event, $currentUser) || !$this->isEncadrantOf($event, $originalReport->getUser())) {
+            throw new AccessDeniedHttpException('Only encadrants of the event can clone its expense reports.');
         }
 
         $existingReport = $this->entityManager->getRepository(ExpenseReport::class)
@@ -77,5 +84,16 @@ class ExpenseReportCloneProcessor implements ProcessorInterface
         $this->entityManager->flush();
 
         return $clonedReport;
+    }
+
+    private function isEncadrantOf(Evt $event, ?User $user): bool
+    {
+        foreach ($event->getEncadrants() as $participation) {
+            if (null !== $user && $participation->getUser()?->getId() === $user->getId()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
