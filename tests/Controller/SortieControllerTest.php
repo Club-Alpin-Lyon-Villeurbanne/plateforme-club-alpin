@@ -3,6 +3,7 @@
 namespace App\Tests\Controller;
 
 use App\Entity\EventParticipation;
+use App\Entity\EventUnrecognizedPayer;
 use App\Entity\Evt;
 use App\Entity\ExpenseReport;
 use App\Entity\TransportModeEnum;
@@ -28,6 +29,29 @@ class SortieControllerTest extends WebTestCase
         $this->getContainer()->get('doctrine')->getManager()->flush();
         $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
         $this->assertResponseStatusCodeSame(200);
+    }
+
+    public function testParticipantPayeSousSonEmailApparaitPayeMaisPasUnNomadeSansEmail(): void
+    {
+        $user = $this->signup();
+        $this->signin($user);
+
+        $event = $this->createEvent($user);
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE)->setStatusWho($user)->setHasPaymentForm(true)->setPaymentAmount(20.0)->setPaymentUrl('https://www.helloasso.com/sortie');
+        $participant = $this->signup();
+        $nomade = $this->signup()->setEmail(null);
+        $event->addParticipation($participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $event->addParticipation($nomade, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        foreach ([$participant->getEmail(), ''] as $email) {
+            $event->addUnrecognizedPayer((new EventUnrecognizedPayer())->setEvent($event)->setEmail($email)->setFirstname('prenom')->setLastname('nom')->setHasPaid(true));
+        }
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+
+        $this->assertResponseStatusCodeSame(200);
+        $badgesPaye = $crawler->filter('td.event-manage-user span')->reduce(fn ($span) => 'Payé' === trim($span->text()));
+        $this->assertCount(1, $badgesPaye);
     }
 
     public function testDisplaySortieWithFiliationsAndEmpietementsToOwner()

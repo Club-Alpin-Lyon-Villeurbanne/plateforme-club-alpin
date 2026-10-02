@@ -91,7 +91,8 @@ class HelloAssoWebhookController extends AbstractController
 
         // email du payeur pour trouver l'adhérent
         $payerEmail = $requestData['payer']['email'] ?? null;
-        $user = $this->userRepository->findOneBy(['email' => $payerEmail]);
+        // sans email, findOneBy chercherait « email IS NULL » et tomberait sur un nomade
+        $user = $payerEmail ? $this->userRepository->findOneBy(['email' => $payerEmail]) : null;
 
         // slug de la campagne pour trouver la sortie
         $eventSlug = null;
@@ -119,7 +120,6 @@ class HelloAssoWebhookController extends AbstractController
                 // niveau error : seul niveau remonté en prod, et un rapprochement par nom doit rester vérifiable
                 $this->logger->error('HelloAsso Webhook - Payer matched by firstname + lastname', [
                     'payerEmail' => $payerEmail,
-                    'payerName' => $payerFirstname . ' ' . $payerLastname,
                     'participationId' => $participation->getId(),
                     'eventSlug' => $eventSlug,
                 ]);
