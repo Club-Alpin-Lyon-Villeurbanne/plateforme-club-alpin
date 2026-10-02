@@ -562,7 +562,7 @@ class UserController extends AbstractController
         $start = $request->query->getInt('start', 0);
         $length = $request->query->getInt('length', 100);
         $searchText = $request->query->all()['search']['value'] ?? null;
-        $order = $request->query->all()['order'] ?? null;
+        $order = $request->query->all()['order'] ?? [];
         $usersToIgnore = $this->getEventParticipants($eventId, $eventRepository);
 
         $recordsFiltered = $userRepository->getUsersCount($show, $searchText, $usersToIgnore);
@@ -720,6 +720,7 @@ class UserController extends AbstractController
 
     #[Route(path: '/adherents-creer.html', name: 'user_create', priority: 10)]
     #[Route(path: '/adherents/modifier/{id}.html', name: 'user_update', requirements: ['id' => '\d+'], priority: 10)]
+    #[IsGranted('ROLE_USER')]
     #[Template('user/form.html.twig')]
     public function update(
         Request $request,
