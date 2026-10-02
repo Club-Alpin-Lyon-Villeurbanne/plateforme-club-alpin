@@ -14,14 +14,11 @@ class ExpenseAttachmentRepository extends ServiceEntityRepository
         parent::__construct($registry, ExpenseAttachment::class);
     }
 
-    public function findByExpenseReportAndExpenseId(ExpenseReport $expenseReport, string $expenseId): ?ExpenseAttachment
+    /**
+     * @return list<ExpenseAttachment>
+     */
+    public function findByExpenseReportAndExpenseId(ExpenseReport $expenseReport, string $expenseId): array
     {
-        return $this->createQueryBuilder('a')
-            ->andWhere('a.expenseReport = :expenseReport')
-            ->andWhere('a.expenseId = :expenseId')
-            ->setParameter('expenseReport', $expenseReport)
-            ->setParameter('expenseId', $expenseId)
-            ->getQuery()
-            ->getOneOrNullResult();
+        return $this->findBy(['expenseReport' => $expenseReport, 'expenseId' => $expenseId], ['id' => 'ASC']);
     }
 }

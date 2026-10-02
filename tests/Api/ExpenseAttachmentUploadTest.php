@@ -32,6 +32,17 @@ class ExpenseAttachmentUploadTest extends ExpenseReportApiTestCase
         $this->assertNotSame($previousPath, $this->attachmentPath($report));
     }
 
+    public function testUnDoublonDeJustificatifsNeBloquePlusLEnvoi(): void
+    {
+        $report = $this->createReport($this->owner, ExpenseReportStatusEnum::DRAFT);
+        $this->createAttachment($report);
+        $doublon = $this->createAttachment($report);
+
+        $this->assertResponseStatus(201, $this->uploadAttachment($this->owner, $report, self::EXPENSE_ID));
+        $this->assertCount(1, $this->em()->getRepository(ExpenseAttachment::class)->findBy(['expenseReport' => $report->getId(), 'expenseId' => self::EXPENSE_ID]));
+        $this->assertFileDoesNotExist($doublon);
+    }
+
     /**
      * @dataProvider frozenStatusProvider
      */

@@ -75,7 +75,16 @@ class ExpenseAttachmentController extends AbstractController
         $file = $this->fileUploader->upload($file, 'expense-attachments');
 
         // Check if an attachment already exists for this expense
-        $existingAttachment = $this->attachmentRepository->findByExpenseReportAndExpenseId($expenseReport, $body['expenseId']);
+        $existingAttachments = $this->attachmentRepository->findByExpenseReportAndExpenseId($expenseReport, $body['expenseId']);
+        $existingAttachment = array_shift($existingAttachments);
+
+        // un double envoi simultané a pu créer des doublons, qui faisaient échouer tout nouvel envoi
+        foreach ($existingAttachments as $duplicate) {
+            if (file_exists($duplicate->getFilePath())) {
+                unlink($duplicate->getFilePath());
+            }
+            $this->entityManager->remove($duplicate);
+        }
 
         if ($existingAttachment) {
             // Update existing attachment
