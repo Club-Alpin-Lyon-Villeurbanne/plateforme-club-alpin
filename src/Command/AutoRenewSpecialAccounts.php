@@ -27,14 +27,17 @@ class AutoRenewSpecialAccounts extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $specialAccountsIds = array_map('trim', explode(',', $this->specialAccountsIds));
+        $specialAccountsIds = array_filter(array_map('trim', explode(',', $this->specialAccountsIds)));
 
         foreach ($specialAccountsIds as $id) {
-            /** @var User $user */
             $user = $this->userRepository->find($id);
+            if (!$user instanceof User) {
+                $output->writeln("<error>Compte spécial $id introuvable</error>");
+                continue;
+            }
 
             $timestamp = mktime(1, 0, 0, 9, 1, date('Y'));
-            $joinDate = (new \DateTime())->setTimestamp($timestamp);
+            $joinDate = (new \DateTimeImmutable())->setTimestamp($timestamp);
 
             $user->setJoinDate($joinDate);
             $this->entityManager->persist($user);
