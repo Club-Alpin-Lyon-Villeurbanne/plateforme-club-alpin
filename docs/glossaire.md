@@ -60,6 +60,22 @@ Paiement HelloAsso dont l'e-mail ne correspond à aucun compte du site. Voir [He
 ### Moulinette
 Nom courant des traitements automatiques (synchronisations FFCAM et Google, envois d'alertes). Voir [Tâches planifiées](taches-planifiees.md).
 
+## Cursus FFCAM
+
+Le cursus d'un adhérent comporte deux filières : « pratiquants » (niveaux de pratique) et « cadres » (brevets). Voir [Schéma formations et compétences](schema-formations-competences.md).
+
+### Brevet
+Diplôme fédéral de la filière « cadres », délivré par activité. Deux degrés : initiateur 1er degré (brevet socle de l'activité) et initiateur 2e degré (spécialité dans l'activité). L'extranet FFCAM affiche pour chaque brevet quatre dates : obtention, migration, recyclage, formation continue.
+
+### Formation validée
+Stage FFCAM suivi et validé par un adhérent (par exemple PSC1 ou une unité de formation « Neige et avalanches »), avec sa date et le numéro de la session.
+
+### Niveau de pratique
+Niveau d'un adhérent dans une activité, filière « pratiquants » : INITIE, puis PERFECTIONNE, et SPECIALISE dans certaines activités seulement. Exemple : « INITIE en alpinisme ». Le niveau PERFECTIONNE n'est pas un prérequis pour le brevet d'initiateur 1er degré.
+
+### Groupe de compétences (GDC)
+Subdivision d'un niveau de pratique. Chaque niveau est découpé en 4 chapitres, eux-mêmes découpés en parties ; chaque partie est un groupe de compétences, repéré par niveau-chapitre.partie (par exemple INI-2.1 ou PER-3.3). Un GDC est attesté par un initiateur. Quand tous les GDC d'un niveau sont validés, le niveau est obtenu.
+
 ## Outils
 
 ### ClickUp
