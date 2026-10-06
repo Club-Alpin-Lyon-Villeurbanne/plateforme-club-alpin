@@ -134,6 +134,7 @@ class MemberMerger
     {
         $oldCafUser->setFirstname($newCafUser->getFirstname())
             ->setLastname($newCafUser->getLastname())
+            ->setCiv($newCafUser->getCiv())
             ->setCafnum($newCafUser->getCafnum())
             ->setTel($newCafUser->getTel() ?? '')
             ->setTel2($newCafUser->getTel2() ?? '')
