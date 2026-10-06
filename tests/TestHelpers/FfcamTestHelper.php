@@ -4,7 +4,7 @@ namespace App\Tests\TestHelpers;
 
 class FfcamTestHelper
 {
-    private const TEMPLATE = '%s;6900;%s;99;A1;;%s;%s;M;%s;%s;;LE BELVEDERE;12 RUE DES LILAS;;69001;%s;0;0;0000-00-00;0;;0;;0;;0472000001 0630000001;%s;%s;04.72.00.00.01;0000-00-00;;contact;RANDONNEE,SKI ALPIN,SKI NORDIQUE;;0;;;;;;;;;;;;;;;;;;;;;;;;;A;0;3;;;O;,';
+    private const TEMPLATE = '%s;6900;%s;99;A1;;%s;%s;%s;%s;%s;;LE BELVEDERE;12 RUE DES LILAS;;69001;%s;0;0;0000-00-00;0;;0;;0;;0472000001 0630000001;%s;%s;04.72.00.00.01;0000-00-00;;contact;RANDONNEE,SKI ALPIN,SKI NORDIQUE;;0;0;;;;;;;;;;;;;;;;;;;;;;;;;;A;0;3;;;O;,';
 
     public static function generateFile(array $members, ?string $filePath = null): string
     {
@@ -24,6 +24,7 @@ class FfcamTestHelper
             $tel = $member['tel'] ?? '0687000001';
             $email = $member['email'] ?? 'test-email@clubalpinlyon.fr';
             $ville = $member['ville'] ?? 'LYON';
+            $sexe = $member['sexe'] ?? 'M';
 
             $content .= sprintf(
                 self::TEMPLATE,
@@ -31,6 +32,7 @@ class FfcamTestHelper
                 $shortCafnum,
                 $birthday,
                 $adhesionDate,
+                $sexe,
                 $lastname,
                 $firstname,
                 $ville,

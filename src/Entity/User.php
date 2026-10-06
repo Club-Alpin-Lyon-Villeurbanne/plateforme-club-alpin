@@ -485,7 +485,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this->civ;
     }
 
-    public function setCiv(string $civ): self
+    public function setCiv(?string $civ): self
     {
         $this->civ = $civ;
 

@@ -41,7 +41,16 @@ class FfcamSynchronizer
             return;
         }
 
+        try {
+            $structureWarning = $this->fileParser->checkStructure($ffcamFilePath);
+        } catch (\UnexpectedValueException $e) {
+            $this->logger->error($e->getMessage());
+
+            return;
+        }
+
         $stats = $this->processMembers($this->fileParser->parse($ffcamFilePath));
+        $this->reportFileAnomalies($stats, basename($ffcamFilePath), $structureWarning);
 
         $this->archiveFile($ffcamFilePath, $stats);
         $this->logResults($ffcamFilePath, $stats);
@@ -73,7 +82,16 @@ class FfcamSynchronizer
             return;
         }
 
+        try {
+            $structureWarning = $this->fileParser->checkStructure($ffcamFilePath, 'discovery');
+        } catch (\UnexpectedValueException $e) {
+            $this->logger->error($e->getMessage());
+
+            return;
+        }
+
         $stats = $this->processMembers($this->fileParser->parse($ffcamFilePath, 'discovery'));
+        $this->reportFileAnomalies($stats, basename($ffcamFilePath), $structureWarning);
 
         $this->archiveFile($ffcamFilePath, $stats);
         $this->logResults($ffcamFilePath, $stats);
@@ -82,6 +100,32 @@ class FfcamSynchronizer
 
         // Envoyer le mail de récapitulatif si le service est disponible
         $this->syncReportMailer?->sendSyncReport($stats, $startTime, $endTime, 'discovery');
+    }
+
+    // En tête des avertissements, que le mail tronque à 10 ; une seule alerte par passage, au message fixe
+    // pour que Sentry regroupe les passages.
+    private function reportFileAnomalies(array &$stats, string $file, ?string $structureWarning): void
+    {
+        $anomalies = [];
+
+        if (null !== $structureWarning) {
+            $this->logger->warning($structureWarning);
+            $anomalies[] = $structureWarning;
+        }
+
+        $unknownSexes = $this->fileParser->getUnknownSexes();
+        if ($unknownSexes) {
+            arsort($unknownSexes);
+            $values = array_map(static fn ($value, int $count) => "$value ($count)", array_keys($unknownSexes), $unknownSexes);
+            $others = \count($values) - 10;
+            $listed = implode(', ', \array_slice($values, 0, 10)) . ($others > 0 ? " et $others autre" . ($others > 1 ? 's' : '') : '');
+
+            $this->logger->error('Valeurs de sexe inconnues dans le fichier FFCAM', ['fichier' => $file, 'valeurs' => $listed]);
+            $anomalies[] = "Valeurs de sexe inconnues dans le fichier FFCAM $file : $listed";
+        }
+
+        $stats['warnings'] += \count($anomalies);
+        array_unshift($stats['warning_details'], ...$anomalies);
     }
 
     private function isFileValid(string $filePath): bool

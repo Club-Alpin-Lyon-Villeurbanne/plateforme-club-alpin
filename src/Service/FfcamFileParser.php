@@ -21,11 +21,80 @@ class FfcamFileParser
         'email' => 200,
     ];
 
+    // Fin août 2026, la FFCAM est passée de M / MME / MLLE à Masculin / Féminin / Autre, sans prévenir.
+    private const SEXES = [
+        'M' => 'Masculin',
+        'M.' => 'Masculin',
+        'MASCULIN' => 'Masculin',
+        'MME' => 'Féminin',
+        'MME.' => 'Féminin',
+        'MLLE' => 'Féminin',
+        'MLLE.' => 'Féminin',
+        'FÉMININ' => 'Féminin',
+        'AUTRE' => 'Autre',
+    ];
+
+    // min : en dessous, des colonnes lues manquent ; expected : nombre livré par la FFCAM en octobre 2026.
+    private const COLUMN_COUNTS = [
+        'annual' => ['min' => 33, 'expected' => 69],
+        'discovery' => ['min' => 24, 'expected' => 25],
+    ];
+
+    /** @var array<int|string, int> */
+    private array $unknownSexes = [];
+
+    /**
+     * Contrôle la première ligne avant tout traitement : un format décalé corromprait toutes les fiches.
+     *
+     * @return string|null avertissement si le nombre de colonnes diffère de celui attendu
+     *
+     * @throws \UnexpectedValueException s'il manque des colonnes
+     */
+    public function checkStructure(string $filePath, string $fileType = 'annual'): ?string
+    {
+        if (!$handle = @fopen($filePath, 'r')) {
+            throw new \Exception("Can't open '$filePath'");
+        }
+        do {
+            $firstLine = fgets($handle);
+        } while (false !== $firstLine && '' === trim($firstLine));
+        fclose($handle);
+        $isEmpty = false === $firstLine;
+
+        // Un fichier découverte peut être vide ; un fichier annuel vide est une livraison ratée.
+        if ($isEmpty && 'discovery' === $fileType) {
+            return null;
+        }
+
+        $columns = $isEmpty ? 0 : \count(explode(';', $firstLine));
+        ['min' => $min, 'expected' => $expected] = self::COLUMN_COUNTS[$fileType];
+        $file = basename($filePath);
+
+        if ($columns < $min) {
+            throw new \UnexpectedValueException("Fichier FFCAM $file : $columns colonnes au lieu d'au moins $min. Synchro interrompue, aucun adhérent n'a été modifié ni bloqué.");
+        }
+
+        if ($columns !== $expected) {
+            return "Fichier FFCAM $file : $columns colonnes au lieu de $expected. La FFCAM a peut-être changé son format.";
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array<int|string, int> valeurs de sexe inconnues rencontrées au dernier parse(), avec leur nombre
+     */
+    public function getUnknownSexes(): array
+    {
+        return $this->unknownSexes;
+    }
+
     /**
      * @throws \Exception
      */
     public function parse(string $filePath, string $fileType = 'annual'): \Generator
     {
+        $this->unknownSexes = [];
         if (!$handle = @fopen($filePath, 'r')) {
             throw new \Exception("Can't open '$filePath'");
         }
@@ -82,7 +151,7 @@ class FfcamFileParser
             ->setFirstname($this->truncate($firstname, 'firstname'))
             ->setLastname($this->truncate($lastname, 'lastname'))
             ->setBirthdate($birthdate)
-            ->setCiv($this->truncate($this->normalizeNames(str_replace('MLLE', 'MME', trim($line[8]))), 'civ'))
+            ->setCiv($this->normalizeSexe($line[8]))
             ->setCafnumParent((int) $line[5] > 0 ? trim($line[1] . $line[5]) : null)
             ->setTel($this->truncate(trim($line[27]) ?: trim($line[29]), 'tel'))
             ->setTel2($this->truncate(trim($line[26]), 'tel2'))
@@ -142,7 +211,7 @@ class FfcamFileParser
             ->setFirstname($this->truncate($firstname, 'firstname'))
             ->setLastname($this->truncate($lastname, 'lastname'))
             ->setBirthdate($birthdate)
-            ->setCiv($this->truncate($this->normalizeNames(str_replace('MLLE', 'MME', trim($line[5]))), 'civ'))
+            ->setCiv($this->normalizeSexe($line[5]))
             ->setCafnumParent(null)
             ->setTel($this->truncate(trim($line[17]) ?: trim($line[14]), 'tel'))
             ->setTel2($this->truncate(trim($line[18]), 'tel2'))
@@ -169,8 +238,8 @@ class FfcamFileParser
      */
     private function validateDiscoveryLine(array $line, int $lineNumber): void
     {
-        if (\count($line) < 24) {
-            throw new \Exception("Can't process line $lineNumber : Invalid format. Expected : 24 columns. Got: " . \count($line));
+        if (\count($line) < self::COLUMN_COUNTS['discovery']['min']) {
+            throw new \Exception("Can't process line $lineNumber : Invalid format. Expected : " . self::COLUMN_COUNTS['discovery']['min'] . ' columns. Got: ' . \count($line));
         }
 
         $fullCafNum = $line[0];
@@ -192,8 +261,8 @@ class FfcamFileParser
 
     private function validateLine(array $line, int $lineNumber): void
     {
-        if (\count($line) < 33) {
-            throw new \Exception("Can't process line $lineNumber : Invalid format. Expected : 33 columns. Got: " . \count($line));
+        if (\count($line) < self::COLUMN_COUNTS['annual']['min']) {
+            throw new \Exception("Can't process line $lineNumber : Invalid format. Expected : " . self::COLUMN_COUNTS['annual']['min'] . ' columns. Got: ' . \count($line));
         }
 
         $fullCafNum = $line[0];
@@ -209,6 +278,23 @@ class FfcamFileParser
         ) {
             throw new \Exception("Can't process line $lineNumber : Multiple values are wrong");
         }
+    }
+
+    private function normalizeSexe(string $value): ?string
+    {
+        $value = trim($value);
+        if ('' === $value) {
+            return null;
+        }
+
+        $sexe = self::SEXES[mb_strtoupper($value)] ?? null;
+        if (null === $sexe) {
+            $this->unknownSexes[$value] = ($this->unknownSexes[$value] ?? 0) + 1;
+
+            return $this->truncate($value, 'civ');
+        }
+
+        return $sexe;
     }
 
     private function truncate(string $value, string $field): string
