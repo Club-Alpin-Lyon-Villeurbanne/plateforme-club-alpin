@@ -116,7 +116,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[Groups('user:details')]
     private ?string $pays = null;
 
-    #[ORM\Column(name: 'civ_user', type: 'string', length: 10, nullable: true)]
+    #[ORM\Column(name: 'civ_user', type: 'string', length: 10, nullable: true, options: ['comment' => 'Sexe tel que fourni par la FFCAM : Masculin, Féminin ou Autre'])]
     #[Groups('user:details')]
     #[SerializedName('civilite')]
     private ?string $civ = null;
