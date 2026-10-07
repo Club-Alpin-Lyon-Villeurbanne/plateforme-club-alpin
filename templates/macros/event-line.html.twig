@@ -96,7 +96,7 @@
 
                         {% set participation = event.participation(user) %}
                         {% if participation and display_participation_status %}
-                            {% set is_orga = app.user == event.user %}
+                            {% set is_orga = user == event.user %}
                             <div class="tw-flex tw-flex-col tw-items-end tw-ml-auto tw-gap-0.5">
                                     {% if participation.role and participation.role in constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT_ETENDU') %}
                                         <span class="tw-inline-flex tw-items-center tw-text-right tw-gap-1 tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
