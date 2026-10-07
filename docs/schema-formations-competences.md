@@ -3,6 +3,32 @@
 ## Vue d'ensemble
 Ce document décrit le schéma de base de données pour la gestion des formations et niveaux de pratique des adhérents du Club Alpin Français (CAF).
 
+## Notions métier
+
+Les définitions sont dans le [glossaire](glossaire.md#cursus-ffcam).
+
+### Correspondance entre notions et tables
+
+| Notion | Tables |
+|--------|--------|
+| Formation validée | `formation_referentiel`, `formation_validation` |
+| Niveau de pratique | `formation_niveau_referentiel`, `formation_niveau_validation` |
+| Brevet | non décrit dans ce document |
+| Groupe de compétences | non décrit dans ce document |
+
+### Brevets d'initiateur par activité
+
+| 1er degré (brevet socle) | 2e degré (spécialités) |
+|--------------------------|------------------------|
+| Escalade SAE | aucune |
+| Escalade SNE | Grandes voies équipées, Grandes voies, Escalade sur glace - dry, Escalade - perfectionnement sportif, Via ferrata |
+| Alpinisme | Grandes voies équipées, Grandes voies, Escalade sur glace - dry, Cascade de glace |
+| Ski de randonnée | Ski alpinisme |
+| Snowboard de randonnée | Snowboard alpinisme |
+| Randonnée montagne | Randonnée alpine, Raquettes à neige |
+| Trail | aucune |
+| Vélo de montagne | aucune |
+
 ## Tables de référentiel (données maîtres FFCAM)
 
 ### 1. `formation_referentiel`
