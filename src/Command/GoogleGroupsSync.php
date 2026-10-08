@@ -157,21 +157,20 @@ class GoogleGroupsSync extends Command
 
             $this->upsertMemberToGoogleGroup($existingMembers, $groupKey, $email, $type);
 
-            unset($existingMembers[$email]);
+            unset($existingMembers[self::comparableEmail($email)]);
         }
 
         $this->upsertMemberToGoogleGroup($existingMembers, $groupKey, 'publics-eloignes@clubalpinlyon.fr', 'MEMBER');
         $this->upsertMemberToGoogleGroup($existingMembers, $groupKey, 'escalade@clubalpinlyon.fr', 'MEMBER');
         unset($existingMembers['publics-eloignes@clubalpinlyon.fr'], $existingMembers['escalade@clubalpinlyon.fr']);
 
-        foreach ($existingMembers as $emailToRemove => $_) {
+        foreach ($existingMembers as $emailToRemove) {
             if (!$this->dryRun) {
                 $this->output->writeln("\t☑️ Removing Google Group Member <info>$emailToRemove</info>");
                 $this->googleGroupsService->members->delete($groupKey, $emailToRemove);
             } else {
                 $this->output->writeln("\t💨 Desinscription du membre du Google Group <info>$emailToRemove</info>");
             }
-            unset($existingMembers[$emailToRemove]);
         }
     }
 
@@ -214,7 +213,7 @@ class GoogleGroupsSync extends Command
 
             $this->upsertMemberToGoogleGroup($existingMembers, $groupKey, $email, $type);
 
-            unset($existingMembers[$email]);
+            unset($existingMembers[self::comparableEmail($email)]);
         }
 
         // Hack parce que cette commission fonctionne pas comme les autres
@@ -224,14 +223,13 @@ class GoogleGroupsSync extends Command
             unset($existingMembers['escalade-jeunes@clubalpinlyon.fr'], $existingMembers['escalade@clubalpinlyon.fr']);
         }
 
-        foreach ($existingMembers as $emailToRemove => $_) {
+        foreach ($existingMembers as $emailToRemove) {
             if (!$this->dryRun) {
                 $this->output->writeln("\t☑️ Removing Google Group Member <info>$emailToRemove</info>");
                 $this->googleGroupsService->members->delete($groupKey, $emailToRemove);
             } else {
                 $this->output->writeln("\t💨 Desinscription du membre du Google Group <info>$emailToRemove</info>");
             }
-            unset($existingMembers[$emailToRemove]);
         }
 
         $this->upsertDriveAndAccesses($commission);
@@ -254,14 +252,16 @@ class GoogleGroupsSync extends Command
     /**
      * Insère un nouveau membre dans un groupe Google ou met à jour son rôle s'il est déjà présent avec un rôle différent.
      *
-     * @param array<string, string> $existingMembers Membres déjà présents dans le groupe (email => email)
+     * @param array<string, string> $existingMembers Membres déjà présents dans le groupe (adresse comparable => adresse connue de Google)
      * @param string                $groupKey        Adresse email du groupe Google cible
      * @param string                $email           Adresse email du membre à insérer/mettre à jour
      * @param string                $type            Rôle Google Group : MEMBER, OWNER ou MANAGER
      */
     private function upsertMemberToGoogleGroup(array $existingMembers, string $groupKey, string $email, string $type = 'MEMBER'): void
     {
-        if (!isset($existingMembers[$email])) {
+        $googleEmail = $existingMembers[self::comparableEmail($email)] ?? null;
+
+        if (null === $googleEmail) {
             $member = new Member();
             $member->setEmail($email);
             $member->setRole($type); // Possible roles: MEMBER, OWNER, MANAGER
@@ -283,7 +283,7 @@ class GoogleGroupsSync extends Command
             }
         } else {
             try {
-                $member = $this->googleGroupsService->members->get($groupKey, $email);
+                $member = $this->googleGroupsService->members->get($groupKey, $googleEmail);
             } catch (Exception $e) {
                 $this->output->writeln("\t🚨 No Google Account found for email <info>$email</info>, impossible de verifier le role ; utilisateur.ice avec acces OK, role a verifier");
 
@@ -297,7 +297,7 @@ class GoogleGroupsSync extends Command
 
                 if (!$this->dryRun) {
                     $this->output->writeln("\t☑️ Updating Google Group Member from <comment>$oldType</comment> to <comment>$type</comment> <info>$email</info>");
-                    $this->googleGroupsService->members->update($groupKey, $email, $member);
+                    $this->googleGroupsService->members->update($groupKey, $googleEmail, $member);
                 } else {
                     $this->output->writeln("\t💨 Mise a jour des access de <comment>$oldType</comment> a <comment>$type</comment> <info>$email</info>");
                 }
@@ -496,7 +496,7 @@ class GoogleGroupsSync extends Command
     }
 
     /**
-     * Retourne les membres actuels d'un groupe Google sous forme de tableau indexé par email (email => email).
+     * Retourne les membres actuels d'un groupe Google (adresse comparable => adresse connue de Google).
      *
      * @return array<string, string>
      *
@@ -504,10 +504,13 @@ class GoogleGroupsSync extends Command
      */
     private function getCommissionGoogleGroupMembers(string $groupEmail): array
     {
-        $members = array_map(fn (Member $member) => mb_strtolower($member->getEmail() ?? ''), $this->googleGroupsService->members->listMembers($groupEmail)->getMembers());
+        $members = [];
+        foreach ($this->googleGroupsService->members->listMembers($groupEmail)->getMembers() as $member) {
+            $email = mb_strtolower($member->getEmail() ?? '');
+            $members[self::comparableEmail($email)] = $email;
+        }
 
-        // return a map, more easy to process by the algo
-        return array_combine($members, $members);
+        return $members;
     }
 
     /**
@@ -603,5 +606,13 @@ class GoogleGroupsSync extends Command
 
         // les membres renvoyés par Google sont en minuscules
         return mb_strtolower($email);
+    }
+
+    // Gmail ignore les points : Google renvoie le membre sous la forme de son compte
+    public static function comparableEmail(string $email): string
+    {
+        $email = mb_strtolower($email);
+
+        return str_ends_with($email, '@gmail.com') ? str_replace('.', '', strstr($email, '@', true)) . '@gmail.com' : $email;
     }
 }
