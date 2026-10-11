@@ -3,6 +3,7 @@
 namespace App\Tests\Api;
 
 use App\Entity\User;
+use Monolog\Handler\TestHandler;
 use Symfony\Component\Mime\Email;
 
 /**
@@ -21,6 +22,7 @@ class NoteHorsSortieResponsableMailsTest extends ExpenseReportApiTestCase
             $mail = $this->seulMailAValider($valideur);
             $this->assertCount(1, $mail->getTo());
             $this->assertSame([], $mail->getBcc());
+            $this->assertReponseAuDemandeur($mail, $this->adherent);
             foreach ($this->corps($mail) as $corps) {
                 $this->assertStringContainsString($bonjour, $corps);
                 $this->assertStringContainsString('Dégaines pour la SAE', $corps);
@@ -113,6 +115,30 @@ class NoteHorsSortieResponsableMailsTest extends ExpenseReportApiTestCase
         $this->assertSame([], $this->mailsAValider($this->responsableAutreCommission));
     }
 
+    public function testSansAdresseValideChezLesValideursLaNoteAValiderPartALaTresorerie(): void
+    {
+        $this->changerLAdresse($this->responsable, 'pas-une-adresse-' . bin2hex(random_bytes(4)));
+        $this->changerLAdresse($this->coResponsable, null);
+
+        $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
+
+        $mails = $this->mailsA($this->adresseTresorerie());
+        $this->assertCount(1, $mails);
+        $this->assertSame(self::SUJET_A_VALIDER, $mails[0]->getSubject());
+        $this->assertReponseAuDemandeur($mails[0], $this->adherent);
+        $this->assertTrue($this->getContainer()->get(TestHandler::class)->hasErrorThatContains('aucun valideur n\'a d\'adresse mail valide'));
+    }
+
+    public function testUnValideurSansAdresseValideNEmpechePasLesAutresDeRecevoirLaNote(): void
+    {
+        $this->changerLAdresse($this->responsable, null);
+
+        $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
+
+        $this->seulMailAValider($this->coResponsable);
+        $this->assertSame([], $this->mailsA($this->adresseTresorerie()));
+    }
+
     public function testLeDemandeurApprendAQuiSaNoteEstEnvoyee(): void
     {
         $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
@@ -188,6 +214,12 @@ class NoteHorsSortieResponsableMailsTest extends ExpenseReportApiTestCase
         $this->assertStringContainsString('Zoé D\'ARC l\'a reçu aussi', $mail->getTextBody());
         $this->assertStringContainsString('Zoé D&#039;ARC', $mail->getHtmlBody());
         $this->assertStringContainsString('est envoyée à Alex DURAND et Zoé D\'ARC.', $this->mailsA($this->adherent->getEmail())[0]->getTextBody());
+    }
+
+    private function changerLAdresse(User $utilisateur, ?string $adresse): void
+    {
+        $this->em()->find(User::class, $utilisateur->getId())->setEmail($adresse);
+        $this->em()->flush();
     }
 
     /**

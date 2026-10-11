@@ -25,6 +25,7 @@ class NoteHorsSortieMailsTest extends ExpenseReportApiTestCase
         $mails = $this->mailsA($this->adresseTresorerie());
         $this->assertCount(1, $mails);
         $this->assertSame('Note de frais à valider : Dégaines pour la SAE', $mails[0]->getSubject());
+        $this->assertReponseAuDemandeur($mails[0], $this->owner);
         foreach ([$mails[0]->getTextBody(), $mails[0]->getHtmlBody()] as $corps) {
             $this->assertStringContainsStringIgnoringCase('Sam Petit', $corps);
             $this->assertStringContainsString('achat', $corps);

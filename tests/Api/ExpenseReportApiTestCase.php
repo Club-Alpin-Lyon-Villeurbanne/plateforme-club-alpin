@@ -353,6 +353,14 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
     }
 
     /**
+     * Le destinataire répond directement au demandeur de la note.
+     */
+    protected function assertReponseAuDemandeur(Email $mail, User $demandeur): void
+    {
+        $this->assertSame([$demandeur->getEmail()], array_map(static fn (Address $adresse) => $adresse->getAddress(), $mail->getReplyTo()));
+    }
+
+    /**
      * @return array{status: int, body: array}
      */
     protected function list(User $as, string $uri, array $query = []): array

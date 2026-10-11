@@ -33,8 +33,9 @@ class NotificationsNoteHorsSortie
     }
 
     /**
-     * La note attend une validation : chaque valideur reçoit son mail, ou la trésorerie s'il n'y
-     * en a pas. Jamais le choix entre don et remboursement, qui ne doit pas peser sur la décision.
+     * La note attend une validation : chaque valideur reçoit son mail, ou la trésorerie si aucun
+     * ne peut le recevoir. Jamais le choix entre don et remboursement, qui ne doit pas peser sur
+     * la décision. Une réponse au mail va au demandeur.
      */
     public function noteEnvoyee(ExpenseReport $note): void
     {
@@ -53,7 +54,11 @@ class NotificationsNoteHorsSortie
         ];
 
         $valideurs = $this->valideurs->pour($note);
-        if ([] === $valideurs) {
+        $joignables = array_filter($valideurs, fn (User $valideur) => $this->mailer->isValid($valideur->getEmail()));
+        if ([] === $joignables) {
+            if ([] !== $valideurs) {
+                $this->logger->error(sprintf('Note de frais %d : aucun valideur n\'a d\'adresse mail valide, la note à valider part à la trésorerie.', $note->getId()));
+            }
             $this->envoyerALaTresorerie($note, 'transactional/note-de-frais-a-valider', $contexte);
 
             return;
@@ -64,7 +69,7 @@ class NotificationsNoteHorsSortie
             $this->mailer->send($valideur, 'transactional/note-de-frais-a-valider', $contexte + [
                 'prenom' => $valideur->getFirstname(),
                 'autresValideurs' => array_values(array_map(static fn (User $autre) => $autre->getFullName(), $autres)),
-            ]);
+            ], replyTo: $note->getUser());
         }
     }
 
@@ -107,7 +112,7 @@ class NotificationsNoteHorsSortie
             return;
         }
 
-        $this->mailer->send($this->adresseTresorerie, $gabarit, $contexte);
+        $this->mailer->send($this->adresseTresorerie, $gabarit, $contexte, replyTo: $note->getUser());
     }
 
     /**

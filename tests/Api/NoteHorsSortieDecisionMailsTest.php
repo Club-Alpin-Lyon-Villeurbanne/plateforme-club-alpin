@@ -32,6 +32,7 @@ class NoteHorsSortieDecisionMailsTest extends ExpenseReportApiTestCase
         $mails = $this->mailsA($this->adresseTresorerie());
         $this->assertCount(1, $mails);
         $this->assertSame('Note de frais validée : Dégaines pour la SAE', $mails[0]->getSubject());
+        $this->assertReponseAuDemandeur($mails[0], $this->owner);
         $dateDepense = (new \DateTimeImmutable('-3 days'))->format('d/m/Y');
         foreach ($this->corps($mails[0]) as $corps) {
             $this->assertStringContainsString('Sam PETIT', $corps);

@@ -119,7 +119,7 @@ class Mailer
         }
     }
 
-    private function isValid(?string $email): bool
+    public function isValid(?string $email): bool
     {
         if (!$email || '' === trim($email)) {
             return false;
