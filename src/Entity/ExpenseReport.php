@@ -353,6 +353,23 @@ class ExpenseReport
         return $this;
     }
 
+    /**
+     * Les champs propres aux notes hors sortie, avec leur valeur : une note de sortie les laisse
+     * vides, et seul le demandeur les modifie.
+     *
+     * @return array<string, mixed>
+     */
+    public function champsHorsSortie(): array
+    {
+        return [
+            'commission' => $this->commission,
+            'objet' => $this->objet,
+            'dateDepense' => $this->dateDepense,
+            'lienFormation' => $this->lienFormation,
+            'motPourResponsable' => $this->motPourResponsable,
+        ];
+    }
+
     public function getTotalDeclare(): ?string
     {
         return $this->totalDeclare;

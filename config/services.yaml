@@ -40,6 +40,16 @@ parameters:
                 autre: 30
             # Total déclaré au-delà duquel la note porte un avertissement, en euros.
             seuilAvertissement: 200
+            # Barème d'une formation : chaque ligne au réel, sauf la voiture (kilomètres × taux).
+            # Un plafond, en euros, vaut pour une nature : sur chaque ligne (portee: ligne) ou sur
+            # le total de la nature dans la note (portee: note). Une nature absente n'a pas de plafond.
+            formation:
+                tauxKilometrique: 0.40
+                plafonds:
+                    voiture: { montant: 200, portee: note }
+                    peage: { montant: 60, portee: note }
+                    train: { montant: 130, portee: note }
+                    hebergement: { montant: 60, portee: ligne }
   materiel_api_base_url: "%env(LOXYA_API_URL)%"
   materiel_api_username: "%env(LOXYA_API_USERNAME)%"
   materiel_api_password: "%env(LOXYA_API_PASSWORD)%"

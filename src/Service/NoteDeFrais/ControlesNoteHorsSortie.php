@@ -4,8 +4,10 @@ namespace App\Service\NoteDeFrais;
 
 use App\Entity\ExpenseAttachment;
 use App\Entity\ExpenseReport;
+use App\Entity\UserAttr;
 use App\Repository\ExpenseReportStatusHistoryRepository;
 use App\Service\ExpenseReportCalculator;
+use App\Utils\Enums\ExpenseReportTypeEnum;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
@@ -17,6 +19,15 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
  */
 final class ControlesNoteHorsSortie
 {
+    // Rôles qui permettent de demander le remboursement d'une formation sur leur commission.
+    private const array ROLES_D_ENCADREMENT = [
+        UserAttr::RESPONSABLE_COMMISSION,
+        UserAttr::ENCADRANT,
+        UserAttr::COENCADRANT,
+        UserAttr::STAGIAIRE,
+        UserAttr::BENEVOLE,
+    ];
+
     public function __construct(
         #[Autowire(param: 'expense_report')]
         private readonly array $config,
@@ -60,6 +71,12 @@ final class ControlesNoteHorsSortie
                 'controle' => $this->delaiDEnvoiDepasse(...),
             ],
             [
+                'champ' => 'commission',
+                'moments' => [MomentDeControle::CREATION, MomentDeControle::CHANGEMENT_DE_COMMISSION],
+                'niveau' => NiveauDeControle::BLOQUANT,
+                'controle' => $this->formationSansRoleDEncadrement(...),
+            ],
+            [
                 'champ' => 'details',
                 'moments' => [MomentDeControle::CHAQUE_SOUMISSION],
                 'niveau' => NiveauDeControle::BLOQUANT,
@@ -82,6 +99,12 @@ final class ControlesNoteHorsSortie
                 'moments' => [MomentDeControle::CHAQUE_SOUMISSION],
                 'niveau' => NiveauDeControle::BLOQUANT,
                 'controle' => $this->choixDonOuRemboursementManquant(...),
+            ],
+            [
+                'champ' => 'totalRemboursable',
+                'moments' => [MomentDeControle::LECTURE],
+                'niveau' => NiveauDeControle::AVERTISSEMENT,
+                'controle' => $this->plafondApplique(...),
             ],
             [
                 'champ' => 'totalDeclare',
@@ -141,6 +164,18 @@ final class ControlesNoteHorsSortie
             : null;
     }
 
+    private function formationSansRoleDEncadrement(ExpenseReport $note): ?string
+    {
+        $commission = $note->getCommission();
+        if (ExpenseReportTypeEnum::FORMATION !== $note->getType() || null === $commission) {
+            return null;
+        }
+
+        return $note->getUser()?->hasAttribute(self::ROLES_D_ENCADREMENT, $commission->getCode())
+            ? null
+            : 'Seuls les encadrants de la commission peuvent demander le remboursement d\'une formation.';
+    }
+
     private function sansDepense(ExpenseReport $note): ?string
     {
         return [] === $note->lignes() ? 'Il manque au moins une dépense.' : null;
@@ -148,10 +183,11 @@ final class ControlesNoteHorsSortie
 
     private function montantsNonPositifs(ExpenseReport $note): ?string
     {
+        // La distance d'une voiture compte comme son montant.
         $numeros = $this->numerosDesLignes($note, static function (array $ligne): bool {
-            $montant = $ligne['montant'] ?? null;
+            $saisie = $ligne[ExpenseReportTypeEnum::champDeLaSaisie($ligne)] ?? null;
 
-            return !(\is_int($montant) || \is_float($montant)) || $montant <= 0;
+            return !(\is_int($saisie) || \is_float($saisie)) || $saisie <= 0;
         });
 
         return match (\count($numeros)) {
@@ -164,7 +200,8 @@ final class ControlesNoteHorsSortie
     private function justificatifsManquants(ExpenseReport $note): ?string
     {
         $lignesJustifiees = $note->getAttachments()->map(static fn (ExpenseAttachment $justificatif) => $justificatif->getExpenseId())->toArray();
-        $numeros = $this->numerosDesLignes($note, static fn (array $ligne): bool => !\in_array($ligne['id'] ?? null, $lignesJustifiees, true));
+        $numeros = $this->numerosDesLignes($note, static fn (array $ligne): bool => ExpenseReportTypeEnum::NATURE_EN_KILOMETRES !== ($ligne['nature'] ?? null)
+            && !\in_array($ligne['id'] ?? null, $lignesJustifiees, true));
 
         return match (\count($numeros)) {
             0 => null,
@@ -176,6 +213,15 @@ final class ControlesNoteHorsSortie
     private function choixDonOuRemboursementManquant(ExpenseReport $note): ?string
     {
         return null === $note->isRefundRequired() ? 'Il manque le choix entre remboursement et don.' : null;
+    }
+
+    private function plafondApplique(ExpenseReport $note): ?string
+    {
+        $montants = $this->calculator->montantsNoteHorsSortie($note);
+
+        return $montants['totalRemboursable'] < $montants['totalDeclare']
+            ? sprintf('dont %s remboursables selon les plafonds du club', $this->calculator->formatEuros($montants['totalRemboursable']))
+            : null;
     }
 
     private function auDelaDuSeuil(ExpenseReport $note): ?string

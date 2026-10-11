@@ -30,6 +30,8 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
     protected const INFLATED_DETAILS = '{"transport":{"type":"PERSONAL_VEHICLE","distance":5000,"tollFee":0},"accommodations":[],"others":[]}';
 
     protected const LIGNES_ACHAT = '{"lignes":[{"id":"ligne-1","montant":64.9,"description":"Dégaines (x6)"},{"id":"ligne-2","montant":21.5,"description":"Cordelette 6 mm"}]}';
+    // Aucun plafond n'est atteint ; seule la voiture (ligne 2) se passe de justificatif.
+    protected const LIGNES_FORMATION = '{"lignes":[{"id":"ligne-1","nature":"stage","montant":280},{"id":"ligne-2","nature":"voiture","distance":220},{"id":"ligne-3","nature":"peage","montant":32},{"id":"ligne-4","nature":"hebergement","montant":54}]}';
 
     private const MANAGERS_ENV = 'AUTHORIZED_IDS_FOR_EXPENSE_MANAGEMENT';
     private const ADRESSE_TRESORERIE_ENV = 'NOTES_DE_FRAIS_EMAIL_TRESORERIE';
@@ -168,6 +170,54 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
         $em->clear();
 
         return $note;
+    }
+
+    /**
+     * Formation déposée sur la commission de test, où l'encadrant a son rôle, sans passer par le
+     * contrôle de création.
+     */
+    protected function creerFormation(User $demandeur, ?string $details = null, ?\DateTimeImmutable $dateDepense = null, ?string $lienFormation = null): ExpenseReport
+    {
+        $em = $this->em();
+        $note = ExpenseReport::nouvelleNoteHorsSortie($em->find(User::class, $demandeur->getId()), ExpenseReportTypeEnum::FORMATION);
+        $note->setCommission($em->find(Commission::class, $this->commissionDeTest->getId()));
+        $note->setObjet('Formation initiateur SAE');
+        $note->setDateDepense($dateDepense ?? new \DateTimeImmutable('-3 days'));
+        $note->setLienFormation($lienFormation);
+        $note->setDetails($details);
+        $em->persist($note);
+        $em->flush();
+        $em->clear();
+
+        return $note;
+    }
+
+    /**
+     * Corps de création d'une formation sur la commission de test ; null pour laisser un champ vide.
+     */
+    protected function formation(array $champs = []): array
+    {
+        return array_merge([
+            'type' => 'formation',
+            'commissionId' => $this->commissionDeTest->getId(),
+            'objet' => 'Formation initiateur SAE',
+            'dateDepense' => (new \DateTimeImmutable('-3 days'))->format('Y-m-d'),
+        ], $champs);
+    }
+
+    /**
+     * Barème formation de la configuration : taux kilométrique et plafonds par nature.
+     *
+     * @return array{tauxKilometrique: float, plafonds: array<string, array{montant: float, portee: string}>}
+     */
+    protected function baremeFormation(): array
+    {
+        return $this->configHorsSortie()['formation'];
+    }
+
+    protected function euros(float $montant): string
+    {
+        return (new \NumberFormatter('fr_FR', \NumberFormatter::CURRENCY))->formatCurrency($montant, 'EUR');
     }
 
     /**

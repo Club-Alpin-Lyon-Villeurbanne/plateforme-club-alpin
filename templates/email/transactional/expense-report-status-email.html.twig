@@ -42,13 +42,16 @@
     <ul>
         <li>Demandeur : {{ report.user.firstname }} {{ report.user.lastname }}</li>
         <li>Commission : {{ report.commission.title }}</li>
-        <li>{{ report.type.value == 'formation' ? 'Date de la formation' : "Date de l'achat" }} : {{ report.dateDepense|date('d/m/Y') }}</li>
+        <li>{{ report.type.libelleDeLaDate }} : {{ report.dateDepense|date('d/m/Y') }}</li>
+        {% if report.lienFormation %}
+        <li>Formation : <a href="{{ report.lienFormation }}">{{ report.lienFormation }}</a></li>
+        {% endif %}
     </ul>
 
     <h2>Dépenses</h2>
     <ul>
     {% for ligne in lignes %}
-        <li>{{ ligne.montant }}{{ ligne.description ? ' - ' ~ ligne.description }}</li>
+        <li>{{ ligne.montant }}{{ ligne.libelle ? ' - ' ~ ligne.libelle }}{{ ligne.detail ? ' (' ~ ligne.detail ~ ')' }}</li>
     {% endfor %}
     </ul>
     <p><strong>Total :</strong> {{ formattedTotal }}</p>
@@ -225,11 +228,14 @@ Corriger ma demande : {{ lienCorrection }}
 {% endif %}
 - Demandeur : {{ report.user.firstname }} {{ report.user.lastname }}
 - Commission : {{ report.commission.title }}
-- {{ report.type.value == 'formation' ? 'Date de la formation' : "Date de l'achat" }} : {{ report.dateDepense|date('d/m/Y') }}
+- {{ report.type.libelleDeLaDate }} : {{ report.dateDepense|date('d/m/Y') }}
+{% if report.lienFormation %}
+- Formation : {{ report.lienFormation }}
+{% endif %}
 
 DÉPENSES
 {% for ligne in lignes %}
-- {{ ligne.montant }}{{ ligne.description ? ' - ' ~ ligne.description }}
+- {{ ligne.montant }}{{ ligne.libelle ? ' - ' ~ ligne.libelle }}{{ ligne.detail ? ' (' ~ ligne.detail ~ ')' }}
 {% endfor %}
 
 Total : {{ formattedTotal }}

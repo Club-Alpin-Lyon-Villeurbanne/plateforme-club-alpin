@@ -10,8 +10,8 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 /**
  * Qui peut modifier quel champ d'une note de frais existante.
  *
- * - details / refundRequired, et les champs d'une note hors sortie (commission, objet, date,
- *   lien, mot pour le responsable) : le propriétaire, tant que la note est en brouillon ou rejetée ;
+ * - details / refundRequired, et les champs d'une note hors sortie (ExpenseReport::champsHorsSortie()) :
+ *   le propriétaire, tant que la note est en brouillon ou rejetée ;
  * - statusComment : un gestionnaire (non propriétaire) ou le responsable de la note, dans la
  *   requête où il change le statut.
  *
@@ -41,14 +41,7 @@ class FieldPermissionValidator
                 ->addViolation();
         }
 
-        $champsHorsSortie = [
-            'commission' => $expenseReport->getCommission(),
-            'objet' => $expenseReport->getObjet(),
-            'dateDepense' => $expenseReport->getDateDepense(),
-            'lienFormation' => $expenseReport->getLienFormation(),
-            'motPourResponsable' => $expenseReport->getMotPourResponsable(),
-        ];
-        foreach ($champsHorsSortie as $champ => $valeur) {
+        foreach ($expenseReport->champsHorsSortie() as $champ => $valeur) {
             if (!$canEditClaim && $this->changed($expenseReport, $champ, $valeur)) {
                 $context->buildViolation('Seul le demandeur peut modifier ce champ, tant que la note est en brouillon ou à corriger.')
                     ->atPath($champ)

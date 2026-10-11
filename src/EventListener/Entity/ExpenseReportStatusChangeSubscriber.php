@@ -90,11 +90,6 @@ class ExpenseReportStatusChangeSubscriber
     private function parametresNoteHorsSortie(ExpenseReport $note): array
     {
         $montants = $this->calculator->montantsNoteHorsSortie($note);
-        $lignes = array_map(fn (array $ligne) => [
-            'montant' => $this->calculator->formatEuros((float) ($ligne['montant'] ?? 0)),
-            'description' => $ligne['description'] ?? null,
-        ], $note->lignes());
-
         // L'auteur du changement, celui que l'historique des statuts enregistre.
         $auteur = $this->security->getUser();
 
@@ -105,7 +100,7 @@ class ExpenseReportStatusChangeSubscriber
             'status' => $note->getStatus()->value,
             // À qui la note est envoyée ; vide : à la trésorerie.
             'valideurs' => array_map(static fn (User $valideur) => $valideur->getFullName(), $this->valideurs->pour($note)),
-            'lignes' => $lignes,
+            'lignes' => $this->calculator->lignesAffichees($note),
             'formattedTotal' => $this->calculator->formatEuros($montants['totalDeclare']),
             'formattedReimbursable' => $this->calculator->formatEuros($montants['totalRemboursable']),
         ];

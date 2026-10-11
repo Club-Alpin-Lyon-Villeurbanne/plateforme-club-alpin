@@ -16,6 +16,9 @@
         <li><strong>Commission :</strong> {{ commission }}</li>
         <li><strong>Objet :</strong> {{ objet }}</li>
         <li><strong>Montant :</strong> {{ montant }}</li>
+        {% if lienFormation %}
+            <li><strong>Formation :</strong> <a href="{{ lienFormation }}">{{ lienFormation }}</a></li>
+        {% endif %}
     </ul>
     {% if mot %}
         <p><strong>Mot du demandeur :</strong><br>{{ mot|nl2br }}</p>
@@ -53,6 +56,9 @@ Bonjour{% if prenom|default(null) %} {{ prenom }}{% endif %},
 - Commission : {{ commission }}
 - Objet : {{ objet }}
 - Montant : {{ montant }}
+{% if lienFormation %}
+- Formation : {{ lienFormation }}
+{% endif %}
 {% if mot %}
 
 Mot du demandeur :

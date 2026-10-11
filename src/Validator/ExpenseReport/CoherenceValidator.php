@@ -55,14 +55,7 @@ class CoherenceValidator
             $this->refuser($context, 'event', 'Une note de sortie doit être rattachée à sa sortie.');
         }
 
-        $champsHorsSortie = [
-            'commission' => $note->getCommission(),
-            'objet' => $note->getObjet(),
-            'dateDepense' => $note->getDateDepense(),
-            'lienFormation' => $note->getLienFormation(),
-            'motPourResponsable' => $note->getMotPourResponsable(),
-        ];
-        foreach ($champsHorsSortie as $champ => $valeur) {
+        foreach ($note->champsHorsSortie() as $champ => $valeur) {
             if (null !== $valeur) {
                 $this->refuser($context, $champ, 'Ce champ ne concerne que les notes hors sortie.');
             }
@@ -96,18 +89,43 @@ class CoherenceValidator
                 continue;
             }
 
-            $montant = $ligne['montant'] ?? null;
-            if (null !== $montant && (!(\is_int($montant) || \is_float($montant)) || $montant < 0)) {
-                $this->refuser($context, 'details', "Ligne {$numero} : le montant doit être un nombre positif.");
-            } elseif (\is_float($montant) && abs($montant * 100 - round($montant * 100)) > 1e-6) {
-                $this->refuser($context, 'details', "Ligne {$numero} : le montant ne peut pas avoir plus de deux décimales.");
-            }
+            $this->validerNombre($context, $numero, $ligne['montant'] ?? null, 'le montant');
+            $this->validerNombre($context, $numero, $ligne['distance'] ?? null, 'la distance');
             if (isset($ligne['description']) && !\is_string($ligne['description'])) {
                 $this->refuser($context, 'details', "Ligne {$numero} : la description doit être un texte.");
             }
-            if (isset($ligne['nature']) && !\in_array($ligne['nature'], $naturesPermises, true)) {
+
+            // Une formation porte une nature par ligne, un achat aucune.
+            if (!isset($ligne['nature']) && [] !== $naturesPermises) {
+                $this->refuser($context, 'details', "Ligne {$numero} : la nature de la dépense manque.");
+            } elseif (isset($ligne['nature']) && !\in_array($ligne['nature'], $naturesPermises, true)) {
                 $this->refuser($context, 'details', "Ligne {$numero} : cette nature de dépense n'est pas permise pour ce type de note.");
             }
+
+            if ('distance' === ExpenseReportTypeEnum::champDeLaSaisie($ligne)) {
+                if (isset($ligne['montant'])) {
+                    $this->refuser($context, 'details', "Ligne {$numero} : la voiture se déclare en kilomètres, sans montant.");
+                }
+            } elseif (isset($ligne['distance'])) {
+                $this->refuser($context, 'details', "Ligne {$numero} : seule la voiture se déclare en kilomètres.");
+            }
+        }
+    }
+
+    /**
+     * Un montant ou une distance : vide tant que la ligne est en cours de saisie, sinon un
+     * nombre positif au centième près.
+     */
+    private function validerNombre(ExecutionContextInterface $context, int $numero, mixed $valeur, string $quoi): void
+    {
+        if (null === $valeur) {
+            return;
+        }
+
+        if (!(\is_int($valeur) || \is_float($valeur)) || $valeur < 0) {
+            $this->refuser($context, 'details', "Ligne {$numero} : {$quoi} doit être un nombre positif.");
+        } elseif (\is_float($valeur) && abs($valeur * 100 - round($valeur * 100)) > 1e-6) {
+            $this->refuser($context, 'details', "Ligne {$numero} : {$quoi} ne peut pas avoir plus de deux décimales.");
         }
     }
 

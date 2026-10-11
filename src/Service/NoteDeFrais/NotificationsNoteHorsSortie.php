@@ -7,7 +7,6 @@ use App\Entity\User;
 use App\Mailer\Mailer;
 use App\Repository\ExpenseReportStatusHistoryRepository;
 use App\Service\ExpenseReportCalculator;
-use App\Utils\Enums\ExpenseReportTypeEnum;
 use App\Utils\FileUploader;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -41,9 +40,10 @@ class NotificationsNoteHorsSortie
     {
         $contexte = [
             'demandeur' => $note->getUser()?->getFullName(),
-            'type' => $this->type($note),
+            'type' => $note->getType()->libelle(),
             'commission' => $note->getCommission()?->getTitle(),
             'objet' => $note->getObjet(),
+            'lienFormation' => $note->getLienFormation(),
             'montant' => $this->calculator->formatEuros($this->calculator->montantsNoteHorsSortie($note)['totalDeclare']),
             'mot' => $note->getMotPourResponsable(),
             'avertissements' => $this->controles->avertissements($note),
@@ -79,10 +79,12 @@ class NotificationsNoteHorsSortie
 
         $this->envoyerALaTresorerie($note, 'transactional/note-de-frais-validee', [
             'demandeur' => $demandeur?->getFullName(),
-            'type' => $this->type($note),
+            'type' => $note->getType()->libelle(),
             'commission' => $note->getCommission()?->getTitle(),
             'objet' => $note->getObjet(),
+            'libelleDate' => $note->getType()->libelleDeLaDate(),
             'dateDepense' => $dateDepense,
+            'lienFormation' => $note->getLienFormation(),
             'lignes' => $this->lignes($note),
             'total' => $this->calculator->formatEuros($montants['totalDeclare']),
             'remboursable' => $this->calculator->formatEuros($montants['totalRemboursable']),
@@ -109,7 +111,7 @@ class NotificationsNoteHorsSortie
     /**
      * Lignes dans l'ordre de la saisie, chacune avec l'adresse de son justificatif.
      *
-     * @return list<array{montant: string, description: ?string, justificatif: ?string}>
+     * @return list<array{id: ?string, libelle: ?string, detail: ?string, montant: string, justificatif: ?string}>
      */
     private function lignes(ExpenseReport $note): array
     {
@@ -120,16 +122,9 @@ class NotificationsNoteHorsSortie
             }
         }
 
-        return array_map(fn (array $ligne) => [
-            'montant' => $this->calculator->formatEuros((float) ($ligne['montant'] ?? 0)),
-            'description' => $ligne['description'] ?? null,
+        return array_map(static fn (array $ligne) => $ligne + [
             'justificatif' => $justificatifs[$ligne['id'] ?? ''] ?? null,
-        ], $note->lignes());
-    }
-
-    private function type(ExpenseReport $note): string
-    {
-        return ExpenseReportTypeEnum::FORMATION === $note->getType() ? 'formation' : 'achat';
+        ], $this->calculator->lignesAffichees($note));
     }
 
     private function lien(ExpenseReport $note): string

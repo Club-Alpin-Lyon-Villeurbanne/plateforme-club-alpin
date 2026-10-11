@@ -16,13 +16,16 @@
         <li><strong>Type :</strong> {{ type }}</li>
         <li><strong>Commission :</strong> {{ commission }}</li>
         <li><strong>Objet :</strong> {{ objet }}</li>
-        <li><strong>{{ type == 'formation' ? 'Date de la formation' : "Date de l'achat" }} :</strong> {{ dateDepense }}</li>
+        <li><strong>{{ libelleDate }} :</strong> {{ dateDepense }}</li>
+        {% if lienFormation %}
+            <li><strong>Formation :</strong> <a href="{{ lienFormation }}">{{ lienFormation }}</a></li>
+        {% endif %}
     </ul>
 
     <h2>Dépenses</h2>
     <ul>
         {% for ligne in lignes %}
-            <li>{{ ligne.montant }}{{ ligne.description ? ' - ' ~ ligne.description }}{% if ligne.justificatif %} (<a href="{{ ligne.justificatif }}">justificatif</a>){% endif %}</li>
+            <li>{{ ligne.montant }}{{ ligne.libelle ? ' - ' ~ ligne.libelle }}{{ ligne.detail ? ' (' ~ ligne.detail ~ ')' }}{% if ligne.justificatif %} (<a href="{{ ligne.justificatif }}">justificatif</a>){% endif %}</li>
         {% endfor %}
     </ul>
     <p>Total : {{ total }}<br>Remboursable : {{ remboursable }}</p>
@@ -62,11 +65,14 @@ Cette note de frais est validée et vous est transmise.
 - Type : {{ type }}
 - Commission : {{ commission }}
 - Objet : {{ objet }}
-- {{ type == 'formation' ? 'Date de la formation' : "Date de l'achat" }} : {{ dateDepense }}
+- {{ libelleDate }} : {{ dateDepense }}
+{% if lienFormation %}
+- Formation : {{ lienFormation }}
+{% endif %}
 
 DÉPENSES
 {% for ligne in lignes %}
-- {{ ligne.montant }}{{ ligne.description ? ' - ' ~ ligne.description }}{% if ligne.justificatif %} (justificatif : {{ ligne.justificatif }}){% endif %}
+- {{ ligne.montant }}{{ ligne.libelle ? ' - ' ~ ligne.libelle }}{{ ligne.detail ? ' (' ~ ligne.detail ~ ')' }}{% if ligne.justificatif %} (justificatif : {{ ligne.justificatif }}){% endif %}
 
 {% endfor %}
 
