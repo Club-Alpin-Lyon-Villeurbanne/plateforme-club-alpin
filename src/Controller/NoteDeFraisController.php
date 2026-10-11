@@ -25,6 +25,18 @@ class NoteDeFraisController extends AbstractController
     ) {
     }
 
+    #[Route(path: '/notes-de-frais', name: 'notes_de_frais_mes_notes', methods: ['GET'])]
+    public function mesNotes(Environment $twig, string $baseUrl): Response
+    {
+        $this->pageDisponible();
+
+        $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal('apiBaseUrl', $baseUrl);
+
+        return $this->render('notes-de-frais/mes-notes.html.twig', [
+            'donnees' => ['delaisEnvoiJours' => $this->configNotesDeFrais['horsSortie']['delaiEnvoiJours']],
+        ]);
+    }
+
     #[Route(path: '/notes-de-frais/nouvelle', name: 'notes_de_frais_nouvelle', methods: ['GET'])]
     public function nouvelle(Request $request, CommissionRepository $commissionRepository, Environment $twig, string $baseUrl): Response
     {

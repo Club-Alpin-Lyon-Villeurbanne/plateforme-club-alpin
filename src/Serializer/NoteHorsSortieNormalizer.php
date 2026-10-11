@@ -3,8 +3,12 @@
 namespace App\Serializer;
 
 use App\Entity\ExpenseReport;
+use App\Entity\User;
+use App\Repository\ExpenseReportStatusHistoryRepository;
 use App\Service\ExpenseReportCalculator;
 use App\Service\NoteDeFrais\ControlesNoteHorsSortie;
+use App\Service\NoteDeFrais\ValideursNoteHorsSortie;
+use App\Utils\Enums\ExpenseReportStatusEnum;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
@@ -22,6 +26,8 @@ final class NoteHorsSortieNormalizer implements NormalizerInterface, NormalizerA
     public function __construct(
         private readonly ExpenseReportCalculator $calculator,
         private readonly ControlesNoteHorsSortie $controles,
+        private readonly ValideursNoteHorsSortie $valideurs,
+        private readonly ExpenseReportStatusHistoryRepository $historique,
     ) {
     }
 
@@ -37,8 +43,27 @@ final class NoteHorsSortieNormalizer implements NormalizerInterface, NormalizerA
         return array_merge(
             $donnees,
             $this->calculator->montantsNoteHorsSortie($object),
-            ['avertissements' => $this->controles->avertissements($object)],
+            [
+                'avertissements' => $this->controles->avertissements($object),
+                'dateEnvoi' => $this->dateEnvoi($object)?->format(\DATE_ATOM),
+                'valideurs' => array_map(
+                    static fn (User $valideur) => ['id' => $valideur->getId(), 'prenom' => $valideur->getFirstname(), 'nom' => $valideur->getLastname()],
+                    $this->valideurs->pour($object),
+                ),
+            ],
         );
+    }
+
+    /**
+     * Une requête par note envoyée : la liste d'un demandeur reste de quelques dizaines de lignes.
+     */
+    private function dateEnvoi(ExpenseReport $note): ?\DateTimeImmutable
+    {
+        if (ExpenseReportStatusEnum::DRAFT === $note->getStatus()) {
+            return null;
+        }
+
+        return $this->historique->dateDernierEnvoi($note);
     }
 
     public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool

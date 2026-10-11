@@ -56,6 +56,14 @@ export interface NoteDeFrais {
   totalRemboursable: number;
   /** Messages à afficher tels quels. */
   avertissements: string[];
+  /** Null pour un brouillon. */
+  dateEnvoi: string | null;
+  /** Vide : la note va directement à la trésorerie. */
+  valideurs: { id: number; prenom: string; nom: string }[];
+}
+
+export interface DonneesMesNotes {
+  delaisEnvoiJours: Record<string, number>;
 }
 
 export interface Refus {

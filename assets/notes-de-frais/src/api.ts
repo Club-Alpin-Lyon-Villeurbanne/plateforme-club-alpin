@@ -48,6 +48,21 @@ export async function creerNote(corps: Record<string, unknown>): Promise<NoteDeF
   return (await api.post<NoteDeFrais>("/notes-de-frais", corps)).data;
 }
 
+export interface PageDeNotes {
+  notes: NoteDeFrais[];
+  pages: number;
+}
+
+/** Notes hors sortie du demandeur, brouillons compris, des plus récentes aux plus anciennes. */
+export async function listerMesNotes(page: number): Promise<PageDeNotes> {
+  const reponse = await api.get<{ data: NoteDeFrais[]; meta: { pages: number } }>("/notes-de-frais", {
+    params: { type: ["autre", "formation"], inclure_brouillons: true, page },
+    paramsSerializer: { indexes: false },
+  });
+
+  return { notes: reponse.data.data, pages: reponse.data.meta.pages };
+}
+
 export async function lireNote(id: number): Promise<NoteDeFrais> {
   return (await api.get<NoteDeFrais>(`/notes-de-frais/${id}`)).data;
 }
