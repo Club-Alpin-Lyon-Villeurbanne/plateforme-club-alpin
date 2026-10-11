@@ -11,7 +11,7 @@
 
   <div v-if="!envoyee" class="main-type">
     <h1>Demande de remboursement</h1>
-    <p>Pour une formation ou un achat fait pour le club.</p>
+    <p>{{ formationPossible ? "Pour une formation ou un achat fait pour le club." : "Pour un achat fait pour le club." }}</p>
   </div>
 
   <form
@@ -28,6 +28,7 @@
       v-else-if="etape === 1"
       v-model="demande"
       :type-modifiable="note === null"
+      :formation-possible="formationPossible"
       :commissions="donnees.commissions"
       :commission-enregistree="note?.commission?.id ?? null"
       :delai-envoi-jours="delaiEnvoiJours"
@@ -139,6 +140,11 @@ const messageDeRenvoi = computed(() => {
 
   return `Renvoyée par ${nomComplet(decision.auteur)} : « ${decision.message ?? ""} »`;
 });
+
+// Une formation reprise reste une formation, même si le demandeur n'encadre plus nulle part.
+const formationPossible = computed(
+  () => demande.value.type === "formation" || props.donnees.commissions.some((commission) => commission.formationPossible),
+);
 
 const commissionChoisie = computed(() => props.donnees.commissions.find((commission) => commission.id === demande.value.commissionId));
 

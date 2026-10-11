@@ -73,6 +73,8 @@ import type { CommissionProposee, Demande } from "../types";
 const props = defineProps<{
   /** Vrai tant que la demande n'est pas créée. */
   typeModifiable: boolean;
+  /** Au moins une commission accepte une formation de l'utilisateur. */
+  formationPossible: boolean;
   commissions: CommissionProposee[];
   /** Commission enregistrée d'une demande reprise : toujours proposée. */
   commissionEnregistree: number | null;
@@ -84,8 +86,6 @@ const props = defineProps<{
 const demande = defineModel<Demande>({ required: true });
 const emit = defineEmits<{ continuer: [] }>();
 
-const formationPossible = computed(() => props.commissions.some((commission) => commission.formationPossible));
-
 // Une formation ne se demande que sur une commission où l'on encadre : la règle vient du serveur.
 const commissionsProposees = computed(() =>
   demande.value.type === "formation"
@@ -93,16 +93,29 @@ const commissionsProposees = computed(() =>
     : props.commissions,
 );
 
+// Ce que le passage à « Formation » a changé dans la commission, rendu au retour à l'achat tant que
+// l'utilisateur n'a pas choisi lui-même : la commission d'un achat ne change jamais à son insu.
+let changementAutomatique: { avant: number | null; apres: number | null } | null = null;
+
 watch(
   () => demande.value.type,
-  () => {
-    const ids = commissionsProposees.value.map((commission) => commission.id);
-    if (demande.value.commissionId !== null && !ids.includes(demande.value.commissionId)) {
-      demande.value.commissionId = null;
+  (type) => {
+    if (type === "formation") {
+      const ids = commissionsProposees.value.map((commission) => commission.id);
+      const actuelle = demande.value.commissionId;
+      if (actuelle !== null && ids.includes(actuelle)) {
+        changementAutomatique = null;
+        return;
+      }
+      const preselection = ids.length === 1 ? ids[0] : null;
+      changementAutomatique = { avant: actuelle, apres: preselection };
+      demande.value.commissionId = preselection;
+      return;
     }
-    if (demande.value.commissionId === null && ids.length === 1) {
-      demande.value.commissionId = ids[0];
+    if (changementAutomatique !== null && demande.value.commissionId === changementAutomatique.apres) {
+      demande.value.commissionId = changementAutomatique.avant;
     }
+    changementAutomatique = null;
   },
 );
 
