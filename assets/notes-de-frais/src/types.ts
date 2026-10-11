@@ -93,6 +93,8 @@ export interface DonneesAValider {
 
 export interface DonneesDetail {
   noteId: number;
+  utilisateurId: number | null;
+  gestionnaire: boolean;
 }
 
 export interface Refus {

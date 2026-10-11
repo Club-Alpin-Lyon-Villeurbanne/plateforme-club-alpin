@@ -71,10 +71,6 @@ final class NoteHorsSortieNormalizer implements NormalizerInterface, NormalizerA
         return $this->historique->dateDernierEnvoi($note);
     }
 
-    /**
-     * Le message est celui du renvoi : après correction et validation, le commentaire de statut
-     * garde encore l'ancien message de renvoi.
-     */
     private function derniereDecision(ExpenseReport $note): ?array
     {
         if (ExpenseReportStatusEnum::DRAFT === $note->getStatus()) {
@@ -90,7 +86,7 @@ final class NoteHorsSortieNormalizer implements NormalizerInterface, NormalizerA
             'statut' => $decision->getNewStatus()->value,
             'auteur' => ['prenom' => $decision->getChangedBy()?->getFirstname(), 'nom' => $decision->getChangedBy()?->getLastname()],
             'date' => $decision->getChangedAt()?->format(\DATE_ATOM),
-            'message' => ExpenseReportStatusEnum::REJECTED === $decision->getNewStatus() ? $note->getStatusComment() : null,
+            'message' => $decision->getMessage(),
         ];
     }
 

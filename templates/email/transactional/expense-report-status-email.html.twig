@@ -1,10 +1,11 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
-{% macro phrase_hors_sortie(report, status, auteur) -%}
-    Votre note de frais « {{ report.objet }} »
+{# L'appelant échappe l'objet et l'auteur pour le HTML ; la partie texte les garde tels quels. #}
+{% macro phrase_hors_sortie(objet, status, auteur) -%}
+    Votre note de frais « {{ objet|raw }} »
     {%- if status == 'submitted' %} est envoyée à la trésorerie
     {%- elseif status == 'rejected' %} vous est renvoyée pour correction
-    {%- elseif status == 'approved' %} a été validée{{ auteur ? ' par ' ~ auteur }} et transmise à la trésorerie
+    {%- elseif status == 'approved' %} a été validée{% if auteur %} par {{ auteur|raw }}{% endif %} et transmise à la trésorerie
     {%- elseif status == 'accounted' %} a été comptabilisée
     {%- else %} a été acceptée{% endif %}.
 {%- endmacro %}
@@ -12,7 +13,7 @@
 {% block subject -%}
     {% import _self as notes -%}
     {% if report.type.estHorsSortie -%}
-    {{ notes.phrase_hors_sortie(report, status, auteur|default(null)) }}
+    {{ notes.phrase_hors_sortie(report.objet, status, auteur|default(null)) }}
     {%- else -%}
     Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} 
     {%- if status == 'submitted' %} est envoyée à la comptabilité
@@ -25,12 +26,16 @@
 {% block inner_html %}{% import _self as notes %}{% if report.type.estHorsSortie %}
 <div>
     <p>
-        {{ notes.phrase_hors_sortie(report, status, auteur|default(null)) }}
+        {{ notes.phrase_hors_sortie(report.objet|e, status, auteur|default(null)|e) }}
     </p>
 
-    {% if status == 'rejected' and report.statusComment %}
+    {% if status == 'rejected' %}
+        {% if report.statusComment %}
+        <p>Message laissé par {{ auteur|default('la trésorerie') }} :</p>
+        <p style="margin-left: 0; padding: 4px 12px; border-left: 3px solid #d1d5db; color: #374151;">«&nbsp;{{ report.statusComment|nl2br }}&nbsp;»</p>
+        {% endif %}
     <p>
-        Message laissé par {{ auteur|default('la trésorerie') }} : "{{ report.statusComment }}"
+        <a href="{{ lienCorrection }}" style="display: inline-block; padding: 8px 16px; border-radius: 6px; background-color: #0369a1; color: #ffffff; font-weight: bold; text-decoration: none;">Corriger ma demande</a>
     </p>
     {% endif %}
     <h2>Détails</h2>
@@ -201,11 +206,21 @@
 </div>
 {% endif %}{% endblock %}
 
-{% block inner_txt %}{% import _self as notes %}{% if report.type.estHorsSortie %}
-{{ notes.phrase_hors_sortie(report, status, auteur|default(null)) }}
+{# Note hors sortie : partie texte sans échappement HTML, et sa première phrase n'est pas répétée. #}
+{% block txt %}{% if report.type.estHorsSortie %}{% autoescape false %}
+{{ block('inner_txt') }}
+{% endautoescape %}{% else %}{{ parent() }}{% endif %}{% endblock %}
 
-{% if status == 'rejected' and report.statusComment %}
-Message laissé par {{ auteur|default('la trésorerie') }} : "{{ report.statusComment }}"
+{% block inner_txt %}{% import _self as notes %}{% if report.type.estHorsSortie %}{% autoescape false %}
+{{ notes.phrase_hors_sortie(report.objet, status, auteur|default(null)) }}
+
+{% if status == 'rejected' %}
+{% if report.statusComment %}
+Message laissé par {{ auteur|default('la trésorerie') }} :
+« {{ report.statusComment }} »
+
+{% endif %}
+Corriger ma demande : {{ lienCorrection }}
 
 {% endif %}
 - Demandeur : {{ report.user.firstname }} {{ report.user.lastname }}
@@ -227,7 +242,7 @@ Remboursement demandé.
 {% elseif report.refundRequired is not null %}
 Don au club (un reçu fiscal vous sera envoyé en fin d'année).
 {% endif %}
-{% else %}
+{% endautoescape %}{% else %}
 Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} 
     {%- if status == 'submitted' %} est envoyée à la comptabilité
     {%- elseif status == 'rejected' %} a été refusée

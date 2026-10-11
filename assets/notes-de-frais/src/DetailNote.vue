@@ -2,7 +2,7 @@
 import { isAxiosError } from "axios";
 import { computed, nextTick, onMounted, ref } from "vue";
 import { enregistrerNote, lireNote, messagesDErreur, refusDeLApi, sessionExpiree } from "./api";
-import { dateFrDe, euros, nomComplet } from "./format";
+import { dateFr, dateFrDe, euros, jour, nomComplet } from "./format";
 import { lireLignes } from "./lignes";
 import type { DonneesDetail, NoteDeFrais } from "./types";
 
@@ -33,9 +33,10 @@ const contexte = computed(() => {
     return "";
   }
   const nature = note.value.type === "formation" ? "Formation" : "Achat";
+  const date = note.value.dateDepense ? ` du ${dateFr(jour(note.value.dateDepense))}` : "";
   const envoi = note.value.dateEnvoi ? `, envoyée le ${dateFrDe(note.value.dateEnvoi)}` : "";
 
-  return `${nature} pour ${note.value.commission?.title ?? ""}${envoi}`;
+  return `${nature}${date} pour ${note.value.commission?.title ?? ""}${envoi}`;
 });
 
 // Un justificatif dont la ligne a été retirée reste rattaché à la note : on ne le montre pas.
@@ -67,6 +68,19 @@ const decisionPrise = computed(() => {
 });
 
 const messageRempli = computed(() => message.value.trim() !== "");
+
+// Une note envoyée sans les boutons : on dit pourquoi, et qui décidera.
+const attente = computed(() => {
+  if (!note.value || note.value.status !== "submitted" || note.value.peutDecider) {
+    return null;
+  }
+  if (props.donnees.gestionnaire && note.value.utilisateur.id === props.donnees.utilisateurId) {
+    return "C'est votre note : un autre gestionnaire la validera.";
+  }
+  const valideurs = note.value.valideurs.length ? note.value.valideurs.map(nomComplet).join(" ou ") : "la trésorerie";
+
+  return `En attente de la décision de ${valideurs}.`;
+});
 
 onMounted(async () => {
   try {
@@ -191,7 +205,7 @@ function renvoyer() {
 
     <div class="tw-px-8">
       <p v-if="note.motPourResponsable" class="tw-mb-4 tw-whitespace-pre-line tw-border-l-2 tw-border-gray-300 tw-pl-3 tw-text-sm tw-text-gray-700">« {{ note.motPourResponsable }} »</p>
-      <p v-if="note.status === 'submitted'" class="tw-text-sm tw-text-green-700">✓ Justificatifs, délai et plafonds vérifiés.</p>
+      <p v-if="note.status === 'submitted'" class="tw-text-sm tw-text-green-700">✓ Justificatifs et plafonds vérifiés.</p>
       <p v-for="avertissement in note.avertissements" :key="avertissement" class="tw-mt-1 tw-text-sm tw-text-amber-700">{{ avertissement }}</p>
 
       <table class="tw-mt-5 tw-w-full tw-text-sm">
@@ -278,7 +292,7 @@ function renvoyer() {
         </div>
       </template>
 
-      <p v-else-if="note.status === 'submitted'" class="tw-text-sm tw-text-gray-600">En attente de validation.</p>
+      <p v-else-if="attente" class="tw-text-sm tw-text-gray-600">{{ attente }}</p>
 
       <div aria-live="polite" class="tw-text-right tw-text-sm tw-text-red-600">
         <p v-for="un in refus" :key="un" class="tw-mt-2">{{ un }}</p>

@@ -99,6 +99,7 @@ class ExpenseReportStatusChangeSubscriber
         return [
             'report' => $note,
             'auteur' => $auteur instanceof User ? $auteur->getFullName() : null,
+            'lienCorrection' => $this->urlGenerator->generate('notes_de_frais_nouvelle', ['id' => $note->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'status' => $note->getStatus()->value,
             'lignes' => $lignes,
             'formattedTotal' => $this->calculator->formatEuros($montants['totalDeclare']),

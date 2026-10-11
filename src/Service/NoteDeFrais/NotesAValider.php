@@ -9,6 +9,7 @@ use App\Utils\Enums\ExpenseReportStatusEnum;
 use App\Utils\Enums\ExpenseReportTypeEnum;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * Les notes hors sortie que l'utilisateur connecté peut traiter : la liste « notes de frais à
@@ -19,6 +20,8 @@ class NotesAValider
     public function __construct(
         private readonly Security $security,
         private readonly ExpenseReportRepository $notes,
+        #[Autowire(env: 'bool:DISPLAY_NOTES_DE_FRAIS')]
+        private readonly bool $notesDeFraisActives,
     ) {
     }
 
@@ -28,11 +31,12 @@ class NotesAValider
     }
 
     /**
-     * Nombre de notes en attente, ou null si l'utilisateur ne valide aucune note.
+     * Nombre de notes en attente, pour le menu et la pastille de l'en-tête ; null si
+     * l'utilisateur ne valide aucune note ou si le club n'utilise pas les notes de frais.
      */
     public function nombreEnAttente(): ?int
     {
-        if (!$this->concerneLUtilisateur()) {
+        if (!$this->notesDeFraisActives || !$this->concerneLUtilisateur()) {
             return null;
         }
 

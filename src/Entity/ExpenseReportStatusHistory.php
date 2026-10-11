@@ -37,6 +37,10 @@ class ExpenseReportStatusHistory
 
     private ?\DateTimeImmutable $changedAt = null;
 
+    // Message de la validation ou du renvoi ; le commentaire de statut de la note est effacé à son nouvel envoi.
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $message = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -98,6 +102,18 @@ class ExpenseReportStatusHistory
     public function setChangedAt(\DateTimeImmutable $changedAt): self
     {
         $this->changedAt = $changedAt;
+
+        return $this;
+    }
+
+    public function getMessage(): ?string
+    {
+        return $this->message;
+    }
+
+    public function setMessage(?string $message): self
+    {
+        $this->message = $message;
 
         return $this;
     }

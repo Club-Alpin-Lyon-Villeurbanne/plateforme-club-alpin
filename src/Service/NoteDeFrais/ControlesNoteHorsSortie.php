@@ -4,6 +4,7 @@ namespace App\Service\NoteDeFrais;
 
 use App\Entity\ExpenseAttachment;
 use App\Entity\ExpenseReport;
+use App\Repository\ExpenseReportStatusHistoryRepository;
 use App\Service\ExpenseReportCalculator;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
@@ -20,6 +21,7 @@ final class ControlesNoteHorsSortie
         #[Autowire(param: 'expense_report')]
         private readonly array $config,
         private readonly ExpenseReportCalculator $calculator,
+        private readonly ExpenseReportStatusHistoryRepository $historique,
     ) {
     }
 
@@ -87,6 +89,12 @@ final class ControlesNoteHorsSortie
                 'niveau' => NiveauDeControle::AVERTISSEMENT,
                 'controle' => $this->auDelaDuSeuil(...),
             ],
+            [
+                'champ' => 'dateDepense',
+                'moments' => [MomentDeControle::LECTURE],
+                'niveau' => NiveauDeControle::AVERTISSEMENT,
+                'controle' => $this->envoyeeApresLeDelai(...),
+            ],
         ];
     }
 
@@ -110,6 +118,26 @@ final class ControlesNoteHorsSortie
 
         return $date->modify(sprintf('+%d days', $delai)) < new \DateTimeImmutable('today')
             ? sprintf('Le délai de %d jours après la dépense est dépassé.', $delai)
+            : null;
+    }
+
+    /**
+     * Une note renvoyée repart sans contrôle du délai, et sa date peut changer pendant la
+     * correction : le valideur doit le voir. Rien tant que la note est chez son demandeur.
+     */
+    private function envoyeeApresLeDelai(ExpenseReport $note): ?string
+    {
+        $date = $note->getDateDepense();
+        $delai = $this->config['horsSortie']['delaiEnvoiJours'][$note->getType()->value] ?? null;
+        $statut = $note->getStatus();
+        if (null === $date || null === $delai || null === $statut || $statut->isEditableByOwner()) {
+            return null;
+        }
+
+        $envoi = $this->historique->dateDernierEnvoi($note);
+
+        return null !== $envoi && $date->modify(sprintf('+%d days', $delai)) < $envoi->setTime(0, 0)
+            ? sprintf('Achat daté de plus de %d jours avant son envoi.', $delai)
             : null;
     }
 

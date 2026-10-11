@@ -105,7 +105,8 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
      */
     public function getNotificationsCounter(): int
     {
-        return $this->locator->get(Notifications::class)->getAll();
+        return $this->locator->get(Notifications::class)->getAll()
+            + ($this->locator->get(NotesAValider::class)->nombreEnAttente() ?? 0);
     }
 
     /**

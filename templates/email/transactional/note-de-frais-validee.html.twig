@@ -46,7 +46,14 @@
     </p>
 {% endblock %}
 
-{% block inner_txt %}
+{# Partie texte sans échappement HTML : elle se lit et se copie telle quelle. #}
+{% block txt %}{% autoescape false %}
+Note de frais validée : {{ objet }}
+
+{{ block('inner_txt') }}
+{% endautoescape %}{% endblock %}
+
+{% block inner_txt %}{% autoescape false %}
 Bonjour,
 
 Cette note de frais est validée et vous est transmise.
@@ -80,4 +87,4 @@ Validée par {{ valideePar }} le {{ valideeLe }}.
 Libellé de saisie : {{ libelleSaisie }}
 
 Voir la demande : {{ lien }}
-{% endblock %}
+{% endautoescape %}{% endblock %}

@@ -56,11 +56,25 @@ class ExpenseReportStatusHistoryListener
                 ->setOldStatus($oldStatus)
                 ->setNewStatus($newStatus)
                 ->setChangedBy($user)
-                ->setChangedAt(new \DateTimeImmutable());
+                ->setChangedAt(new \DateTimeImmutable())
+                ->setMessage($this->messageDeLaDecision($entity, $newStatus, isset($changeSet['statusComment'])));
 
             $em->persist($history);
             $uow->computeChangeSet($em->getClassMetadata(ExpenseReportStatusHistory::class), $history);
         }
+    }
+
+    /**
+     * Le message en vigueur pour un renvoi. Pour une validation, seulement celui écrit avec elle :
+     * le commentaire d'une note de sortie garde sinon le message d'un ancien renvoi.
+     */
+    private function messageDeLaDecision(ExpenseReport $note, ExpenseReportStatusEnum $newStatus, bool $commentaireModifie): ?string
+    {
+        return match ($newStatus) {
+            ExpenseReportStatusEnum::REJECTED => $note->getStatusComment(),
+            ExpenseReportStatusEnum::APPROVED => $commentaireModifie ? $note->getStatusComment() : null,
+            default => null,
+        };
     }
 
     /**

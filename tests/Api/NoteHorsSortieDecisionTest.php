@@ -136,6 +136,37 @@ class NoteHorsSortieDecisionTest extends ExpenseReportApiTestCase
         $this->assertNull($decision['message']);
     }
 
+    public function testUnSecondRenvoiExigeUnNouveauMessage(): void
+    {
+        $this->nommer($this->otherManager, 'Sam', 'Petit');
+        $note = $this->noteEnvoyee($this->owner);
+        $this->assertResponseStatus(200, $this->renvoyer($this->manager, $note, 'Il manque un justificatif.'));
+        $this->assertResponseStatus(200, $this->envoyer($this->owner, $note));
+        $this->assertNull($this->reload($note)->getStatusComment());
+
+        $this->assertRefusAvec(
+            $this->patch($this->otherManager, $note, ['status' => 'rejected']),
+            'commentaireStatut',
+            'Un message au demandeur est obligatoire pour lui renvoyer la note.',
+        );
+        $this->assertResponseStatus(200, $this->renvoyer($this->otherManager, $note, 'Montant à revoir.'));
+
+        $decision = $this->show($this->owner, $note)['body']['derniereDecision'];
+        $this->assertSame(['prenom' => 'Sam', 'nom' => 'PETIT'], $decision['auteur']);
+        $this->assertSame('Montant à revoir.', $decision['message']);
+    }
+
+    public function testLeMessageLaisseALaValidationEstExpose(): void
+    {
+        $note = $this->noteEnvoyee($this->owner);
+
+        $this->assertResponseStatus(200, $this->patch($this->manager, $note, ['status' => 'approved', 'commentaireStatut' => 'Prévu au budget de la commission.']));
+
+        $decision = $this->show($this->owner, $note)['body']['derniereDecision'];
+        $this->assertSame('approved', $decision['statut']);
+        $this->assertSame('Prévu au budget de la commission.', $decision['message']);
+    }
+
     public function testUneNoteJamaisTraiteeNAPasDeDecision(): void
     {
         $note = $this->noteEnvoyee($this->owner);

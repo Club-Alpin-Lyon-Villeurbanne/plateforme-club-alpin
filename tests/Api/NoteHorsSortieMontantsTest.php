@@ -64,6 +64,35 @@ class NoteHorsSortieMontantsTest extends ExpenseReportApiTestCase
         $this->assertSame([$this->messageDuSeuil()], $liste['body']['data'][0]['avertissements']);
     }
 
+    public function testUnAchatEnvoyePlusDeTrenteJoursApresLaDepenseLeSignale(): void
+    {
+        $delai = $this->configHorsSortie()['delaiEnvoiJours']['autre'];
+        $message = sprintf('Achat daté de plus de %d jours avant son envoi.', $delai);
+        // Une note à corriger repart sans contrôle du délai.
+        $note = $this->creerAchat($this->owner, ExpenseReportStatusEnum::REJECTED, self::LIGNES, null, new \DateTimeImmutable(sprintf('-%d days', $delai + 1)));
+        $this->joindreLesJustificatifs($note, 'ligne-1', 'ligne-2');
+
+        $envoi = $this->envoyer($this->owner, $note);
+
+        $this->assertResponseStatus(200, $envoi);
+        $this->assertContains($message, $envoi['body']['avertissements']);
+        $this->assertContains($message, $this->show($this->manager, $note)['body']['avertissements']);
+        $this->assertResponseStatus(200, $this->renvoyer($this->manager, $note));
+        $this->assertNotContains($message, $this->show($this->owner, $note)['body']['avertissements']);
+    }
+
+    public function testUnAchatEnvoyeDansLeDelaiNeLeSignalePas(): void
+    {
+        $delai = $this->configHorsSortie()['delaiEnvoiJours']['autre'];
+        $note = $this->creerAchat($this->owner, ExpenseReportStatusEnum::DRAFT, self::LIGNES, null, new \DateTimeImmutable(sprintf('-%d days', $delai)));
+        $this->joindreLesJustificatifs($note, 'ligne-1', 'ligne-2');
+
+        $envoi = $this->envoyer($this->owner, $note);
+
+        $this->assertResponseStatus(200, $envoi);
+        $this->assertSame([], $envoi['body']['avertissements']);
+    }
+
     public function testUneNoteDeSortieNExposeNiMontantsNiAvertissements(): void
     {
         $report = $this->createReport($this->owner, ExpenseReportStatusEnum::DRAFT);

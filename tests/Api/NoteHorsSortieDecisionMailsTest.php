@@ -119,6 +119,62 @@ class NoteHorsSortieDecisionMailsTest extends ExpenseReportApiTestCase
         }
     }
 
+    public function testLeMailDeRenvoiProposeDeCorrigerLaDemande(): void
+    {
+        $note = $this->noteEnvoyee($this->owner);
+
+        $this->assertResponseStatus(200, $this->renvoyer($this->manager, $note, self::MESSAGE));
+
+        $mail = $this->mailsA($this->owner->getEmail())[0];
+        $lien = 'http://localhost/notes-de-frais/nouvelle?id=' . $note->getId();
+        $this->assertStringContainsString('Corriger ma demande', $mail->getHtmlBody());
+        $this->assertStringContainsString('href="' . $lien . '"', $mail->getHtmlBody());
+        $this->assertStringContainsString($lien, $mail->getTextBody());
+    }
+
+    public function testAuSecondRenvoiLeNouveauMessageEstAttribueASonAuteur(): void
+    {
+        $this->nommer($this->otherManager, 'Lou', 'Martin');
+        $note = $this->noteEnvoyee($this->owner);
+        $this->assertResponseStatus(200, $this->renvoyer($this->manager, $note, 'Il manque un justificatif.'));
+        $this->assertResponseStatus(200, $this->envoyer($this->owner, $note));
+
+        $this->assertResponseStatus(200, $this->renvoyer($this->otherManager, $note, 'Montant à revoir.'));
+
+        foreach ($this->corps($this->mailsA($this->owner->getEmail())[0]) as $corps) {
+            $this->assertStringContainsString('Message laissé par Lou MARTIN', $corps);
+            $this->assertStringContainsString('Montant à revoir.', $corps);
+            $this->assertStringNotContainsString('Il manque un justificatif.', $corps);
+        }
+    }
+
+    public function testLesPartiesTexteDesMailsGardentLesApostrophes(): void
+    {
+        $objet = 'Cordes pour l\'école d\'aventure';
+        $note = $this->creerAchat($this->owner, ExpenseReportStatusEnum::DRAFT, self::LIGNES_ACHAT);
+        $this->assertResponseStatus(200, $this->patch($this->owner, $note, ['objet' => $objet]));
+        $this->joindreLesJustificatifs($note, 'ligne-1', 'ligne-2');
+
+        $this->assertResponseStatus(200, $this->envoyer($this->owner, $note));
+        $textes = array_map(static fn (Email $mail) => $mail->getTextBody(), $this->getMailerMessages());
+        $this->assertResponseStatus(200, $this->renvoyer($this->manager, $note, 'Il manque l\'accord préalable.'));
+        $textes[] = $this->mailsA($this->owner->getEmail())[0]->getTextBody();
+        $this->assertResponseStatus(200, $this->envoyer($this->owner, $note));
+        $this->assertResponseStatus(200, $this->patch($this->manager, $note, ['status' => 'approved']));
+        $recapitulatif = $this->mailsA($this->adresseTresorerie())[0];
+        $textes[] = $recapitulatif->getTextBody();
+        $textes[] = $this->mailsA($this->owner->getEmail())[0]->getTextBody();
+
+        $this->assertCount(5, $textes);
+        foreach ($textes as $texte) {
+            $this->assertStringContainsString($objet, $texte);
+            $this->assertStringNotContainsString('&#039;', $texte);
+        }
+        $this->assertStringContainsString('Il manque l\'accord préalable.', $textes[2]);
+        $this->assertStringContainsString(sprintf('Libellé de saisie : PETIT Sam NDF %s %s', (new \DateTimeImmutable('-3 days'))->format('d/m/Y'), $objet), $recapitulatif->getTextBody());
+        $this->assertStringContainsString('l&#039;école', $recapitulatif->getHtmlBody());
+    }
+
     public function testApresCorrectionLeNouvelEnvoiPrevientLaTresorerieANouveau(): void
     {
         $note = $this->noteEnvoyee($this->owner);

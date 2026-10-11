@@ -32,7 +32,14 @@
     </p>
 {% endblock %}
 
-{% block inner_txt %}
+{# Partie texte sans échappement HTML : elle se lit et se copie telle quelle. #}
+{% block txt %}{% autoescape false %}
+Note de frais à valider : {{ objet }}
+
+{{ block('inner_txt') }}
+{% endautoescape %}{% endblock %}
+
+{% block inner_txt %}{% autoescape false %}
 Bonjour,
 
 {{ demandeur }} a envoyé une note de frais à valider.
@@ -56,4 +63,4 @@ Mot du demandeur :
 {% endif %}
 
 Voir la demande : {{ lien }}
-{% endblock %}
+{% endautoescape %}{% endblock %}
