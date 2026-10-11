@@ -47,8 +47,15 @@ export interface NoteDeFrais {
   objet: string | null;
   dateDepense: string | null;
   motPourResponsable: string | null;
+  /** Null tant que le demandeur n'a pas choisi : true pour un remboursement, false pour un don. */
+  refundRequired: boolean | null;
   details: string | null;
   piecesJointes: PieceJointe[];
+  /** Calculés par le serveur, figés à l'envoi. */
+  totalDeclare: number;
+  totalRemboursable: number;
+  /** Messages à afficher tels quels. */
+  avertissements: string[];
 }
 
 export interface Toastr {

@@ -1,10 +1,21 @@
 <template>
-  <div class="main-type">
+  <div
+    v-if="envoyee"
+    class="expense-report-form tw-mx-[30px] tw-mb-8 tw-bg-white tw-p-10 tw-text-center tw-font-sans tw-shadow-sm tw-ring-1 tw-ring-gray-200"
+  >
+    <div class="tw-mx-auto tw-flex tw-h-12 tw-w-12 tw-items-center tw-justify-center tw-rounded-full tw-bg-green-100 tw-text-xl tw-text-green-700" aria-hidden="true">✓</div>
+    <h2 ref="titreEnvoyee" tabindex="-1" class="tw-mt-4 tw-text-xl tw-font-semibold tw-text-gray-900 focus:tw-outline-none">Demande envoyée</h2>
+    <p class="tw-mt-2 tw-text-sm tw-text-gray-600">La trésorerie a été prévenue. Vous recevrez un mail dès qu'il y a une réponse.</p>
+    <a :href="URL_MES_NOTES" class="tw-mt-6 tw-inline-block tw-text-sm tw-font-medium tw-text-sky-700 hover:tw-underline">Voir mes notes de frais</a>
+  </div>
+
+  <div v-if="!envoyee" class="main-type">
     <h1>Demande de remboursement</h1>
     <p>Pour une formation ou un achat fait pour le club.</p>
   </div>
 
   <form
+    v-if="!envoyee"
     ref="formulaire"
     class="expense-report-form tw-mx-[30px] tw-mb-8 tw-bg-white tw-font-sans tw-shadow-sm tw-ring-1 tw-ring-gray-200"
     @submit.prevent
@@ -26,16 +37,20 @@
       v-else
       v-model:lignes="lignes"
       v-model:mot="motPourResponsable"
+      v-model:choix="choix"
       :demande="demande"
       :commission-titre="commissionTitre"
       :justificatifs="justificatifs"
       :envois-en-cours="envoisEnCours"
       :erreurs-justificatifs="erreursJustificatifs"
+      :avertissements="note?.avertissements ?? []"
       :erreurs="erreursEtape2"
       :en-cours="enCours"
       @modifier="afficherEtape(1)"
       @enregistrer="enregistrer"
+      @envoyer="envoyer"
       @justificatif="joindre"
+      @montants-modifies="enregistrerLignes"
     />
   </form>
 </template>
@@ -51,6 +66,7 @@ import type { Demande, DonneesInitiales, Justificatif, Ligne, NoteDeFrais, Toast
 
 // Seul l'achat est proposé pour l'instant.
 const TYPE = "autre";
+const URL_MES_NOTES = "/notes-de-frais";
 
 const props = defineProps<{ donnees: DonneesInitiales }>();
 const toastr = inject<Toastr>("toastr");
@@ -61,6 +77,7 @@ const etape = ref<1 | 2>(1);
 const demande = ref<Demande>({ commissionId: null, objet: "", dateDepense: "" });
 const lignes = ref<Ligne[]>([]);
 const motPourResponsable = ref("");
+const choix = ref<boolean | null>(null);
 const justificatifs = ref<Record<string, Justificatif>>({});
 const envoisEnCours = ref<string[]>([]);
 const erreursJustificatifs = ref<Record<string, string>>({});
@@ -69,6 +86,8 @@ const erreursEtape2 = ref<string[]>([]);
 const enCours = ref(false);
 const chargement = ref(props.donnees.noteId !== null);
 const erreurDeChargement = ref("");
+const envoyee = ref(false);
+const titreEnvoyee = ref<HTMLElement | null>(null);
 
 // Une note renvoyée à corriger peut être renvoyée après le délai.
 const delaiEnvoiJours = computed(() =>
@@ -84,16 +103,16 @@ const commissionTitre = computed(
 
 // —— Ce qui est enregistré, pour prévenir avant de quitter la page ——
 
-function empreintes() {
-  const lignesRenseignees = lignes.value.filter(
-    (ligne) =>
-      typeof ligne.montant === "number" || ligne.description.trim() !== "" || justificatifs.value[ligne.id] !== undefined,
-  );
+function renseignee(ligne: Ligne): boolean {
+  return typeof ligne.montant === "number" || ligne.description.trim() !== "" || justificatifs.value[ligne.id] !== undefined;
+}
 
+function empreintes() {
   return {
     demande: JSON.stringify({ ...demande.value, objet: demande.value.objet.trim() }),
-    lignes: ecrireLignes(lignesRenseignees),
+    lignes: ecrireLignes(lignes.value.filter(renseignee)),
     mot: motPourResponsable.value.trim(),
+    choix: choix.value,
   };
 }
 
@@ -150,6 +169,7 @@ function reprendre(noteLue: NoteDeFrais) {
     dateDepense: noteLue.dateDepense ?? "",
   };
   motPourResponsable.value = noteLue.motPourResponsable ?? "";
+  choix.value = noteLue.refundRequired;
   lignes.value = lireLignes(noteLue.details);
   if (!lignes.value.length) {
     lignes.value.push(nouvelleLigne());
@@ -202,7 +222,19 @@ async function continuer() {
   }
 }
 
-// —— Enregistrement ——
+// —— Enregistrement et envoi ——
+
+function corpsDeLaNote(): Record<string, unknown> {
+  return {
+    commission: `/api/commissions/${demande.value.commissionId}`,
+    objet: demande.value.objet.trim(),
+    dateDepense: demande.value.dateDepense,
+    motPourResponsable: motPourResponsable.value.trim() || null,
+    details: ecrireLignes(lignes.value),
+    // L'API refuse de remettre le choix à « pas encore choisi ».
+    ...(choix.value === null ? {} : { refundRequired: choix.value }),
+  };
+}
 
 async function enregistrer() {
   if (note.value === null) {
@@ -213,19 +245,43 @@ async function enregistrer() {
   erreursEtape2.value = [];
   // Le résultat de l'enregistrement s'affiche en pied de page, pas en double sous les lignes.
   erreursJustificatifs.value = {};
+  await enregistrementDesLignes;
   const empreinte = empreintes();
   try {
-    note.value = await enregistrerNote(note.value.id, {
-      commission: `/api/commissions/${demande.value.commissionId}`,
-      objet: demande.value.objet.trim(),
-      dateDepense: demande.value.dateDepense,
-      motPourResponsable: motPourResponsable.value.trim() || null,
-      details: ecrireLignes(lignes.value),
-    });
+    note.value = await enregistrerNote(note.value.id, corpsDeLaNote());
     enregistre.value = empreinte;
     toastr?.info("Enregistrée. Vous la retrouverez dans « mes notes de frais ».");
   } catch (erreur) {
     erreursEtape2.value = messagesDErreur(erreur);
+  } finally {
+    enCours.value = false;
+  }
+}
+
+async function envoyer() {
+  if (note.value === null) {
+    return;
+  }
+
+  enCours.value = true;
+  erreursEtape2.value = [];
+  erreursJustificatifs.value = {};
+  await enregistrementDesLignes;
+  // Une ligne restée vide n'est pas une dépense ; la retirer garde la numérotation des messages de l'API.
+  lignes.value = lignes.value.filter(renseignee);
+  try {
+    note.value = await enregistrerNote(note.value.id, { ...corpsDeLaNote(), status: "submitted" });
+    enregistre.value = empreintes();
+    envoyee.value = true;
+    await nextTick();
+    // Le formulaire, plus long, laisse la page défilée : l'en-tête fixe du site masquerait le haut.
+    window.scrollTo({ top: 0 });
+    titreEnvoyee.value?.focus({ preventScroll: true });
+  } catch (erreur) {
+    erreursEtape2.value = messagesDErreur(erreur);
+    if (!lignes.value.length) {
+      lignes.value.push(nouvelleLigne());
+    }
   } finally {
     enCours.value = false;
   }
@@ -259,20 +315,30 @@ async function joindre(ligneId: string, fichier: File) {
   await enregistrerLignes();
 }
 
-// Un justificatif est rattaché à sa ligne : la ligne doit exister en base dès qu'il est envoyé.
-async function enregistrerLignes() {
-  if (note.value === null) {
-    return;
-  }
+// Enregistrement des seules lignes : en cours, « Enregistrer » et « Envoyer » l'attendent.
+let enregistrementDesLignes: Promise<void> = Promise.resolve();
 
-  const empreinte = empreintes().lignes;
-  try {
-    note.value = await enregistrerNote(note.value.id, { details: ecrireLignes(lignes.value) });
-    enregistre.value = { ...enregistre.value, lignes: empreinte };
-    erreursEtape2.value = [];
-    erreursJustificatifs.value = {};
-  } catch (erreur) {
-    erreursEtape2.value = messagesDErreur(erreur);
-  }
+/**
+ * Un justificatif est rattaché à sa ligne : la ligne doit exister en base dès qu'il est envoyé.
+ * Un montant modifié est enregistré aussitôt, pour afficher les avertissements du serveur.
+ */
+function enregistrerLignes(): Promise<void> {
+  enregistrementDesLignes = enregistrementDesLignes.then(async () => {
+    if (note.value === null || envoyee.value) {
+      return;
+    }
+
+    const empreinte = empreintes().lignes;
+    try {
+      note.value = await enregistrerNote(note.value.id, { details: ecrireLignes(lignes.value) });
+      enregistre.value = { ...enregistre.value, lignes: empreinte };
+      erreursEtape2.value = [];
+      erreursJustificatifs.value = {};
+    } catch (erreur) {
+      erreursEtape2.value = messagesDErreur(erreur);
+    }
+  });
+
+  return enregistrementDesLignes;
 }
 </script>

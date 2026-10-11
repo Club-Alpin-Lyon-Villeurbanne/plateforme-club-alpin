@@ -8,6 +8,7 @@
         min="0"
         :class="[champ, 'tw-pr-7 tw-text-right tw-tabular-nums']"
         :aria-label="`Montant de la dépense ${numero}`"
+        @change="arrondirLeMontant"
       />
       <span class="tw-pointer-events-none tw-absolute tw-inset-y-0 tw-right-3 tw-flex tw-items-center tw-text-sm tw-text-gray-400">€</span>
     </div>
@@ -70,7 +71,15 @@ defineProps<{
   erreurJustificatif: string | null;
 }>();
 const ligne = defineModel<Ligne>({ required: true });
-const emit = defineEmits<{ retirer: []; justificatif: [fichier: File] }>();
+const emit = defineEmits<{ retirer: []; justificatif: [fichier: File]; montantModifie: [] }>();
+
+// Le serveur refuse plus de deux décimales.
+function arrondirLeMontant() {
+  if (typeof ligne.value.montant === "number" && !Number.isNaN(ligne.value.montant)) {
+    ligne.value.montant = Math.round(ligne.value.montant * 100) / 100;
+  }
+  emit("montantModifie");
+}
 
 // L'input est masqué : le libellé montre le focus clavier ; tw-relative garde l'input dans le libellé.
 const libelleFichier =
