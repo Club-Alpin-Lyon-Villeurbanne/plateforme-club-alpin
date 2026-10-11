@@ -4,6 +4,14 @@
       <div>
         <p class="tw-font-semibold tw-text-gray-900">{{ demande.objet }}</p>
         <p :class="discret">{{ contexte }}</p>
+        <a
+          v-if="demande.type === 'formation' && demande.lienFormation.trim()"
+          :href="demande.lienFormation.trim()"
+          target="_blank"
+          rel="noopener"
+          class="tw-text-xs tw-text-sky-700 hover:tw-underline"
+          >Voir la formation</a
+        >
       </div>
       <button type="button" class="tw-text-sm tw-text-sky-700 hover:tw-underline" @click="emit('modifier')">Modifier</button>
     </div>
@@ -12,19 +20,34 @@
 
     <div class="tw-px-8 tw-py-6">
       <div ref="conteneurLignes" class="tw-divide-y tw-divide-gray-100">
-        <LigneAchat
-          v-for="(ligne, index) in lignes"
-          :key="ligne.id"
-          v-model="lignes[index]"
-          :numero="index + 1"
-          :justificatif="justificatifs[ligne.id] ?? null"
-          :envoi-en-cours="envoisEnCours.includes(ligne.id)"
-          :erreur-justificatif="erreursJustificatifs[ligne.id] ?? null"
-          :marquer-les-manques="refusSurLesLignes"
-          @retirer="retirer(index)"
-          @justificatif="(fichier: File) => emit('justificatif', ligne.id, fichier)"
-          @montant-modifie="emit('montantsModifies')"
-        />
+        <template v-for="(ligne, index) in lignes" :key="ligne.id">
+          <LigneFormation
+            v-if="demande.type === 'formation'"
+            v-model="lignes[index]"
+            :numero="index + 1"
+            :natures="formation.natures"
+            :taux-kilometrique="formation.tauxKilometrique"
+            :justificatif="justificatifs[ligne.id] ?? null"
+            :envoi-en-cours="envoisEnCours.includes(ligne.id)"
+            :erreur-justificatif="erreursJustificatifs[ligne.id] ?? null"
+            :marquer-les-manques="refusSurLesLignes"
+            @retirer="retirer(index)"
+            @justificatif="(fichier: File) => emit('justificatif', ligne.id, fichier)"
+            @montant-modifie="emit('montantsModifies')"
+          />
+          <LigneAchat
+            v-else
+            v-model="lignes[index]"
+            :numero="index + 1"
+            :justificatif="justificatifs[ligne.id] ?? null"
+            :envoi-en-cours="envoisEnCours.includes(ligne.id)"
+            :erreur-justificatif="erreursJustificatifs[ligne.id] ?? null"
+            :marquer-les-manques="refusSurLesLignes"
+            @retirer="retirer(index)"
+            @justificatif="(fichier: File) => emit('justificatif', ligne.id, fichier)"
+            @montant-modifie="emit('montantsModifies')"
+          />
+        </template>
       </div>
       <button
         ref="boutonAjouter"
@@ -37,7 +60,7 @@
 
       <div class="tw-mt-6 tw-flex tw-items-baseline tw-justify-end tw-gap-3 tw-border-t tw-border-gray-200 tw-pt-4">
         <span class="tw-text-sm tw-text-gray-600">Total</span>
-        <span class="tw-text-xl tw-font-semibold tw-tabular-nums tw-text-gray-900">{{ euros(total(lignes)) }}</span>
+        <span class="tw-text-xl tw-font-semibold tw-tabular-nums tw-text-gray-900">{{ euros(total(lignes, formation.tauxKilometrique)) }}</span>
       </div>
 
       <div aria-live="polite">
@@ -105,13 +128,16 @@
 <script setup lang="ts">
 import { computed, nextTick, ref } from "vue";
 import LigneAchat from "./LigneAchat.vue";
+import LigneFormation from "./LigneFormation.vue";
 import { discret, libelle } from "../classes";
 import { dateFr, euros, jour } from "../format";
 import { nouvelleLigne, total } from "../lignes";
-import type { Demande, Justificatif, Ligne } from "../types";
+import { TYPES } from "../typesDeNote";
+import type { BaremeFormation, Demande, Justificatif, Ligne } from "../types";
 
 const props = defineProps<{
   demande: Demande;
+  formation: BaremeFormation;
   commissionTitre: string;
   /** « Validée par … » de la première étape. */
   phraseValideurs: string;
@@ -150,27 +176,32 @@ const declaration = computed(() => {
     : "En envoyant, vous déclarez : « Je renonce au remboursement du montant de ces frais pour en faire don au Club Alpin de Lyon. »";
 });
 
-const contexte = computed(() =>
-  [`Achat pour ${props.commissionTitre}, date de l'achat : ${dateFr(jour(props.demande.dateDepense))}.`, props.phraseValideurs]
+const contexte = computed(() => {
+  const type = TYPES[props.demande.type];
+
+  return [`${type.libelle} pour ${props.commissionTitre}, ${type.date.toLowerCase()} : ${dateFr(jour(props.demande.dateDepense))}.`, props.phraseValideurs]
     .filter(Boolean)
-    .join(" "),
-);
+    .join(" ");
+});
 
 const conteneurLignes = ref<HTMLElement | null>(null);
 const boutonAjouter = ref<HTMLButtonElement | null>(null);
 
+// Premier champ d'une ligne : le montant d'un achat, la nature d'une formation.
+const PREMIER_CHAMP = "input, select";
+
 async function ajouter() {
-  lignes.value.push(nouvelleLigne());
+  lignes.value.push(nouvelleLigne(props.demande.type));
   await nextTick();
-  conteneurLignes.value?.lastElementChild?.querySelector("input")?.focus();
+  conteneurLignes.value?.lastElementChild?.querySelector<HTMLElement>(PREMIER_CHAMP)?.focus();
 }
 
 // Le bouton retiré emporte le focus : on le pose sur la ligne qui prend sa place.
 async function retirer(index: number) {
   const [retiree] = lignes.value.splice(index, 1);
   await nextTick();
-  (conteneurLignes.value?.children[index]?.querySelector("input") ?? boutonAjouter.value)?.focus();
-  if (typeof retiree?.montant === "number") {
+  (conteneurLignes.value?.children[index]?.querySelector<HTMLElement>(PREMIER_CHAMP) ?? boutonAjouter.value)?.focus();
+  if (typeof retiree?.montant === "number" || typeof retiree?.distance === "number") {
     emit("montantsModifies");
   }
 }

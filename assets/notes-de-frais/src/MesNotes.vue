@@ -2,6 +2,7 @@
 import { computed, onMounted, ref } from "vue";
 import { listerMesNotes, messagesDErreur } from "./api";
 import { aujourdhui, dateFr, enumeration, euros, jourMoisDe, limiteEnvoi, messageDelaiDepasse, nomComplet } from "./format";
+import { libellesDuType } from "./typesDeNote";
 import type { DonneesMesNotes, NoteDeFrais } from "./types";
 
 const props = defineProps<{ donnees: DonneesMesNotes }>();
@@ -53,9 +54,7 @@ async function charger() {
 onMounted(charger);
 
 function contexte(note: NoteDeFrais): string {
-  const nature = note.type === "formation" ? "Formation" : "Achat";
-
-  return `${nature} pour ${note.commission?.title ?? ""}`;
+  return `${libellesDuType(note.type).libelle} pour ${note.commission?.title ?? ""}`;
 }
 
 function limite(note: NoteDeFrais): Date | null {

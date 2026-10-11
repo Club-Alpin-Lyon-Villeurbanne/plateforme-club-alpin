@@ -23,30 +23,13 @@
       :aria-label="`Description de la dépense ${numero}`"
     />
     <div>
-      <span v-if="envoiEnCours" :class="discret">Envoi du justificatif…</span>
-      <span v-else-if="justificatif" class="tw-flex tw-min-w-0 tw-items-center tw-gap-1 tw-text-xs tw-text-green-700">
-        ✓
-        <a :href="justificatif.fileUrl" target="_blank" rel="noopener" class="tw-truncate hover:tw-underline">{{ justificatif.nom ?? "Justificatif" }}</a>
-        <label :class="['tw-ml-1 tw-font-medium tw-text-sky-700', libelleFichier]">
-          <input
-            type="file"
-            class="tw-sr-only"
-            :accept="FORMATS_ACCEPTES"
-            :aria-label="`Remplacer le justificatif de la dépense ${numero}`"
-            @change="choisir"
-          />Remplacer
-        </label>
-      </span>
-      <label v-else :class="['tw-text-xs tw-font-medium', justificatifManquant ? 'tw-text-red-600' : 'tw-text-sky-700', libelleFichier]">
-        <input
-          type="file"
-          class="tw-sr-only"
-          :accept="FORMATS_ACCEPTES"
-          :aria-label="`Joindre le justificatif de la dépense ${numero}`"
-          :aria-invalid="justificatifManquant"
-          @change="choisir"
-        />Joindre le justificatif
-      </label>
+      <JustificatifDeLigne
+        :numero="numero"
+        :justificatif="justificatif"
+        :envoi-en-cours="envoiEnCours"
+        :manquant="justificatifManquant"
+        @justificatif="(fichier: File) => emit('justificatif', fichier)"
+      />
     </div>
     <button
       type="button"
@@ -65,8 +48,8 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import { champ, discret } from "../classes";
-import { FORMATS_ACCEPTES } from "../justificatifs";
+import JustificatifDeLigne from "./JustificatifDeLigne.vue";
+import { champ, champEnErreur } from "../classes";
 import type { Justificatif, Ligne } from "../types";
 
 const props = defineProps<{
@@ -79,7 +62,6 @@ const props = defineProps<{
 }>();
 const ligne = defineModel<Ligne>({ required: true });
 
-const champEnErreur = champ.replace("tw-border-gray-300", "tw-border-red-500");
 const montantManquant = computed(
   () => props.marquerLesManques && !(typeof ligne.value.montant === "number" && ligne.value.montant > 0),
 );
@@ -92,19 +74,5 @@ function arrondirLeMontant() {
     ligne.value.montant = Math.round(ligne.value.montant * 100) / 100;
   }
   emit("montantModifie");
-}
-
-// L'input est masqué : le libellé montre le focus clavier ; tw-relative garde l'input dans le libellé.
-const libelleFichier =
-  "tw-relative tw-cursor-pointer tw-rounded hover:tw-underline focus-within:tw-outline focus-within:tw-outline-2 focus-within:tw-outline-offset-2 focus-within:tw-outline-sky-500";
-
-function choisir(evenement: Event) {
-  const champFichier = evenement.target as HTMLInputElement;
-  const fichier = champFichier.files?.[0];
-  if (fichier) {
-    emit("justificatif", fichier);
-  }
-  // Permet de choisir à nouveau le même fichier.
-  champFichier.value = "";
 }
 </script>

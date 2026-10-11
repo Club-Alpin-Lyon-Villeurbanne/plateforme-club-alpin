@@ -1,31 +1,59 @@
+import { euros } from "./format";
+import type { TypeHorsSortie } from "./typesDeNote";
 import type { Ligne } from "./types";
 
-export function nouvelleLigne(): Ligne {
+/** Une ligne de voiture se saisit en kilomètres, les autres en euros. */
+export const NATURE_EN_KILOMETRES = "voiture";
+
+export function nouvelleLigne(type: TypeHorsSortie): Ligne {
   return {
     id: `ligne-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
     montant: null,
     description: "",
+    ...(type === "formation" ? { nature: "autre" } : {}),
   };
 }
 
-/** Champ `details` d'une note hors sortie : {"lignes": [{id, montant, description}]}. */
+/** Champ `details` d'une note hors sortie : {"lignes": [{id, montant, description, nature, distance}]}. */
 export function lireLignes(details: string | null): Ligne[] {
   const lignes = details ? JSON.parse(details).lignes : null;
 
-  return Array.isArray(lignes) ? lignes : [];
+  return Array.isArray(lignes) ? lignes.map((ligne) => ({ ...ligne, description: ligne.description ?? "" })) : [];
+}
+
+// Un champ nombre vidé donne une chaîne vide.
+function nombre(valeur: unknown): number | null {
+  return typeof valeur === "number" && !Number.isNaN(valeur) ? valeur : null;
 }
 
 export function ecrireLignes(lignes: Ligne[]): string {
   return JSON.stringify({
-    lignes: lignes.map(({ id, montant, description }) => ({
+    lignes: lignes.map(({ id, montant, description, nature, distance }) => ({
       id,
-      // Un champ nombre vidé donne une chaîne vide.
-      montant: typeof montant === "number" && !Number.isNaN(montant) ? montant : null,
+      montant: nombre(montant),
       description,
+      ...(nature === undefined ? {} : { nature }),
+      ...(distance === undefined ? {} : { distance: nombre(distance) }),
     })),
   });
 }
 
-export function total(lignes: Ligne[]): number {
-  return lignes.reduce((somme, ligne) => somme + (typeof ligne.montant === "number" && !Number.isNaN(ligne.montant) ? ligne.montant : 0), 0);
+/** Pour l'affichage pendant la saisie : kilomètres × taux pour la voiture, montant saisi sinon. */
+export function montantDeLaLigne(ligne: Ligne, tauxKilometrique: number): number {
+  if (ligne.nature === NATURE_EN_KILOMETRES) {
+    const distance = nombre(ligne.distance);
+
+    return distance === null ? 0 : Math.round(distance * tauxKilometrique * 100) / 100;
+  }
+
+  return nombre(ligne.montant) ?? 0;
+}
+
+export function total(lignes: Ligne[], tauxKilometrique: number): number {
+  return lignes.reduce((somme, ligne) => somme + montantDeLaLigne(ligne, tauxKilometrique), 0);
+}
+
+/** « 220 km × 0,40 € ». */
+export function calculDeLaVoiture(distance: number, tauxKilometrique: number): string {
+  return `${distance.toLocaleString("fr-FR")} km × ${euros(tauxKilometrique)}`;
 }

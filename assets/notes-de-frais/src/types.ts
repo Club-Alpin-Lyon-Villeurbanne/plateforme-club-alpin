@@ -1,3 +1,5 @@
+import type { TypeHorsSortie } from "./typesDeNote";
+
 /** Un responsable de la commission qui valide la note. */
 export interface Valideur {
   id: number;
@@ -12,28 +14,44 @@ export interface CommissionProposee {
   valideurs: Valideur[];
 }
 
+/** Transmis par le gabarit pour afficher le calcul d'une ligne de voiture ; l'API fait foi pour les montants. */
+export interface BaremeFormation {
+  tauxKilometrique: number;
+  /** Libellé de chaque nature, dans l'ordre du menu. */
+  natures: Record<string, string>;
+}
+
 /** Données transmises par le gabarit Twig. */
 export interface DonneesInitiales {
   commissions: CommissionProposee[];
   /** Par type de note ; un type absent n'a pas de délai. */
   delaisEnvoiJours: Record<string, number>;
+  formation: BaremeFormation;
   /** Brouillon à reprendre. */
   noteId: number | null;
 }
 
 /** Première étape. */
 export interface Demande {
+  type: TypeHorsSortie;
   commissionId: number | null;
   objet: string;
   /** AAAA-MM-JJ */
   dateDepense: string;
+  /** Formation seulement ; vide si aucun. */
+  lienFormation: string;
 }
 
 export interface Ligne {
   /** Généré ici ; sert d'expenseId au justificatif de la ligne. */
   id: string;
+  /** En euros ; null pour une voiture, qui se déclare en kilomètres. */
   montant: number | null;
   description: string;
+  /** Formation seulement. */
+  nature?: string;
+  /** Kilomètres d'une voiture. */
+  distance?: number | null;
 }
 
 export interface PieceJointe {
@@ -109,6 +127,7 @@ export interface DonneesDetail {
   noteId: number;
   utilisateurId: number | null;
   gestionnaire: boolean;
+  formation: BaremeFormation;
 }
 
 export interface Refus {

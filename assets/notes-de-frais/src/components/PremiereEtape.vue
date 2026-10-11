@@ -1,5 +1,12 @@
 <template>
   <div class="tw-space-y-5 tw-p-8">
+    <!-- Le type ne change plus une fois la demande créée. -->
+    <div v-if="typeModifiable" class="tw-flex tw-gap-6 tw-text-sm" role="radiogroup" aria-label="Type de demande">
+      <label v-for="(libelles, type) in TYPES" :key="type" class="tw-flex tw-items-center tw-gap-2">
+        <input v-model="demande.type" type="radio" name="type" :value="type" /> {{ libelles.choix }}
+      </label>
+    </div>
+
     <div>
       <label for="f-commission" :class="libelle">Commission</label>
       <select id="f-commission" v-model="demande.commissionId" :class="['tw-mt-1', champ]" aria-describedby="f-valideurs">
@@ -18,12 +25,17 @@
         v-model="demande.objet"
         type="text"
         :class="['tw-mt-1', champ]"
-        placeholder="ex : Dégaines pour la SAE"
+        :placeholder="TYPES[demande.type].exempleObjet"
       />
     </div>
 
+    <div v-if="demande.type === 'formation'">
+      <label for="f-lien" :class="libelle">Lien vers la formation <span class="tw-font-normal tw-text-gray-500">(facultatif)</span></label>
+      <input id="f-lien" v-model="demande.lienFormation" type="url" :class="['tw-mt-1', champ]" placeholder="https://" />
+    </div>
+
     <div>
-      <label for="f-date" :class="libelle">Date de l'achat</label>
+      <label for="f-date" :class="libelle">{{ TYPES[demande.type].date }}</label>
       <input
         id="f-date"
         v-model="demande.dateDepense"
@@ -55,9 +67,12 @@
 import { computed, ref, watch } from "vue";
 import { champ, discret, libelle } from "../classes";
 import { aujourdhui, dateFr, jour, phraseValideurs } from "../format";
+import { TYPES } from "../typesDeNote";
 import type { CommissionProposee, Demande } from "../types";
 
 const props = defineProps<{
+  /** Vrai tant que la demande n'est pas créée. */
+  typeModifiable: boolean;
   commissions: CommissionProposee[];
   /** Null quand le délai ne s'applique pas : pas de délai pour le type, ou note renvoyée à corriger. */
   delaiEnvoiJours: number | null;

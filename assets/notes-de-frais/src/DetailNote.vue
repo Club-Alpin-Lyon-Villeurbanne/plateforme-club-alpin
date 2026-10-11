@@ -3,8 +3,9 @@ import { isAxiosError } from "axios";
 import { computed, nextTick, onMounted, ref } from "vue";
 import { enregistrerNote, lireNote, messagesDErreur, refusDeLApi, sessionExpiree } from "./api";
 import { dateFr, dateFrDe, enumeration, euros, jour, nomComplet } from "./format";
-import { lireLignes } from "./lignes";
-import type { DonneesDetail, NoteDeFrais } from "./types";
+import { calculDeLaVoiture, lireLignes, montantDeLaLigne, NATURE_EN_KILOMETRES } from "./lignes";
+import { libellesDuType } from "./typesDeNote";
+import type { DonneesDetail, Ligne, NoteDeFrais } from "./types";
 
 const props = defineProps<{ donnees: DonneesDetail }>();
 
@@ -32,11 +33,11 @@ const contexte = computed(() => {
   if (!note.value) {
     return "";
   }
-  const nature = note.value.type === "formation" ? "Formation" : "Achat";
+  const type = libellesDuType(note.value.type).libelle;
   const date = note.value.dateDepense ? ` du ${dateFr(jour(note.value.dateDepense))}` : "";
   const envoi = note.value.dateEnvoi ? `, envoyée le ${dateFrDe(note.value.dateEnvoi)}` : "";
 
-  return `${nature}${date} pour ${note.value.commission?.title ?? ""}${envoi}`;
+  return `${type}${date} pour ${note.value.commission?.title ?? ""}${envoi}`;
 });
 
 // Un justificatif dont la ligne a été retirée reste rattaché à la note : on ne le montre pas.
@@ -46,12 +47,26 @@ const lignes = computed(() => {
   }
   const justificatifs = new Map(note.value.piecesJointes.map((pieceJointe) => [pieceJointe.expenseId, pieceJointe.fileUrl]));
 
+  const { natures, tauxKilometrique } = props.donnees.formation;
+
   return lireLignes(note.value.details).map((ligne, index) => ({
-    ...ligne,
+    id: ligne.id,
     numero: index + 1,
+    // Une ligne de formation se présente par sa nature, une ligne d'achat par son numéro.
+    libelle: ligne.nature ? (natures[ligne.nature] ?? ligne.nature) : `Dépense ${index + 1}`,
+    detail: detailDeLaLigne(ligne),
+    montant: montantDeLaLigne(ligne, tauxKilometrique),
     justificatif: justificatifs.get(ligne.id) ?? null,
   }));
 });
+
+function detailDeLaLigne(ligne: Ligne): string {
+  if (ligne.nature === NATURE_EN_KILOMETRES) {
+    return typeof ligne.distance === "number" ? calculDeLaVoiture(ligne.distance, props.donnees.formation.tauxKilometrique) : "";
+  }
+
+  return ligne.nature === "hebergement" ? "1 nuit" : ligne.description;
+}
 
 const decisionPrise = computed(() => {
   const derniere = note.value?.derniereDecision;
@@ -222,7 +237,7 @@ function renvoyer() {
         <caption class="tw-sr-only">Dépenses</caption>
         <tbody>
         <tr v-for="ligne in lignes" :key="ligne.id" class="tw-border-t tw-border-gray-100">
-          <td class="tw-py-2.5 tw-text-gray-900">Dépense {{ ligne.numero }} <span class="tw-text-gray-500">{{ ligne.description }}</span></td>
+          <td class="tw-py-2.5 tw-text-gray-900">{{ ligne.libelle }} <span class="tw-text-gray-500">{{ ligne.detail }}</span></td>
           <td class="tw-py-2.5 tw-text-right">
             <a
               v-if="ligne.justificatif"
@@ -234,7 +249,7 @@ function renvoyer() {
               >{{ nomDuFichier(ligne.justificatif) }}</a
             >
           </td>
-          <td class="tw-w-24 tw-py-2.5 tw-text-right tw-tabular-nums">{{ euros(ligne.montant ?? 0) }}</td>
+          <td class="tw-w-24 tw-py-2.5 tw-text-right tw-tabular-nums">{{ euros(ligne.montant) }}</td>
         </tr>
         </tbody>
       </table>

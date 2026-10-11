@@ -7,6 +7,7 @@ use App\Repository\CommissionRepository;
 use App\Security\Voter\ExpenseReportVoter;
 use App\Service\NoteDeFrais\ValideursNoteHorsSortie;
 use App\Twig\JavascriptGlobalsExtension;
+use App\Utils\Enums\ExpenseReportTypeEnum;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\Request;
@@ -65,6 +66,7 @@ class NoteDeFraisController extends AbstractController
             'donnees' => [
                 'commissions' => $commissions,
                 'delaisEnvoiJours' => $this->configNotesDeFrais['horsSortie']['delaiEnvoiJours'],
+                'formation' => $this->baremeFormation(),
                 // Reprise d'un brouillon : l'application le charge par l'API.
                 'noteId' => $request->query->getInt('id') ?: null,
             ],
@@ -102,8 +104,23 @@ class NoteDeFraisController extends AbstractController
                 // Pour expliquer à un gestionnaire pourquoi il ne peut pas valider sa propre note.
                 'utilisateurId' => $utilisateur instanceof User ? $utilisateur->getId() : null,
                 'gestionnaire' => $this->isGranted(ExpenseReportVoter::MANAGE_EXPENSE_REPORTS),
+                'formation' => $this->baremeFormation(),
             ],
         ]);
+    }
+
+    /**
+     * Natures d'une ligne de formation et taux kilométrique, pour afficher le calcul d'une ligne de
+     * voiture ; les totaux, le remboursable et les avertissements viennent de l'API.
+     *
+     * @return array{tauxKilometrique: float, natures: array<string, string>}
+     */
+    private function baremeFormation(): array
+    {
+        return [
+            'tauxKilometrique' => (float) $this->configNotesDeFrais['horsSortie']['formation']['tauxKilometrique'],
+            'natures' => ExpenseReportTypeEnum::FORMATION->natures(),
+        ];
     }
 
     private function pageDisponible(): void

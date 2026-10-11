@@ -27,6 +27,7 @@
     <PremiereEtape
       v-else-if="etape === 1"
       v-model="demande"
+      :type-modifiable="note === null"
       :commissions="donnees.commissions"
       :delai-envoi-jours="delaiEnvoiJours"
       :erreurs="erreursEtape1"
@@ -40,6 +41,7 @@
       v-model:mot="motPourResponsable"
       v-model:choix="choix"
       :demande="demande"
+      :formation="donnees.formation"
       :commission-titre="commissionTitre"
       :phrase-valideurs="phraseDesValideurs"
       :justificatifs="justificatifs"
@@ -69,10 +71,9 @@ import { creerNote, enregistrerNote, envoyerJustificatif, lireNote, messagesDErr
 import { aujourdhui, limiteEnvoi, messageDelaiDepasse, nomComplet, phrasePrevenus, phraseValideurs } from "./format";
 import { refusDuFichier } from "./justificatifs";
 import { ecrireLignes, lireLignes, nouvelleLigne } from "./lignes";
+import type { TypeHorsSortie } from "./typesDeNote";
 import type { Demande, DonneesInitiales, Justificatif, Ligne, NoteDeFrais, Refus, Toastr } from "./types";
 
-// Seul l'achat est proposé pour l'instant.
-const TYPE = "autre";
 const URL_MES_NOTES = "/notes-de-frais";
 
 const props = defineProps<{ donnees: DonneesInitiales }>();
@@ -81,7 +82,7 @@ const toastr = inject<Toastr>("toastr");
 const formulaire = ref<HTMLFormElement | null>(null);
 const note = ref<NoteDeFrais | null>(null);
 const etape = ref<1 | 2>(1);
-const demande = ref<Demande>({ commissionId: null, objet: "", dateDepense: "" });
+const demande = ref<Demande>({ type: "autre", commissionId: null, objet: "", dateDepense: "", lienFormation: "" });
 const lignes = ref<Ligne[]>([]);
 const motPourResponsable = ref("");
 const choix = ref<boolean | null>(null);
@@ -114,9 +115,9 @@ const erreursEtape2 = computed(() =>
 const refusSurLesLignes = computed(() => refusEnvoi.value.some((un) => un.champ === "details"));
 const refusSurLeChoix = computed(() => choix.value === null && refusEnvoi.value.some((un) => un.champ === "refundRequired"));
 
-// Une note renvoyée à corriger peut être renvoyée après le délai.
+// Une note renvoyée à corriger peut être renvoyée après le délai ; une formation n'en a pas.
 const delaiEnvoiJours = computed(() =>
-  note.value === null || note.value.status === "draft" ? (props.donnees.delaisEnvoiJours[TYPE] ?? null) : null,
+  note.value === null || note.value.status === "draft" ? (props.donnees.delaisEnvoiJours[demande.value.type] ?? null) : null,
 );
 
 const delaiDepasse = computed(() => {
@@ -146,12 +147,17 @@ const phraseDesValideurs = computed(() => (commissionChoisie.value ? phraseValid
 // —— Ce qui est enregistré, pour prévenir avant de quitter la page ——
 
 function renseignee(ligne: Ligne): boolean {
-  return typeof ligne.montant === "number" || ligne.description.trim() !== "" || justificatifs.value[ligne.id] !== undefined;
+  return (
+    typeof ligne.montant === "number" ||
+    typeof ligne.distance === "number" ||
+    ligne.description.trim() !== "" ||
+    justificatifs.value[ligne.id] !== undefined
+  );
 }
 
 function empreintes() {
   return {
-    demande: JSON.stringify({ ...demande.value, objet: demande.value.objet.trim() }),
+    demande: JSON.stringify({ ...demande.value, objet: demande.value.objet.trim(), lienFormation: demande.value.lienFormation.trim() }),
     lignes: ecrireLignes(lignes.value.filter(renseignee)),
     mot: motPourResponsable.value.trim(),
     choix: choix.value,
@@ -194,11 +200,6 @@ function reprendre(noteLue: NoteDeFrais) {
     erreurDeChargement.value = "Cette note de frais concerne une sortie : elle se remplit sur la page de la sortie.";
     return;
   }
-  // Cette page ne connaît que les lignes d'un achat : elle effacerait les natures d'une formation.
-  if (noteLue.type !== TYPE) {
-    erreurDeChargement.value = "Cette demande n'est pas un achat : elle ne peut pas encore être modifiée sur cette page.";
-    return;
-  }
   if (noteLue.status !== "draft" && noteLue.status !== "rejected") {
     erreurDeChargement.value = "Cette demande a été envoyée : elle ne peut plus être modifiée.";
     return;
@@ -206,15 +207,17 @@ function reprendre(noteLue: NoteDeFrais) {
 
   note.value = noteLue;
   demande.value = {
+    type: noteLue.type as TypeHorsSortie,
     commissionId: noteLue.commission?.id ?? null,
     objet: noteLue.objet ?? "",
     dateDepense: noteLue.dateDepense ?? "",
+    lienFormation: noteLue.lienFormation ?? "",
   };
   motPourResponsable.value = noteLue.motPourResponsable ?? "";
   choix.value = noteLue.refundRequired ?? null;
   lignes.value = lireLignes(noteLue.details);
   if (!lignes.value.length) {
-    lignes.value.push(nouvelleLigne());
+    lignes.value.push(nouvelleLigne(demande.value.type));
   }
   for (const pieceJointe of noteLue.piecesJointes) {
     justificatifs.value[pieceJointe.expenseId] = { fileUrl: pieceJointe.fileUrl, nom: null };
@@ -247,14 +250,15 @@ async function continuer() {
   erreursEtape1.value = [];
   try {
     note.value = await creerNote({
-      type: TYPE,
+      type: demande.value.type,
       commissionId: demande.value.commissionId,
       objet: demande.value.objet.trim(),
       dateDepense: demande.value.dateDepense,
+      ...lienDeLaFormation(),
     });
     // Le brouillon se reprend par l'URL ; chemin absolu à cause du <base href> du site.
     history.replaceState(null, "", `${window.location.pathname}?id=${note.value.id}`);
-    lignes.value = [nouvelleLigne()];
+    lignes.value = [nouvelleLigne(demande.value.type)];
     enregistre.value = empreintes();
     await afficherEtape(2);
   } catch (erreur) {
@@ -266,11 +270,17 @@ async function continuer() {
 
 // —— Enregistrement et envoi ——
 
+// Un achat n'a pas de lien : l'API le refuserait.
+function lienDeLaFormation(): { lienFormation?: string | null } {
+  return demande.value.type === "formation" ? { lienFormation: demande.value.lienFormation.trim() || null } : {};
+}
+
 function corpsDeLaNote(): Record<string, unknown> {
   return {
     commission: `/api/commissions/${demande.value.commissionId}`,
     objet: demande.value.objet.trim(),
     dateDepense: demande.value.dateDepense,
+    ...lienDeLaFormation(),
     motPourResponsable: motPourResponsable.value.trim() || null,
     details: ecrireLignes(lignes.value),
     // L'API refuse de remettre le choix à « pas encore choisi ».
@@ -330,7 +340,7 @@ async function envoyer() {
     titreEnvoyee.value?.focus({ preventScroll: true });
   } catch (erreur) {
     if (!lignes.value.length) {
-      lignes.value.push(nouvelleLigne());
+      lignes.value.push(nouvelleLigne(demande.value.type));
     }
     refusEnvoi.value = refusDeLApi(erreur);
     await montrerLesRefus();

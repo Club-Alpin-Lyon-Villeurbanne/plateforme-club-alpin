@@ -2,6 +2,7 @@
 import { computed, nextTick, onMounted, ref } from "vue";
 import { listerNotesAValider, messagesDErreur, type Attente } from "../api";
 import { enumeration, euros, jourMoisDe, nomComplet } from "../format";
+import { libellesDuType } from "../typesDeNote";
 import type { NoteDeFrais } from "../types";
 
 const props = defineProps<{
@@ -61,9 +62,7 @@ async function charger() {
 onMounted(charger);
 
 function contexte(note: NoteDeFrais): string {
-  const nature = note.type === "formation" ? "formation" : "achat";
-
-  return `${nomComplet(note.utilisateur)}, ${nature} pour ${note.commission?.title ?? ""}`;
+  return `${nomComplet(note.utilisateur)}, ${libellesDuType(note.type).libelle.toLowerCase()} pour ${note.commission?.title ?? ""}`;
 }
 
 function decision(note: NoteDeFrais): string | null {
