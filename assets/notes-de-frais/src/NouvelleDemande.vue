@@ -211,6 +211,8 @@ async function enregistrer() {
 
   enCours.value = true;
   erreursEtape2.value = [];
+  // Le résultat de l'enregistrement s'affiche en pied de page, pas en double sous les lignes.
+  erreursJustificatifs.value = {};
   const empreinte = empreintes();
   try {
     note.value = await enregistrerNote(note.value.id, {
@@ -268,6 +270,7 @@ async function enregistrerLignes() {
     note.value = await enregistrerNote(note.value.id, { details: ecrireLignes(lignes.value) });
     enregistre.value = { ...enregistre.value, lignes: empreinte };
     erreursEtape2.value = [];
+    erreursJustificatifs.value = {};
   } catch (erreur) {
     erreursEtape2.value = messagesDErreur(erreur);
   }

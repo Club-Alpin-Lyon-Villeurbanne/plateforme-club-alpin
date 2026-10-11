@@ -20,7 +20,7 @@
     />
     <div>
       <span v-if="envoiEnCours" :class="discret">Envoi du justificatif…</span>
-      <span v-else-if="justificatif" class="tw-flex tw-items-center tw-gap-1 tw-truncate tw-text-xs tw-text-green-700">
+      <span v-else-if="justificatif" class="tw-flex tw-min-w-0 tw-items-center tw-gap-1 tw-text-xs tw-text-green-700">
         ✓
         <a :href="justificatif.fileUrl" target="_blank" rel="noopener" class="tw-truncate hover:tw-underline">{{ justificatif.nom ?? "Justificatif" }}</a>
         <label :class="['tw-ml-1 tw-font-medium tw-text-sky-700', libelleFichier]">

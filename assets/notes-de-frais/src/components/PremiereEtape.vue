@@ -31,7 +31,7 @@
         aria-describedby="f-date-aide"
         :aria-invalid="dateRefusee"
       />
-      <p id="f-date-aide" :class="['tw-mt-1 tw-text-xs', dateRefusee ? 'tw-text-red-600' : 'tw-text-gray-500']" aria-live="polite">
+      <p id="f-date-aide" :class="['tw-mt-1 tw-text-xs', dateRefusee ? 'tw-text-red-600' : 'tw-text-gray-500']">
         {{ aideDate }}
       </p>
     </div>
