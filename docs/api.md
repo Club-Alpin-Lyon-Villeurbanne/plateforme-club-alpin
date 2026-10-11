@@ -190,13 +190,23 @@ Retourne uniquement les notes de frais de l'utilisateur connecté.
 GET /api/admin/notes-de-frais
 ```
 
-Retourne toutes les notes de frais de tous les utilisateurs. Réservé aux administrateurs et aux utilisateurs ayant le droit `manage_expense_reports`.
+La liste de compta-club. Retourne les notes de frais de tous les utilisateurs : toutes les notes de sortie, et les notes hors sortie qui attendent la trésorerie ou qu'elle a traitées. Une note hors sortie n'y figure ni en brouillon, ni `submitted` tant qu'elle a des valideurs (elle attend alors un responsable). Réservé aux administrateurs et aux utilisateurs ayant le droit `manage_expense_reports`.
 
 **Sécurité :** `ROLE_ADMIN` ou droit `manage_expense_reports`
 
 **Paramètres de requête :**
+- `status` : une valeur, ou plusieurs (`status[]=submitted&status[]=preapproved`)
+- `type` : `sortie`, `formation` ou `autre` (achat)
+- `refundRequired` : `true` (remboursement) ou `false` (don)
+- `user.lastname` : nom du demandeur, recherche partielle
+- `event.titre` (recherche partielle) et `event.startDate[after]`, `event.startDate[before]`, `event.startDate[strictly_after]`, `event.startDate[strictly_before]` : ne portent que sur les notes de sortie ; une note hors sortie reste dans la liste quand ils sont actifs
 - `event` : Filtrer par ID de sortie
+- `inclure_brouillons` : `true` pour inclure les brouillons des notes de sortie
 - `pagination` : `false` pour désactiver la pagination
+
+Une valeur inconnue de `status` ou de `type` donne une liste vide.
+
+Une note hors sortie y porte les [champs d'une note hors sortie](#champs-dune-note-hors-sortie), comme à sa lecture par `GET /api/notes-de-frais/{id}`, que compta-club utilise pour la page d'une note.
 
 **Réponse exemple :**
 ```json
@@ -271,7 +281,8 @@ Une note de type `formation` ou `autre` porte en plus, en lecture seule :
 - `derniereDecision` : `{statut, niveau, auteur: {prenom, nom}, date, message}`, la dernière validation ou le dernier refus, `null` s'il n'y en a pas.
   - `statut` : `preapproved` (validée par un responsable), `approved` ou `rejected`. La comptabilisation n'est pas une décision.
   - `niveau` : `responsable` ou `tresorerie`. Il est établi au moment de la décision : un refus depuis `submitted` vient de la trésorerie si la note n'avait alors aucun valideur. `null` pour une décision plus ancienne que ce champ.
-- `validationResponsable` : `{auteur: {prenom, nom}, date}` du dernier passage en `preapproved`, conservé après la décision de la trésorerie ; `null` si aucun responsable ne l'a validée.
+- `validationResponsable` : `{auteur: {prenom, nom}, date}` de la validation par un responsable depuis le dernier envoi (passage en `preapproved`), conservée après la décision de la trésorerie ; `null` si aucun responsable ne l'a validée depuis. Une note renvoyée après un refus repart à `null` jusqu'à sa nouvelle validation : celle d'avant le renvoi ne compte plus.
+- `libelleComptable` : « NOM Prénom NDF JJ/MM/AAAA objet », avec le nom du demandeur et la date de la dépense, ce que la trésorerie saisit en comptabilité ; `null` pour un brouillon.
 - `peutDecider` : l'utilisateur connecté est valideur de la note et elle est `submitted`.
 
 ### 📎 Pièces jointes (Notes de frais)
