@@ -2,10 +2,12 @@
 
 namespace App\Tests\Api;
 
+use App\Entity\Commission;
 use App\Entity\ExpenseReport;
 use App\Entity\User;
 use App\Tests\WebTestCase;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use App\Utils\Enums\ExpenseReportTypeEnum;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -86,6 +88,70 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
         $em->clear();
 
         return $report;
+    }
+
+    protected function creerAchat(User $demandeur, ExpenseReportStatusEnum $status = ExpenseReportStatusEnum::DRAFT, ?string $details = null): ExpenseReport
+    {
+        $em = $this->em();
+        $note = ExpenseReport::nouvelleNoteHorsSortie($em->find(User::class, $demandeur->getId()), ExpenseReportTypeEnum::AUTRE);
+        $note->setCommission($em->find(Commission::class, $this->commissionVisible()->getId()));
+        $note->setObjet('Dégaines pour la SAE');
+        $note->setDateDepense(new \DateTimeImmutable('-3 days'));
+        $note->setStatus($status);
+        $note->setDetails($details);
+        $em->persist($note);
+        $em->flush();
+        $em->clear();
+
+        return $note;
+    }
+
+    protected function commissionVisible(int $rang = 0): Commission
+    {
+        $commissions = $this->em()->getRepository(Commission::class)->findBy(['vis' => true], ['id' => 'ASC'], $rang + 1);
+        $this->assertArrayHasKey($rang, $commissions, 'La base de test doit contenir des commissions visibles.');
+
+        return $commissions[$rang];
+    }
+
+    /**
+     * Corps de création d'un achat valide ; null pour laisser un champ vide.
+     */
+    protected function achat(array $champs = []): array
+    {
+        return array_merge([
+            'type' => 'autre',
+            'commissionId' => $this->commissionVisible()->getId(),
+            'objet' => 'Dégaines pour la SAE',
+            'dateDepense' => (new \DateTimeImmutable('-3 days'))->format('Y-m-d'),
+        ], $champs);
+    }
+
+    /**
+     * @return array{status: int, body: array}
+     */
+    protected function create(User $as, array $body): array
+    {
+        $this->client->request('POST', '/api/notes-de-frais', [], [], [
+            'CONTENT_TYPE' => 'application/json',
+            'HTTP_ACCEPT' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $this->jwt($as),
+        ], json_encode($body));
+
+        return $this->lastResponse();
+    }
+
+    /**
+     * @return array{status: int, body: array}
+     */
+    protected function list(User $as, string $uri, array $query = []): array
+    {
+        $this->client->request('GET', $uri . ($query ? '?' . http_build_query($query) : ''), [], [], [
+            'HTTP_ACCEPT' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $this->jwt($as),
+        ]);
+
+        return $this->lastResponse();
     }
 
     /**

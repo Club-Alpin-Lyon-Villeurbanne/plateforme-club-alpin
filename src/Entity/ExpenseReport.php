@@ -17,6 +17,7 @@ use App\Repository\ExpenseReportRepository;
 use App\State\ExpenseReportCloneProcessor;
 use App\State\ExpenseReportCreateProcessor;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use App\Utils\Enums\ExpenseReportTypeEnum;
 use App\Validator\ValidExpenseReport;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -71,6 +72,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 #[ApiFilter(SearchFilter::class, properties: [
     'event' => 'exact',
     'status' => 'exact',
+    'type' => 'exact',
     'user.lastname' => 'partial',
     'event.titre' => 'partial',
 ])]
@@ -104,7 +106,8 @@ class ExpenseReport
 
     private ?ExpenseReportStatusEnum $status = null;
 
-    #[ORM\Column]
+    // null : pas encore choisi (note hors sortie). Une note de sortie a toujours un choix.
+    #[ORM\Column(nullable: true)]
     #[Groups(['report:read', 'report:write'])]
     private ?bool $refundRequired = true;
 
@@ -115,10 +118,47 @@ class ExpenseReport
     private ?User $user = null;
 
     #[ORM\ManyToOne(inversedBy: 'expenseReports')]
-    #[ORM\JoinColumn(nullable: false, referencedColumnName: 'id_evt')]
+    #[ORM\JoinColumn(nullable: true, referencedColumnName: 'id_evt')]
     #[Groups(['event:read'])]
     #[SerializedName('sortie')]
     private ?Evt $event = null;
+
+    #[ORM\Column(length: 20, enumType: ExpenseReportTypeEnum::class, options: ['default' => 'sortie'])]
+    #[Groups(['report:read'])]
+    private ExpenseReportTypeEnum $type = ExpenseReportTypeEnum::SORTIE;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true, referencedColumnName: 'id_commission')]
+    #[Groups(['report:read', 'report:write'])]
+    private ?Commission $commission = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
+    #[Groups(['report:read', 'report:write'])]
+    private ?string $objet = null;
+
+    // Date de l'achat, ou date de la formation.
+    #[ORM\Column(type: Types::DATE_IMMUTABLE, nullable: true)]
+    #[Groups(['report:read', 'report:write'])]
+    #[Context(normalizationContext: [DateTimeNormalizer::FORMAT_KEY => 'Y-m-d'], denormalizationContext: [DateTimeNormalizer::FORMAT_KEY => '!Y-m-d'])]
+    private ?\DateTimeImmutable $dateDepense = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Url(message: 'Le lien vers la formation doit être une adresse web (https://…).')]
+    #[Assert\Length(max: 255)]
+    #[Groups(['report:read', 'report:write'])]
+    private ?string $lienFormation = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['report:read', 'report:write'])]
+    private ?string $motPourResponsable = null;
+
+    // Montants figés à chaque soumission d'une note hors sortie.
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    private ?string $totalDeclare = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
+    private ?string $totalRemboursable = null;
 
     #[ORM\Column]
     #[Groups(['report:read'])]
@@ -147,6 +187,21 @@ class ExpenseReport
     public function __construct()
     {
         $this->attachments = new ArrayCollection();
+    }
+
+    public static function nouvelleNoteHorsSortie(User $demandeur, ExpenseReportTypeEnum $type): self
+    {
+        if (!$type->estHorsSortie()) {
+            throw new \InvalidArgumentException('Une note de sortie se crée à partir de sa sortie.');
+        }
+
+        $note = new self();
+        $note->user = $demandeur;
+        $note->type = $type;
+        $note->status = ExpenseReportStatusEnum::DRAFT;
+        $note->refundRequired = null;
+
+        return $note;
     }
 
     #[ORM\PrePersist]
@@ -222,6 +277,71 @@ class ExpenseReport
     public function setEvent(?Evt $event): self
     {
         $this->event = $event;
+
+        return $this;
+    }
+
+    public function getType(): ExpenseReportTypeEnum
+    {
+        return $this->type;
+    }
+
+    public function getCommission(): ?Commission
+    {
+        return $this->commission;
+    }
+
+    public function setCommission(?Commission $commission): self
+    {
+        $this->commission = $commission;
+
+        return $this;
+    }
+
+    public function getObjet(): ?string
+    {
+        return $this->objet;
+    }
+
+    public function setObjet(?string $objet): self
+    {
+        $this->objet = $objet;
+
+        return $this;
+    }
+
+    public function getDateDepense(): ?\DateTimeImmutable
+    {
+        return $this->dateDepense;
+    }
+
+    public function setDateDepense(?\DateTimeImmutable $dateDepense): self
+    {
+        $this->dateDepense = $dateDepense;
+
+        return $this;
+    }
+
+    public function getLienFormation(): ?string
+    {
+        return $this->lienFormation;
+    }
+
+    public function setLienFormation(?string $lienFormation): self
+    {
+        $this->lienFormation = $lienFormation;
+
+        return $this;
+    }
+
+    public function getMotPourResponsable(): ?string
+    {
+        return $this->motPourResponsable;
+    }
+
+    public function setMotPourResponsable(?string $motPourResponsable): self
+    {
+        $this->motPourResponsable = $motPourResponsable;
 
         return $this;
     }

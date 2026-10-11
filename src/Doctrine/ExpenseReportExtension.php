@@ -8,13 +8,15 @@ use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use ApiPlatform\Metadata\Operation;
 use App\Entity\ExpenseReport;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use App\Utils\Enums\ExpenseReportTypeEnum;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
 
 /**
  * Gère le filtrage et l'optimisation des notes de frais :
  * - Par défaut : filtré par l'utilisateur connecté (sécurité par défaut)
- * - /admin/notes-de-frais : pas de filtrage (réservé aux admins/gestionnaires via security)
+ * - /admin/notes-de-frais : pas de filtrage par utilisateur (réservé aux admins/gestionnaires via security),
+ *   mais seulement les notes de sortie : compta-club lit `sortie.*` sans tester le cas vide
  * - Exclut les brouillons par défaut (sauf si inclure_brouillons=true)
  * - Eager loading des relations pour éviter le problème N+1
  * - Tri par défaut : created_at DESC
@@ -64,8 +66,11 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
             ->leftJoin(sprintf('%s.user', $rootAlias), 'user')
             ->leftJoin(sprintf('%s.event', $rootAlias), 'event');
 
-        // 1. Filtrage par utilisateur (sauf sur /admin/notes-de-frais)
-        if ('/admin/notes-de-frais' !== $operation?->getUriTemplate() && $user) {
+        // 1. Filtrage par utilisateur (sauf sur /admin/notes-de-frais, limité aux notes de sortie)
+        if ('/admin/notes-de-frais' === $operation?->getUriTemplate()) {
+            $queryBuilder->andWhere(sprintf('%s.type = :type_sortie', $rootAlias))
+                ->setParameter('type_sortie', ExpenseReportTypeEnum::SORTIE->value);
+        } elseif ($user) {
             $queryBuilder->andWhere(sprintf('%s.user = :current_user', $rootAlias))
                 ->setParameter('current_user', $user);
         }

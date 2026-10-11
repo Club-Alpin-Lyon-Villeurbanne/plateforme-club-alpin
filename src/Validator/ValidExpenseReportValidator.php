@@ -3,7 +3,10 @@
 namespace App\Validator;
 
 use App\Entity\ExpenseReport;
+use App\Service\NoteDeFrais\ControlesNoteHorsSortie;
+use App\Service\NoteDeFrais\MomentDeControle;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use App\Validator\ExpenseReport\CoherenceValidator;
 use App\Validator\ExpenseReport\DetailsValidator;
 use App\Validator\ExpenseReport\ExpenseReportOriginalState;
 use App\Validator\ExpenseReport\FieldPermissionValidator;
@@ -19,6 +22,8 @@ class ValidExpenseReportValidator extends ConstraintValidator
         private readonly StatusTransitionValidator $statusTransitionValidator,
         private readonly FieldPermissionValidator $fieldPermissionValidator,
         private readonly DetailsValidator $detailsValidator,
+        private readonly CoherenceValidator $coherenceValidator,
+        private readonly ControlesNoteHorsSortie $controles,
     ) {
     }
 
@@ -47,6 +52,16 @@ class ValidExpenseReportValidator extends ConstraintValidator
 
             $this->statusTransitionValidator->validate($value, $oldStatus, $this->context);
             $this->fieldPermissionValidator->validate($value, $oldStatus, $this->context);
+        }
+
+        $this->coherenceValidator->validate($value, $this->context);
+
+        if (null === $value->getId()) {
+            foreach ($this->controles->bloquants($value, MomentDeControle::CREATION) as $constat) {
+                $this->context->buildViolation($constat['message'])
+                    ->atPath($constat['champ'])
+                    ->addViolation();
+            }
         }
 
         if (ExpenseReportStatusEnum::SUBMITTED === $value->getStatus()) {

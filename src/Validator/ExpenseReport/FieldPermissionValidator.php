@@ -10,7 +10,8 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 /**
  * Qui peut modifier quel champ d'une note de frais existante.
  *
- * - details / refundRequired : le propriétaire, tant que la note est en brouillon ou rejetée ;
+ * - details / refundRequired, et les champs d'une note hors sortie (commission, objet, date,
+ *   lien, mot pour le responsable) : le propriétaire, tant que la note est en brouillon ou rejetée ;
  * - statusComment : un gestionnaire (non propriétaire), dans la requête où il change le statut.
  *
  * Renvoyer la valeur déjà enregistrée n'est pas une modification.
@@ -39,6 +40,21 @@ class FieldPermissionValidator
                 ->addViolation();
         }
 
+        $champsHorsSortie = [
+            'commission' => $expenseReport->getCommission(),
+            'objet' => $expenseReport->getObjet(),
+            'dateDepense' => $expenseReport->getDateDepense(),
+            'lienFormation' => $expenseReport->getLienFormation(),
+            'motPourResponsable' => $expenseReport->getMotPourResponsable(),
+        ];
+        foreach ($champsHorsSortie as $champ => $valeur) {
+            if (!$canEditClaim && $this->changed($expenseReport, $champ, $valeur)) {
+                $context->buildViolation('Seul le demandeur peut modifier ce champ, tant que la note est en brouillon ou à corriger.')
+                    ->atPath($champ)
+                    ->addViolation();
+            }
+        }
+
         // La validité de la transition elle-même est contrôlée par StatusTransitionValidator :
         // un commentaire accompagnant une transition refusée est refusé avec elle.
         $canComment = $this->actor->isManagerOf($expenseReport) && $oldStatus !== $expenseReport->getStatus();
@@ -52,6 +68,13 @@ class FieldPermissionValidator
 
     private function changed(ExpenseReport $expenseReport, string $field, mixed $newValue): bool
     {
-        return $this->originalState->value($expenseReport, $field) !== $newValue;
+        $originalValue = $this->originalState->value($expenseReport, $field);
+
+        // La même date renvoyée arrive dans un nouvel objet.
+        if ($originalValue instanceof \DateTimeInterface && $newValue instanceof \DateTimeInterface) {
+            return $originalValue->format('Y-m-d') !== $newValue->format('Y-m-d');
+        }
+
+        return $originalValue !== $newValue;
     }
 }

@@ -34,6 +34,10 @@ parameters:
         tauxKilometriqueVoiture: 0.2
         tauxKilometriqueMinibus: 0.3
         divisionPeage: 3
+        horsSortie:
+            # Délai d'envoi d'une note après la dépense, par type de note ; un type absent n'a pas de délai.
+            delaiEnvoiJours:
+                autre: 30
   materiel_api_base_url: "%env(LOXYA_API_URL)%"
   materiel_api_username: "%env(LOXYA_API_USERNAME)%"
   materiel_api_password: "%env(LOXYA_API_PASSWORD)%"
