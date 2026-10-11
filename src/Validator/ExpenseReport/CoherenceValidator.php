@@ -8,10 +8,16 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * Structure d'une note selon son type : une note de sortie a sa sortie et rien d'autre ; une
- * note hors sortie (formation, achat) a sa commission, son objet, sa date et une liste de lignes.
+ * note hors sortie (formation, achat) a une commission visible, un objet, une date et une liste
+ * de lignes.
  */
 class CoherenceValidator
 {
+    public function __construct(
+        private readonly ExpenseReportOriginalState $originalState,
+    ) {
+    }
+
     public function validate(ExpenseReport $note, ExecutionContextInterface $context): void
     {
         if (!$note->getType()->estHorsSortie()) {
@@ -23,8 +29,12 @@ class CoherenceValidator
         if (null !== $note->getEvent()) {
             $this->refuser($context, 'event', 'Une note hors sortie n\'est pas rattachée à une sortie.');
         }
-        if (null === $note->getCommission()) {
+        $commission = $note->getCommission();
+        if (null === $commission) {
             $this->refuser($context, 'commission', 'La commission est obligatoire.');
+        } elseif (!$commission->getVis() && $commission !== $this->originalState->value($note, 'commission')) {
+            // Vérifié quand la commission est choisie : la masquer ensuite ne bloque pas ses notes en cours.
+            $this->refuser($context, 'commission', 'Cette commission ne peut pas recevoir de note de frais.');
         }
         if ('' === trim((string) $note->getObjet())) {
             $this->refuser($context, 'objet', 'L\'objet est obligatoire.');

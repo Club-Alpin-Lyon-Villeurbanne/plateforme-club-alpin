@@ -90,11 +90,11 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
         return $report;
     }
 
-    protected function creerAchat(User $demandeur, ExpenseReportStatusEnum $status = ExpenseReportStatusEnum::DRAFT, ?string $details = null): ExpenseReport
+    protected function creerAchat(User $demandeur, ExpenseReportStatusEnum $status = ExpenseReportStatusEnum::DRAFT, ?string $details = null, ?Commission $commission = null): ExpenseReport
     {
         $em = $this->em();
         $note = ExpenseReport::nouvelleNoteHorsSortie($em->find(User::class, $demandeur->getId()), ExpenseReportTypeEnum::AUTRE);
-        $note->setCommission($em->find(Commission::class, $this->commissionVisible()->getId()));
+        $note->setCommission($em->find(Commission::class, ($commission ?? $this->commissionVisible())->getId()));
         $note->setObjet('Dégaines pour la SAE');
         $note->setDateDepense(new \DateTimeImmutable('-3 days'));
         $note->setStatus($status);
@@ -112,6 +112,15 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
         $this->assertArrayHasKey($rang, $commissions, 'La base de test doit contenir des commissions visibles.');
 
         return $commissions[$rang];
+    }
+
+    protected function commissionMasquee(): Commission
+    {
+        $commission = $this->createCommission('Commission masquée');
+        $commission->setVis(false);
+        $this->em()->flush();
+
+        return $commission;
     }
 
     /**

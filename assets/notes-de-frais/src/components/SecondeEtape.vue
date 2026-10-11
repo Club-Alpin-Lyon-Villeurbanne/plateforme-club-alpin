@@ -14,13 +14,20 @@
           v-for="(ligne, index) in lignes"
           :key="ligne.id"
           v-model="lignes[index]"
+          :numero="index + 1"
           :justificatif="justificatifs[ligne.id] ?? null"
           :envoi-en-cours="envoisEnCours.includes(ligne.id)"
-          @retirer="lignes.splice(index, 1)"
+          :erreur-justificatif="erreursJustificatifs[ligne.id] ?? null"
+          @retirer="retirer(index)"
           @justificatif="(fichier: File) => emit('justificatif', ligne.id, fichier)"
         />
       </div>
-      <button type="button" class="tw-mt-3 tw-text-sm tw-font-medium tw-text-sky-700 hover:tw-text-sky-900" @click="ajouter">
+      <button
+        ref="boutonAjouter"
+        type="button"
+        class="tw-mt-3 tw-text-sm tw-font-medium tw-text-sky-700 hover:tw-text-sky-900"
+        @click="ajouter"
+      >
         + Ajouter une dépense
       </button>
 
@@ -52,7 +59,7 @@
       </div>
     </div>
 
-    <p class="tw-px-8 tw-pb-3 tw-text-right tw-text-sm tw-text-red-600">{{ erreurs.join(" ") }}</p>
+    <p class="tw-px-8 tw-pb-3 tw-text-right tw-text-sm tw-text-red-600" aria-live="polite">{{ erreurs.join(" ") }}</p>
     <div class="tw-flex tw-items-center tw-justify-end tw-gap-5 tw-border-t tw-border-gray-100 tw-bg-gray-50 tw-px-8 tw-py-4">
       <button
         type="button"
@@ -79,6 +86,7 @@ const props = defineProps<{
   commissionTitre: string;
   justificatifs: Record<string, Justificatif>;
   envoisEnCours: string[];
+  erreursJustificatifs: Record<string, string>;
   erreurs: string[];
   enCours: boolean;
 }>();
@@ -95,10 +103,19 @@ const contexte = computed(
 );
 
 const conteneurLignes = ref<HTMLElement | null>(null);
+const boutonAjouter = ref<HTMLButtonElement | null>(null);
+
 async function ajouter() {
   lignes.value.push(nouvelleLigne());
   await nextTick();
   conteneurLignes.value?.lastElementChild?.querySelector("input")?.focus();
+}
+
+// Le bouton retiré emporte le focus : on le pose sur la ligne qui prend sa place.
+async function retirer(index: number) {
+  lignes.value.splice(index, 1);
+  await nextTick();
+  (conteneurLignes.value?.children[index]?.querySelector("input") ?? boutonAjouter.value)?.focus();
 }
 
 const motVisible = ref(mot.value !== "");

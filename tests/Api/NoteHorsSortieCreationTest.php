@@ -57,6 +57,11 @@ class NoteHorsSortieCreationTest extends ExpenseReportApiTestCase
         $this->assertRefused($this->create($this->owner, $this->achat(['commissionId' => 999999999])), 'commission');
     }
 
+    public function testUneCommissionMasqueeEstRefusee(): void
+    {
+        $this->assertRefused($this->create($this->owner, $this->achat(['commissionId' => $this->commissionMasquee()->getId()])), 'commission');
+    }
+
     public function testUnLienVersUneFormationEstRefusePourUnAchat(): void
     {
         $this->assertRefused($this->create($this->owner, $this->achat(['lienFormation' => 'https://example.org/stage'])), 'lienFormation');

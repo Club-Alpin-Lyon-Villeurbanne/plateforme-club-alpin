@@ -23,12 +23,21 @@
 
     <div>
       <label for="f-date" :class="libelle">Date de l'achat</label>
-      <input id="f-date" v-model="demande.dateDepense" type="date" :class="['tw-mt-1', champ, 'tw-w-48']" />
-      <p :class="['tw-mt-1 tw-text-xs', dateRefusee ? 'tw-text-red-600' : 'tw-text-gray-500']">{{ aideDate }}</p>
+      <input
+        id="f-date"
+        v-model="demande.dateDepense"
+        type="date"
+        :class="['tw-mt-1', champ, 'tw-w-48']"
+        aria-describedby="f-date-aide"
+        :aria-invalid="dateRefusee"
+      />
+      <p id="f-date-aide" :class="['tw-mt-1 tw-text-xs', dateRefusee ? 'tw-text-red-600' : 'tw-text-gray-500']" aria-live="polite">
+        {{ aideDate }}
+      </p>
     </div>
 
     <div class="tw-flex tw-items-center tw-justify-end tw-gap-4 tw-pt-2">
-      <p class="tw-text-sm tw-text-red-600">{{ manque || erreurs.join(" ") }}</p>
+      <p class="tw-text-sm tw-text-red-600" aria-live="polite">{{ manque || erreurs.join(" ") }}</p>
       <button
         type="button"
         :disabled="enCours"

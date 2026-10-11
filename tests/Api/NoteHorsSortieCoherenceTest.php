@@ -2,6 +2,7 @@
 
 namespace App\Tests\Api;
 
+use App\Entity\Commission;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 
 /**
@@ -16,6 +17,25 @@ class NoteHorsSortieCoherenceTest extends ExpenseReportApiTestCase
 
         $this->assertRefused($this->patch($this->owner, $note, ['commission' => null]), 'commission');
         $this->assertRefused($this->patch($this->owner, $note, ['objet' => '']), 'objet');
+    }
+
+    public function testUneCommissionMasqueeNePeutPasEtreChoisie(): void
+    {
+        $note = $this->creerAchat($this->owner);
+
+        // L'API ne résout pas l'IRI d'une commission masquée : refus avant la validation.
+        $this->assertResponseStatus(400, $this->patch($this->owner, $note, ['commission' => '/api/commissions/' . $this->commissionMasquee()->getId()]));
+        $this->assertSame($this->commissionVisible()->getId(), $this->reload($note)->getCommission()->getId());
+    }
+
+    public function testMasquerUneCommissionNeBloquePasSesNotesEnCours(): void
+    {
+        $commission = $this->createCommission('Commission bientôt masquée');
+        $note = $this->creerAchat($this->owner, ExpenseReportStatusEnum::DRAFT, null, $commission);
+        $this->em()->find(Commission::class, $commission->getId())->setVis(false);
+        $this->em()->flush();
+
+        $this->assertResponseStatus(200, $this->patch($this->owner, $note, ['objet' => 'Cordes pour la SAE']));
     }
 
     public function testUnAchatNeRecoitPasDeLienVersUneFormation(): void
