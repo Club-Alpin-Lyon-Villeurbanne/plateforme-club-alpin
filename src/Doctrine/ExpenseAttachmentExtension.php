@@ -6,19 +6,20 @@ use ApiPlatform\Doctrine\Orm\Extension\QueryCollectionExtensionInterface;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use ApiPlatform\Metadata\Operation;
 use App\Entity\ExpenseAttachment;
+use App\Entity\ExpenseReport;
 use App\Security\Voter\ExpenseReportVoter;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
 
 /**
- * Justificatifs d'une note de frais : visibles par ceux qui ont accès à la note.
- * Équivalent en requête de ExpenseReportVoter::ACCESS_EXPENSE_REPORT : toute évolution de cette règle
- * dans le voter doit être répercutée ici.
+ * Justificatifs d'une note de frais : la liste est toujours celle d'une note, visible par ceux qui y ont accès.
  */
 final class ExpenseAttachmentExtension implements QueryCollectionExtensionInterface
 {
     public function __construct(
-        private Security $security
+        private Security $security,
+        private EntityManagerInterface $entityManager,
     ) {
     }
 
@@ -29,17 +30,15 @@ final class ExpenseAttachmentExtension implements QueryCollectionExtensionInterf
         ?Operation $operation = null,
         array $context = []
     ): void {
-        if (ExpenseAttachment::class !== $resourceClass || $this->security->isGranted(ExpenseReportVoter::MANAGE_EXPENSE_REPORTS)) {
+        if (ExpenseAttachment::class !== $resourceClass) {
             return;
         }
 
-        $rootAlias = $queryBuilder->getRootAliases()[0];
-        $reportAlias = $queryNameGenerator->generateJoinAlias('expenseReport');
-        $userParameter = $queryNameGenerator->generateParameterName('currentUser');
+        $reportId = $context['uri_variables']['expenseReportId'] ?? null;
+        $report = null === $reportId ? null : $this->entityManager->find(ExpenseReport::class, $reportId);
 
-        $queryBuilder
-            ->join(sprintf('%s.expenseReport', $rootAlias), $reportAlias)
-            ->andWhere(sprintf('%s.user = :%s', $reportAlias, $userParameter))
-            ->setParameter($userParameter, $this->security->getUser());
+        if (null === $report || !$this->security->isGranted(ExpenseReportVoter::ACCESS_EXPENSE_REPORT, $report)) {
+            $queryBuilder->andWhere('1 = 0');
+        }
     }
 }
