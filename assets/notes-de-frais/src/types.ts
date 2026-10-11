@@ -58,6 +58,12 @@ export interface NoteDeFrais {
   avertissements: string[];
 }
 
+export interface Refus {
+  /** Chemin de la violation (`details`, `refundRequired`…), null pour un refus général. */
+  champ: string | null;
+  message: string;
+}
+
 export interface Toastr {
   error: (message: string) => void;
   success: (message: string) => void;

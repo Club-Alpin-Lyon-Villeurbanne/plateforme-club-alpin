@@ -45,7 +45,10 @@
       :erreurs-justificatifs="erreursJustificatifs"
       :avertissements="note?.avertissements ?? []"
       :erreurs="erreursEtape2"
+      :refus-sur-les-lignes="refusSurLesLignes"
+      :refus-sur-le-choix="refusSurLeChoix"
       :en-cours="enCours"
+      :envoi-en-cours="envoiEnCours"
       @modifier="afficherEtape(1)"
       @enregistrer="enregistrer"
       @envoyer="envoyer"
@@ -59,10 +62,10 @@
 import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import PremiereEtape from "./components/PremiereEtape.vue";
 import SecondeEtape from "./components/SecondeEtape.vue";
-import { creerNote, enregistrerNote, envoyerJustificatif, lireNote, messagesDErreur, sessionExpiree } from "./api";
+import { creerNote, enregistrerNote, envoyerJustificatif, lireNote, messagesDErreur, refusDeLApi, sessionExpiree } from "./api";
 import { refusDuFichier } from "./justificatifs";
 import { ecrireLignes, lireLignes, nouvelleLigne } from "./lignes";
-import type { Demande, DonneesInitiales, Justificatif, Ligne, NoteDeFrais, Toastr } from "./types";
+import type { Demande, DonneesInitiales, Justificatif, Ligne, NoteDeFrais, Refus, Toastr } from "./types";
 
 // Seul l'achat est proposé pour l'instant.
 const TYPE = "autre";
@@ -82,12 +85,30 @@ const justificatifs = ref<Record<string, Justificatif>>({});
 const envoisEnCours = ref<string[]>([]);
 const erreursJustificatifs = ref<Record<string, string>>({});
 const erreursEtape1 = ref<string[]>([]);
-const erreursEtape2 = ref<string[]>([]);
+// Chaque source de refus garde les siens jusqu'à sa prochaine tentative : « Envoyer », « Enregistrer
+// pour plus tard » et l'enregistrement automatique des lignes.
+const refusEnvoi = ref<Refus[]>([]);
+const refusEnregistrement = ref<string[]>([]);
+const erreursEnregistrementAuto = ref<string[]>([]);
 const enCours = ref(false);
+const envoiEnCours = ref(false);
 const chargement = ref(props.donnees.noteId !== null);
 const erreurDeChargement = ref("");
 const envoyee = ref(false);
 const titreEnvoyee = ref<HTMLElement | null>(null);
+
+// Le choix, une fois fait, rend son refus caduc ; les autres refus attendent le prochain envoi.
+const erreursEtape2 = computed(() =>
+  Array.from(
+    new Set([
+      ...refusEnvoi.value.filter((un) => un.champ !== "refundRequired" || choix.value === null).map((un) => un.message),
+      ...refusEnregistrement.value,
+      ...erreursEnregistrementAuto.value,
+    ]),
+  ),
+);
+const refusSurLesLignes = computed(() => refusEnvoi.value.some((un) => un.champ === "details"));
+const refusSurLeChoix = computed(() => choix.value === null && refusEnvoi.value.some((un) => un.champ === "refundRequired"));
 
 // Une note renvoyée à corriger peut être renvoyée après le délai.
 const delaiEnvoiJours = computed(() =>
@@ -237,39 +258,48 @@ function corpsDeLaNote(): Record<string, unknown> {
 }
 
 async function enregistrer() {
-  if (note.value === null) {
+  if (note.value === null || enCours.value) {
     return;
   }
 
   enCours.value = true;
-  erreursEtape2.value = [];
-  // Le résultat de l'enregistrement s'affiche en pied de page, pas en double sous les lignes.
-  erreursJustificatifs.value = {};
-  await enregistrementDesLignes;
+  refusEnregistrement.value = [];
+  if (await attendreLesEnregistrementsEnCours()) {
+    // Le résultat de l'enregistrement s'affiche en pied de page, pas en double sous les lignes.
+    erreursJustificatifs.value = {};
+  }
   const empreinte = empreintes();
   try {
     note.value = await enregistrerNote(note.value.id, corpsDeLaNote());
     enregistre.value = empreinte;
     toastr?.info("Enregistrée. Vous la retrouverez dans « mes notes de frais ».");
   } catch (erreur) {
-    erreursEtape2.value = messagesDErreur(erreur);
+    refusEnregistrement.value = messagesDErreur(erreur);
+    await montrerLesRefus();
   } finally {
     enCours.value = false;
   }
 }
 
 async function envoyer() {
-  if (note.value === null) {
+  if (note.value === null || enCours.value) {
     return;
   }
 
   enCours.value = true;
-  erreursEtape2.value = [];
-  erreursJustificatifs.value = {};
-  await enregistrementDesLignes;
-  // Une ligne restée vide n'est pas une dépense ; la retirer garde la numérotation des messages de l'API.
-  lignes.value = lignes.value.filter(renseignee);
+  envoiEnCours.value = true;
+  refusEnvoi.value = [];
+  refusEnregistrement.value = [];
   try {
+    // Sinon la note partirait avec l'ancien justificatif, et le nouveau serait refusé sur une note envoyée.
+    if (!(await attendreLesEnregistrementsEnCours())) {
+      refusEnvoi.value = [{ champ: null, message: "Un justificatif n'a pas pu être envoyé : la demande n'est pas partie." }];
+      await montrerLesRefus();
+      return;
+    }
+    erreursJustificatifs.value = {};
+    // Une ligne restée vide n'est pas une dépense ; la retirer garde la numérotation des messages de l'API.
+    lignes.value = lignes.value.filter(renseignee);
     note.value = await enregistrerNote(note.value.id, { ...corpsDeLaNote(), status: "submitted" });
     enregistre.value = empreintes();
     envoyee.value = true;
@@ -278,25 +308,59 @@ async function envoyer() {
     window.scrollTo({ top: 0 });
     titreEnvoyee.value?.focus({ preventScroll: true });
   } catch (erreur) {
-    erreursEtape2.value = messagesDErreur(erreur);
     if (!lignes.value.length) {
       lignes.value.push(nouvelleLigne());
     }
+    refusEnvoi.value = refusDeLApi(erreur);
+    await montrerLesRefus();
   } finally {
     enCours.value = false;
+    envoiEnCours.value = false;
   }
 }
 
-async function joindre(ligneId: string, fichier: File) {
+// Le focus resterait sur le bouton : on le pose sur les refus, pour qu'ils soient lus et parcourus.
+async function montrerLesRefus() {
+  await nextTick();
+  formulaire.value?.querySelector<HTMLElement>("#f-refus")?.focus();
+}
+
+// —— Justificatifs et enregistrement automatique des lignes ——
+
+// Envois de justificatifs en cours, chacun résolu à vrai s'il a réussi.
+const envoisDeJustificatifs = new Set<Promise<boolean>>();
+
+/** Attend les justificatifs et l'enregistrement des lignes en cours ; faux si un justificatif a échoué. */
+async function attendreLesEnregistrementsEnCours(): Promise<boolean> {
+  let reussis = true;
+  // Un justificatif choisi pendant l'attente est attendu lui aussi.
+  while (envoisDeJustificatifs.size) {
+    const resultats = await Promise.all(Array.from(envoisDeJustificatifs));
+    reussis = reussis && resultats.every(Boolean);
+  }
+  await enregistrementDesLignes;
+
+  return reussis;
+}
+
+function joindre(ligneId: string, fichier: File): Promise<boolean> {
+  const envoi = envoyerLeJustificatif(ligneId, fichier);
+  envoisDeJustificatifs.add(envoi);
+  void envoi.finally(() => envoisDeJustificatifs.delete(envoi));
+
+  return envoi;
+}
+
+async function envoyerLeJustificatif(ligneId: string, fichier: File): Promise<boolean> {
   if (note.value === null) {
-    return;
+    return false;
   }
 
   delete erreursJustificatifs.value[ligneId];
-  const refus = refusDuFichier(fichier);
-  if (refus !== null) {
-    erreursJustificatifs.value[ligneId] = refus;
-    return;
+  const refusDuJustificatif = refusDuFichier(fichier);
+  if (refusDuJustificatif !== null) {
+    erreursJustificatifs.value[ligneId] = refusDuJustificatif;
+    return false;
   }
 
   envoisEnCours.value.push(ligneId);
@@ -307,12 +371,14 @@ async function joindre(ligneId: string, fichier: File) {
     erreursJustificatifs.value[ligneId] = sessionExpiree(erreur)
       ? messagesDErreur(erreur)[0]
       : "Le justificatif n'a pas pu être envoyé. Réessayez avec un fichier JPG, PNG ou PDF.";
-    return;
+    return false;
   } finally {
     envoisEnCours.value = envoisEnCours.value.filter((id) => id !== ligneId);
   }
 
   await enregistrerLignes();
+
+  return true;
 }
 
 // Enregistrement des seules lignes : en cours, « Enregistrer » et « Envoyer » l'attendent.
@@ -332,10 +398,10 @@ function enregistrerLignes(): Promise<void> {
     try {
       note.value = await enregistrerNote(note.value.id, { details: ecrireLignes(lignes.value) });
       enregistre.value = { ...enregistre.value, lignes: empreinte };
-      erreursEtape2.value = [];
+      erreursEnregistrementAuto.value = [];
       erreursJustificatifs.value = {};
     } catch (erreur) {
-      erreursEtape2.value = messagesDErreur(erreur);
+      erreursEnregistrementAuto.value = messagesDErreur(erreur);
     }
   });
 

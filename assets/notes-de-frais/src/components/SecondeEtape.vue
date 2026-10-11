@@ -18,6 +18,7 @@
           :justificatif="justificatifs[ligne.id] ?? null"
           :envoi-en-cours="envoisEnCours.includes(ligne.id)"
           :erreur-justificatif="erreursJustificatifs[ligne.id] ?? null"
+          :marquer-les-manques="refusSurLesLignes"
           @retirer="retirer(index)"
           @justificatif="(fichier: File) => emit('justificatif', ligne.id, fichier)"
           @montant-modifie="emit('montantsModifies')"
@@ -42,10 +43,10 @@
       </div>
 
       <fieldset class="tw-mt-6">
-        <legend class="tw-text-sm tw-font-medium tw-text-gray-900">Remboursement ou don ?</legend>
+        <legend :class="['tw-text-sm tw-font-medium', refusSurLeChoix ? 'tw-text-red-600' : 'tw-text-gray-900']">Remboursement ou don ?</legend>
         <div class="tw-mt-2 tw-flex tw-gap-6 tw-text-sm">
-          <label class="tw-flex tw-items-center tw-gap-2"><input v-model="choix" type="radio" name="choix" :value="true" /> Être remboursé</label>
-          <label class="tw-flex tw-items-center tw-gap-2"><input v-model="choix" type="radio" name="choix" :value="false" /> En faire don au club</label>
+          <label class="tw-flex tw-items-center tw-gap-2"><input v-model="choix" type="radio" name="choix" :value="true" :aria-invalid="refusSurLeChoix" /> Être remboursé</label>
+          <label class="tw-flex tw-items-center tw-gap-2"><input v-model="choix" type="radio" name="choix" :value="false" :aria-invalid="refusSurLeChoix" /> En faire don au club</label>
         </div>
         <p :class="['tw-mt-2 tw-italic', discret]" aria-live="polite">{{ declaration }}</p>
       </fieldset>
@@ -73,25 +74,27 @@
       </div>
     </div>
 
-    <div class="tw-px-8 tw-pb-3 tw-text-right tw-text-sm tw-text-red-600" aria-live="polite">
+    <!-- Reçoit le focus après un refus : le Tab suivant repart des boutons. -->
+    <div id="f-refus" tabindex="-1" class="tw-px-8 tw-pb-3 tw-text-right tw-text-sm tw-text-red-600 focus:tw-outline-none" aria-live="polite">
       <p v-for="erreur in erreurs" :key="erreur">{{ erreur }}</p>
     </div>
+    <!-- aria-disabled plutôt que disabled : un bouton désactivé perdrait le focus pendant l'appel. -->
     <div class="tw-flex tw-items-center tw-justify-end tw-gap-5 tw-border-t tw-border-gray-100 tw-bg-gray-50 tw-px-8 tw-py-4">
       <button
         type="button"
-        :disabled="enCours"
-        class="tw-text-sm tw-font-medium tw-text-gray-600 hover:tw-text-gray-900"
-        @click="emit('enregistrer')"
+        :aria-disabled="enCours"
+        class="tw-text-sm tw-font-medium tw-text-gray-600 hover:tw-text-gray-900 aria-disabled:tw-cursor-wait aria-disabled:tw-opacity-60"
+        @click="enCours || emit('enregistrer')"
       >
         Enregistrer pour plus tard
       </button>
       <button
         type="button"
-        :disabled="enCours"
-        class="tw-rounded-md tw-bg-sky-600 tw-px-5 tw-py-2 tw-text-sm tw-font-semibold tw-text-white hover:tw-bg-sky-700"
-        @click="emit('envoyer')"
+        :aria-disabled="enCours"
+        class="tw-rounded-md tw-bg-sky-700 tw-px-5 tw-py-2 tw-text-sm tw-font-semibold tw-text-white hover:tw-bg-sky-800 aria-disabled:tw-cursor-wait aria-disabled:tw-opacity-60"
+        @click="enCours || emit('envoyer')"
       >
-        Envoyer
+        {{ envoiEnCours ? "Envoi…" : "Envoyer" }}
       </button>
     </div>
   </div>
@@ -114,7 +117,11 @@ const props = defineProps<{
   /** Renvoyés par l'API. */
   avertissements: string[];
   erreurs: string[];
+  /** Le dernier refus porte sur les lignes, ou sur le choix encore absent : on les signale. */
+  refusSurLesLignes: boolean;
+  refusSurLeChoix: boolean;
   enCours: boolean;
+  envoiEnCours: boolean;
 }>();
 const lignes = defineModel<Ligne[]>("lignes", { required: true });
 const mot = defineModel<string>("mot", { required: true });

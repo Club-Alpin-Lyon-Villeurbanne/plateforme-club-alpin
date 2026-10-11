@@ -1,5 +1,5 @@
 import axios, { isAxiosError, type InternalAxiosRequestConfig } from "axios";
-import type { NoteDeFrais, PieceJointe } from "./types";
+import type { NoteDeFrais, PieceJointe, Refus } from "./types";
 
 const MESSAGE_SESSION_EXPIREE =
   "Votre session a expiré. Reconnectez-vous dans un autre onglet, puis réessayez : votre saisie reste sur cette page.";
@@ -73,19 +73,27 @@ export function sessionExpiree(erreur: unknown): boolean {
   return isAxiosError(erreur) && erreur.response?.status === 401;
 }
 
-/** Messages de refus de l'API, à afficher tels quels. */
-export function messagesDErreur(erreur: unknown): string[] {
+/** Refus de l'API, avec le champ en cause quand c'est une violation de validation. */
+export function refusDeLApi(erreur: unknown): Refus[] {
   if (sessionExpiree(erreur)) {
-    return [MESSAGE_SESSION_EXPIREE];
+    return [{ champ: null, message: MESSAGE_SESSION_EXPIREE }];
   }
 
   const donnees = isAxiosError(erreur) ? erreur.response?.data : null;
   if (donnees?.violations?.length) {
-    return donnees.violations.map((violation: { message: string }) => violation.message);
+    return donnees.violations.map((violation: { propertyPath?: string; message: string }) => ({
+      champ: violation.propertyPath || null,
+      message: violation.message,
+    }));
   }
   if (donnees?.detail) {
-    return [donnees.detail];
+    return [{ champ: null, message: donnees.detail }];
   }
 
-  return ["Une erreur s'est produite. Réessayez dans un instant."];
+  return [{ champ: null, message: "Une erreur s'est produite. Réessayez dans un instant." }];
+}
+
+/** Messages de refus de l'API, à afficher tels quels. */
+export function messagesDErreur(erreur: unknown): string[] {
+  return refusDeLApi(erreur).map((refus) => refus.message);
 }

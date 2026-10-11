@@ -41,7 +41,7 @@
       <button
         type="button"
         :disabled="enCours"
-        class="tw-rounded-md tw-bg-sky-600 tw-px-5 tw-py-2 tw-text-sm tw-font-semibold tw-text-white hover:tw-bg-sky-700"
+        class="tw-rounded-md tw-bg-sky-700 tw-px-5 tw-py-2 tw-text-sm tw-font-semibold tw-text-white hover:tw-bg-sky-800"
         @click="continuer"
       >
         Continuer

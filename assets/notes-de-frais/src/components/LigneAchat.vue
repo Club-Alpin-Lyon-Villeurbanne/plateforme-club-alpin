@@ -1,13 +1,16 @@
 <template>
-  <div class="tw-grid tw-grid-cols-[7.5rem_1fr_11rem_2rem] tw-items-center tw-gap-3 tw-py-2.5">
+  <div class="tw-grid tw-grid-cols-[1.25rem_7.5rem_1fr_11rem_2rem] tw-items-center tw-gap-3 tw-py-2.5">
+    <!-- Numéro repris par les messages de l'API (« dépense 2 ») ; les champs le portent déjà dans leur nom. -->
+    <span class="tw-text-right tw-text-xs tw-tabular-nums tw-text-gray-500" aria-hidden="true">{{ numero }}.</span>
     <div class="tw-relative">
       <input
         v-model.number="ligne.montant"
         type="number"
         step="0.01"
         min="0"
-        :class="[champ, 'tw-pr-7 tw-text-right tw-tabular-nums']"
+        :class="[montantManquant ? champEnErreur : champ, 'tw-pr-7 tw-text-right tw-tabular-nums']"
         :aria-label="`Montant de la dépense ${numero}`"
+        :aria-invalid="montantManquant"
         @change="arrondirLeMontant"
       />
       <span class="tw-pointer-events-none tw-absolute tw-inset-y-0 tw-right-3 tw-flex tw-items-center tw-text-sm tw-text-gray-400">€</span>
@@ -34,12 +37,13 @@
           />Remplacer
         </label>
       </span>
-      <label v-else :class="['tw-text-xs tw-font-medium tw-text-sky-700', libelleFichier]">
+      <label v-else :class="['tw-text-xs tw-font-medium', justificatifManquant ? 'tw-text-red-600' : 'tw-text-sky-700', libelleFichier]">
         <input
           type="file"
           class="tw-sr-only"
           :accept="FORMATS_ACCEPTES"
           :aria-label="`Joindre le justificatif de la dépense ${numero}`"
+          :aria-invalid="justificatifManquant"
           @change="choisir"
         />Joindre le justificatif
       </label>
@@ -53,24 +57,33 @@
     >
       ×
     </button>
-    <p v-if="erreurJustificatif" role="alert" class="tw-col-span-2 tw-col-start-3 tw-text-xs tw-text-red-600">
+    <p v-if="erreurJustificatif" role="alert" class="tw-col-span-2 tw-col-start-4 tw-text-xs tw-text-red-600">
       {{ erreurJustificatif }}
     </p>
   </div>
 </template>
 
 <script setup lang="ts">
+import { computed } from "vue";
 import { champ, discret } from "../classes";
 import { FORMATS_ACCEPTES } from "../justificatifs";
 import type { Justificatif, Ligne } from "../types";
 
-defineProps<{
+const props = defineProps<{
   numero: number;
   justificatif: Justificatif | null;
   envoiEnCours: boolean;
   erreurJustificatif: string | null;
+  /** L'envoi a été refusé sur les lignes : on signale ce qui manque à celle-ci, jusqu'à ce qu'elle soit complétée. */
+  marquerLesManques: boolean;
 }>();
 const ligne = defineModel<Ligne>({ required: true });
+
+const champEnErreur = champ.replace("tw-border-gray-300", "tw-border-red-500");
+const montantManquant = computed(
+  () => props.marquerLesManques && !(typeof ligne.value.montant === "number" && ligne.value.montant > 0),
+);
+const justificatifManquant = computed(() => props.marquerLesManques && !props.justificatif && !props.envoiEnCours);
 const emit = defineEmits<{ retirer: []; justificatif: [fichier: File]; montantModifie: [] }>();
 
 // Le serveur refuse plus de deux décimales.
