@@ -7,8 +7,8 @@ use App\Entity\User;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 
 /**
- * Les responsables de la commission d'une note hors sortie la valident ou la renvoient ; personne
- * d'autre que les valideurs et la trésorerie n'y touche.
+ * Les responsables de la commission d'une note hors sortie la valident, avant la trésorerie, ou la
+ * renvoient ; personne d'autre que les valideurs et la trésorerie n'y touche.
  */
 class NoteHorsSortieResponsableDecisionTest extends ExpenseReportApiTestCase
 {
@@ -18,23 +18,24 @@ class NoteHorsSortieResponsableDecisionTest extends ExpenseReportApiTestCase
     {
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
 
-        $response = $this->patch($this->responsable, $note, ['status' => 'approved']);
+        $response = $this->patch($this->responsable, $note, ['status' => 'preapproved']);
 
         $this->assertResponseStatus(200, $response);
-        $this->assertSame(ExpenseReportStatusEnum::APPROVED, $this->reload($note)->getStatus());
+        $this->assertSame('preapproved', $response['body']['status']);
+        $this->assertSame(ExpenseReportStatusEnum::PREAPPROVED, $this->reload($note)->getStatus());
         $historique = $this->em()->getRepository(ExpenseReportStatusHistory::class)->findBy(['expenseReport' => $note->getId()], ['id' => 'DESC']);
-        $this->assertSame(ExpenseReportStatusEnum::APPROVED, $historique[0]->getNewStatus());
+        $this->assertSame([ExpenseReportStatusEnum::SUBMITTED, ExpenseReportStatusEnum::PREAPPROVED], [$historique[0]->getOldStatus(), $historique[0]->getNewStatus()]);
         $this->assertSame($this->responsable->getId(), $historique[0]->getChangedBy()->getId());
     }
 
     public function testLeCoResponsableNePeutPlusAgirSurUneNoteValidee(): void
     {
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
-        $this->assertResponseStatus(200, $this->patch($this->responsable, $note, ['status' => 'approved']));
+        $this->assertResponseStatus(200, $this->patch($this->responsable, $note, ['status' => 'preapproved']));
 
         $this->assertRefused($this->patch($this->coResponsable, $note, ['status' => 'rejected', 'commentaireStatut' => self::MESSAGE]), 'status');
         $this->assertRefused($this->patch($this->coResponsable, $note, ['status' => 'submitted']), 'status');
-        $this->assertSame(ExpenseReportStatusEnum::APPROVED, $this->reload($note)->getStatus());
+        $this->assertSame(ExpenseReportStatusEnum::PREAPPROVED, $this->reload($note)->getStatus());
     }
 
     /**
@@ -61,15 +62,17 @@ class NoteHorsSortieResponsableDecisionTest extends ExpenseReportApiTestCase
     {
         $note = $this->noteEnvoyee($this->responsable, commission: $this->commissionDeTest);
 
-        $this->assertRefused($this->patch($this->responsable, $note, ['status' => 'approved']), 'status');
+        $this->assertRefused($this->patch($this->responsable, $note, ['status' => 'preapproved']), 'status');
         $this->assertRefusSurLeStatut($this->renvoyer($this->responsable, $note));
-        $this->assertResponseStatus(200, $this->patch($this->coResponsable, $note, ['status' => 'approved']));
+        $this->assertResponseStatus(200, $this->patch($this->coResponsable, $note, ['status' => 'preapproved']));
     }
 
-    public function testUnGestionnaireValideLaNoteDUnResponsable(): void
+    public function testLaNoteDUnResponsablePasseParLAutreResponsablePuisParLaTresorerie(): void
     {
         $note = $this->noteEnvoyee($this->responsable, commission: $this->commissionDeTest);
 
+        $this->assertRefused($this->patch($this->manager, $note, ['status' => 'approved']), 'status');
+        $this->assertResponseStatus(200, $this->patch($this->coResponsable, $note, ['status' => 'preapproved']));
         $this->assertResponseStatus(200, $this->patch($this->manager, $note, ['status' => 'approved']));
     }
 
@@ -147,7 +150,7 @@ class NoteHorsSortieResponsableDecisionTest extends ExpenseReportApiTestCase
             $valeur = '/api/commissions/' . $this->autreCommission->getId();
         }
 
-        $response = $this->patch($this->responsable, $note, ['status' => 'approved', $champ => $valeur]);
+        $response = $this->patch($this->responsable, $note, ['status' => 'preapproved', $champ => $valeur]);
 
         // Une commission changée refuse aussi la transition : le responsable n'est pas valideur de l'autre commission.
         $this->assertRefusSur($response, $champ);
@@ -168,14 +171,16 @@ class NoteHorsSortieResponsableDecisionTest extends ExpenseReportApiTestCase
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
 
         $this->assertRefused($this->patch($this->responsable, $note, ['commentaireStatut' => self::MESSAGE]), 'commentaireStatut');
-        $this->assertResponseStatus(200, $this->patch($this->responsable, $note, ['status' => 'approved', 'commentaireStatut' => 'Prévu au budget.']));
+        $this->assertResponseStatus(200, $this->patch($this->responsable, $note, ['status' => 'preapproved', 'commentaireStatut' => 'Prévu au budget.']));
     }
 
-    public function testUnGestionnaireResponsableGardeLesDroitsDuGestionnaire(): void
+    public function testUnGestionnaireResponsableValideEnResponsablePuisEnGestionnaire(): void
     {
         $this->rendreResponsable($this->manager, $this->commissionDeTest);
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
 
+        $this->assertRefused($this->patch($this->manager, $note, ['status' => 'approved']), 'status');
+        $this->assertResponseStatus(200, $this->patch($this->manager, $note, ['status' => 'preapproved']));
         $this->assertResponseStatus(200, $this->patch($this->manager, $note, ['status' => 'approved']));
         $this->assertResponseStatus(200, $this->patch($this->manager, $note, ['status' => 'accounted']));
     }
@@ -190,7 +195,7 @@ class NoteHorsSortieResponsableDecisionTest extends ExpenseReportApiTestCase
         $this->assertTrue($this->show($this->coResponsable, $duResponsable)['body']['peutDecider']);
         $this->assertFalse($this->show($this->manager, $deLAdherent)['body']['peutDecider']);
 
-        $this->assertResponseStatus(200, $this->patch($this->responsable, $deLAdherent, ['status' => 'approved']));
+        $this->assertResponseStatus(200, $this->patch($this->responsable, $deLAdherent, ['status' => 'preapproved']));
         $this->assertFalse($this->show($this->coResponsable, $deLAdherent)['body']['peutDecider']);
     }
 
@@ -200,8 +205,8 @@ class NoteHorsSortieResponsableDecisionTest extends ExpenseReportApiTestCase
         $this->em()->find(User::class, $this->responsable->getId())->setDoitRenouveler(true);
         $this->em()->flush();
 
-        $this->assertResponseStatus(403, $this->patch($this->responsable, $note, ['status' => 'approved']));
-        $this->assertResponseStatus(200, $this->patch($this->coResponsable, $note, ['status' => 'approved']));
+        $this->assertResponseStatus(403, $this->patch($this->responsable, $note, ['status' => 'preapproved']));
+        $this->assertResponseStatus(200, $this->patch($this->coResponsable, $note, ['status' => 'preapproved']));
     }
 
     public function testLeResponsableNIntervientPasSurUneNoteDeSortie(): void

@@ -66,13 +66,14 @@ class ExpenseReportStatusHistoryListener
 
     /**
      * Le message en vigueur pour un renvoi. Pour une validation, seulement celui écrit avec elle :
-     * le commentaire d'une note de sortie garde sinon le message d'un ancien renvoi.
+     * le commentaire garde sinon le message d'un ancien renvoi (note de sortie) ou de la
+     * pré-validation (note hors sortie).
      */
     private function messageDeLaDecision(ExpenseReport $note, ExpenseReportStatusEnum $newStatus, bool $commentaireModifie): ?string
     {
         return match ($newStatus) {
             ExpenseReportStatusEnum::REJECTED => $note->getStatusComment(),
-            ExpenseReportStatusEnum::APPROVED => $commentaireModifie ? $note->getStatusComment() : null,
+            ExpenseReportStatusEnum::PREAPPROVED, ExpenseReportStatusEnum::APPROVED => $commentaireModifie ? $note->getStatusComment() : null,
             default => null,
         };
     }

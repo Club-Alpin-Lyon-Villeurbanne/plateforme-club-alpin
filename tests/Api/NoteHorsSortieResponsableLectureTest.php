@@ -56,7 +56,7 @@ class NoteHorsSortieResponsableLectureTest extends ExpenseReportApiTestCase
     {
         $note = $this->noteEnvoyee($this->adherent, false, commission: $this->commissionDeTest);
 
-        $response = $this->patch($this->responsable, $note, ['status' => 'approved']);
+        $response = $this->patch($this->responsable, $note, ['status' => 'preapproved']);
 
         $this->assertResponseStatus(200, $response);
         $this->assertArrayNotHasKey('refundRequired', $response['body']);
@@ -71,7 +71,7 @@ class NoteHorsSortieResponsableLectureTest extends ExpenseReportApiTestCase
     {
         $note = $this->noteEnvoyee($this->adherent, true, commission: $this->commissionDeTest);
 
-        $response = $this->patch($this->responsable, $note, ['status' => 'approved', 'refundRequired' => $choix]);
+        $response = $this->patch($this->responsable, $note, ['status' => 'preapproved', 'refundRequired' => $choix]);
 
         $this->assertResponseStatus(200, $response);
         $this->assertTrue($this->reload($note)->isRefundRequired());
@@ -207,11 +207,11 @@ class NoteHorsSortieResponsableLectureTest extends ExpenseReportApiTestCase
     public function testLaDerniereDecisionNommeLeResponsable(): void
     {
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
-        $this->assertResponseStatus(200, $this->patch($this->coResponsable, $note, ['status' => 'approved']));
+        $this->assertResponseStatus(200, $this->patch($this->coResponsable, $note, ['status' => 'preapproved']));
 
         $decision = $this->show($this->adherent, $note)['body']['derniereDecision'];
 
-        $this->assertSame(['approved', 'Sam', 'PETIT'], [$decision['statut'], $decision['auteur']['prenom'], $decision['auteur']['nom']]);
+        $this->assertSame(['preapproved', 'Sam', 'PETIT'], [$decision['statut'], $decision['auteur']['prenom'], $decision['auteur']['nom']]);
     }
 
     /**

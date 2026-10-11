@@ -85,7 +85,7 @@ class NotificationsNoteHorsSortie
         }
 
         $montants = $this->calculator->montantsNoteHorsSortie($note);
-        $decision = \in_array($note->getStatus(), [ExpenseReportStatusEnum::APPROVED, ExpenseReportStatusEnum::REJECTED], true)
+        $decision = \in_array($note->getStatus(), [ExpenseReportStatusEnum::PREAPPROVED, ExpenseReportStatusEnum::REJECTED], true)
             ? $this->historique->derniereDecision($note)
             : null;
 

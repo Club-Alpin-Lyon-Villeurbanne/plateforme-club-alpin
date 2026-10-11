@@ -11,6 +11,9 @@ use App\Utils\Enums\ExpenseReportStatusEnum;
  */
 class NoteHorsSortieResponsableAValiderTest extends ExpenseReportApiTestCase
 {
+    // Le filtre de la page « Demandes déjà traitées ».
+    private const TRAITEES = ['status' => ['preapproved', 'approved', 'rejected', 'accounted']];
+
     /**
      * @dataProvider responsablesProvider
      */
@@ -38,7 +41,7 @@ class NoteHorsSortieResponsableAValiderTest extends ExpenseReportApiTestCase
     {
         $sortie = $this->createReport($this->adherent, ExpenseReportStatusEnum::SUBMITTED);
         $this->rendreResponsable($this->responsable, $sortie->getEvent()->getCommission());
-        foreach ([ExpenseReportStatusEnum::DRAFT, ExpenseReportStatusEnum::APPROVED, ExpenseReportStatusEnum::REJECTED, ExpenseReportStatusEnum::ACCOUNTED] as $statut) {
+        foreach ([ExpenseReportStatusEnum::DRAFT, ExpenseReportStatusEnum::PREAPPROVED, ExpenseReportStatusEnum::APPROVED, ExpenseReportStatusEnum::REJECTED, ExpenseReportStatusEnum::ACCOUNTED] as $statut) {
             $this->creerAchat($this->adherent, $statut, null, $this->commissionDeTest);
         }
         $envoyee = $this->creerAchat($this->adherent, ExpenseReportStatusEnum::SUBMITTED, null, $this->commissionDeTest);
@@ -48,15 +51,19 @@ class NoteHorsSortieResponsableAValiderTest extends ExpenseReportApiTestCase
 
     public function testAvecLeFiltreLeResponsableRetrouveLesNotesTraiteesDeSesCommissions(): void
     {
-        $validee = $this->creerAchat($this->adherent, ExpenseReportStatusEnum::APPROVED, null, $this->commissionDeTest);
-        $aCorriger = $this->creerAchat($this->adherent, ExpenseReportStatusEnum::REJECTED, null, $this->commissionDeTest);
+        $traitees = array_map(fn (ExpenseReportStatusEnum $statut) => $this->creerAchat($this->adherent, $statut, null, $this->commissionDeTest)->getId(), [
+            ExpenseReportStatusEnum::PREAPPROVED,
+            ExpenseReportStatusEnum::APPROVED,
+            ExpenseReportStatusEnum::REJECTED,
+            ExpenseReportStatusEnum::ACCOUNTED,
+        ]);
         $this->creerAchat($this->adherent, ExpenseReportStatusEnum::SUBMITTED, null, $this->commissionDeTest);
         $this->creerAchat($this->adherent, ExpenseReportStatusEnum::APPROVED, null, $this->autreCommission);
         $this->creerAchat($this->adherent, ExpenseReportStatusEnum::APPROVED);
 
-        $ids = $this->ids($this->aValider($this->responsable, ['status' => ['approved', 'rejected']]));
+        $ids = $this->ids($this->aValider($this->responsable, self::TRAITEES));
 
-        $this->assertEqualsCanonicalizing([$validee->getId(), $aCorriger->getId()], $ids);
+        $this->assertEqualsCanonicalizing($traitees, $ids);
     }
 
     public function testUneNoteValideeDisparaitDeLaListeDuCoResponsable(): void
@@ -64,10 +71,10 @@ class NoteHorsSortieResponsableAValiderTest extends ExpenseReportApiTestCase
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
         $this->assertSame([$note->getId()], $this->ids($this->aValider($this->coResponsable)));
 
-        $this->assertResponseStatus(200, $this->patch($this->responsable, $note, ['status' => 'approved']));
+        $this->assertResponseStatus(200, $this->patch($this->responsable, $note, ['status' => 'preapproved']));
 
         $this->assertSame([], $this->ids($this->aValider($this->coResponsable)));
-        $this->assertSame([$note->getId()], $this->ids($this->aValider($this->coResponsable, ['status' => ['approved', 'rejected']])));
+        $this->assertSame([$note->getId()], $this->ids($this->aValider($this->coResponsable, self::TRAITEES)));
     }
 
     public function testLeResponsableNeVoitPasSaPropreNote(): void
@@ -96,7 +103,7 @@ class NoteHorsSortieResponsableAValiderTest extends ExpenseReportApiTestCase
     {
         foreach (['encadrant' => 'encadrant', 'tiers' => 'stranger', 'adhérent sans rôle' => 'adherent'] as $nom => $acteur) {
             yield $nom . ', sans filtre' => [$acteur, []];
-            yield $nom . ', demandes déjà traitées' => [$acteur, ['status' => ['approved', 'rejected']]];
+            yield $nom . ', demandes déjà traitées' => [$acteur, self::TRAITEES];
         }
     }
 
@@ -117,7 +124,7 @@ class NoteHorsSortieResponsableAValiderTest extends ExpenseReportApiTestCase
     public static function filtresProvider(): iterable
     {
         yield 'sans filtre' => [[]];
-        yield 'demandes déjà traitées' => [['status' => ['approved', 'rejected']]];
+        yield 'demandes déjà traitées' => [self::TRAITEES];
     }
 
     public function testLaListeDonneCeQueLaPageAffiche(): void

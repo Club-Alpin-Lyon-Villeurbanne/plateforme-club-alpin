@@ -62,10 +62,12 @@ function decision(note: NoteDeFrais): string | null {
   if (!derniere || note.status === "submitted") {
     return null;
   }
+  const le = jourMoisDe(derniere.date);
+  if (derniere.statut === "preapproved") {
+    return `Validée par ${nomComplet(derniere.auteur)} le ${le}, transmise à la trésorerie.`;
+  }
 
-  return derniere.statut === "approved"
-    ? `Validée par ${nomComplet(derniere.auteur)} le ${jourMoisDe(derniere.date)}.`
-    : `Refusée par ${nomComplet(derniere.auteur)} le ${jourMoisDe(derniere.date)}.`;
+  return derniere.statut === "approved" ? `Validée par la trésorerie le ${le}.` : `Refusée par ${nomComplet(derniere.auteur)} le ${le}.`;
 }
 </script>
 

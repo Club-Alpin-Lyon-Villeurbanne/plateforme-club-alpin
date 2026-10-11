@@ -41,7 +41,7 @@ class ExpenseReportActor
 
     /**
      * Valideur d'une note hors sortie : responsable de sa commission, et pas son demandeur. Un
-     * gestionnaire peut l'être aussi ; ses droits de gestionnaire priment.
+     * gestionnaire peut l'être aussi : il agit en valideur tant que la note est envoyée.
      */
     public function isResponsableOf(ExpenseReport $expenseReport): bool
     {

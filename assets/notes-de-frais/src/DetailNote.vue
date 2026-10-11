@@ -63,10 +63,14 @@ const decisionPrise = computed(() => {
   if (!note.value || !derniere) {
     return null;
   }
-  const par = `par ${nomComplet(derniere.auteur)} le ${dateFrDe(derniere.date)}`;
-  if (derniere.statut === "approved") {
-    return { texte: `Validée ${par}.`, message: null };
+  const le = dateFrDe(derniere.date);
+  if (derniere.statut === "preapproved") {
+    return { texte: `Validée par ${nomComplet(derniere.auteur)} le ${le}.`, message: null };
   }
+  if (derniere.statut === "approved") {
+    return { texte: `Validée par la trésorerie le ${le}.`, message: null };
+  }
+  const par = `par ${nomComplet(derniere.auteur)} le ${le}`;
 
   // Une note corrigée puis envoyée à nouveau garde la trace du refus.
   return { texte: note.value.status === "submitted" ? `Refusée une première fois ${par} :` : `Refusée ${par} :`, message: derniere.message };
@@ -74,14 +78,17 @@ const decisionPrise = computed(() => {
 
 const messageRempli = computed(() => message.value.trim() !== "");
 
-// Une note envoyée sans les boutons : on dit pourquoi, et qui décidera.
+// Une note en attente sans les boutons : on dit pourquoi, et qui décidera.
 const attente = computed(() => {
-  if (!note.value || note.value.status !== "submitted" || note.value.peutDecider) {
+  if (!note.value || note.value.peutDecider) {
     return null;
   }
-  const valideurs = note.value.valideurs.length ? enumeration(note.value.valideurs.map(nomComplet), "ou") : "la trésorerie";
+  const { status, valideurs } = note.value;
+  if (status === "preapproved" || (status === "submitted" && !valideurs.length)) {
+    return "En attente de la trésorerie.";
+  }
 
-  return `En attente de la décision de ${valideurs}.`;
+  return status === "submitted" ? `En attente de la décision de ${enumeration(valideurs.map(nomComplet), "ou")}.` : null;
 });
 
 onMounted(async () => {
@@ -163,7 +170,7 @@ async function decider(corps: Record<string, unknown>, texte: string, classe: st
 }
 
 function valider() {
-  void decider({ status: "approved" }, `✓ Validée. La trésorerie et ${demandeur.value} sont prévenus.`, "tw-text-green-700");
+  void decider({ status: "preapproved" }, `✓ Validée et transmise à la trésorerie. ${demandeur.value} a été prévenu·e.`, "tw-text-green-700");
 }
 
 function refuser() {

@@ -191,13 +191,16 @@ class NoteHorsSortieResponsableMailsTest extends ExpenseReportApiTestCase
     {
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
 
-        $this->assertResponseStatus(200, $this->patch($this->responsable, $note, ['status' => 'approved']));
+        $this->assertResponseStatus(200, $this->patch($this->responsable, $note, ['status' => 'preapproved']));
 
         $this->assertSeulsDestinataires([$this->adherent]);
         $this->assertSame(
             ['Votre note de frais « Dégaines pour la SAE » a été validée par Alex DURAND et transmise à la trésorerie.'],
             $this->sujetsA($this->adherent),
         );
+        foreach ($this->corps($this->mailsA($this->adherent->getEmail())[0]) as $corps) {
+            $this->assertStringContainsString('validée par Alex DURAND et transmise à la trésorerie', $corps);
+        }
     }
 
     public function testLeRenvoiParUnResponsableEstAttribueASonAuteur(): void

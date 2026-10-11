@@ -6,6 +6,8 @@ enum ExpenseReportStatusEnum: string
 {
     case DRAFT = 'draft';
     case SUBMITTED = 'submitted';
+    // Note hors sortie validée par un responsable de sa commission, qui attend la trésorerie.
+    case PREAPPROVED = 'preapproved';
     case REJECTED = 'rejected';
     case APPROVED = 'approved';
     case ACCOUNTED = 'accounted';

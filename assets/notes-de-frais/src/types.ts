@@ -87,13 +87,13 @@ export interface Personne {
   nom: string;
 }
 
-/** Dernière validation ou dernier renvoi d'une note. */
+/** Dernière décision sur une note : validation par un responsable (preapproved) ou par la trésorerie, ou renvoi. */
 export interface Decision {
-  statut: "approved" | "rejected";
+  statut: "preapproved" | "approved" | "rejected";
   auteur: Personne;
   /** Date et heure ISO 8601. */
   date: string;
-  /** Message du renvoi ; null pour une validation. */
+  /** Message du renvoi, ou mot laissé avec une validation ; null sinon. */
   message: string | null;
 }
 

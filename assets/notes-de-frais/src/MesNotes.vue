@@ -22,6 +22,7 @@ const FILTRES: { valeur: Filtre; libelle: string }[] = [
 const LIBELLES: Record<string, string> = {
   draft: "Brouillon",
   submitted: "Transmise à la trésorerie",
+  preapproved: "Transmise à la trésorerie",
   rejected: "À corriger",
   approved: "Validée",
   accounted: "Comptabilisée",
@@ -30,6 +31,7 @@ const LIBELLES: Record<string, string> = {
 const STYLES: Record<string, string> = {
   draft: "tw-bg-gray-100 tw-text-gray-700",
   submitted: "tw-bg-blue-50 tw-text-blue-700",
+  preapproved: "tw-bg-blue-50 tw-text-blue-700",
   rejected: "tw-bg-red-50 tw-text-red-700",
   approved: "tw-bg-green-50 tw-text-green-700",
   accounted: "tw-bg-green-50 tw-text-green-700",
@@ -153,11 +155,14 @@ function valideeLe(note: Note): string | null {
     return null;
   }
   const decision = note.derniereDecision;
+  if (note.status === "preapproved" && decision?.statut === "preapproved") {
+    return `Validée par ${nomComplet(decision.auteur)} le ${jourMoisDe(decision.date)}, transmise à la trésorerie.`;
+  }
   if ((note.status !== "approved" && note.status !== "accounted") || decision?.statut !== "approved") {
     return null;
   }
 
-  return `Validée par ${nomComplet(decision.auteur)} le ${jourMoisDe(decision.date)}.`;
+  return `Validée par la trésorerie le ${jourMoisDe(decision.date)}.`;
 }
 
 const ACTIONS: Record<string, string> = { draft: "Reprendre", rejected: "Corriger" };

@@ -29,7 +29,8 @@ class ExpenseReportStatusHistoryRepository extends ServiceEntityRepository
     }
 
     /**
-     * Dernière validation ou dernier renvoi de la note, avec son auteur.
+     * Dernière décision sur la note, avec son auteur : pré-validation par un responsable,
+     * validation ou renvoi. La comptabilisation n'en est pas une.
      */
     public function derniereDecision(ExpenseReport $note): ?ExpenseReportStatusHistory
     {
@@ -39,7 +40,7 @@ class ExpenseReportStatusHistoryRepository extends ServiceEntityRepository
             ->andWhere('h.expenseReport = :note')
             ->andWhere('h.newStatus IN (:decisions)')
             ->setParameter('note', $note)
-            ->setParameter('decisions', [ExpenseReportStatusEnum::APPROVED->value, ExpenseReportStatusEnum::REJECTED->value])
+            ->setParameter('decisions', [ExpenseReportStatusEnum::PREAPPROVED->value, ExpenseReportStatusEnum::APPROVED->value, ExpenseReportStatusEnum::REJECTED->value])
             // Deux changements dans la même seconde : l'ordre d'insertion départage.
             ->orderBy('h.changedAt', 'DESC')
             ->addOrderBy('h.id', 'DESC')

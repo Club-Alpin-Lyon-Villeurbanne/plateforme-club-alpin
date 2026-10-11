@@ -6,8 +6,8 @@ use App\Utils\Enums\ExpenseReportStatusEnum;
 use Symfony\Component\Mime\Email;
 
 /**
- * Mails de la décision : seul le demandeur est prévenu, par un mail qui nomme l'auteur de la
- * décision. Rien ne part à la trésorerie.
+ * Mails de la décision : seul le demandeur est prévenu, par un mail qui nomme l'auteur d'un refus.
+ * Rien ne part à la trésorerie.
  */
 class NoteHorsSortieDecisionMailsTest extends ExpenseReportApiTestCase
 {
@@ -30,7 +30,7 @@ class NoteHorsSortieDecisionMailsTest extends ExpenseReportApiTestCase
         $this->assertSeulsDestinataires([$this->owner]);
     }
 
-    public function testLeDemandeurApprendQuiAValideSaNote(): void
+    public function testSansValideurLeDemandeurApprendQueLaTresorerieAValideSaNote(): void
     {
         $note = $this->noteEnvoyee($this->owner);
 
@@ -38,9 +38,9 @@ class NoteHorsSortieDecisionMailsTest extends ExpenseReportApiTestCase
 
         $mails = $this->mailsA($this->owner->getEmail());
         $this->assertCount(1, $mails);
-        $this->assertSame('Votre note de frais « Dégaines pour la SAE » a été validée par Alex DURAND et transmise à la trésorerie.', $mails[0]->getSubject());
+        $this->assertSame('Votre note de frais « Dégaines pour la SAE » a été validée par la trésorerie.', $mails[0]->getSubject());
         foreach ($this->corps($mails[0]) as $corps) {
-            $this->assertStringContainsString('validée par Alex DURAND et transmise à la trésorerie', $corps);
+            $this->assertStringContainsString('a été validée par la trésorerie.', $corps);
         }
     }
 
@@ -118,7 +118,7 @@ class NoteHorsSortieDecisionMailsTest extends ExpenseReportApiTestCase
         $renvoi = $this->mailsA($this->owner->getEmail())[0];
         $mails[] = $renvoi;
         $this->assertResponseStatus(200, $this->envoyer($this->owner, $note));
-        $this->assertResponseStatus(200, $this->patch($this->responsable, $note, ['status' => 'approved']));
+        $this->assertResponseStatus(200, $this->patch($this->responsable, $note, ['status' => 'preapproved']));
         $mails[] = $this->mailsA($this->owner->getEmail())[0];
 
         // Trois à l'envoi (les deux valideurs et le demandeur), un au renvoi, un à la validation.

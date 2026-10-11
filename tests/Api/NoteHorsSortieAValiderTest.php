@@ -29,7 +29,7 @@ class NoteHorsSortieAValiderTest extends ExpenseReportApiTestCase
     public static function filtresProvider(): iterable
     {
         yield 'sans filtre' => [[]];
-        yield 'demandes déjà traitées' => [['status' => ['approved', 'rejected']]];
+        yield 'demandes déjà traitées' => [['status' => ['preapproved', 'approved', 'rejected', 'accounted']]];
         yield 'ancienne file de la trésorerie' => [['attente' => 'moi']];
         yield 'ancienne file des responsables' => [['attente' => 'responsables']];
     }
