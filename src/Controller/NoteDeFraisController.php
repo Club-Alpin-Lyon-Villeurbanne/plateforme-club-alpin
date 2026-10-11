@@ -52,6 +52,7 @@ class NoteDeFraisController extends AbstractController
         $utilisateur = $this->getUser();
         // Pour la phrase « Validée par … » : l'utilisateur connecté ne valide pas sa propre note.
         $valideursParCommission = $utilisateur instanceof User ? $valideurs->pourLesCommissions($visibles, $utilisateur) : [];
+        $commissionsDontIlEstResponsable = $utilisateur instanceof User ? $valideurs->commissionsValideesPar($utilisateur) : [];
 
         $commissions = [];
         foreach ($visibles as $commission) {
@@ -61,6 +62,8 @@ class NoteDeFraisController extends AbstractController
                 'valideurs' => ValideursNoteHorsSortie::exposer($valideursParCommission[$commission->getId()] ?? []),
                 // La page ne propose une formation que là où l'API l'accepterait.
                 'formationPossible' => $utilisateur instanceof User && $controles->peutDemanderUneFormation($utilisateur, $commission),
+                // Sans autre valideur, la page lui dit qu'il est le seul responsable.
+                'demandeurResponsable' => \in_array($commission->getId(), $commissionsDontIlEstResponsable, true),
             ];
         }
 

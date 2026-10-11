@@ -122,7 +122,7 @@ watch(
 const valideurs = computed(() => {
   const commission = props.commissions.find((une) => une.id === demande.value.commissionId);
 
-  return commission ? phraseValideurs(commission.valideurs) : "";
+  return commission ? phraseValideurs(commission) : "";
 });
 
 const manque = ref("");

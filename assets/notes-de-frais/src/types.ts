@@ -14,6 +14,8 @@ export interface CommissionProposee {
   valideurs: Valideur[];
   /** L'utilisateur y a un rôle d'encadrement : l'API accepterait qu'il y demande une formation. */
   formationPossible: boolean;
+  /** L'utilisateur est responsable de cette commission : sans autre valideur, il en est le seul. */
+  demandeurResponsable: boolean;
 }
 
 /** Transmis par le gabarit pour afficher le calcul d'une ligne de voiture ; l'API fait foi pour les montants. */

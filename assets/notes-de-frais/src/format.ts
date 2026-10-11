@@ -62,9 +62,13 @@ export function partRemboursable(montants: { totalDeclare: number; totalRembours
 }
 
 /** Sous la commission choisie : qui validera la note. */
-export function phraseValideurs(valideurs: Personne[]): string {
-  return valideurs.length
-    ? `Validée par ${enumeration(valideurs.map(nomComplet), "ou")}.`
+export function phraseValideurs(commission: { valideurs: Personne[]; demandeurResponsable: boolean }): string {
+  if (commission.valideurs.length) {
+    return `Validée par ${enumeration(commission.valideurs.map(nomComplet), "ou")}.`;
+  }
+
+  return commission.demandeurResponsable
+    ? "Vous êtes le seul responsable de cette commission : la trésorerie validera."
     : "Pas de responsable : la trésorerie validera.";
 }
 

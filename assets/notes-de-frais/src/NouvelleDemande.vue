@@ -150,7 +150,7 @@ const commissionChoisie = computed(() => props.donnees.commissions.find((commiss
 
 const commissionTitre = computed(() => commissionChoisie.value?.titre ?? note.value?.commission?.title ?? "");
 
-const phraseDesValideurs = computed(() => (commissionChoisie.value ? phraseValideurs(commissionChoisie.value.valideurs) : ""));
+const phraseDesValideurs = computed(() => (commissionChoisie.value ? phraseValideurs(commissionChoisie.value) : ""));
 
 // —— Ce qui est enregistré, pour prévenir avant de quitter la page ——
 

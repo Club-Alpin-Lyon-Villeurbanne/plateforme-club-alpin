@@ -59,7 +59,7 @@ function contexte(note: NoteDeFrais): string {
 
 function limite(note: NoteDeFrais): Date | null {
   const delai = props.donnees.delaisEnvoiJours[note.type];
-  if (note.status !== "draft" || note.type !== "autre" || !note.dateDepense || delai === undefined) {
+  if (note.status !== "draft" || !note.dateDepense || delai === undefined) {
     return null;
   }
 
