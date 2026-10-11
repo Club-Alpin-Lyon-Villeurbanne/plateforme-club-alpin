@@ -44,6 +44,7 @@
       :envois-en-cours="envoisEnCours"
       :erreurs-justificatifs="erreursJustificatifs"
       :avertissements="note?.avertissements ?? []"
+      :delai-depasse="delaiDepasse"
       :erreurs="erreursEtape2"
       :refus-sur-les-lignes="refusSurLesLignes"
       :refus-sur-le-choix="refusSurLeChoix"
@@ -63,6 +64,7 @@ import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref } from "vue
 import PremiereEtape from "./components/PremiereEtape.vue";
 import SecondeEtape from "./components/SecondeEtape.vue";
 import { creerNote, enregistrerNote, envoyerJustificatif, lireNote, messagesDErreur, refusDeLApi, sessionExpiree } from "./api";
+import { aujourdhui, limiteEnvoi, messageDelaiDepasse } from "./format";
 import { refusDuFichier } from "./justificatifs";
 import { ecrireLignes, lireLignes, nouvelleLigne } from "./lignes";
 import type { Demande, DonneesInitiales, Justificatif, Ligne, NoteDeFrais, Refus, Toastr } from "./types";
@@ -114,6 +116,14 @@ const refusSurLeChoix = computed(() => choix.value === null && refusEnvoi.value.
 const delaiEnvoiJours = computed(() =>
   note.value === null || note.value.status === "draft" ? (props.donnees.delaisEnvoiJours[TYPE] ?? null) : null,
 );
+
+const delaiDepasse = computed(() => {
+  if (note.value?.status !== "draft" || delaiEnvoiJours.value === null || !demande.value.dateDepense) {
+    return null;
+  }
+
+  return aujourdhui() > limiteEnvoi(demande.value.dateDepense, delaiEnvoiJours.value) ? messageDelaiDepasse(delaiEnvoiJours.value) : null;
+});
 
 const commissionTitre = computed(
   () =>

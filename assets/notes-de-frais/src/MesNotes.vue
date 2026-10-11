@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { listerMesNotes, messagesDErreur } from "./api";
-import { dateFr, euros, jour } from "./format";
+import { aujourdhui, dateFr, euros, limiteEnvoi, messageDelaiDepasse } from "./format";
 import type { DonneesMesNotes, NoteDeFrais } from "./types";
 
 const props = defineProps<{ donnees: DonneesMesNotes }>();
@@ -58,15 +58,33 @@ function contexte(note: NoteDeFrais): string {
   return `${nature} pour ${note.commission?.title ?? ""}`;
 }
 
-function dateLimite(note: NoteDeFrais): string | null {
+function limite(note: NoteDeFrais): Date | null {
   const delai = props.donnees.delaisEnvoiJours[note.type];
   if (note.status !== "draft" || note.type !== "autre" || !note.dateDepense || delai === undefined) {
     return null;
   }
-  const limite = jour(note.dateDepense.slice(0, 10));
-  limite.setDate(limite.getDate() + delai);
 
-  return dateFr(limite);
+  return limiteEnvoi(note.dateDepense, delai);
+}
+
+function delaiDepasse(note: NoteDeFrais): string | null {
+  const date = limite(note);
+
+  return date !== null && aujourdhui() > date ? messageDelaiDepasse(props.donnees.delaisEnvoiJours[note.type]) : null;
+}
+
+function dateLimite(note: NoteDeFrais): string | null {
+  const date = limite(note);
+
+  return date === null || delaiDepasse(note) !== null ? null : dateFr(date);
+}
+
+function libelleStatut(note: NoteDeFrais): string {
+  if (note.status === "submitted" && note.valideurs.length === 0) {
+    return "Chez la trésorerie";
+  }
+
+  return LIBELLES[note.status] ?? note.status;
 }
 
 function envoyeeLe(note: NoteDeFrais): string | null {
@@ -117,14 +135,13 @@ function envoyeeLe(note: NoteDeFrais): string | null {
         <div class="tw-min-w-0 tw-flex-1">
           <p class="tw-font-medium tw-text-gray-900">{{ note.objet }}</p>
           <p class="tw-text-xs tw-text-gray-500">{{ contexte(note) }}</p>
-          <p v-if="dateLimite(note)" class="tw-mt-1 tw-text-xs tw-text-gray-500">À envoyer avant le {{ dateLimite(note) }}.</p>
+          <p v-if="delaiDepasse(note)" class="tw-mt-1 tw-text-xs tw-text-red-700">{{ delaiDepasse(note) }}</p>
+          <p v-else-if="dateLimite(note)" class="tw-mt-1 tw-text-xs tw-text-gray-500">À envoyer avant le {{ dateLimite(note) }}.</p>
           <p v-else-if="envoyeeLe(note)" class="tw-mt-1 tw-text-xs tw-text-gray-500">{{ envoyeeLe(note) }}</p>
         </div>
         <div class="tw-flex tw-shrink-0 tw-flex-col tw-items-end tw-gap-2">
           <span class="tw-font-semibold tw-tabular-nums tw-text-gray-900">{{ euros(note.totalDeclare) }}</span>
-          <span class="tw-whitespace-nowrap tw-rounded-full tw-px-3 tw-py-1 tw-text-xs tw-font-semibold" :class="STYLES[note.status]">{{
-            LIBELLES[note.status] ?? note.status
-          }}</span>
+          <span class="tw-whitespace-nowrap tw-rounded-full tw-px-3 tw-py-1 tw-text-xs tw-font-semibold" :class="STYLES[note.status]">{{ libelleStatut(note) }}</span>
           <a
             v-if="note.status === 'draft'"
             :href="`${URL_NOUVELLE}?id=${note.id}`"

@@ -3,7 +3,7 @@
 {% block subject -%}
     {% if report.type.estHorsSortie -%}
     Votre note de frais « {{ report.objet }} »
-    {%- if status == 'submitted' %} est transmise à la trésorerie
+    {%- if status == 'submitted' %} est envoyée à la trésorerie
     {%- elseif status == 'rejected' %} a été refusée
     {%- elseif status == 'accounted' %} a été comptabilisée
     {%- else %} a été acceptée{% endif %}.
@@ -20,7 +20,7 @@
 <div>
     <p>
         Votre note de frais « {{ report.objet }} »
-            {%- if status == 'submitted' %} est transmise à la trésorerie
+            {%- if status == 'submitted' %} est envoyée à la trésorerie
             {%- elseif status == 'rejected' %} a été refusée
             {%- elseif status == 'accounted' %} a été comptabilisée
             {%- else %} a été acceptée{% endif %}.
@@ -201,7 +201,7 @@
 
 {% block inner_txt %}{% if report.type.estHorsSortie %}
 Votre note de frais « {{ report.objet }} »
-    {%- if status == 'submitted' %} est transmise à la trésorerie
+    {%- if status == 'submitted' %} est envoyée à la trésorerie
     {%- elseif status == 'rejected' %} a été refusée
     {%- elseif status == 'accounted' %} a été comptabilisée
     {%- else %} a été acceptée{% endif %}.

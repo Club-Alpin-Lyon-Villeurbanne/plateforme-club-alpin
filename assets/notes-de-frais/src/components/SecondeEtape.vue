@@ -8,6 +8,8 @@
       <button type="button" class="tw-text-sm tw-text-sky-700 hover:tw-underline" @click="emit('modifier')">Modifier</button>
     </div>
 
+    <p v-if="delaiDepasse" role="alert" class="tw-border-b tw-border-red-100 tw-bg-red-50 tw-px-8 tw-py-3 tw-text-sm tw-text-red-700">{{ delaiDepasse }}</p>
+
     <div class="tw-px-8 tw-py-6">
       <div ref="conteneurLignes" class="tw-divide-y tw-divide-gray-100">
         <LigneAchat
@@ -116,6 +118,7 @@ const props = defineProps<{
   erreursJustificatifs: Record<string, string>;
   /** Renvoyés par l'API. */
   avertissements: string[];
+  delaiDepasse: string | null;
   erreurs: string[];
   /** Le dernier refus porte sur les lignes, ou sur le choix encore absent : on les signale. */
   refusSurLesLignes: boolean;

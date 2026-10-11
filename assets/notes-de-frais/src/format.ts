@@ -18,3 +18,15 @@ export function aujourdhui(): Date {
 export function dateFr(date: Date): string {
   return date.toLocaleDateString("fr-FR");
 }
+
+/** Dernier jour pour envoyer une dépense faite le `dateDepense` (AAAA-MM-JJ). */
+export function limiteEnvoi(dateDepense: string, delaiJours: number): Date {
+  const limite = jour(dateDepense.slice(0, 10));
+  limite.setDate(limite.getDate() + delaiJours);
+
+  return limite;
+}
+
+export function messageDelaiDepasse(delaiJours: number): string {
+  return `Le délai de ${delaiJours} jours est dépassé : cette demande ne peut plus être envoyée.`;
+}

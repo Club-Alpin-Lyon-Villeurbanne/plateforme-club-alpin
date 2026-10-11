@@ -10,7 +10,7 @@ use Symfony\Component\Mime\Email;
 
 /**
  * Mails à l'envoi d'une note hors sortie : l'adresse de la trésorerie reçoit la note à valider,
- * le demandeur apprend qu'elle lui est transmise.
+ * le demandeur apprend qu'elle lui est envoyée.
  */
 class NoteHorsSortieMailsTest extends ExpenseReportApiTestCase
 {
@@ -101,7 +101,7 @@ class NoteHorsSortieMailsTest extends ExpenseReportApiTestCase
         }
     }
 
-    public function testLeDemandeurApprendQueSaNoteEstTransmiseALaTresorerie(): void
+    public function testLeDemandeurApprendQueSaNoteEstEnvoyeeALaTresorerie(): void
     {
         $note = $this->noteAEnvoyer();
 
@@ -109,9 +109,9 @@ class NoteHorsSortieMailsTest extends ExpenseReportApiTestCase
 
         $mails = $this->mailsA($this->owner->getEmail());
         $this->assertCount(1, $mails);
-        $this->assertSame('Votre note de frais « Dégaines pour la SAE » est transmise à la trésorerie.', $mails[0]->getSubject());
+        $this->assertSame('Votre note de frais « Dégaines pour la SAE » est envoyée à la trésorerie.', $mails[0]->getSubject());
         foreach ([$mails[0]->getTextBody(), $mails[0]->getHtmlBody()] as $corps) {
-            $this->assertStringContainsString('est transmise à la trésorerie', $corps);
+            $this->assertStringContainsString('est envoyée à la trésorerie', $corps);
             $this->assertStringContainsString('Dégaines (x6)', $corps);
             $this->assertStringContainsString('Cordelette 6 mm', $corps);
             $this->assertStringContainsString('86,40', $corps);
