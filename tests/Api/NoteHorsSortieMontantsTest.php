@@ -112,15 +112,15 @@ class NoteHorsSortieMontantsTest extends ExpenseReportApiTestCase
         $this->assertSame([], $envoi['body']['avertissements']);
     }
 
-    public function testUneNoteDeSortieNExposeNiMontantsNiAvertissements(): void
+    public function testUneNoteDeSortieExposeSesMontantsSansAvertissements(): void
     {
-        $report = $this->createReport($this->owner, ExpenseReportStatusEnum::DRAFT);
+        $report = $this->createReport($this->owner, ExpenseReportStatusEnum::DRAFT, '{"transport":{"type":"PUBLIC_TRANSPORT","ticketPrice":42.5},"accommodations":[],"others":[]}');
 
         $response = $this->show($this->owner, $report);
 
         $this->assertResponseStatus(200, $response);
-        $this->assertArrayNotHasKey('totalDeclare', $response['body']);
-        $this->assertArrayNotHasKey('totalRemboursable', $response['body']);
+        $this->assertSame(42.5, $response['body']['totalDeclare']);
+        $this->assertSame(42.5, $response['body']['totalRemboursable']);
         $this->assertArrayNotHasKey('avertissements', $response['body']);
     }
 

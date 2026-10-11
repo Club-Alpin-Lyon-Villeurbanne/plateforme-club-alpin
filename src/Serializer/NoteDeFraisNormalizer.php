@@ -14,16 +14,16 @@ use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
- * Ajoute à une note hors sortie, en lecture seule, ce que le serveur calcule : montants, lignes
- * telles qu'affichées, avertissements, valideurs, date d'envoi, dernière décision, et si
- * l'utilisateur connecté peut la valider ou la renvoyer. Retire le choix entre don et
- * remboursement pour qui ne doit pas le connaître. Une note de sortie garde exactement sa forme.
+ * Ajoute à une note, en lecture seule, ses montants calculés par le serveur. Pour une note hors
+ * sortie, aussi : lignes telles qu'affichées, avertissements, valideurs, date d'envoi, dernière
+ * décision, et si l'utilisateur connecté peut la valider ou la refuser ; le choix entre don et
+ * remboursement est retiré pour qui ne doit pas le connaître.
  */
-final class NoteHorsSortieNormalizer implements NormalizerInterface, NormalizerAwareInterface
+final class NoteDeFraisNormalizer implements NormalizerInterface, NormalizerAwareInterface
 {
     use NormalizerAwareTrait;
 
-    private const DEJA_APPELE = 'NOTE_HORS_SORTIE_NORMALIZER_DEJA_APPELE';
+    private const DEJA_APPELE = 'NOTE_DE_FRAIS_NORMALIZER_DEJA_APPELE';
 
     public function __construct(
         private readonly ExpenseReportCalculator $calculator,
@@ -43,23 +43,24 @@ final class NoteHorsSortieNormalizer implements NormalizerInterface, NormalizerA
             return $donnees;
         }
 
+        $donnees = array_merge($donnees, $this->calculator->montants($object));
+        if (!$object->getType()->estHorsSortie()) {
+            return $donnees;
+        }
+
         if (!$this->actor->voitLeChoixDuRemboursement($object)) {
             unset($donnees['refundRequired']);
         }
 
-        return array_merge(
-            $donnees,
-            $this->calculator->montantsNoteHorsSortie($object),
-            [
-                'lignesAffichees' => $this->calculator->lignesAffichees($object),
-                'avertissements' => $this->controles->avertissements($object),
-                'dateEnvoi' => $this->dateEnvoi($object)?->format(\DATE_ATOM),
-                'valideurs' => ValideursNoteHorsSortie::exposer($this->valideurs->pour($object)),
-                'derniereDecision' => $this->derniereDecision($object),
-                'peutDecider' => ExpenseReportStatusEnum::SUBMITTED === $object->getStatus()
-                    && ($this->actor->isManagerOf($object) || $this->actor->isResponsableOf($object)),
-            ],
-        );
+        return array_merge($donnees, [
+            'lignesAffichees' => $this->calculator->lignesAffichees($object),
+            'avertissements' => $this->controles->avertissements($object),
+            'dateEnvoi' => $this->dateEnvoi($object)?->format(\DATE_ATOM),
+            'valideurs' => ValideursNoteHorsSortie::exposer($this->valideurs->pour($object)),
+            'derniereDecision' => $this->derniereDecision($object),
+            'peutDecider' => ExpenseReportStatusEnum::SUBMITTED === $object->getStatus()
+                && ($this->actor->isManagerOf($object) || $this->actor->isResponsableOf($object)),
+        ]);
     }
 
     /**
@@ -95,9 +96,7 @@ final class NoteHorsSortieNormalizer implements NormalizerInterface, NormalizerA
 
     public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool
     {
-        return !isset($context[self::DEJA_APPELE])
-            && $data instanceof ExpenseReport
-            && $data->getType()->estHorsSortie();
+        return !isset($context[self::DEJA_APPELE]) && $data instanceof ExpenseReport;
     }
 
     public function getSupportedTypes(?string $format): array

@@ -61,15 +61,19 @@ export function partRemboursable(montants: { totalDeclare: number; totalRembours
     : null;
 }
 
-/** Sous la commission choisie : qui validera la note. */
+/** Sous la commission choisie : à qui la note sera transmise. */
 export function phraseValideurs(commission: { valideurs: Personne[]; demandeurResponsable: boolean }): string {
-  if (commission.valideurs.length) {
-    return `Validée par ${enumeration(commission.valideurs.map(nomComplet), "ou")}.`;
+  const noms = enumeration(commission.valideurs.map(nomComplet));
+  if (commission.valideurs.length > 1) {
+    return `Sera transmise aux responsables de la commission : ${noms}.`;
+  }
+  if (commission.valideurs.length === 1) {
+    return `Sera transmise au responsable de la commission : ${noms}.`;
   }
 
   return commission.demandeurResponsable
-    ? "Vous êtes le seul responsable de cette commission : la trésorerie validera."
-    : "Pas de responsable : la trésorerie validera.";
+    ? "Sera transmise à la trésorerie : vous êtes le seul responsable de cette commission."
+    : "Sera transmise à la trésorerie : la commission n'a pas de responsable.";
 }
 
 /** Après l'envoi : qui a reçu la note à valider. */

@@ -129,6 +129,17 @@ export interface NoteDeFrais {
   peutDecider: boolean;
 }
 
+/** Note d'une sortie, telle que « Mes notes de frais » la lit : elle se remplit sur la page de sa sortie. */
+export interface NoteDeSortie {
+  id: number;
+  status: string;
+  type: "sortie";
+  sortie: { id: number; code: string; titre: string; startDate: string; commission: { title: string } | null };
+  commentaireStatut: string | null;
+  /** Calculés par le serveur avec les taux en vigueur. */
+  totalDeclare: number;
+}
+
 export interface DonneesMesNotes {
   delaisEnvoiJours: Record<string, number>;
 }

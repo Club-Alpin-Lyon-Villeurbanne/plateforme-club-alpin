@@ -1,5 +1,5 @@
 import axios, { isAxiosError, type InternalAxiosRequestConfig } from "axios";
-import type { NoteDeFrais, PieceJointe, Refus } from "./types";
+import type { NoteDeFrais, NoteDeSortie, PieceJointe, Refus } from "./types";
 
 const MESSAGE_SESSION_EXPIREE =
   "Votre session a expiré. Reconnectez-vous dans un autre onglet, puis réessayez : votre saisie reste sur cette page.";
@@ -53,11 +53,10 @@ export interface PageDeNotes {
   pages: number;
 }
 
-/** Notes hors sortie du demandeur, brouillons compris, des plus récentes aux plus anciennes. */
-export async function listerMesNotes(page: number): Promise<PageDeNotes> {
-  const reponse = await api.get<{ data: NoteDeFrais[]; meta: { pages: number } }>("/notes-de-frais", {
-    params: { type: ["autre", "formation"], inclure_brouillons: true, page },
-    paramsSerializer: { indexes: false },
+/** Notes du demandeur, brouillons compris, des plus récentes aux plus anciennes ; toutes si aucun type n'est demandé. */
+export async function listerMesNotes(page: number, type: NoteDeFrais["type"] | null): Promise<{ notes: (NoteDeFrais | NoteDeSortie)[]; pages: number }> {
+  const reponse = await api.get<{ data: (NoteDeFrais | NoteDeSortie)[]; meta: { pages: number } }>("/notes-de-frais", {
+    params: { inclure_brouillons: true, page, ...(type ? { type } : {}) },
   });
 
   return { notes: reponse.data.data, pages: reponse.data.meta.pages };

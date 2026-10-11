@@ -6,33 +6,35 @@ use App\Entity\User;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 
 /**
- * Données de la page « Mes notes de frais » : liste filtrée sur les types hors sortie, date
- * d'envoi et valideurs d'une note.
+ * Données de la page « Mes notes de frais » : toutes les notes du demandeur, brouillons compris,
+ * filtrables par type ; date d'envoi et valideurs d'une note hors sortie.
  */
 class NoteHorsSortieMesNotesTest extends ExpenseReportApiTestCase
 {
     private const LIGNES = '{"lignes":[{"id":"ligne-1","montant":64.9,"description":"Dégaines (x6)"}]}';
 
-    public function testLaListeFiltreeRenvoieSesNotesHorsSortieBrouillonsCompris(): void
+    public function testLaListeRenvoieToutesSesNotesBrouillonsCompris(): void
     {
+        $sortie = $this->createReport($this->owner, ExpenseReportStatusEnum::DRAFT);
         $brouillon = $this->creerAchat($this->owner);
         $envoyee = $this->creerAchat($this->owner, ExpenseReportStatusEnum::SUBMITTED);
+        $this->creerAchat($this->stranger);
 
         $response = $this->listerMesNotes($this->owner);
 
         $this->assertResponseStatus(200, $response);
-        $this->assertEqualsCanonicalizing([$brouillon->getId(), $envoyee->getId()], array_column($response['body']['data'], 'id'));
+        $this->assertEqualsCanonicalizing([$sortie->getId(), $brouillon->getId(), $envoyee->getId()], array_column($response['body']['data'], 'id'));
     }
 
-    public function testLaListeNeContientNiSesNotesDeSortieNiLesNotesDesAutres(): void
+    public function testLaListeSeFiltreParType(): void
     {
-        $this->createReport($this->owner, ExpenseReportStatusEnum::DRAFT);
-        $this->creerAchat($this->stranger);
-        $mienne = $this->creerAchat($this->owner);
+        $sortie = $this->createReport($this->owner, ExpenseReportStatusEnum::DRAFT);
+        $achat = $this->creerAchat($this->owner);
+        $formation = $this->creerFormation($this->owner);
 
-        $response = $this->listerMesNotes($this->owner);
-
-        $this->assertSame([$mienne->getId()], array_column($response['body']['data'], 'id'));
+        foreach (['sortie' => $sortie, 'autre' => $achat, 'formation' => $formation] as $type => $note) {
+            $this->assertSame([$note->getId()], array_column($this->listerMesNotes($this->owner, ['type' => $type])['body']['data'], 'id'), $type);
+        }
     }
 
     public function testUneNoteEnvoyeeExposeSaDateDEnvoiEtSesValideurs(): void
@@ -69,8 +71,8 @@ class NoteHorsSortieMesNotesTest extends ExpenseReportApiTestCase
         $this->assertArrayNotHasKey('valideurs', $lue['body']);
     }
 
-    private function listerMesNotes(User $utilisateur): array
+    private function listerMesNotes(User $utilisateur, array $filtres = []): array
     {
-        return $this->list($utilisateur, '/api/notes-de-frais', ['type' => ['autre', 'formation'], 'inclure_brouillons' => 'true']);
+        return $this->list($utilisateur, '/api/notes-de-frais', ['inclure_brouillons' => 'true'] + $filtres);
     }
 }

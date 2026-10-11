@@ -166,6 +166,24 @@ class ExpenseReportCalculator
     }
 
     /**
+     * Total déclaré et total remboursable d'une note, quel que soit son type. Ceux d'une note de
+     * sortie suivent toujours les taux en vigueur, comme sur la page de la sortie et dans ses mails.
+     *
+     * @return array{totalDeclare: float, totalRemboursable: float}
+     */
+    public function montants(ExpenseReport $note): array
+    {
+        if ($note->getType()->estHorsSortie()) {
+            return $this->montantsNoteHorsSortie($note);
+        }
+
+        $details = json_decode($note->getDetails() ?? '', true);
+        $totaux = $this->calculateTotal(\is_array($details) ? $details : []);
+
+        return ['totalDeclare' => round($totaux['total'], 2), 'totalRemboursable' => round($totaux['reimbursable'], 2)];
+    }
+
+    /**
      * Montants d'une note hors sortie : ceux figés à son dernier envoi, sauf quand elle est chez
      * son demandeur (brouillon ou à corriger), où ils suivent ses lignes et le barème en vigueur.
      *
