@@ -32,14 +32,14 @@ Une note hors sortie rembourse une formation ou un achat fait pour le club, sans
 ### Qui fait quoi
 
 - Le demandeur fait sa demande (formation ou achat) depuis le menu « Notes de frais » : une ligne par dépense avec son justificatif, puis le choix entre remboursement et don.
-- Le responsable de commission valide la note, ou la renvoie au demandeur avec un message. Il ne voit pas le choix entre remboursement et don.
+- Le responsable de commission valide la note, ou la refuse avec un message : le demandeur la corrige et l'envoie à nouveau. Il ne voit pas le choix entre remboursement et don.
 - La trésorerie reçoit par mail le récapitulatif de chaque note validée, puis paie ou prépare le reçu fiscal.
 
 Règles à connaître :
 
 - Tout adhérent connecté peut demander le remboursement d'un achat. Une formation est réservée aux adhérents qui ont un rôle d'encadrement sur la commission (responsable, encadrant, coencadrant, stagiaire ou bénévole d'encadrement).
 - Personne ne valide sa propre note. Si la commission n'a pas d'autre responsable que le demandeur, la note va à la trésorerie.
-- La trésorerie voit toutes les notes hors sortie et peut valider ou renvoyer à la place d'un responsable.
+- La trésorerie voit toutes les notes hors sortie et peut valider ou refuser à la place d'un responsable.
 
 ### Circuit des statuts
 
@@ -58,9 +58,9 @@ stateDiagram-v2
     envoi --> responsable : la commission a un responsable autre que le demandeur
     envoi --> tresorerie : sinon
     responsable --> transmise : Valider
-    responsable --> corriger : Renvoyer, avec un message
+    responsable --> corriger : Refuser, avec un message
     tresorerie --> transmise : Valider
-    tresorerie --> corriger : Renvoyer, avec un message
+    tresorerie --> corriger : Refuser, avec un message
     transmise --> [*]
 ```
 
@@ -72,7 +72,7 @@ Le menu adhérent gagne une rubrique « Notes de frais ». L'entrée « notes de
 
 ![Menu adhérent avec la rubrique Notes de frais](images/notes-de-frais/hors-sortie-menu.png)
 
-Première étape : type, commission, objet et date. Sous la commission, le demandeur voit qui validera sa note.
+Première étape : type, commission, objet et date. Sous la commission, le demandeur voit à qui sa note sera transmise : le responsable de la commission, ou la trésorerie.
 
 ![Première étape d'une demande de formation](images/notes-de-frais/hors-sortie-premiere-etape.png)
 
@@ -80,7 +80,7 @@ Seconde étape : une ligne par dépense avec son justificatif, le total, puis le
 
 ![Seconde étape d'une demande d'achat](images/notes-de-frais/hors-sortie-seconde-etape.png)
 
-« Mes notes de frais » : le statut de chaque demande, le message en cas de renvoi, et les liens « Reprendre » ou « Corriger ».
+« Mes notes de frais » : toutes les notes du demandeur, de sortie comme hors sortie, filtrables par type. Pour chacune : le statut, le message en cas de refus, et les liens « Reprendre » ou « Corriger ». Une note de sortie renvoie vers la page de sa sortie, où elle se remplit.
 
 ![Page Mes notes de frais](images/notes-de-frais/hors-sortie-mes-notes.png)
 
@@ -88,7 +88,7 @@ Seconde étape : une ligne par dépense avec son justificatif, le total, puis le
 
 ![Page Notes de frais à valider](images/notes-de-frais/hors-sortie-a-valider.png)
 
-Détail d'une note vu par le responsable : dépenses, justificatifs et mot du demandeur, puis « Renvoyer » ou « Valider ».
+Détail d'une note vu par le responsable : dépenses, justificatifs et mot du demandeur, puis « Refuser » ou « Valider ».
 
 ![Détail d'une note vu par le responsable](images/notes-de-frais/hors-sortie-detail-responsable.png)
 
