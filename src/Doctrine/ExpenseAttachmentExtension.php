@@ -11,7 +11,9 @@ use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
 
 /**
- * Justificatifs d'une note de frais : visibles par le propriétaire de la note et par les gestionnaires.
+ * Justificatifs d'une note de frais : visibles par ceux qui ont accès à la note.
+ * Équivalent en requête de ExpenseReportVoter::ACCESS_EXPENSE_REPORT : toute évolution de cette règle
+ * dans le voter doit être répercutée ici.
  */
 final class ExpenseAttachmentExtension implements QueryCollectionExtensionInterface
 {

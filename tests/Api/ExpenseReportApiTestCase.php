@@ -105,6 +105,19 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
     /**
      * @return array{status: int, body: array}
      */
+    protected function show(User $as, ExpenseReport $report): array
+    {
+        $this->client->request('GET', '/api/notes-de-frais/' . $report->getId(), [], [], [
+            'HTTP_ACCEPT' => 'application/json',
+            'HTTP_AUTHORIZATION' => 'Bearer ' . $this->jwt($as),
+        ]);
+
+        return $this->lastResponse();
+    }
+
+    /**
+     * @return array{status: int, body: array}
+     */
     protected function uploadAttachment(User $as, ExpenseReport $report, string $expenseId): array
     {
         // PNG 1x1 valide : la contrainte File vérifie le type MIME réel.

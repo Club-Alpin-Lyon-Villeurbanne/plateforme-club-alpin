@@ -56,11 +56,11 @@ use Symfony\Component\Validator\Constraints as Assert;
         ),
         new Get(
             uriTemplate: '/notes-de-frais/{id}',
-            security: "is_granted('ROLE_ADMIN') or object.getUser() == user or is_granted('manage_expense_reports')",
+            security: "is_granted('ROLE_ADMIN') or is_granted('access_expense_report', object)",
         ),
         new Patch(
             uriTemplate: '/notes-de-frais/{id}',
-            security: 'object.getUser() == user or is_granted("manage_expense_reports")',
+            security: "is_granted('access_expense_report', object)",
             denormalizationContext: ['groups' => ['report:write']],
         ),
     ],
