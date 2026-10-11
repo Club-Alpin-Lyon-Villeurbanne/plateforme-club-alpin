@@ -2,7 +2,7 @@
 
 L'application gère deux circuits de notes de frais :
 - les notes de sortie, rattachées à une sortie : saisies sur le site, validées dans compta-club (sections suivantes) ;
-- les [notes hors sortie](#notes-hors-sortie), pour une formation ou un achat fait pour le club : validées par le responsable de la commission, puis transmises à la trésorerie.
+- les [notes hors sortie](#notes-hors-sortie), pour une formation ou un achat fait pour le club : validées par le responsable de la commission, puis par la trésorerie.
 
 ## Soumission des Notes de Frais
 
@@ -32,8 +32,9 @@ Une note hors sortie rembourse une formation ou un achat fait pour le club, sans
 ### Qui fait quoi
 
 - Le demandeur fait sa demande (formation ou achat) depuis le menu « Notes de frais » : une ligne par dépense avec son justificatif, puis le choix entre remboursement et don.
-- Le responsable de commission valide la note, ou la refuse avec un message : le demandeur la corrige et l'envoie à nouveau. Il ne voit pas le choix entre remboursement et don.
-- La trésorerie n'a aucune fonction sur le site et ne reçoit aucun mail : elle travaille dans compta-club, par l'API.
+- Le responsable de commission valide la note, qui passe alors à la trésorerie, ou la refuse avec un message : le demandeur la corrige et l'envoie à nouveau. Il ne voit pas le choix entre remboursement et don.
+- La trésorerie n'a aucune fonction sur le site et ne reçoit aucun mail : elle travaille dans compta-club, par l'API. Elle valide ou refuse la note après le responsable, ou dès l'envoi s'il n'y en a pas, puis la comptabilise.
+- Le demandeur reçoit un mail à chaque étape : envoi, validation par le responsable, validation par la trésorerie, refus, comptabilisation.
 
 Règles à connaître :
 
@@ -49,22 +50,27 @@ stateDiagram-v2
     state envoi <<choice>>
     state "Chez le responsable (submitted)" as responsable
     state "Chez la trésorerie (submitted)" as tresorerie
+    state "Validée par le responsable, chez la trésorerie (preapproved)" as prevalidee
     state "À corriger (rejected)" as corriger
-    state "Transmise à la trésorerie (approved)" as transmise
+    state "Validée par la trésorerie (approved)" as validee
+    state "Comptabilisée (accounted)" as comptabilisee
 
     [*] --> brouillon
     brouillon --> envoi : Envoyer
     corriger --> envoi : Envoyer à nouveau
     envoi --> responsable : la commission a un responsable autre que le demandeur
     envoi --> tresorerie : sinon
-    responsable --> transmise : Valider
+    responsable --> prevalidee : Valider
     responsable --> corriger : Refuser, avec un message
-    tresorerie --> transmise : Valider
-    tresorerie --> corriger : Refuser, avec un message
-    transmise --> [*]
+    prevalidee --> validee : la trésorerie valide
+    prevalidee --> corriger : la trésorerie refuse, avec un message
+    tresorerie --> validee : la trésorerie valide
+    tresorerie --> corriger : la trésorerie refuse, avec un message
+    validee --> comptabilisee : la trésorerie comptabilise
+    comptabilisee --> [*]
 ```
 
-Le demandeur ne modifie sa note qu'en brouillon ou à corriger. Une note transmise reste `approved` : compta-club ne la voit pas.
+Le demandeur ne modifie sa note qu'en brouillon ou à corriger. Corrigée, une note refusée par la trésorerie repasse par le responsable. Celui qui décide d'une note qui a quitté son étape (un second responsable, ou un responsable après la trésorerie) lit « Cette demande a déjà été traitée. ».
 
 ### Écrans
 
@@ -105,6 +111,7 @@ Détail d'une note vu par le responsable : dépenses, justificatifs et mot du de
 - Plafonds : en configuration seulement. `<type>.plafonds.parNature` plafonne une nature sur chaque ligne (`portee: ligne`) ou sur son total dans la note (`portee: note`) ; `<type>.plafonds.total` plafonne le remboursable de la note.
 - Montants figés : à chaque envoi, `ExpenseReportCalculator::figerNoteHorsSortie()` enregistre le total déclaré, le total remboursable et, pour une formation, le taux kilométrique. Ce que le responsable a validé reste ce que la trésorerie paie, même si le barème change ensuite. Un brouillon ou une note à corriger suit le barème en vigueur.
 - Valideurs : `ValideursNoteHorsSortie` est la seule source. Les droits (`ResponsableNoteDeFraisVoter`), la liste « à valider », le compteur du menu, les mails et la phrase « Validée par … » en dépendent. Les valideurs sont recalculés à chaque lecture.
+- Transitions : `StatusTransitionValidator`. Un valideur passe la note de `submitted` à `preapproved` ou `rejected` ; un gestionnaire décide depuis `preapproved`, ou depuis `submitted` si la note n'a pas de valideur, puis comptabilise. Un gestionnaire qui est aussi valideur agit en valideur tant que la note est `submitted`. Les notes de sortie n'utilisent jamais `preapproved`. La colonne `status` est une énumération MySQL : un nouveau statut demande une migration.
 - Mails : tous ceux d'une note hors sortie partent de `NotificationsNoteHorsSortie`, une fois le changement de statut enregistré ; le listener Doctrine des notes de sortie les ignore. Ils vont au demandeur et aux valideurs, jamais à la trésorerie.
 - compta-club : `/admin/notes-de-frais` exclut les notes hors sortie (`ExpenseReportExtension`), car compta-club suppose qu'une note a une sortie. Voir la [décision](decisions/2026.10.11-notes_de_frais_hors_sortie.md).
 - Code : application Vue dans `assets/notes-de-frais/`, pages dans `NoteDeFraisController`, opérations d'API sur l'entité `ExpenseReport`, services dans `src/Service/NoteDeFrais/`.

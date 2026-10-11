@@ -23,14 +23,14 @@ Rôle avec tous les droits : gestion des permissions, des rôles de président o
 Rôle permettant de modifier les pages et les blocs de contenu du site, sans les droits d'administration complets. Identifiants de test en local : voir le [guide d'installation](installation.md#accès).
 
 ### Valideurs
-Personnes qui reçoivent une note de frais hors sortie à valider : les responsables de la commission de la note (rôle `responsable-commission`), sauf le demandeur et ceux qui n'ont pas d'adresse mail. S'il n'en reste aucun, c'est la trésorerie qui valide.
+Personnes qui reçoivent une note de frais hors sortie à valider, avant la trésorerie : les responsables de la commission de la note (rôle `responsable-commission`), sauf le demandeur et ceux qui n'ont pas d'adresse mail. S'il n'en reste aucun, seule la trésorerie valide.
 
 ## Fonctionnalités
 
 ### Notes de frais
 Remboursement des frais engagés pour le club. Deux circuits :
 - note de sortie : frais d'une sortie, déposés par l'encadrant sur la page de la sortie et validés par la comptabilité dans compta-club ;
-- note hors sortie : formation ou achat fait pour le club, sans sortie. La note est validée par les [valideurs](#valideurs) puis transmise à la trésorerie.
+- note hors sortie : formation ou achat fait pour le club, sans sortie. La note est validée par les [valideurs](#valideurs), puis par la trésorerie.
 
 Voir [Notes de frais](notes-de-frais.md).
 
