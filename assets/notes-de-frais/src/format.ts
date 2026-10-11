@@ -1,3 +1,5 @@
+import type { Personne } from "./types";
+
 export function euros(montant: number): string {
   return montant.toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
 }
@@ -46,6 +48,25 @@ export function nomComplet(personne: { prenom: string; nom: string }): string {
 }
 
 /** « Escalade », « Escalade et Alpinisme », « Escalade, Ski et Alpinisme ». */
-export function enumeration(elements: string[]): string {
-  return elements.length < 2 ? (elements[0] ?? "") : `${elements.slice(0, -1).join(", ")} et ${elements[elements.length - 1]}`;
+export function enumeration(elements: string[], conjonction: "et" | "ou" = "et"): string {
+  return elements.length < 2
+    ? (elements[0] ?? "")
+    : `${elements.slice(0, -1).join(", ")} ${conjonction} ${elements[elements.length - 1]}`;
+}
+
+/** Sous la commission choisie : qui validera la note. */
+export function phraseValideurs(valideurs: Personne[]): string {
+  return valideurs.length
+    ? `Validée par ${enumeration(valideurs.map(nomComplet), "ou")}.`
+    : "Pas de responsable : la trésorerie validera.";
+}
+
+/** Après l'envoi : qui a reçu la note à valider. */
+export function phrasePrevenus(valideurs: Personne[]): string {
+  if (!valideurs.length) {
+    return "La trésorerie a été prévenue.";
+  }
+  const noms = enumeration(valideurs.map(nomComplet));
+
+  return valideurs.length > 1 ? `${noms} ont été prévenus.` : `${noms} a été prévenu·e.`;
 }

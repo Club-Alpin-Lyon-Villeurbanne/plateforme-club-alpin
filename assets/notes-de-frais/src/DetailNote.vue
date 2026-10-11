@@ -2,7 +2,7 @@
 import { isAxiosError } from "axios";
 import { computed, nextTick, onMounted, ref } from "vue";
 import { enregistrerNote, lireNote, messagesDErreur, refusDeLApi, sessionExpiree } from "./api";
-import { dateFr, dateFrDe, euros, jour, nomComplet } from "./format";
+import { dateFr, dateFrDe, enumeration, euros, jour, nomComplet } from "./format";
 import { lireLignes } from "./lignes";
 import type { DonneesDetail, NoteDeFrais } from "./types";
 
@@ -74,10 +74,10 @@ const attente = computed(() => {
   if (!note.value || note.value.status !== "submitted" || note.value.peutDecider) {
     return null;
   }
-  if (props.donnees.gestionnaire && note.value.utilisateur.id === props.donnees.utilisateurId) {
+  if (!note.value.valideurs.length && props.donnees.gestionnaire && note.value.utilisateur.id === props.donnees.utilisateurId) {
     return "C'est votre note : un autre gestionnaire la validera.";
   }
-  const valideurs = note.value.valideurs.length ? note.value.valideurs.map(nomComplet).join(" ou ") : "la trésorerie";
+  const valideurs = note.value.valideurs.length ? enumeration(note.value.valideurs.map(nomComplet), "ou") : "la trésorerie";
 
   return `En attente de la décision de ${valideurs}.`;
 });

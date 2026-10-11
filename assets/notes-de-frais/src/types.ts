@@ -1,6 +1,15 @@
+/** Un responsable de la commission qui valide la note. */
+export interface Valideur {
+  id: number;
+  prenom: string;
+  nom: string;
+}
+
 export interface CommissionProposee {
   id: number;
   titre: string;
+  /** Calculés pour l'utilisateur connecté, lui-même exclu ; vide : la trésorerie validera. */
+  valideurs: Valideur[];
 }
 
 /** Données transmises par le gabarit Twig. */
@@ -64,8 +73,11 @@ export interface NoteDeFrais {
   dateDepense: string | null;
   lienFormation: string | null;
   motPourResponsable: string | null;
-  /** Null tant que le demandeur n'a pas choisi : true pour un remboursement, false pour un don. */
-  refundRequired: boolean | null;
+  /**
+   * Null tant que le demandeur n'a pas choisi : true pour un remboursement, false pour un don.
+   * Absent pour le responsable de la note, que ce choix ne doit pas influencer.
+   */
+  refundRequired?: boolean | null;
   details: string | null;
   piecesJointes: PieceJointe[];
   /** Calculés par le serveur, figés à l'envoi. */
@@ -76,7 +88,7 @@ export interface NoteDeFrais {
   /** Null pour un brouillon. */
   dateEnvoi: string | null;
   /** Vide : la note va directement à la trésorerie. */
-  valideurs: { id: number; prenom: string; nom: string }[];
+  valideurs: Valideur[];
   derniereDecision: Decision | null;
   /** L'utilisateur connecté peut valider ou renvoyer la note maintenant. */
   peutDecider: boolean;

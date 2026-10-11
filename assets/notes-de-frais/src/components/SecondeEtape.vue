@@ -113,6 +113,8 @@ import type { Demande, Justificatif, Ligne } from "../types";
 const props = defineProps<{
   demande: Demande;
   commissionTitre: string;
+  /** « Validée par … » de la première étape. */
+  phraseValideurs: string;
   justificatifs: Record<string, Justificatif>;
   envoisEnCours: string[];
   erreursJustificatifs: Record<string, string>;
@@ -148,8 +150,10 @@ const declaration = computed(() => {
     : "En envoyant, vous déclarez : « Je renonce au remboursement du montant de ces frais pour en faire don au Club Alpin de Lyon. »";
 });
 
-const contexte = computed(
-  () => `Achat pour ${props.commissionTitre}, date de l'achat : ${dateFr(jour(props.demande.dateDepense))}.`,
+const contexte = computed(() =>
+  [`Achat pour ${props.commissionTitre}, date de l'achat : ${dateFr(jour(props.demande.dateDepense))}.`, props.phraseValideurs]
+    .filter(Boolean)
+    .join(" "),
 );
 
 const conteneurLignes = ref<HTMLElement | null>(null);

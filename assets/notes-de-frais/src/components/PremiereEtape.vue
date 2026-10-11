@@ -2,12 +2,13 @@
   <div class="tw-space-y-5 tw-p-8">
     <div>
       <label for="f-commission" :class="libelle">Commission</label>
-      <select id="f-commission" v-model="demande.commissionId" :class="['tw-mt-1', champ]">
+      <select id="f-commission" v-model="demande.commissionId" :class="['tw-mt-1', champ]" aria-describedby="f-valideurs">
         <option :value="null">Choisir…</option>
         <option v-for="commission in commissions" :key="commission.id" :value="commission.id">
           {{ commission.titre }}
         </option>
       </select>
+      <p id="f-valideurs" :class="['tw-mt-1', discret]">{{ valideurs }}</p>
     </div>
 
     <div>
@@ -52,8 +53,8 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { champ, libelle } from "../classes";
-import { aujourdhui, dateFr, jour } from "../format";
+import { champ, discret, libelle } from "../classes";
+import { aujourdhui, dateFr, jour, phraseValideurs } from "../format";
 import type { CommissionProposee, Demande } from "../types";
 
 const props = defineProps<{
@@ -65,6 +66,12 @@ const props = defineProps<{
 }>();
 const demande = defineModel<Demande>({ required: true });
 const emit = defineEmits<{ continuer: [] }>();
+
+const valideurs = computed(() => {
+  const commission = props.commissions.find((une) => une.id === demande.value.commissionId);
+
+  return commission ? phraseValideurs(commission.valideurs) : "";
+});
 
 const manque = ref("");
 watch(demande, () => (manque.value = ""), { deep: true });

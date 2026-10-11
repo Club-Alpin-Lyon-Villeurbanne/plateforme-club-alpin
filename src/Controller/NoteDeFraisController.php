@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Repository\CommissionRepository;
 use App\Security\Voter\ExpenseReportVoter;
+use App\Service\NoteDeFrais\ValideursNoteHorsSortie;
 use App\Twig\JavascriptGlobalsExtension;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
@@ -40,13 +41,22 @@ class NoteDeFraisController extends AbstractController
     }
 
     #[Route(path: '/notes-de-frais/nouvelle', name: 'notes_de_frais_nouvelle', methods: ['GET'])]
-    public function nouvelle(Request $request, CommissionRepository $commissionRepository, Environment $twig, string $baseUrl): Response
+    public function nouvelle(Request $request, CommissionRepository $commissionRepository, ValideursNoteHorsSortie $valideurs, Environment $twig, string $baseUrl): Response
     {
         $this->pageDisponible();
 
+        $visibles = iterator_to_array($commissionRepository->findVisible(), false);
+        $utilisateur = $this->getUser();
+        // Pour la phrase « Validée par … » : l'utilisateur connecté ne valide pas sa propre note.
+        $valideursParCommission = $utilisateur instanceof User ? $valideurs->pourLesCommissions($visibles, $utilisateur) : [];
+
         $commissions = [];
-        foreach ($commissionRepository->findVisible() as $commission) {
-            $commissions[] = ['id' => $commission->getId(), 'titre' => $commission->getTitle()];
+        foreach ($visibles as $commission) {
+            $commissions[] = [
+                'id' => $commission->getId(),
+                'titre' => $commission->getTitle(),
+                'valideurs' => ValideursNoteHorsSortie::exposer($valideursParCommission[$commission->getId()] ?? []),
+            ];
         }
 
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal('apiBaseUrl', $baseUrl);

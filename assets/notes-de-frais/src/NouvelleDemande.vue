@@ -5,7 +5,7 @@
   >
     <div class="tw-mx-auto tw-flex tw-h-12 tw-w-12 tw-items-center tw-justify-center tw-rounded-full tw-bg-green-100 tw-text-xl tw-text-green-700" aria-hidden="true">✓</div>
     <h2 ref="titreEnvoyee" tabindex="-1" class="tw-mt-4 tw-text-xl tw-font-semibold tw-text-gray-900 focus:tw-outline-none">Demande envoyée</h2>
-    <p class="tw-mt-2 tw-text-sm tw-text-gray-600">La trésorerie a été prévenue. Vous recevrez un mail dès qu'il y a une réponse.</p>
+    <p class="tw-mt-2 tw-text-sm tw-text-gray-600">{{ phrasePrevenus(note?.valideurs ?? []) }} Vous recevrez un mail dès qu'il y a une réponse.</p>
     <a :href="URL_MES_NOTES" class="tw-mt-6 tw-inline-block tw-text-sm tw-font-medium tw-text-sky-700 hover:tw-underline">Voir mes notes de frais</a>
   </div>
 
@@ -41,6 +41,7 @@
       v-model:choix="choix"
       :demande="demande"
       :commission-titre="commissionTitre"
+      :phrase-valideurs="phraseDesValideurs"
       :justificatifs="justificatifs"
       :envois-en-cours="envoisEnCours"
       :erreurs-justificatifs="erreursJustificatifs"
@@ -65,7 +66,7 @@ import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref } from "vue
 import PremiereEtape from "./components/PremiereEtape.vue";
 import SecondeEtape from "./components/SecondeEtape.vue";
 import { creerNote, enregistrerNote, envoyerJustificatif, lireNote, messagesDErreur, refusDeLApi, sessionExpiree } from "./api";
-import { aujourdhui, limiteEnvoi, messageDelaiDepasse, nomComplet } from "./format";
+import { aujourdhui, limiteEnvoi, messageDelaiDepasse, nomComplet, phrasePrevenus, phraseValideurs } from "./format";
 import { refusDuFichier } from "./justificatifs";
 import { ecrireLignes, lireLignes, nouvelleLigne } from "./lignes";
 import type { Demande, DonneesInitiales, Justificatif, Ligne, NoteDeFrais, Refus, Toastr } from "./types";
@@ -136,12 +137,11 @@ const messageDeRenvoi = computed(() => {
   return `Renvoyée par ${nomComplet(decision.auteur)} : « ${decision.message ?? ""} »`;
 });
 
-const commissionTitre = computed(
-  () =>
-    props.donnees.commissions.find((commission) => commission.id === demande.value.commissionId)?.titre ??
-    note.value?.commission?.title ??
-    "",
-);
+const commissionChoisie = computed(() => props.donnees.commissions.find((commission) => commission.id === demande.value.commissionId));
+
+const commissionTitre = computed(() => commissionChoisie.value?.titre ?? note.value?.commission?.title ?? "");
+
+const phraseDesValideurs = computed(() => (commissionChoisie.value ? phraseValideurs(commissionChoisie.value.valideurs) : ""));
 
 // —— Ce qui est enregistré, pour prévenir avant de quitter la page ——
 
@@ -211,7 +211,7 @@ function reprendre(noteLue: NoteDeFrais) {
     dateDepense: noteLue.dateDepense ?? "",
   };
   motPourResponsable.value = noteLue.motPourResponsable ?? "";
-  choix.value = noteLue.refundRequired;
+  choix.value = noteLue.refundRequired ?? null;
   lignes.value = lireLignes(noteLue.details);
   if (!lignes.value.length) {
     lignes.value.push(nouvelleLigne());

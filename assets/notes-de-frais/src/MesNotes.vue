@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { listerMesNotes, messagesDErreur } from "./api";
-import { aujourdhui, dateFr, euros, jourMoisDe, limiteEnvoi, messageDelaiDepasse, nomComplet } from "./format";
+import { aujourdhui, dateFr, enumeration, euros, jourMoisDe, limiteEnvoi, messageDelaiDepasse, nomComplet } from "./format";
 import type { DonneesMesNotes, NoteDeFrais } from "./types";
 
 const props = defineProps<{ donnees: DonneesMesNotes }>();
@@ -91,7 +91,7 @@ function envoyeeLe(note: NoteDeFrais): string | null {
   if (note.status !== "submitted" || !note.dateEnvoi) {
     return null;
   }
-  const valideurs = note.valideurs.length ? note.valideurs.map(nomComplet).join(", ") : "la trésorerie";
+  const valideurs = note.valideurs.length ? enumeration(note.valideurs.map(nomComplet)) : "la trésorerie";
 
   return `Envoyée le ${jourMoisDe(note.dateEnvoi)} à ${valideurs}.`;
 }
