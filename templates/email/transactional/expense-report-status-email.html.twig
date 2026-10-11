@@ -4,7 +4,7 @@
 {% macro phrase_hors_sortie(objet, status, auteur, valideurs) -%}
     Votre note de frais « {{ objet|raw }} »
     {%- if status == 'submitted' %} est envoyée à {{ valideurs ? valideurs|raw : 'la trésorerie' }}
-    {%- elseif status == 'rejected' %} vous est renvoyée pour correction
+    {%- elseif status == 'rejected' %} a été refusée{% if auteur %} par {{ auteur|raw }}{% endif %}
     {%- elseif status == 'approved' %} a été validée{% if auteur %} par {{ auteur|raw }}{% endif %} et transmise à la trésorerie
     {%- elseif status == 'accounted' %} a été comptabilisée
     {%- else %} a été acceptée{% endif %}.

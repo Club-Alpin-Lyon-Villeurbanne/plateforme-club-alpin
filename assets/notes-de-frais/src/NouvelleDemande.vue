@@ -20,7 +20,7 @@
     class="expense-report-form tw-mx-[30px] tw-mb-8 tw-bg-white tw-font-sans tw-shadow-sm tw-ring-1 tw-ring-gray-200"
     @submit.prevent
   >
-    <p v-if="messageDeRenvoi" class="tw-whitespace-pre-line tw-border-b tw-border-red-100 tw-bg-red-50 tw-px-8 tw-py-3 tw-text-sm tw-text-red-800">{{ messageDeRenvoi }}</p>
+    <p v-if="messageDeRefus" class="tw-whitespace-pre-line tw-border-b tw-border-red-100 tw-bg-red-50 tw-px-8 tw-py-3 tw-text-sm tw-text-red-800">{{ messageDeRefus }}</p>
     <p v-if="chargement" class="tw-p-8 tw-text-sm tw-text-gray-600">Chargement de la demande…</p>
     <p v-else-if="erreurDeChargement" role="alert" class="tw-p-8 tw-text-sm tw-text-red-600">{{ erreurDeChargement }}</p>
 
@@ -131,14 +131,14 @@ const delaiDepasse = computed(() => {
   return aujourdhui() > limiteEnvoi(demande.value.dateDepense, delaiEnvoiJours.value) ? messageDelaiDepasse(delaiEnvoiJours.value) : null;
 });
 
-// Une note renvoyée rappelle ce qu'il faut corriger, sur les deux étapes.
-const messageDeRenvoi = computed(() => {
+// Une note refusée rappelle ce qu'il faut corriger, sur les deux étapes.
+const messageDeRefus = computed(() => {
   const decision = note.value?.derniereDecision;
   if (note.value?.status !== "rejected" || decision?.statut !== "rejected") {
     return null;
   }
 
-  return `Renvoyée par ${nomComplet(decision.auteur)} : « ${decision.message ?? ""} »`;
+  return `Refusée par ${nomComplet(decision.auteur)} : « ${decision.message ?? ""} »`;
 });
 
 // Une formation reprise reste une formation, même si le demandeur n'encadre plus nulle part.

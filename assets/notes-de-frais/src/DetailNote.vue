@@ -15,15 +15,15 @@ const note = ref<NoteDeFrais | null>(null);
 const chargement = ref(true);
 const erreurDeChargement = ref("");
 
-// Zone de décision : les deux boutons, puis le renvoi avec son message, puis le résultat.
-const renvoiOuvert = ref(false);
+// Zone de décision : les deux boutons, puis le refus avec son motif, puis le résultat.
+const refusOuvert = ref(false);
 const message = ref("");
 const enCours = ref(false);
 const refus = ref<string[]>([]);
 const fait = ref<{ texte: string; classe: string } | null>(null);
 
 const champMessage = ref<HTMLTextAreaElement | null>(null);
-const boutonRenvoyer = ref<HTMLButtonElement | null>(null);
+const boutonRefuser = ref<HTMLButtonElement | null>(null);
 const resultat = ref<HTMLElement | null>(null);
 
 const demandeur = computed(() => (note.value ? nomComplet(note.value.utilisateur) : ""));
@@ -68,8 +68,8 @@ const decisionPrise = computed(() => {
     return { texte: `Validée ${par}.`, message: null };
   }
 
-  // Une note corrigée puis envoyée à nouveau garde la trace du renvoi.
-  return { texte: note.value.status === "submitted" ? `Déjà renvoyée ${par} :` : `Renvoyée ${par} :`, message: derniere.message };
+  // Une note corrigée puis envoyée à nouveau garde la trace du refus.
+  return { texte: note.value.status === "submitted" ? `Refusée une première fois ${par} :` : `Refusée ${par} :`, message: derniere.message };
 });
 
 const messageRempli = computed(() => message.value.trim() !== "");
@@ -131,17 +131,17 @@ function nomDuFichier(url: string): string {
   return decodeURIComponent(url.split("/").pop() ?? url);
 }
 
-async function ouvrirLeRenvoi() {
-  renvoiOuvert.value = true;
+async function ouvrirLeRefus() {
+  refusOuvert.value = true;
   await nextTick();
   champMessage.value?.focus();
 }
 
-async function annulerLeRenvoi() {
-  renvoiOuvert.value = false;
+async function annulerLeRefus() {
+  refusOuvert.value = false;
   refus.value = [];
   await nextTick();
-  boutonRenvoyer.value?.focus();
+  boutonRefuser.value?.focus();
 }
 
 function ajouterMotif(motif: string) {
@@ -158,14 +158,14 @@ async function decider(corps: Record<string, unknown>, texte: string, classe: st
   try {
     note.value = await enregistrerNote(note.value.id, corps);
     fait.value = { texte, classe };
-    renvoiOuvert.value = false;
+    refusOuvert.value = false;
     await nextTick();
     resultat.value?.focus();
   } catch (erreur) {
     // Traitée entre-temps par quelqu'un d'autre : on montre sa décision.
     if (refusDeLApi(erreur).some((un) => un.champ === "status")) {
       note.value = await lireNote(note.value.id).catch(() => note.value);
-      renvoiOuvert.value = false;
+      refusOuvert.value = false;
       refus.value = ["Cette demande a déjà été traitée."];
     } else {
       refus.value = messagesDErreur(erreur);
@@ -179,13 +179,13 @@ function valider() {
   void decider({ status: "approved" }, `✓ Validée. La trésorerie et ${demandeur.value} sont prévenus.`, "tw-text-green-700");
 }
 
-function renvoyer() {
+function refuser() {
   if (!messageRempli.value) {
     return;
   }
   void decider(
     { status: "rejected", commentaireStatut: message.value.trim() },
-    `Renvoyée à ${demandeur.value} avec votre message.`,
+    `Refusée. ${demandeur.value} a reçu votre message.`,
     "tw-text-gray-700",
   );
 }
@@ -258,14 +258,14 @@ function renvoyer() {
 
       <template v-else-if="note.peutDecider">
         <p v-if="aLaPlaceDesResponsables" class="tw-mb-3 tw-text-sm tw-text-gray-700">{{ aLaPlaceDesResponsables }}</p>
-        <div v-if="!renvoiOuvert" class="tw-flex tw-justify-end tw-gap-3">
+        <div v-if="!refusOuvert" class="tw-flex tw-justify-end tw-gap-3">
           <button
-            ref="boutonRenvoyer"
+            ref="boutonRefuser"
             type="button"
             class="tw-rounded-md tw-px-4 tw-py-2 tw-text-sm tw-font-semibold tw-text-gray-700 hover:tw-bg-gray-100"
-            @click="ouvrirLeRenvoi"
+            @click="ouvrirLeRefus"
           >
-            Renvoyer
+            Refuser
           </button>
           <button
             type="button"
@@ -277,7 +277,7 @@ function renvoyer() {
           </button>
         </div>
         <div v-else>
-          <label for="message-renvoi" class="tw-block tw-text-sm tw-font-medium tw-text-gray-900">Que doit corriger {{ note.utilisateur.prenom }} ?</label>
+          <label for="message-refus" class="tw-block tw-text-sm tw-font-medium tw-text-gray-900">Motif du refus : que doit corriger {{ note.utilisateur.prenom }} ?</label>
           <div class="tw-mt-2 tw-flex tw-flex-wrap tw-gap-2">
             <button
               v-for="motif in MOTIFS"
@@ -290,22 +290,22 @@ function renvoyer() {
             </button>
           </div>
           <textarea
-            id="message-renvoi"
+            id="message-refus"
             ref="champMessage"
             v-model="message"
             rows="2"
             class="tw-mt-3 tw-w-full tw-rounded-md tw-border tw-border-gray-300 tw-bg-white tw-p-2 tw-text-sm focus:tw-border-sky-500 focus:tw-outline-none"
           ></textarea>
           <div class="tw-mt-3 tw-flex tw-justify-end tw-gap-3">
-            <button type="button" class="tw-px-3 tw-py-2 tw-text-sm tw-text-gray-600 hover:tw-text-gray-900" @click="annulerLeRenvoi">Annuler</button>
+            <button type="button" class="tw-px-3 tw-py-2 tw-text-sm tw-text-gray-600 hover:tw-text-gray-900" @click="annulerLeRefus">Annuler</button>
             <button
               type="button"
               :disabled="!messageRempli"
               :aria-disabled="enCours"
               class="tw-rounded-md tw-bg-red-600 tw-px-5 tw-py-2 tw-text-sm tw-font-semibold tw-text-white disabled:tw-opacity-40 aria-disabled:tw-cursor-wait aria-disabled:tw-opacity-60"
-              @click="enCours || renvoyer()"
+              @click="enCours || refuser()"
             >
-              Renvoyer à {{ demandeur }}
+              Refuser la demande
             </button>
           </div>
         </div>

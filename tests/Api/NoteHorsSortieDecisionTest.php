@@ -44,7 +44,7 @@ class NoteHorsSortieDecisionTest extends ExpenseReportApiTestCase
         $this->assertRefusAvec(
             $this->patch($this->manager, $note, ['status' => 'rejected'] + $message),
             'commentaireStatut',
-            'Un message au demandeur est obligatoire pour lui renvoyer la note.',
+            'Un message au demandeur est obligatoire pour refuser la note.',
         );
         $this->assertSame(ExpenseReportStatusEnum::SUBMITTED, $this->reload($note)->getStatus());
     }
@@ -147,7 +147,7 @@ class NoteHorsSortieDecisionTest extends ExpenseReportApiTestCase
         $this->assertRefusAvec(
             $this->patch($this->otherManager, $note, ['status' => 'rejected']),
             'commentaireStatut',
-            'Un message au demandeur est obligatoire pour lui renvoyer la note.',
+            'Un message au demandeur est obligatoire pour refuser la note.',
         );
         $this->assertResponseStatus(200, $this->renvoyer($this->otherManager, $note, 'Montant à revoir.'));
 

@@ -73,7 +73,7 @@ function decision(note: NoteDeFrais): string | null {
 
   return derniere.statut === "approved"
     ? `Validée par ${nomComplet(derniere.auteur)} le ${jourMoisDe(derniere.date)}.`
-    : `Renvoyée par ${nomComplet(derniere.auteur)} le ${jourMoisDe(derniere.date)}.`;
+    : `Refusée par ${nomComplet(derniere.auteur)} le ${jourMoisDe(derniere.date)}.`;
 }
 
 // Pour la trésorerie, qui peut décider à la place d'un responsable : chez qui la note attend, et depuis quand.

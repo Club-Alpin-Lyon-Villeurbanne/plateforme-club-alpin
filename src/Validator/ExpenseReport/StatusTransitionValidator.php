@@ -73,7 +73,7 @@ class StatusTransitionValidator
         if ($expenseReport->getType()->estHorsSortie()
             && ExpenseReportStatusEnum::REJECTED === $newStatus
             && '' === trim((string) $expenseReport->getStatusComment())) {
-            $context->buildViolation('Un message au demandeur est obligatoire pour lui renvoyer la note.')
+            $context->buildViolation('Un message au demandeur est obligatoire pour refuser la note.')
                 ->atPath('statusComment')
                 ->addViolation();
         }

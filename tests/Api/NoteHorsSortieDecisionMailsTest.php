@@ -127,6 +127,7 @@ class NoteHorsSortieDecisionMailsTest extends ExpenseReportApiTestCase
         $this->assertCount(0, $this->mailsA($this->adresseTresorerie()));
         $mails = $this->mailsA($this->owner->getEmail());
         $this->assertCount(1, $mails);
+        $this->assertSame('Votre note de frais « Dégaines pour la SAE » a été refusée par Alex DURAND.', $mails[0]->getSubject());
         foreach ($this->corps($mails[0]) as $corps) {
             $this->assertStringContainsString('Message laissé par Alex DURAND', $corps);
             $this->assertStringContainsString('Merci de joindre la facture du magasin.', $corps);
