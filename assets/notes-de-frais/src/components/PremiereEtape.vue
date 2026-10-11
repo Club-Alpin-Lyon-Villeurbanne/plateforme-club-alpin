@@ -66,7 +66,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { champ, discret, libelle } from "../classes";
-import { aujourdhui, dateFr, jour, phraseValideurs } from "../format";
+import { aujourdhui, dateFr, jour, limiteEnvoi, messageDelaiDepasse, phraseValideurs } from "../format";
 import { TYPES } from "../typesDeNote";
 import type { CommissionProposee, Demande } from "../types";
 
@@ -130,15 +130,9 @@ watch(demande, () => (manque.value = ""), { deep: true });
 
 const date = computed(() => (demande.value.dateDepense ? jour(demande.value.dateDepense) : null));
 const dansLeFutur = computed(() => date.value !== null && date.value > aujourdhui());
-const limite = computed(() => {
-  if (date.value === null || props.delaiEnvoiJours === null) {
-    return null;
-  }
-  const limite = new Date(date.value);
-  limite.setDate(limite.getDate() + props.delaiEnvoiJours);
-
-  return limite;
-});
+const limite = computed(() =>
+  demande.value.dateDepense && props.delaiEnvoiJours !== null ? limiteEnvoi(demande.value.dateDepense, props.delaiEnvoiJours) : null,
+);
 const horsDelai = computed(() => limite.value !== null && aujourdhui() > limite.value);
 const dateRefusee = computed(() => dansLeFutur.value || horsDelai.value);
 
@@ -146,8 +140,8 @@ const aideDate = computed(() => {
   if (dansLeFutur.value) {
     return "Cette date est dans le futur.";
   }
-  if (horsDelai.value) {
-    return `Le délai de ${props.delaiEnvoiJours} jours est dépassé.`;
+  if (horsDelai.value && props.delaiEnvoiJours !== null) {
+    return messageDelaiDepasse(props.delaiEnvoiJours);
   }
 
   return limite.value ? `À envoyer avant le ${dateFr(limite.value)}.` : "";
