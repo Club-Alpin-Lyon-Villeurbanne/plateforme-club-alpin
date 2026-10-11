@@ -8,6 +8,7 @@ use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use ApiPlatform\Metadata\Operation;
 use App\Entity\ExpenseReport;
 use App\Service\NoteDeFrais\NotesAValider;
+use App\Service\NoteDeFrais\ValideursNoteHorsSortie;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use App\Utils\Enums\ExpenseReportTypeEnum;
 use Doctrine\ORM\QueryBuilder;
@@ -16,8 +17,8 @@ use Symfony\Bundle\SecurityBundle\Security;
 /**
  * Gère le filtrage et l'optimisation des notes de frais :
  * - Par défaut : filtré par l'utilisateur connecté (sécurité par défaut)
- * - /admin/notes-de-frais : pas de filtrage par utilisateur (réservé aux admins/gestionnaires via security),
- *   mais seulement les notes de sortie : compta-club lit `sortie.*` sans tester le cas vide
+ * - /admin/notes-de-frais : pas de filtrage par utilisateur (réservé aux admins/gestionnaires via security) ;
+ *   les notes de sortie, et les notes hors sortie qui attendent la trésorerie ou qu'elle a traitées (compta-club)
  * - /notes-de-frais/a-valider : les notes hors sortie que l'utilisateur valide comme responsable (NotesAValider)
  * - Exclut les brouillons par défaut (sauf si inclure_brouillons=true)
  * - Eager loading des relations pour éviter le problème N+1
@@ -28,6 +29,7 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
     public function __construct(
         private Security $security,
         private NotesAValider $notesAValider,
+        private ValideursNoteHorsSortie $valideurs,
     ) {
     }
 
@@ -75,8 +77,7 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
         if ('/notes-de-frais/a-valider' === $operation?->getUriTemplate()) {
             $this->notesAValider->restreindre($queryBuilder, $rootAlias, $filters);
         } elseif ('/admin/notes-de-frais' === $operation?->getUriTemplate()) {
-            $queryBuilder->andWhere(sprintf('%s.type = :type_sortie', $rootAlias))
-                ->setParameter('type_sortie', ExpenseReportTypeEnum::SORTIE->value);
+            $this->restreindreALaTresorerie($queryBuilder, $rootAlias);
         } elseif ($user) {
             $queryBuilder->andWhere(sprintf('%s.user = :current_user', $rootAlias))
                 ->setParameter('current_user', $user);
@@ -93,5 +94,28 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
         // 3. Tri par défaut : plus récentes en premier
         // Les index créés dans la migration optimiseront ce tri
         $queryBuilder->orderBy(sprintf('%s.createdAt', $rootAlias), 'DESC');
+    }
+
+    /**
+     * Une note hors sortie n'intéresse la trésorerie qu'une fois envoyée, et pas tant qu'elle
+     * attend un responsable : brouillon exclu même avec `inclure_brouillons`, `submitted`
+     * seulement sans valideur.
+     */
+    private function restreindreALaTresorerie(QueryBuilder $queryBuilder, string $rootAlias): void
+    {
+        $queryBuilder
+            ->andWhere($queryBuilder->expr()->orX(
+                sprintf('%s.type = :tresorerie_sortie', $rootAlias),
+                $queryBuilder->expr()->andX(
+                    sprintf('%s.status != :tresorerie_brouillon', $rootAlias),
+                    $queryBuilder->expr()->orX(
+                        sprintf('%s.status != :tresorerie_envoyee', $rootAlias),
+                        $this->valideurs->conditionValideurs($queryBuilder, $rootAlias, false),
+                    ),
+                ),
+            ))
+            ->setParameter('tresorerie_sortie', ExpenseReportTypeEnum::SORTIE->value)
+            ->setParameter('tresorerie_brouillon', ExpenseReportStatusEnum::DRAFT->value)
+            ->setParameter('tresorerie_envoyee', ExpenseReportStatusEnum::SUBMITTED->value);
     }
 }

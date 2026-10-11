@@ -127,7 +127,7 @@ export interface NoteDeFrais {
   /** Vide : la note va directement à la trésorerie. */
   valideurs: Valideur[];
   derniereDecision: Decision | null;
-  /** Dernière validation par un responsable, conservée après la décision de la trésorerie. */
+  /** Validation par un responsable depuis le dernier envoi, conservée après la décision de la trésorerie. */
   validationResponsable: { auteur: Personne; date: string } | null;
   /** L'utilisateur connecté peut valider ou renvoyer la note maintenant. */
   peutDecider: boolean;

@@ -219,7 +219,7 @@ class NoteHorsSortieDoubleValidationTest extends ExpenseReportApiTestCase
         $this->assertSame('tresorerie', $this->show($this->responsableAutreCommission, $refuseeParLaTresorerie)['body']['derniereDecision']['niveau']);
     }
 
-    public function testValidationResponsableSuitLeDernierPassageEnPreValidation(): void
+    public function testValidationResponsableEstCelleDuDernierEnvoi(): void
     {
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
         $this->assertNull($this->validationResponsable($note));
@@ -235,6 +235,7 @@ class NoteHorsSortieDoubleValidationTest extends ExpenseReportApiTestCase
         $this->assertSame($premiere, $this->validationResponsable($note));
 
         $this->assertResponseStatus(200, $this->envoyer($this->adherent, $note));
+        $this->assertNull($this->validationResponsable($note));
         $this->assertResponseStatus(200, $this->patch($this->coResponsable, $note, ['status' => 'preapproved']));
         $seconde = $this->validationResponsable($note);
         $this->assertSame(['prenom' => 'Sam', 'nom' => 'PETIT'], $seconde['auteur']);
@@ -243,6 +244,22 @@ class NoteHorsSortieDoubleValidationTest extends ExpenseReportApiTestCase
         $this->assertSame($seconde, $this->validationResponsable($note));
         $this->assertResponseStatus(200, $this->patch($this->manager, $note, ['status' => 'accounted']));
         $this->assertSame($seconde, $this->validationResponsable($note));
+    }
+
+    public function testUneValidationDAvantLeRenvoiNeComptePlusQuandLaTresorerieDecideSeule(): void
+    {
+        $note = $this->notePreValidee();
+        $this->assertResponseStatus(200, $this->renvoyer($this->manager, $note));
+        $this->assertResponseStatus(200, $this->envoyer($this->adherent, $note));
+        foreach ([$this->responsable, $this->coResponsable] as $responsable) {
+            $this->em()->find(User::class, $responsable->getId())->setDoitRenouveler(true);
+        }
+        $this->em()->flush();
+
+        $this->assertResponseStatus(200, $this->patch($this->manager, $note, ['status' => 'approved']));
+
+        $this->assertSame(['approved', 'tresorerie'], [$this->derniereDecision($note)['statut'], $this->derniereDecision($note)['niveau']]);
+        $this->assertNull($this->validationResponsable($note));
     }
 
     public function testSansValideurIlNYAPasDeValidationDuResponsable(): void

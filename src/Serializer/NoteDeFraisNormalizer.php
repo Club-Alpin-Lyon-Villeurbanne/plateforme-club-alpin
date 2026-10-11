@@ -17,9 +17,9 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 /**
  * Ajoute à une note, en lecture seule, ses montants calculés par le serveur. Pour une note hors
  * sortie, aussi : lignes telles qu'affichées, avertissements, valideurs, date d'envoi, dernière
- * décision et son niveau, dernière validation par un responsable, et si l'utilisateur connecté
- * peut la valider ou la refuser ; le choix entre don et remboursement est retiré pour qui ne doit
- * pas le connaître.
+ * décision et son niveau, validation par un responsable depuis le dernier envoi, libellé
+ * comptable, et si l'utilisateur connecté peut la valider ou la refuser ; le choix entre don et
+ * remboursement est retiré pour qui ne doit pas le connaître.
  */
 final class NoteDeFraisNormalizer implements NormalizerInterface, NormalizerAwareInterface
 {
@@ -61,6 +61,7 @@ final class NoteDeFraisNormalizer implements NormalizerInterface, NormalizerAwar
             'valideurs' => ValideursNoteHorsSortie::exposer($this->valideurs->pour($object)),
             'derniereDecision' => $this->derniereDecision($object),
             'validationResponsable' => $this->validationResponsable($object),
+            'libelleComptable' => ExpenseReportStatusEnum::DRAFT === $object->getStatus() ? null : $object->libelleComptable(),
             // La trésorerie décide dans compta-club : le site ne lui propose rien.
             'peutDecider' => ExpenseReportStatusEnum::SUBMITTED === $object->getStatus() && $this->actor->isResponsableOf($object),
         ]);
@@ -104,7 +105,7 @@ final class NoteDeFraisNormalizer implements NormalizerInterface, NormalizerAwar
             return null;
         }
 
-        $validation = $this->historique->dernierePreValidation($note);
+        $validation = $this->historique->preValidationDepuisLeDernierEnvoi($note);
         if (null === $validation) {
             return null;
         }

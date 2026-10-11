@@ -38,12 +38,15 @@ class ExpenseReportStatusHistoryRepository extends ServiceEntityRepository
     }
 
     /**
-     * Dernière validation de la note par un responsable, avec son auteur, même si la trésorerie a
-     * décidé ensuite.
+     * Validation de la note par un responsable depuis son dernier envoi, avec son auteur, même si
+     * la trésorerie a décidé ensuite. Une validation d'avant un renvoi ne compte plus : la note
+     * corrigée repasse par un responsable, ou va directement à la trésorerie s'il n'y en a plus.
      */
-    public function dernierePreValidation(ExpenseReport $note): ?ExpenseReportStatusHistory
+    public function preValidationDepuisLeDernierEnvoi(ExpenseReport $note): ?ExpenseReportStatusHistory
     {
-        return $this->dernierPassage($note, ExpenseReportStatusEnum::PREAPPROVED);
+        $passage = $this->dernierPassage($note, ExpenseReportStatusEnum::SUBMITTED, ExpenseReportStatusEnum::PREAPPROVED);
+
+        return ExpenseReportStatusEnum::PREAPPROVED === $passage?->getNewStatus() ? $passage : null;
     }
 
     private function dernierPassage(ExpenseReport $note, ExpenseReportStatusEnum ...$statuts): ?ExpenseReportStatusHistory

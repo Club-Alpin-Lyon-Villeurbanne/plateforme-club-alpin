@@ -143,9 +143,9 @@ export function decisionSurLaPage(note: NoteDeFrais): DecisionSurLaPage | null {
     return { texte: `Validée ${par}.`, message: null, suite: null };
   }
 
-  // Une décision de la trésorerie vient après la validation du responsable, quand la note en a une.
-  const validation = derniere.niveau === "tresorerie" ? note.validationResponsable : null;
-  const debut = validation && validation.date <= derniere.date ? `Validée par ${nomComplet(validation.auteur)} le ${dateFrDe(validation.date)}, puis ` : "";
+  // La validation du responsable date du dernier envoi : la décision qui la suit est celle de la trésorerie.
+  const validation = note.validationResponsable;
+  const debut = validation ? `Validée par ${nomComplet(validation.auteur)} le ${dateFrDe(validation.date)}, puis ` : "";
 
   if (derniere.statut === "approved") {
     return { texte: debut ? `${debut}${par}.` : `Validée ${par}.`, message: null, suite: note.status === "accounted" ? "Comptabilisée." : null };

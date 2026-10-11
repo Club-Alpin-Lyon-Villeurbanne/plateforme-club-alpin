@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use ApiPlatform\Doctrine\Orm\Filter\BooleanFilter;
-use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
 use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Metadata\ApiFilter;
@@ -12,6 +11,8 @@ use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
+use App\Doctrine\Filter\DateDeLaSortieFilter;
+use App\Doctrine\Filter\RechercheSurLaSortieFilter;
 use App\Dto\ExpenseReportCreateDto;
 use App\Repository\ExpenseReportRepository;
 use App\State\ExpenseReportCloneProcessor;
@@ -81,10 +82,11 @@ use Symfony\Component\Validator\Constraints as Assert;
     'status' => 'exact',
     'type' => 'exact',
     'user.lastname' => 'partial',
-    'event.titre' => 'partial',
 ])]
+// Recherche et date de la sortie : une note hors sortie n'en sort pas.
+#[ApiFilter(RechercheSurLaSortieFilter::class, properties: ['event.titre' => 'partial'])]
 #[ApiFilter(BooleanFilter::class, properties: ['refundRequired'])]
-#[ApiFilter(DateFilter::class, properties: ['event.startDate'])]
+#[ApiFilter(DateDeLaSortieFilter::class, properties: ['event.startDate'])]
 #[ApiFilter(OrderFilter::class, properties: ['createdAt', 'event.startDate', 'user.lastname', 'status'])]
 
 #[HasLifecycleCallbacks]
@@ -368,6 +370,15 @@ class ExpenseReport
             'lienFormation' => $this->lienFormation,
             'motPourResponsable' => $this->motPourResponsable,
         ];
+    }
+
+    /**
+     * « NOM Prénom NDF JJ/MM/AAAA objet » : ce que la trésorerie saisit en comptabilité pour une
+     * note hors sortie.
+     */
+    public function libelleComptable(): string
+    {
+        return sprintf('%s %s NDF %s %s', mb_strtoupper((string) $this->user?->getLastname()), $this->user?->getFirstname(), $this->dateDepense?->format('d/m/Y'), $this->objet);
     }
 
     public function getTotalDeclare(): ?string
