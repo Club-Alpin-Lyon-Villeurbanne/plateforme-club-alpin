@@ -4,13 +4,16 @@ import type { Ligne } from "./types";
 
 /** Une ligne de voiture se saisit en kilomètres, les autres en euros. */
 export const NATURE_EN_KILOMETRES = "voiture";
+/** Une ligne « Autre » se précise par une description, exigée à l'envoi. */
+export const NATURE_A_PRECISER = "autre";
 
 export function nouvelleLigne(type: TypeHorsSortie): Ligne {
   return {
     id: `ligne-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 8)}`,
     montant: null,
     description: "",
-    ...(type === "formation" ? { nature: "autre" } : {}),
+    // Pas de nature par défaut : laissée sur « Autre », une nuit ou un péage échapperait à son plafond.
+    ...(type === "formation" ? { nature: null } : {}),
   };
 }
 

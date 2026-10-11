@@ -28,6 +28,16 @@ class NoteHorsSortieLignesAfficheesTest extends ExpenseReportApiTestCase
         ], $lignes);
     }
 
+    public function testUneDepenseAutreMontreSaDescription(): void
+    {
+        $note = $this->creerFormation($this->encadrant, '{"lignes":[{"id":"ligne-1","nature":"autre","montant":95,"description":" Livre du moniteur "},{"id":"ligne-2","nature":"stage","montant":280,"description":"Stage initiateur"}]}');
+
+        $this->assertSame([
+            ['id' => 'ligne-1', 'nature' => 'autre', 'libelle' => 'Autre', 'detail' => 'Livre du moniteur', 'montant' => 95.0],
+            ['id' => 'ligne-2', 'nature' => 'stage', 'libelle' => 'Stage', 'detail' => null, 'montant' => 280.0],
+        ], $this->lignesAffichees($note));
+    }
+
     public function testUnAchatExposeSesLignesParDescription(): void
     {
         $note = $this->creerAchat($this->owner, ExpenseReportStatusEnum::DRAFT, self::LIGNES_ACHAT);

@@ -63,8 +63,8 @@ class CoherenceValidator
     }
 
     /**
-     * Forme des lignes seulement : les montants strictement positifs et les justificatifs
-     * sont exigés à la soumission.
+     * Forme des lignes seulement : les montants strictement positifs, les justificatifs et la
+     * nature d'une ligne de formation sont exigés à la soumission.
      */
     private function validerLignes(ExpenseReport $note, ExecutionContextInterface $context): void
     {
@@ -96,9 +96,7 @@ class CoherenceValidator
             }
 
             // Une formation porte une nature par ligne, un achat aucune.
-            if (!isset($ligne['nature']) && [] !== $naturesPermises) {
-                $this->refuser($context, 'details', "Ligne {$numero} : la nature de la dépense manque.");
-            } elseif (isset($ligne['nature']) && !\in_array($ligne['nature'], $naturesPermises, true)) {
+            if (isset($ligne['nature']) && !\in_array($ligne['nature'], $naturesPermises, true)) {
                 $this->refuser($context, 'details', "Ligne {$numero} : cette nature de dépense n'est pas permise pour ce type de note.");
             }
 

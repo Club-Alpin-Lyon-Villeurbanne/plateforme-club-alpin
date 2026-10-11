@@ -2,7 +2,13 @@
   <div class="tw-grid tw-grid-cols-[1.25rem_11rem_6.5rem_minmax(0,1fr)_2rem] tw-items-center tw-gap-3 tw-py-2.5">
     <!-- Numéro repris par les messages de l'API (« dépense 2 ») ; les champs le portent déjà dans leur nom. -->
     <span class="tw-text-right tw-text-xs tw-tabular-nums tw-text-gray-500" aria-hidden="true">{{ numero }}.</span>
-    <select v-model="nature" :class="champ" :aria-label="`Nature de la dépense ${numero}`">
+    <select
+      v-model="nature"
+      :class="natureManquante ? champEnErreur : champ"
+      :aria-label="`Nature de la dépense ${numero}`"
+      :aria-invalid="natureManquante"
+    >
+      <option :value="null">Choisir…</option>
       <option v-for="(libelleNature, valeur) in natures" :key="valeur" :value="valeur">{{ libelleNature }}</option>
     </select>
     <div class="tw-relative">
@@ -30,6 +36,16 @@
         @justificatif="(fichier: File) => emit('justificatif', fichier)"
       />
     </div>
+    <!-- Sous la ligne, mais avant « Retirer » au clavier. -->
+    <input
+      v-if="aPreciser"
+      v-model="ligne.description"
+      type="text"
+      :class="[descriptionManquante ? champEnErreur : champ, 'tw-col-span-3 tw-col-start-2 tw-row-start-2']"
+      placeholder="Précisez la dépense"
+      :aria-label="`Description de la dépense ${numero}`"
+      :aria-invalid="descriptionManquante"
+    />
     <button
       type="button"
       class="tw-flex tw-h-8 tw-w-8 tw-items-center tw-justify-center tw-rounded tw-text-lg tw-leading-none tw-text-gray-500 hover:tw-text-red-600"
@@ -50,7 +66,7 @@ import { computed } from "vue";
 import JustificatifDeLigne from "./JustificatifDeLigne.vue";
 import { champ, champEnErreur, discret } from "../classes";
 import { euros } from "../format";
-import { calculDeLaVoiture, montantDeLaLigne, NATURE_EN_KILOMETRES } from "../lignes";
+import { calculDeLaVoiture, montantDeLaLigne, NATURE_A_PRECISER, NATURE_EN_KILOMETRES } from "../lignes";
 import type { Justificatif, Ligne } from "../types";
 
 const props = defineProps<{
@@ -68,6 +84,7 @@ const ligne = defineModel<Ligne>({ required: true });
 const emit = defineEmits<{ retirer: []; justificatif: [fichier: File]; montantModifie: [] }>();
 
 const voiture = computed(() => ligne.value.nature === NATURE_EN_KILOMETRES);
+const aPreciser = computed(() => ligne.value.nature === NATURE_A_PRECISER);
 
 // Un seul champ, en kilomètres pour la voiture et en euros sinon, comme dans la maquette.
 const saisie = computed<number | null>({
@@ -82,8 +99,8 @@ const saisie = computed<number | null>({
 });
 
 // Changer de nature garde le nombre saisi, qui passe d'euros en kilomètres ou l'inverse.
-const nature = computed<string>({
-  get: () => ligne.value.nature ?? "autre",
+const nature = computed<string | null>({
+  get: () => ligne.value.nature ?? null,
   set: (nouvelle) => {
     const valeur = saisie.value;
     ligne.value.nature = nouvelle;
@@ -107,6 +124,8 @@ const calcul = computed(() => {
   return `${calculDeLaVoiture(distance, props.tauxKilometrique)} = ${euros(montantDeLaLigne(ligne.value, props.tauxKilometrique))}`;
 });
 
+const natureManquante = computed(() => props.marquerLesManques && !ligne.value.nature);
+const descriptionManquante = computed(() => props.marquerLesManques && aPreciser.value && !ligne.value.description.trim());
 const saisieManquante = computed(() => props.marquerLesManques && !(typeof saisie.value === "number" && saisie.value > 0));
 const justificatifManquant = computed(() => props.marquerLesManques && !voiture.value && !props.justificatif && !props.envoiEnCours);
 

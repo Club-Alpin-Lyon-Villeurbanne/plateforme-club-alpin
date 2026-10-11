@@ -16,6 +16,8 @@ enum ExpenseReportTypeEnum: string
 
     // Une ligne de voiture se saisit en kilomètres (`distance`), toutes les autres en euros (`montant`).
     public const string NATURE_EN_KILOMETRES = 'voiture';
+    // Une ligne « Autre » se précise par une description, exigée à l'envoi.
+    public const string NATURE_A_PRECISER = 'autre';
 
     public function estHorsSortie(): bool
     {
@@ -58,7 +60,7 @@ enum ExpenseReportTypeEnum: string
                 'train' => 'Train ou bus',
                 // Une ligne par nuit : le plafond de l'hébergement vaut par nuit.
                 'hebergement' => 'Nuit d\'hébergement',
-                'autre' => 'Autre',
+                self::NATURE_A_PRECISER => 'Autre',
             ],
             self::SORTIE, self::AUTRE => [],
         };
@@ -79,6 +81,18 @@ enum ExpenseReportTypeEnum: string
     public function passeParUnResponsable(): bool
     {
         return $this->estHorsSortie();
+    }
+
+    /**
+     * Description saisie sur une ligne, sans les espaces autour ; null si elle est vide.
+     *
+     * @param array<string, mixed> $ligne
+     */
+    public static function descriptionDeLaLigne(array $ligne): ?string
+    {
+        $description = \is_string($ligne['description'] ?? null) ? trim($ligne['description']) : '';
+
+        return '' === $description ? null : $description;
     }
 
     /**

@@ -237,8 +237,9 @@ class ExpenseReportCalculator
 
     /**
      * Lignes d'une note hors sortie telles que le détail et les mails les montrent : la description
-     * d'un achat ou la nature d'une formation, le calcul de la voiture, et le montant retenu. Une
-     * note envoyée garde le taux kilométrique de son envoi.
+     * d'un achat ou la nature d'une formation, le calcul de la voiture ou la description d'une
+     * dépense « Autre », et le montant retenu. Une note envoyée garde le taux kilométrique de son
+     * envoi.
      *
      * @return list<array{id: ?string, nature: ?string, libelle: ?string, detail: ?string, montant: float}>
      */
@@ -256,9 +257,11 @@ class ExpenseReportCalculator
                 'id' => \is_string($ligne['id'] ?? null) ? $ligne['id'] : null,
                 'nature' => $nature,
                 'libelle' => \is_string($libelle) && '' !== $libelle ? $libelle : null,
-                'detail' => 'distance' === ExpenseReportTypeEnum::champDeLaSaisie($ligne) && (\is_int($distance) || \is_float($distance))
-                    ? sprintf('%s km × %s', (new \NumberFormatter('fr_FR', \NumberFormatter::DECIMAL))->format($distance), $this->formatEuros($taux))
-                    : null,
+                'detail' => match (true) {
+                    'distance' === ExpenseReportTypeEnum::champDeLaSaisie($ligne) && (\is_int($distance) || \is_float($distance)) => sprintf('%s km × %s', (new \NumberFormatter('fr_FR', \NumberFormatter::DECIMAL))->format($distance), $this->formatEuros($taux)),
+                    ExpenseReportTypeEnum::NATURE_A_PRECISER === $nature => ExpenseReportTypeEnum::descriptionDeLaLigne($ligne),
+                    default => null,
+                },
                 'montant' => $this->montantDeLaLigne($ligne, $taux),
             ];
         }, $note->lignes());

@@ -88,6 +88,18 @@ final class ControlesNoteHorsSortie
                 'champ' => 'details',
                 'moments' => [MomentDeControle::CHAQUE_SOUMISSION],
                 'niveau' => NiveauDeControle::BLOQUANT,
+                'controle' => $this->naturesManquantes(...),
+            ],
+            [
+                'champ' => 'details',
+                'moments' => [MomentDeControle::CHAQUE_SOUMISSION],
+                'niveau' => NiveauDeControle::BLOQUANT,
+                'controle' => $this->depensesAPreciser(...),
+            ],
+            [
+                'champ' => 'details',
+                'moments' => [MomentDeControle::CHAQUE_SOUMISSION],
+                'niveau' => NiveauDeControle::BLOQUANT,
                 'controle' => $this->montantsNonPositifs(...),
             ],
             [
@@ -185,6 +197,40 @@ final class ControlesNoteHorsSortie
     private function sansDepense(ExpenseReport $note): ?string
     {
         return [] === $note->lignes() ? 'Il manque au moins une dépense.' : null;
+    }
+
+    // La nature décide du plafond : un brouillon peut l'attendre, pas une note envoyée.
+    private function naturesManquantes(ExpenseReport $note): ?string
+    {
+        if ([] === $note->getType()->naturesPermises()) {
+            return null;
+        }
+
+        $numeros = $this->numerosDesLignes($note, static fn (array $ligne): bool => !isset($ligne['nature']));
+
+        return match (\count($numeros)) {
+            0 => null,
+            1 => sprintf('Il manque la nature de la dépense %s.', $numeros[0]),
+            default => sprintf('Il manque la nature des dépenses %s.', $this->enumerer($numeros)),
+        };
+    }
+
+    // Sans description, le valideur ne lirait que « Autre » et le montant.
+    private function depensesAPreciser(ExpenseReport $note): ?string
+    {
+        $libelle = $note->getType()->natures()[ExpenseReportTypeEnum::NATURE_A_PRECISER] ?? null;
+        if (null === $libelle) {
+            return null;
+        }
+
+        $numeros = $this->numerosDesLignes($note, static fn (array $ligne): bool => ExpenseReportTypeEnum::NATURE_A_PRECISER === ($ligne['nature'] ?? null)
+            && null === ExpenseReportTypeEnum::descriptionDeLaLigne($ligne));
+
+        return match (\count($numeros)) {
+            0 => null,
+            1 => sprintf('Précisez la dépense %s : la nature « %s » demande une description.', $numeros[0], $libelle),
+            default => sprintf('Précisez les dépenses %s : la nature « %s » demande une description.', $this->enumerer($numeros), $libelle),
+        };
     }
 
     private function montantsNonPositifs(ExpenseReport $note): ?string

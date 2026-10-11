@@ -50,8 +50,8 @@ export interface Ligne {
   /** En euros ; null pour une voiture, qui se déclare en kilomètres. */
   montant: number | null;
   description: string;
-  /** Formation seulement. */
-  nature?: string;
+  /** Formation seulement ; null tant qu'elle n'est pas choisie. */
+  nature?: string | null;
   /** Kilomètres d'une voiture. */
   distance?: number | null;
 }
@@ -63,7 +63,7 @@ export interface LigneAffichee {
   nature: string | null;
   /** Nature d'une formation, description d'un achat. */
   libelle: string | null;
-  /** « 220 km × 0,40 € » pour la voiture. */
+  /** « 220 km × 0,40 € » pour la voiture, la description pour « Autre ». */
   detail: string | null;
   montant: number;
 }

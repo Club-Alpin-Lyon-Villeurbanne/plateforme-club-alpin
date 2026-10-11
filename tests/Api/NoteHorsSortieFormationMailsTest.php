@@ -111,6 +111,22 @@ class NoteHorsSortieFormationMailsTest extends ExpenseReportApiTestCase
         }
     }
 
+    public function testUneDepenseAutreEstDecriteDansLesMails(): void
+    {
+        $note = $this->envoyerLaFormation('{"lignes":[{"id":"ligne-1","nature":"autre","montant":95,"description":"Livre du moniteur"}]}', 'ligne-1');
+        $ligne = $this->euros(95) . ' - Autre (Livre du moniteur)';
+
+        foreach ($this->corps($this->mailsA($this->encadrant->getEmail())[0]) as $corps) {
+            $this->assertStringContainsString($ligne, $corps);
+        }
+
+        $this->assertResponseStatus(200, $this->patch($this->responsable, $note, ['status' => 'approved']));
+
+        foreach ($this->corps($this->mailsA($this->adresseTresorerie())[0]) as $corps) {
+            $this->assertStringContainsString($ligne, $corps);
+        }
+    }
+
     private function envoyerLaFormation(string $details, string ...$lignesJustifiees): ExpenseReport
     {
         $note = $this->creerFormation($this->encadrant, $details, null, self::LIEN);
