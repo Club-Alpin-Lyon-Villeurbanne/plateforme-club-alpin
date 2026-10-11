@@ -99,7 +99,8 @@ class NoteHorsSortieDecisionTest extends ExpenseReportApiTestCase
 
     public static function peutDeciderProvider(): iterable
     {
-        yield 'gestionnaire, note envoyée par un autre' => ['manager', 'owner', ExpenseReportStatusEnum::SUBMITTED, true];
+        // La trésorerie décide dans compta-club, pas sur le site.
+        yield 'gestionnaire, note envoyée par un autre' => ['manager', 'owner', ExpenseReportStatusEnum::SUBMITTED, false];
         yield 'demandeur, sa note envoyée' => ['owner', 'owner', ExpenseReportStatusEnum::SUBMITTED, false];
         yield 'gestionnaire, sa propre note' => ['manager', 'manager', ExpenseReportStatusEnum::SUBMITTED, false];
         yield 'gestionnaire, brouillon d\'un autre' => ['manager', 'owner', ExpenseReportStatusEnum::DRAFT, false];

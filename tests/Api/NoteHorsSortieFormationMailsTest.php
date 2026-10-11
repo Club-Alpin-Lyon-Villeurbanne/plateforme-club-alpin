@@ -2,7 +2,6 @@
 
 namespace App\Tests\Api;
 
-use App\Entity\ExpenseReport;
 use Symfony\Component\Mime\Email;
 
 /**
@@ -80,60 +79,20 @@ class NoteHorsSortieFormationMailsTest extends ExpenseReportApiTestCase
         }
     }
 
-    public function testLeRecapitulatifDeLaTresorerieDonneNaturesRemboursableEtLien(): void
+    public function testUneDepenseAutreEstDecriteDansLeMailDuDemandeur(): void
     {
-        $peage = $this->plafondDuPeage() + 15;
-        $note = $this->envoyerLaFormation(json_encode(['lignes' => [
-            ['id' => 'ligne-1', 'nature' => 'stage', 'montant' => 280],
-            ['id' => 'ligne-2', 'nature' => 'voiture', 'distance' => 220],
-            ['id' => 'ligne-3', 'nature' => 'peage', 'montant' => $peage],
-            ['id' => 'ligne-4', 'nature' => 'hebergement', 'montant' => 54],
-        ]]), 'ligne-1', 'ligne-3', 'ligne-4');
-        $declare = 280 + $this->voiture(220) + $peage + 54;
-        $remboursable = 280 + $this->voiture(220) + $this->plafondDuPeage() + 54;
-
-        $this->assertResponseStatus(200, $this->patch($this->responsable, $note, ['status' => 'approved']));
-
-        $mails = $this->mailsA($this->adresseTresorerie());
-        $this->assertCount(1, $mails);
-        foreach ($this->corps($mails[0]) as $corps) {
-            $this->assertStringContainsString('Type : formation', $corps);
-            $this->assertStringContainsString('Date de la formation : ' . (new \DateTimeImmutable('-3 days'))->format('d/m/Y'), $corps);
-            $this->assertStringContainsString('Formation : ' . self::LIEN, $corps);
-            $this->assertStringContainsString('Stage', $corps);
-            $this->assertStringContainsString(sprintf('Voiture (%s)', $this->calculDeLaVoiture(220)), $corps);
-            $this->assertStringContainsString('Péage', $corps);
-            $this->assertStringContainsString('Nuit d\'hébergement', $corps);
-            $this->assertStringNotContainsString('1 nuit', $corps);
-            $this->assertStringContainsString('Total : ' . $this->euros($declare), $corps);
-            $this->assertStringContainsString('Remboursable : ' . $this->euros($remboursable), $corps);
-            $this->assertStringNotContainsString('remboursables selon les plafonds du club', $corps);
-        }
-    }
-
-    public function testUneDepenseAutreEstDecriteDansLesMails(): void
-    {
-        $note = $this->envoyerLaFormation('{"lignes":[{"id":"ligne-1","nature":"autre","montant":95,"description":"Livre du moniteur"}]}', 'ligne-1');
-        $ligne = $this->euros(95) . ' - Autre (Livre du moniteur)';
+        $this->envoyerLaFormation('{"lignes":[{"id":"ligne-1","nature":"autre","montant":95,"description":"Livre du moniteur"}]}', 'ligne-1');
 
         foreach ($this->corps($this->mailsA($this->encadrant->getEmail())[0]) as $corps) {
-            $this->assertStringContainsString($ligne, $corps);
-        }
-
-        $this->assertResponseStatus(200, $this->patch($this->responsable, $note, ['status' => 'approved']));
-
-        foreach ($this->corps($this->mailsA($this->adresseTresorerie())[0]) as $corps) {
-            $this->assertStringContainsString($ligne, $corps);
+            $this->assertStringContainsString($this->euros(95) . ' - Autre (Livre du moniteur)', $corps);
         }
     }
 
-    private function envoyerLaFormation(string $details, string ...$lignesJustifiees): ExpenseReport
+    private function envoyerLaFormation(string $details, string ...$lignesJustifiees): void
     {
         $note = $this->creerFormation($this->encadrant, $details, null, self::LIEN);
         $this->joindreLesJustificatifs($note, ...$lignesJustifiees);
         $this->assertResponseStatus(200, $this->envoyer($this->encadrant, $note));
-
-        return $note;
     }
 
     private function assertLignesDeLaFormation(string $corps): void

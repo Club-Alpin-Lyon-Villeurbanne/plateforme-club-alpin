@@ -188,6 +188,7 @@ class NoteHorsSortieResponsableDecisionTest extends ExpenseReportApiTestCase
         $this->assertTrue($this->show($this->responsable, $deLAdherent)['body']['peutDecider']);
         $this->assertFalse($this->show($this->responsable, $duResponsable)['body']['peutDecider']);
         $this->assertTrue($this->show($this->coResponsable, $duResponsable)['body']['peutDecider']);
+        $this->assertFalse($this->show($this->manager, $deLAdherent)['body']['peutDecider']);
 
         $this->assertResponseStatus(200, $this->patch($this->responsable, $deLAdherent, ['status' => 'approved']));
         $this->assertFalse($this->show($this->coResponsable, $deLAdherent)['body']['peutDecider']);

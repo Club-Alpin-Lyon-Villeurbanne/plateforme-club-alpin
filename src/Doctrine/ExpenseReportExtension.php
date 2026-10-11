@@ -18,7 +18,7 @@ use Symfony\Bundle\SecurityBundle\Security;
  * - Par défaut : filtré par l'utilisateur connecté (sécurité par défaut)
  * - /admin/notes-de-frais : pas de filtrage par utilisateur (réservé aux admins/gestionnaires via security),
  *   mais seulement les notes de sortie : compta-club lit `sortie.*` sans tester le cas vide
- * - /notes-de-frais/a-valider : les notes hors sortie que l'utilisateur peut traiter (NotesAValider)
+ * - /notes-de-frais/a-valider : les notes hors sortie que l'utilisateur valide comme responsable (NotesAValider)
  * - Exclut les brouillons par défaut (sauf si inclure_brouillons=true)
  * - Eager loading des relations pour éviter le problème N+1
  * - Tri par défaut : created_at DESC
@@ -71,7 +71,7 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
 
         $filters = $context['filters'] ?? [];
 
-        // 1. Filtrage par utilisateur, sauf sur les listes de la trésorerie
+        // 1. Filtrage par utilisateur, sauf sur la liste « à valider » et celle de compta-club
         if ('/notes-de-frais/a-valider' === $operation?->getUriTemplate()) {
             $this->notesAValider->restreindre($queryBuilder, $rootAlias, $filters);
         } elseif ('/admin/notes-de-frais' === $operation?->getUriTemplate()) {

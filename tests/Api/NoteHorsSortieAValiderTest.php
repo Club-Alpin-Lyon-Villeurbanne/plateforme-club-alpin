@@ -2,90 +2,27 @@
 
 namespace App\Tests\Api;
 
-use App\Entity\ExpenseReport;
 use App\Entity\User;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 
 /**
- * Liste « notes de frais à valider » : les notes hors sortie qu'un gestionnaire peut traiter,
- * envoyées par défaut, déjà traitées avec le filtre de statut.
+ * « Notes de frais à valider » ne donne rien de plus à un gestionnaire : la trésorerie travaille
+ * dans compta-club. Il n'y voit que les notes des commissions dont il est responsable.
  */
 class NoteHorsSortieAValiderTest extends ExpenseReportApiTestCase
 {
-    public function testLeGestionnaireVoitLesNotesHorsSortieEnvoyeesDeTousLesDemandeurs(): void
-    {
-        $deLAdherent = $this->creerAchat($this->owner, ExpenseReportStatusEnum::SUBMITTED);
-        $dUnAutre = $this->creerAchat($this->stranger, ExpenseReportStatusEnum::SUBMITTED);
-
-        $response = $this->aValider($this->manager);
-
-        $this->assertResponseStatus(200, $response);
-        $this->assertContains($deLAdherent->getId(), $this->ids($response));
-        $this->assertContains($dUnAutre->getId(), $this->ids($response));
-    }
-
-    public function testParDefautNiBrouillonNiNoteTraiteeNiNoteDeSortie(): void
-    {
-        $exclues = [
-            $this->createReport($this->owner, ExpenseReportStatusEnum::SUBMITTED),
-            $this->creerAchat($this->owner),
-            $this->creerAchat($this->owner, ExpenseReportStatusEnum::APPROVED),
-            $this->creerAchat($this->owner, ExpenseReportStatusEnum::REJECTED),
-        ];
-        $envoyee = $this->creerAchat($this->owner, ExpenseReportStatusEnum::SUBMITTED);
-
-        $ids = $this->ids($this->aValider($this->manager));
-
-        $this->assertContains($envoyee->getId(), $ids);
-        foreach ($exclues as $note) {
-            $this->assertNotContains($note->getId(), $ids);
-        }
-    }
-
-    public function testLeFiltreDeStatutDonneLesDemandesDejaTraitees(): void
-    {
-        $sortieValidee = $this->createReport($this->owner, ExpenseReportStatusEnum::APPROVED);
-        $validee = $this->creerAchat($this->owner, ExpenseReportStatusEnum::APPROVED);
-        $aCorriger = $this->creerAchat($this->owner, ExpenseReportStatusEnum::REJECTED);
-        $envoyee = $this->creerAchat($this->owner, ExpenseReportStatusEnum::SUBMITTED);
-
-        $ids = $this->ids($this->aValider($this->manager, ['status' => ['approved', 'rejected']]));
-
-        $this->assertContains($validee->getId(), $ids);
-        $this->assertContains($aCorriger->getId(), $ids);
-        $this->assertNotContains($envoyee->getId(), $ids);
-        $this->assertNotContains($sortieValidee->getId(), $ids);
-    }
-
-    public function testUnBrouillonNEstJamaisAValider(): void
-    {
-        $brouillon = $this->creerAchat($this->owner);
-
-        $ids = $this->ids($this->aValider($this->manager, ['status' => 'draft', 'inclure_brouillons' => 'true']));
-
-        $this->assertNotContains($brouillon->getId(), $ids);
-    }
-
-    public function testLeGestionnaireNeVoitPasSesPropresNotesAValider(): void
-    {
-        $sienne = $this->creerAchat($this->manager, ExpenseReportStatusEnum::SUBMITTED);
-
-        $this->assertNotContains($sienne->getId(), $this->ids($this->aValider($this->manager)));
-        $this->assertContains($sienne->getId(), $this->ids($this->aValider($this->otherManager)));
-    }
-
     /**
      * @dataProvider filtresProvider
      */
-    public function testUnTiersRecoitUneListeVide(array $filtres): void
+    public function testUnGestionnaireQuiNEstPasResponsableRecoitUneListeVide(array $filtres): void
     {
         $this->creerAchat($this->owner, ExpenseReportStatusEnum::SUBMITTED);
         $this->creerAchat($this->owner, ExpenseReportStatusEnum::APPROVED);
+        $this->creerAchat($this->adherent, ExpenseReportStatusEnum::SUBMITTED, null, $this->commissionDeTest);
 
-        $response = $this->aValider($this->stranger, $filtres);
+        $response = $this->aValider($this->manager, $filtres);
 
-        $this->assertResponseStatus(200, $response);
-        $this->assertSame([], $response['body']['data']);
+        $this->assertSame([], $this->ids($response));
         $this->assertEquals(0, $response['body']['meta']['total']);
     }
 
@@ -93,31 +30,38 @@ class NoteHorsSortieAValiderTest extends ExpenseReportApiTestCase
     {
         yield 'sans filtre' => [[]];
         yield 'demandes déjà traitées' => [['status' => ['approved', 'rejected']]];
+        yield 'ancienne file de la trésorerie' => [['attente' => 'moi']];
+        yield 'ancienne file des responsables' => [['attente' => 'responsables']];
     }
 
-    public function testLeGestionnaireVoitLeChoixEntreDonEtRemboursement(): void
+    public function testUnGestionnaireResponsableVoitCeQueVoitLeResponsable(): void
     {
-        $note = $this->noteEnvoyee($this->owner, false);
+        $this->rendreResponsable($this->manager, $this->commissionDeTest);
+        $deSaCommission = $this->creerAchat($this->adherent, ExpenseReportStatusEnum::SUBMITTED, null, $this->commissionDeTest);
+        $this->creerAchat($this->adherent, ExpenseReportStatusEnum::SUBMITTED, null, $this->autreCommission);
+        $this->creerAchat($this->adherent, ExpenseReportStatusEnum::SUBMITTED);
 
-        $listee = $this->trouver($this->aValider($this->manager), $note);
-
-        $this->assertArrayHasKey('refundRequired', $listee);
-        $this->assertFalse($listee['refundRequired']);
+        $this->assertSame([$deSaCommission->getId()], $this->ids($this->aValider($this->manager)));
+        $this->assertSame($this->ids($this->aValider($this->responsable)), $this->ids($this->aValider($this->manager)));
+        $this->assertTrue($this->show($this->manager, $deSaCommission)['body']['peutDecider']);
     }
 
-    public function testLaListeDonneCeQueLaPageAffiche(): void
+    public function testLeParametreAttenteNeChangePasLaListeDuResponsable(): void
     {
-        $this->nommer($this->owner, 'Sam', 'Petit');
-        $note = $this->noteEnvoyee($this->owner);
+        $note = $this->creerAchat($this->adherent, ExpenseReportStatusEnum::SUBMITTED, null, $this->commissionDeTest);
 
-        $listee = $this->trouver($this->aValider($this->manager), $note);
+        foreach (['moi', 'responsables'] as $attente) {
+            $this->assertSame([$note->getId()], $this->ids($this->aValider($this->responsable, ['attente' => $attente])));
+        }
+    }
 
-        $this->assertSame('Dégaines pour la SAE', $listee['objet']);
-        $this->assertSame('autre', $listee['type']);
-        $this->assertSame($this->commissionVisible()->getTitle(), $listee['commission']['title']);
-        $this->assertSame(['Sam', 'PETIT'], [$listee['utilisateur']['prenom'], $listee['utilisateur']['nom']]);
-        $this->assertSame(86.4, $listee['totalDeclare']);
-        $this->assertTrue($listee['peutDecider']);
+    public function testLeGestionnaireNePeutPlusDeciderDepuisLeSite(): void
+    {
+        $sansValideur = $this->noteEnvoyee($this->adherent);
+        $avecValideurs = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
+
+        $this->assertFalse($this->show($this->manager, $sansValideur)['body']['peutDecider']);
+        $this->assertFalse($this->show($this->manager, $avecValideurs)['body']['peutDecider']);
     }
 
     private function aValider(User $as, array $filtres = []): array
@@ -126,9 +70,6 @@ class NoteHorsSortieAValiderTest extends ExpenseReportApiTestCase
     }
 
     /**
-     * Les notes laissées par les tests précédents restent en base : on regarde la première page,
-     * où les plus récentes, celles du test, apparaissent.
-     *
      * @return list<int>
      */
     private function ids(array $response): array
@@ -136,16 +77,5 @@ class NoteHorsSortieAValiderTest extends ExpenseReportApiTestCase
         $this->assertResponseStatus(200, $response);
 
         return array_column($response['body']['data'], 'id');
-    }
-
-    private function trouver(array $response, ExpenseReport $note): array
-    {
-        $this->assertResponseStatus(200, $response);
-        foreach ($response['body']['data'] as $listee) {
-            if ($listee['id'] === $note->getId()) {
-                return $listee;
-            }
-        }
-        $this->fail(sprintf('La note %d n\'est pas dans la liste.', $note->getId()));
     }
 }

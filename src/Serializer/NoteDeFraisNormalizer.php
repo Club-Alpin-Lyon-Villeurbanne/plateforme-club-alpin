@@ -58,8 +58,8 @@ final class NoteDeFraisNormalizer implements NormalizerInterface, NormalizerAwar
             'dateEnvoi' => $this->dateEnvoi($object)?->format(\DATE_ATOM),
             'valideurs' => ValideursNoteHorsSortie::exposer($this->valideurs->pour($object)),
             'derniereDecision' => $this->derniereDecision($object),
-            'peutDecider' => ExpenseReportStatusEnum::SUBMITTED === $object->getStatus()
-                && ($this->actor->isManagerOf($object) || $this->actor->isResponsableOf($object)),
+            // La trésorerie décide dans compta-club : le site ne lui propose rien.
+            'peutDecider' => ExpenseReportStatusEnum::SUBMITTED === $object->getStatus() && $this->actor->isResponsableOf($object),
         ]);
     }
 

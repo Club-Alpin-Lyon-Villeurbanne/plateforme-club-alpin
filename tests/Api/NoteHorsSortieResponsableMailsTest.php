@@ -3,16 +3,24 @@
 namespace App\Tests\Api;
 
 use App\Entity\User;
-use Monolog\Handler\TestHandler;
 use Symfony\Component\Mime\Email;
 
 /**
  * Mails du circuit quand la commission a des responsables : chaque valideur reçoit la note à
- * valider, la trésorerie ne la reçoit qu'en l'absence de valideur.
+ * valider. Un responsable sans adresse mail n'est pas valideur ; sans valideur, aucun mail ne
+ * part à la trésorerie.
  */
 class NoteHorsSortieResponsableMailsTest extends ExpenseReportApiTestCase
 {
     private const SUJET_A_VALIDER = 'Note de frais à valider : Dégaines pour la SAE';
+
+    protected function tearDown(): void
+    {
+        // L'adresse est unique en base : une adresse vide laissée ici ferait échouer le test suivant.
+        $this->em()->getConnection()->executeStatement('UPDATE caf_user SET email_user = NULL WHERE email_user = \'\'');
+
+        parent::tearDown();
+    }
 
     public function testChaqueValideurRecoitSonPropreMail(): void
     {
@@ -89,74 +97,62 @@ class NoteHorsSortieResponsableMailsTest extends ExpenseReportApiTestCase
         yield 'don' => [false];
     }
 
-    public function testLaTresorerieNeRecoitPasLaNoteQuandIlYADesValideurs(): void
+    public function testLEnvoiNePrevientQueLesValideursEtLeDemandeur(): void
     {
         $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
 
-        $this->assertSame([], $this->mailsA($this->adresseTresorerie()));
+        $this->assertSeulsDestinataires([$this->responsable, $this->coResponsable, $this->adherent]);
     }
 
-    public function testSansResponsableLaNoteAValiderPartALaTresorerie(): void
+    public function testSansResponsableSeulLeDemandeurRecoitUnMail(): void
     {
         $this->noteEnvoyee($this->adherent);
 
-        $mails = $this->mailsA($this->adresseTresorerie());
-        $this->assertCount(1, $mails);
-        $this->assertSame(self::SUJET_A_VALIDER, $mails[0]->getSubject());
-        $this->assertStringContainsString("Bonjour,\n", $mails[0]->getTextBody());
-        $this->assertStringNotContainsString('reçu aussi', $mails[0]->getTextBody());
+        $this->assertSeulsDestinataires([$this->adherent]);
     }
 
-    public function testQuandLeSeulResponsableEstLeDemandeurLaNotePartALaTresorerie(): void
+    public function testQuandLeSeulResponsableEstLeDemandeurSeulLeDemandeurRecoitUnMail(): void
     {
         $this->noteEnvoyee($this->responsableAutreCommission, commission: $this->autreCommission);
 
-        $this->assertCount(1, $this->mailsA($this->adresseTresorerie()));
-        $this->assertSame([], $this->mailsAValider($this->responsableAutreCommission));
+        $this->assertSeulsDestinataires([$this->responsableAutreCommission]);
+        $this->assertSame(['Votre note de frais « Dégaines pour la SAE » est envoyée à la trésorerie.'], $this->sujetsA($this->responsableAutreCommission));
     }
 
-    public function testSansAdresseValideChezLesValideursLaNoteAValiderPartALaTresorerie(): void
+    /**
+     * @dataProvider sansAdresseProvider
+     */
+    public function testUnResponsableSansAdresseNEstPasValideur(?string $adresse): void
     {
-        $this->changerLAdresse($this->responsable, 'pas-une-adresse-' . bin2hex(random_bytes(4)));
-        $this->changerLAdresse($this->coResponsable, null);
+        $this->changerLAdresse($this->responsable, $adresse);
 
-        $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
+        $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
 
-        $mails = $this->mailsA($this->adresseTresorerie());
-        $this->assertCount(1, $mails);
-        $this->assertSame(self::SUJET_A_VALIDER, $mails[0]->getSubject());
-        $this->assertReponseAuDemandeur($mails[0], $this->adherent);
-        $this->assertTrue($this->getContainer()->get(TestHandler::class)->hasErrorThatContains('aucun valideur n\'a d\'adresse mail valide'));
-    }
-
-    public function testUnValideurSansAdresseValideNEmpechePasLesAutresDeRecevoirLaNote(): void
-    {
-        $this->changerLAdresse($this->responsable, null);
-
-        $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
-
-        $this->seulMailAValider($this->coResponsable);
-        $this->assertSame([], $this->mailsA($this->adresseTresorerie()));
-    }
-
-    public function testSansAdresseValideChezLesValideursLeDemandeurApprendQueLaNotePartALaTresorerie(): void
-    {
-        $this->changerLAdresse($this->responsable, null);
-        $this->changerLAdresse($this->coResponsable, null);
-
-        $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
-
-        $this->assertSame(['Votre note de frais « Dégaines pour la SAE » est envoyée à la trésorerie.'], $this->sujetsA($this->adherent));
-    }
-
-    public function testUnValideurSansAdresseValideNEstPasNommeCommePrevenu(): void
-    {
-        $this->changerLAdresse($this->responsable, null);
-
-        $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
-
+        $this->assertSeulsDestinataires([$this->coResponsable, $this->adherent]);
         $this->assertStringNotContainsString('reçu aussi', $this->seulMailAValider($this->coResponsable)->getTextBody());
         $this->assertSame(['Votre note de frais « Dégaines pour la SAE » est envoyée à Sam PETIT.'], $this->sujetsA($this->adherent));
+        $this->assertSame([$this->coResponsable->getId()], array_column($this->show($this->adherent, $note)['body']['valideurs'], 'id'));
+    }
+
+    /**
+     * @dataProvider sansAdresseProvider
+     */
+    public function testSansResponsableAvecUneAdresseLaNoteVaALaTresorerie(?string $adresse): void
+    {
+        $this->changerLAdresse($this->responsable, $adresse);
+        $this->changerLAdresse($this->coResponsable, null);
+
+        $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
+
+        $this->assertSeulsDestinataires([$this->adherent]);
+        $this->assertSame(['Votre note de frais « Dégaines pour la SAE » est envoyée à la trésorerie.'], $this->sujetsA($this->adherent));
+        $this->assertSame([], $this->show($this->adherent, $note)['body']['valideurs']);
+    }
+
+    public static function sansAdresseProvider(): iterable
+    {
+        yield 'adresse nulle' => [null];
+        yield 'adresse vide' => [''];
     }
 
     public function testLeDemandeurApprendAQuiSaNoteEstEnvoyee(): void
@@ -188,25 +184,20 @@ class NoteHorsSortieResponsableMailsTest extends ExpenseReportApiTestCase
 
         $this->seulMailAValider($this->responsable);
         $this->seulMailAValider($this->coResponsable);
-        $this->assertSame([], $this->mailsA($this->adresseTresorerie()));
+        $this->assertSeulsDestinataires([$this->responsable, $this->coResponsable, $this->adherent]);
     }
 
-    public function testLaValidationParUnResponsablePrevientLaTresorerieEtLeDemandeur(): void
+    public function testLaValidationParUnResponsableNePrevientQueLeDemandeur(): void
     {
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
 
         $this->assertResponseStatus(200, $this->patch($this->responsable, $note, ['status' => 'approved']));
 
-        $recapitulatif = $this->mailsA($this->adresseTresorerie());
-        $this->assertCount(1, $recapitulatif);
-        $this->assertStringContainsString(sprintf('Validée par Alex DURAND le %s', date('d/m/Y')), $recapitulatif[0]->getTextBody());
-        $this->assertStringContainsString('Remboursement demandé', $recapitulatif[0]->getTextBody());
+        $this->assertSeulsDestinataires([$this->adherent]);
         $this->assertSame(
-            'Votre note de frais « Dégaines pour la SAE » a été validée par Alex DURAND et transmise à la trésorerie.',
-            $this->mailsA($this->adherent->getEmail())[0]->getSubject(),
+            ['Votre note de frais « Dégaines pour la SAE » a été validée par Alex DURAND et transmise à la trésorerie.'],
+            $this->sujetsA($this->adherent),
         );
-        $this->assertSame([], $this->mailsA($this->responsable->getEmail()));
-        $this->assertSame([], $this->mailsA($this->coResponsable->getEmail()));
     }
 
     public function testLeRenvoiParUnResponsableEstAttribueASonAuteur(): void
@@ -218,7 +209,7 @@ class NoteHorsSortieResponsableMailsTest extends ExpenseReportApiTestCase
         $mail = $this->mailsA($this->adherent->getEmail())[0];
         $this->assertStringContainsString('Message laissé par Sam PETIT :', $mail->getTextBody());
         $this->assertStringContainsString('Mauvaise commission.', $mail->getTextBody());
-        $this->assertSame([], $this->mailsA($this->adresseTresorerie()));
+        $this->assertSeulsDestinataires([$this->adherent]);
     }
 
     public function testLesNomsSontEnClairDansLeTexteEtEchappesDansLeHtml(): void

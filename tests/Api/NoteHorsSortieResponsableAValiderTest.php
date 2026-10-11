@@ -7,7 +7,7 @@ use App\Utils\Enums\ExpenseReportStatusEnum;
 
 /**
  * Liste « notes de frais à valider » d'un responsable : les notes hors sortie envoyées de ses
- * commissions, déjà traitées avec le filtre de statut ; un gestionnaire voit toujours tout.
+ * commissions, déjà traitées avec le filtre de statut.
  */
 class NoteHorsSortieResponsableAValiderTest extends ExpenseReportApiTestCase
 {
@@ -120,23 +120,19 @@ class NoteHorsSortieResponsableAValiderTest extends ExpenseReportApiTestCase
         yield 'demandes déjà traitées' => [['status' => ['approved', 'rejected']]];
     }
 
-    public function testLeGestionnaireVoitAussiLesNotesDesCommissionsAvecResponsable(): void
+    public function testLaListeDonneCeQueLaPageAffiche(): void
     {
-        $note = $this->creerAchat($this->adherent, ExpenseReportStatusEnum::SUBMITTED, null, $this->commissionDeTest);
+        $this->nommer($this->adherent, 'Lou', 'Martin');
+        $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
 
-        $this->assertContains($note->getId(), $this->ids($this->aValider($this->manager)));
-    }
+        $listee = $this->aValider($this->responsable)['body']['data'][0];
 
-    public function testUnGestionnaireResponsableVoitToutesLesNotes(): void
-    {
-        $this->rendreResponsable($this->manager, $this->autreCommission);
-        $deLaCommissionDeTest = $this->creerAchat($this->adherent, ExpenseReportStatusEnum::SUBMITTED, null, $this->commissionDeTest);
-        $sansResponsable = $this->creerAchat($this->adherent, ExpenseReportStatusEnum::SUBMITTED);
-
-        $ids = $this->ids($this->aValider($this->manager));
-
-        $this->assertContains($deLaCommissionDeTest->getId(), $ids);
-        $this->assertContains($sansResponsable->getId(), $ids);
+        $this->assertSame($note->getId(), $listee['id']);
+        $this->assertSame('Dégaines pour la SAE', $listee['objet']);
+        $this->assertSame('autre', $listee['type']);
+        $this->assertSame('Commission de test', $listee['commission']['title']);
+        $this->assertSame(['Lou', 'MARTIN'], [$listee['utilisateur']['prenom'], $listee['utilisateur']['nom']]);
+        $this->assertSame(86.4, $listee['totalDeclare']);
     }
 
     public function testLaListeDuResponsableNeDonnePasLeChoixEntreDonEtRemboursement(): void
@@ -167,13 +163,6 @@ class NoteHorsSortieResponsableAValiderTest extends ExpenseReportApiTestCase
     {
         yield 'remboursement' => ['true'];
         yield 'don' => ['false'];
-    }
-
-    public function testLeFiltreSurLeChoixResteOuvertAuGestionnaire(): void
-    {
-        $don = $this->noteEnvoyee($this->adherent, false, commission: $this->commissionDeTest);
-
-        $this->assertContains($don->getId(), $this->ids($this->aValider($this->manager, ['refundRequired' => 'false'])));
     }
 
     private function aValider(User $as, array $filtres = []): array

@@ -147,14 +147,10 @@ export interface DonneesMesNotes {
 export interface DonneesAValider {
   /** Demandes déjà traitées plutôt que demandes en attente. */
   traitees: boolean;
-  /** La trésorerie voit à part les demandes qui attendent un responsable. */
-  gestionnaire: boolean;
 }
 
 export interface DonneesDetail {
   noteId: number;
-  utilisateurId: number | null;
-  gestionnaire: boolean;
 }
 
 export interface Refus {

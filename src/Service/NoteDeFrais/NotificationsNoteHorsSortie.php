@@ -8,14 +8,11 @@ use App\Mailer\Mailer;
 use App\Repository\ExpenseReportStatusHistoryRepository;
 use App\Service\ExpenseReportCalculator;
 use App\Utils\Enums\ExpenseReportStatusEnum;
-use App\Utils\FileUploader;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
- * Tous les mails d'une note hors sortie : au demandeur, aux valideurs et à l'adresse de la
- * trésorerie. Le mail au demandeur nomme ceux qui ont réellement reçu la note.
+ * Tous les mails d'une note hors sortie : au demandeur et aux valideurs. Aucun ne part à la
+ * trésorerie, qui suit les notes dans compta-club.
  */
 class NotificationsNoteHorsSortie
 {
@@ -25,11 +22,7 @@ class NotificationsNoteHorsSortie
         private readonly ControlesNoteHorsSortie $controles,
         private readonly ValideursNoteHorsSortie $valideurs,
         private readonly ExpenseReportStatusHistoryRepository $historique,
-        private readonly FileUploader $fileUploader,
         private readonly UrlGeneratorInterface $urlGenerator,
-        private readonly LoggerInterface $logger,
-        #[Autowire(env: 'NOTES_DE_FRAIS_EMAIL_TRESORERIE')]
-        private readonly string $adresseTresorerie,
     ) {
     }
 
@@ -39,22 +32,19 @@ class NotificationsNoteHorsSortie
      */
     public function statutChange(ExpenseReport $note): void
     {
-        $valideursPrevenus = [];
+        $valideurs = [];
         if (ExpenseReportStatusEnum::SUBMITTED === $note->getStatus()) {
-            $valideursPrevenus = $this->noteEnvoyee($note);
-        } elseif (ExpenseReportStatusEnum::APPROVED === $note->getStatus()) {
-            $this->noteValidee($note);
+            $valideurs = $this->noteEnvoyee($note);
         }
 
-        $this->prevenirLeDemandeur($note, $valideursPrevenus);
+        $this->prevenirLeDemandeur($note, $valideurs);
     }
 
     /**
-     * La note attend une validation : chaque valideur joignable reçoit son mail, ou la trésorerie
-     * si aucun ne l'est. Jamais le choix entre don et remboursement, qui ne doit pas peser sur la
-     * décision. Une réponse au mail va au demandeur.
+     * La note attend une validation : chaque valideur reçoit son mail. Jamais le choix entre don et
+     * remboursement, qui ne doit pas peser sur la décision. Une réponse au mail va au demandeur.
      *
-     * @return list<User> les valideurs prévenus ; aucun si la note est partie à la trésorerie
+     * @return list<User> les valideurs ; aucun si la note va directement à la trésorerie
      */
     private function noteEnvoyee(ExpenseReport $note): array
     {
@@ -73,62 +63,21 @@ class NotificationsNoteHorsSortie
         ];
 
         $valideurs = $this->valideurs->pour($note);
-        $joignables = array_values(array_filter($valideurs, fn (User $valideur) => $this->mailer->isValid($valideur->getEmail())));
-        if ([] === $joignables) {
-            if ([] !== $valideurs) {
-                $this->logger->error(sprintf('Note de frais %d : aucun valideur n\'a d\'adresse mail valide, la note à valider part à la trésorerie.', $note->getId()));
-            }
-            $this->envoyerALaTresorerie($note, 'transactional/note-de-frais-a-valider', $contexte);
-
-            return [];
-        }
-
-        foreach ($joignables as $valideur) {
-            $autres = array_filter($joignables, static fn (User $autre) => $autre->getId() !== $valideur->getId());
+        foreach ($valideurs as $valideur) {
+            $autres = array_filter($valideurs, static fn (User $autre) => $autre->getId() !== $valideur->getId());
             $this->mailer->send($valideur, 'transactional/note-de-frais-a-valider', $contexte + [
                 'prenom' => $valideur->getFirstname(),
                 'autresValideurs' => array_values(array_map(static fn (User $autre) => $autre->getFullName(), $autres)),
             ], replyTo: $note->getUser());
         }
 
-        return $joignables;
+        return $valideurs;
     }
 
     /**
-     * La note validée part à la trésorerie avec tout ce qu'il faut pour la payer, ou préparer le
-     * reçu fiscal d'un don, sans rouvrir la note.
+     * @param list<User> $valideurs ceux à qui la note envoyée est transmise ; aucun : la trésorerie
      */
-    private function noteValidee(ExpenseReport $note): void
-    {
-        $montants = $this->calculator->montantsNoteHorsSortie($note);
-        $decision = $this->historique->derniereDecision($note);
-        $demandeur = $note->getUser();
-        $dateDepense = $note->getDateDepense()?->format('d/m/Y');
-
-        $this->envoyerALaTresorerie($note, 'transactional/note-de-frais-validee', [
-            'demandeur' => $demandeur?->getFullName(),
-            'type' => $note->getType()->libelle(),
-            'commission' => $note->getCommission()?->getTitle(),
-            'objet' => $note->getObjet(),
-            'libelleDate' => $note->getType()->libelleDeLaDate(),
-            'dateDepense' => $dateDepense,
-            'lienFormation' => $note->getLienFormation(),
-            'lignes' => $this->lignes($note),
-            'total' => $this->calculator->formatEuros($montants['totalDeclare']),
-            'remboursable' => $this->calculator->formatEuros($montants['totalRemboursable']),
-            'avertissements' => $this->controles->avertissements($note),
-            'remboursement' => $note->isRefundRequired(),
-            'valideePar' => $decision?->getChangedBy()?->getFullName(),
-            'valideeLe' => $decision?->getChangedAt()?->format('d/m/Y'),
-            'libelleSaisie' => sprintf('%s %s NDF %s %s', mb_strtoupper((string) $demandeur?->getLastname()), $demandeur?->getFirstname(), $dateDepense, $note->getObjet()),
-            'lien' => $this->lien($note),
-        ]);
-    }
-
-    /**
-     * @param list<User> $valideursPrevenus aucun : la note envoyée est partie à la trésorerie
-     */
-    private function prevenirLeDemandeur(ExpenseReport $note, array $valideursPrevenus): void
+    private function prevenirLeDemandeur(ExpenseReport $note, array $valideurs): void
     {
         $demandeur = $note->getUser();
         if (null === $demandeur) {
@@ -145,41 +94,22 @@ class NotificationsNoteHorsSortie
             'auteur' => $decision?->getChangedBy()?->getFullName(),
             'lienCorrection' => $this->urlGenerator->generate('notes_de_frais_nouvelle', ['id' => $note->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'status' => $note->getStatus()->value,
-            'valideurs' => array_map(static fn (User $valideur) => $valideur->getFullName(), $valideursPrevenus),
+            'valideurs' => array_map(static fn (User $valideur) => $valideur->getFullName(), $valideurs),
             'lignes' => $this->lignes($note),
             'formattedTotal' => $this->calculator->formatEuros($montants['totalDeclare']),
             'partRemboursable' => $this->calculator->partRemboursable($montants),
         ]);
     }
 
-    private function envoyerALaTresorerie(ExpenseReport $note, string $gabarit, array $contexte): void
-    {
-        if ('' === trim($this->adresseTresorerie)) {
-            $this->logger->error(sprintf('Note de frais %d : la trésorerie n\'est pas prévenue, NOTES_DE_FRAIS_EMAIL_TRESORERIE est vide.', $note->getId()));
-
-            return;
-        }
-
-        $this->mailer->send($this->adresseTresorerie, $gabarit, $contexte, replyTo: $note->getUser());
-    }
-
     /**
-     * Lignes dans l'ordre de la saisie, chacune avec l'adresse de son justificatif.
+     * Lignes dans l'ordre de la saisie.
      *
-     * @return list<array{id: ?string, nature: ?string, libelle: ?string, detail: ?string, montant: string, justificatif: ?string}>
+     * @return list<array{id: ?string, nature: ?string, libelle: ?string, detail: ?string, montant: string}>
      */
     private function lignes(ExpenseReport $note): array
     {
-        $justificatifs = [];
-        foreach ($note->getAttachments() as $justificatif) {
-            if (null !== $justificatif->getUser()) {
-                $justificatifs[$justificatif->getExpenseId()] = $this->fileUploader->getUserUploadUrl($justificatif->getUser(), $justificatif->getFileName(), 'expense-attachments');
-            }
-        }
-
         return array_map(fn (array $ligne) => array_merge($ligne, [
             'montant' => $this->calculator->formatEuros($ligne['montant']),
-            'justificatif' => $justificatifs[$ligne['id'] ?? ''] ?? null,
         ]), $this->calculator->lignesAffichees($note));
     }
 

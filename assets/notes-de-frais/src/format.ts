@@ -81,10 +81,10 @@ export function phraseValideurs(commission: { valideurs: Personne[]; demandeurRe
     : "Sera transmise à la trésorerie : la commission n'a pas de responsable.";
 }
 
-/** Après l'envoi : qui a reçu la note à valider. */
+/** Après l'envoi : qui a reçu la note à valider. La trésorerie, elle, ne reçoit pas de mail. */
 export function phrasePrevenus(valideurs: Personne[]): string {
   if (!valideurs.length) {
-    return "La trésorerie a été prévenue.";
+    return "Elle est transmise à la trésorerie.";
   }
   const noms = enumeration(valideurs.map(nomComplet));
 

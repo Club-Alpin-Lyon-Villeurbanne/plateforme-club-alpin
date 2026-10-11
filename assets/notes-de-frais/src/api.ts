@@ -62,13 +62,10 @@ export async function listerMesNotes(page: number, type: NoteDeFrais["type"] | n
   return { notes: reponse.data.data, pages: reponse.data.meta.pages };
 }
 
-/** Demandes que l'utilisateur peut traiter : en attente, ou déjà traitées. */
-/** File d'un gestionnaire : ses notes (sans valideur, ou de ses commissions), ou celles qui attendent un responsable. */
-export type Attente = "moi" | "responsables";
-
-export async function listerNotesAValider(page: number, traitees: boolean, attente?: Attente): Promise<PageDeNotes & { total: number }> {
+/** Demandes que l'utilisateur peut traiter comme responsable : en attente, ou déjà traitées. */
+export async function listerNotesAValider(page: number, traitees: boolean): Promise<PageDeNotes & { total: number }> {
   const reponse = await api.get<{ data: NoteDeFrais[]; meta: { pages: number; total: number } }>("/notes-de-frais/a-valider", {
-    params: { page, ...(traitees ? { status: ["approved", "rejected", "accounted"] } : {}), ...(attente ? { attente } : {}) },
+    params: { page, ...(traitees ? { status: ["approved", "rejected", "accounted"] } : {}) },
     paramsSerializer: { indexes: false },
   });
 

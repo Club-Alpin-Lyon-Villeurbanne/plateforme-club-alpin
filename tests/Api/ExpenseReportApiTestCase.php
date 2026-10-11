@@ -34,7 +34,6 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
     protected const LIGNES_FORMATION = '{"lignes":[{"id":"ligne-1","nature":"stage","montant":280},{"id":"ligne-2","nature":"voiture","distance":220},{"id":"ligne-3","nature":"peage","montant":32},{"id":"ligne-4","nature":"hebergement","montant":54}]}';
 
     private const MANAGERS_ENV = 'AUTHORIZED_IDS_FOR_EXPENSE_MANAGEMENT';
-    private const ADRESSE_TRESORERIE_ENV = 'NOTES_DE_FRAIS_EMAIL_TRESORERIE';
 
     protected User $owner;
     protected User $manager;
@@ -52,19 +51,17 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
     /** @var list<string> codes des commissions où le test a donné des rôles, retirés à la fin */
     private array $commissionsAvecRoles = [];
 
-    /** @var array<string, array{env: ?string, server: ?string}> */
-    private array $originalEnv = [];
+    /** @var array{env: ?string, server: ?string} */
+    private array $originalManagersEnv;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        foreach ([self::MANAGERS_ENV, self::ADRESSE_TRESORERIE_ENV] as $variable) {
-            $this->originalEnv[$variable] = [
-                'env' => $_ENV[$variable] ?? null,
-                'server' => $_SERVER[$variable] ?? null,
-            ];
-        }
+        $this->originalManagersEnv = [
+            'env' => $_ENV[self::MANAGERS_ENV] ?? null,
+            'server' => $_SERVER[self::MANAGERS_ENV] ?? null,
+        ];
 
         $this->owner = $this->signup();
         $this->manager = $this->signup();
@@ -106,13 +103,11 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
 
         // Restaurer la valeur d'origine (définie, même vide, par .env) : la supprimer
         // ferait échouer tous les tests suivants qui instancient le voter.
-        foreach ($this->originalEnv as $variable => $original) {
-            foreach (['env' => '_ENV', 'server' => '_SERVER'] as $key => $superGlobal) {
-                if (null === $original[$key]) {
-                    unset($GLOBALS[$superGlobal][$variable]);
-                } else {
-                    $GLOBALS[$superGlobal][$variable] = $original[$key];
-                }
+        foreach (['env' => '_ENV', 'server' => '_SERVER'] as $key => $superGlobal) {
+            if (null === $this->originalManagersEnv[$key]) {
+                unset($GLOBALS[$superGlobal][self::MANAGERS_ENV]);
+            } else {
+                $GLOBALS[$superGlobal][self::MANAGERS_ENV] = $this->originalManagersEnv[$key];
             }
         }
 
@@ -326,19 +321,6 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
         return $this->getContainer()->getParameter('expense_report')['horsSortie'];
     }
 
-    protected function adresseTresorerie(): string
-    {
-        $adresse = $_ENV[self::ADRESSE_TRESORERIE_ENV] ?? '';
-        $this->assertNotSame('', $adresse, 'L\'adresse de la trésorerie doit être définie pour les tests.');
-
-        return $adresse;
-    }
-
-    protected function sansAdresseDeTresorerie(): void
-    {
-        $_ENV[self::ADRESSE_TRESORERIE_ENV] = $_SERVER[self::ADRESSE_TRESORERIE_ENV] = '';
-    }
-
     /**
      * Mails de la dernière requête envoyés à cette adresse.
      *
@@ -350,6 +332,24 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
             $this->getMailerMessages(),
             static fn (Email $mail) => \in_array($adresse, array_map(static fn (Address $destinataire) => $destinataire->getAddress(), $mail->getTo()), true),
         ));
+    }
+
+    /**
+     * Les mails de la dernière requête, copies comprises, ne vont qu'à ces personnes, un chacune :
+     * aucun ne part à une autre adresse, celle d'une trésorerie par exemple.
+     *
+     * @param list<User> $personnes
+     */
+    protected function assertSeulsDestinataires(array $personnes): void
+    {
+        $adresses = [];
+        foreach ($this->getMailerMessages() as $mail) {
+            foreach ([...$mail->getTo(), ...$mail->getCc(), ...$mail->getBcc()] as $destinataire) {
+                $adresses[] = $destinataire->getAddress();
+            }
+        }
+
+        $this->assertEqualsCanonicalizing(array_map(static fn (User $personne) => $personne->getEmail(), $personnes), $adresses);
     }
 
     /**

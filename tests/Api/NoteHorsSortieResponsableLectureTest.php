@@ -145,7 +145,6 @@ class NoteHorsSortieResponsableLectureTest extends ExpenseReportApiTestCase
 
         $this->assertSame([], $this->valideurs($this->responsableAutreCommission, $note));
         $this->assertFalse($this->show($this->responsableAutreCommission, $note)['body']['peutDecider']);
-        $this->assertTrue($this->show($this->manager, $note)['body']['peutDecider']);
     }
 
     public function testUneCommissionSansResponsableVaALaTresorerie(): void

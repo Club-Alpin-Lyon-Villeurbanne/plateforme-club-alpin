@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\CommissionRepository;
-use App\Security\Voter\ExpenseReportVoter;
 use App\Service\ExpenseReportCalculator;
 use App\Service\NoteDeFrais\ControlesNoteHorsSortie;
 use App\Service\NoteDeFrais\ValideursNoteHorsSortie;
@@ -92,10 +91,7 @@ class NoteDeFraisController extends AbstractController
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal('apiBaseUrl', $baseUrl);
 
         return $this->render('notes-de-frais/a-valider.html.twig', [
-            'donnees' => [
-                'traitees' => $request->query->has('traitees'),
-                'gestionnaire' => $this->isGranted(ExpenseReportVoter::MANAGE_EXPENSE_REPORTS),
-            ],
+            'donnees' => ['traitees' => $request->query->has('traitees')],
         ]);
     }
 
@@ -107,15 +103,8 @@ class NoteDeFraisController extends AbstractController
 
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal('apiBaseUrl', $baseUrl);
 
-        $utilisateur = $this->getUser();
-
         return $this->render('notes-de-frais/detail.html.twig', [
-            'donnees' => [
-                'noteId' => $id,
-                // Pour expliquer à un gestionnaire pourquoi il ne peut pas valider sa propre note.
-                'utilisateurId' => $utilisateur instanceof User ? $utilisateur->getId() : null,
-                'gestionnaire' => $this->isGranted(ExpenseReportVoter::MANAGE_EXPENSE_REPORTS),
-            ],
+            'donnees' => ['noteId' => $id],
         ]);
     }
 
