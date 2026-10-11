@@ -1,0 +1,143 @@
+<script setup lang="ts">
+import { computed, nextTick, onMounted, ref } from "vue";
+import { listerNotesAValider, messagesDErreur, type Attente } from "../api";
+import { enumeration, euros, jourMoisDe, nomComplet } from "../format";
+import type { NoteDeFrais } from "../types";
+
+const props = defineProps<{
+  traitees: boolean;
+  /** Sans file : toutes les demandes que l'utilisateur peut traiter. */
+  attente?: Attente;
+  titre?: string;
+  /** La file n'apparaît pas quand elle est vide. */
+  masquerSiVide?: boolean;
+}>();
+
+const notes = ref<NoteDeFrais[]>([]);
+const total = ref(0);
+const chargement = ref(true);
+const chargementSuivant = ref(false);
+const erreur = ref<string | null>(null);
+const page = ref(0);
+const pages = ref(1);
+const liste = ref<HTMLUListElement | null>(null);
+
+const aUnePageSuivante = computed(() => !chargement.value && page.value < pages.value);
+const masquee = computed(() => props.masquerSiVide && !chargement.value && !erreur.value && notes.value.length === 0);
+
+const resume = computed(() => {
+  if (props.traitees) {
+    return total.value === 1 ? "1 demande déjà traitée." : `${total.value} demandes déjà traitées.`;
+  }
+  const commissions = enumeration(Array.from(new Set(notes.value.map((note) => note.commission?.title ?? "").filter(Boolean))));
+
+  return `${total.value} ${total.value === 1 ? "demande" : "demandes"} en attente pour ${commissions}.`;
+});
+
+async function charger() {
+  const dejaCharge = page.value > 0;
+  const premiereNouvelle = notes.value.length;
+  (dejaCharge ? chargementSuivant : chargement).value = true;
+  erreur.value = null;
+  try {
+    const suivante = await listerNotesAValider(page.value + 1, props.traitees, props.attente);
+    notes.value = [...notes.value, ...suivante.notes];
+    total.value = suivante.total;
+    page.value += 1;
+    pages.value = suivante.pages;
+  } catch (e) {
+    erreur.value = messagesDErreur(e)[0];
+  } finally {
+    chargement.value = false;
+    chargementSuivant.value = false;
+  }
+  // Le bouton « plus anciennes » peut disparaître : le focus passe à la première demande ajoutée.
+  if (dejaCharge) {
+    await nextTick();
+    liste.value?.children[premiereNouvelle]?.querySelector("a")?.focus();
+  }
+}
+
+onMounted(charger);
+
+function contexte(note: NoteDeFrais): string {
+  const nature = note.type === "formation" ? "formation" : "achat";
+
+  return `${nomComplet(note.utilisateur)}, ${nature} pour ${note.commission?.title ?? ""}`;
+}
+
+function decision(note: NoteDeFrais): string | null {
+  const derniere = note.derniereDecision;
+  if (!derniere || note.status === "submitted") {
+    return null;
+  }
+
+  return derniere.statut === "approved"
+    ? `Validée par ${nomComplet(derniere.auteur)} le ${jourMoisDe(derniere.date)}.`
+    : `Renvoyée par ${nomComplet(derniere.auteur)} le ${jourMoisDe(derniere.date)}.`;
+}
+
+// Pour la trésorerie, qui peut décider à la place d'un responsable : chez qui la note attend, et depuis quand.
+function enAttenteDe(note: NoteDeFrais): string | null {
+  if (props.attente !== "responsables" || !note.valideurs.length) {
+    return null;
+  }
+  const depuis = note.dateEnvoi ? ` depuis le ${jourMoisDe(note.dateEnvoi)}` : "";
+
+  return `En attente de ${enumeration(note.valideurs.map(nomComplet), "ou")}${depuis}.`;
+}
+</script>
+
+<template>
+  <section v-if="!masquee" class="tw-mb-8">
+    <h2 v-if="titre" class="tw-mb-2 tw-text-base tw-font-semibold tw-text-gray-900">{{ titre }}</h2>
+
+    <p v-if="chargement" class="tw-bg-white tw-p-8 tw-text-sm tw-text-gray-600 tw-shadow-sm tw-ring-1 tw-ring-gray-200">Chargement des demandes…</p>
+    <p
+      v-else-if="erreur && notes.length === 0"
+      role="alert"
+      class="tw-bg-white tw-p-8 tw-text-sm tw-text-red-600 tw-shadow-sm tw-ring-1 tw-ring-gray-200"
+    >
+      {{ erreur }}
+    </p>
+    <p
+      v-else-if="notes.length === 0"
+      class="tw-bg-white tw-p-8 tw-text-sm tw-text-gray-600 tw-shadow-sm tw-ring-1 tw-ring-gray-200"
+    >
+      {{ traitees ? "Aucune demande déjà traitée." : "Aucune demande en attente." }}
+    </p>
+
+    <template v-else>
+      <p class="tw-mb-4 tw-text-sm tw-text-gray-600">{{ resume }}</p>
+      <ul ref="liste" class="tw-divide-y tw-divide-gray-100 tw-bg-white tw-shadow-sm tw-ring-1 tw-ring-gray-200">
+        <li v-for="note in notes" :key="note.id">
+          <a
+            :href="`/notes-de-frais/${note.id}`"
+            class="tw-flex tw-items-center tw-gap-4 tw-px-5 tw-py-4 tw-font-normal tw-no-underline hover:tw-bg-gray-50"
+          >
+            <span class="tw-min-w-0 tw-flex-1">
+              <span class="tw-block tw-font-medium tw-text-gray-900">{{ note.objet }}</span>
+              <span class="tw-block tw-text-xs tw-text-gray-500">{{ contexte(note) }}</span>
+              <span v-if="enAttenteDe(note)" class="tw-mt-1 tw-block tw-text-xs tw-text-gray-500">{{ enAttenteDe(note) }}</span>
+              <span v-if="decision(note)" class="tw-mt-1 tw-block tw-text-xs tw-text-gray-500">{{ decision(note) }}</span>
+            </span>
+            <span class="tw-font-semibold tw-tabular-nums tw-text-gray-900">{{ euros(note.totalDeclare) }}</span>
+            <span class="tw-text-gray-300" aria-hidden="true">›</span>
+          </a>
+        </li>
+      </ul>
+    </template>
+
+    <p v-if="erreur && notes.length > 0" role="alert" class="tw-mt-3 tw-text-sm tw-text-red-600">{{ erreur }}</p>
+    <div v-if="aUnePageSuivante" class="tw-mt-4 tw-text-center">
+      <button
+        type="button"
+        :disabled="chargementSuivant"
+        class="tw-text-sm tw-font-medium tw-text-sky-700 hover:tw-underline disabled:tw-opacity-50"
+        @click="charger"
+      >
+        Afficher les demandes plus anciennes
+      </button>
+    </div>
+  </section>
+</template>

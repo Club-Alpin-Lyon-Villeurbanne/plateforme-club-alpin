@@ -22,6 +22,17 @@ class ResponsableNoteDeFraisVoter extends Voter
     ) {
     }
 
+    /**
+     * S'abstient au lieu de refuser : l'accès du propriétaire et du gestionnaire, accordé par
+     * ExpenseReportVoter, ne dépend pas de la stratégie de décision.
+     */
+    public function vote(TokenInterface $token, mixed $subject, array $attributes): int
+    {
+        $vote = parent::vote($token, $subject, $attributes);
+
+        return self::ACCESS_GRANTED === $vote ? $vote : self::ACCESS_ABSTAIN;
+    }
+
     protected function supports(string $attribute, mixed $subject): bool
     {
         return \in_array($attribute, [self::RESPONSABLE_DE_LA_NOTE, ExpenseReportVoter::ACCESS_EXPENSE_REPORT], true)

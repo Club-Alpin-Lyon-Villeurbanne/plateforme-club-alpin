@@ -47,7 +47,7 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
     protected User $encadrant;
     protected User $adherent;
 
-    /** @var list<string> codes des commissions où le test a donné des rôles, nettoyées à la fin */
+    /** @var list<string> codes des commissions où le test a donné des rôles, retirés à la fin */
     private array $commissionsAvecRoles = [];
 
     /** @var array<string, array{env: ?string, server: ?string}> */
@@ -88,8 +88,18 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
 
     protected function tearDown(): void
     {
+        $base = $this->em()->getConnection();
         foreach (array_unique($this->commissionsAvecRoles) as $code) {
-            $this->em()->getConnection()->executeStatement('DELETE FROM caf_user_attr WHERE params_user_attr = ?', ['commission:' . $code]);
+            $base->executeStatement('DELETE FROM caf_user_attr WHERE params_user_attr = ?', ['commission:' . $code]);
+        }
+        // Les deux commissions de chaque test, avec leurs notes : la base de test ne grossit pas.
+        foreach (array_filter([$this->commissionDeTest ?? null, $this->autreCommission ?? null]) as $commission) {
+            $notes = 'SELECT id FROM expense_report WHERE commission_id = ?';
+            $base->executeStatement(sprintf('DELETE FROM expense_report_status_history WHERE expense_report_id IN (SELECT id FROM (%s) AS notes)', $notes), [$commission->getId()]);
+            $base->executeStatement(sprintf('DELETE FROM expense_attachment WHERE expense_report_id IN (SELECT id FROM (%s) AS notes)', $notes), [$commission->getId()]);
+            $base->executeStatement('DELETE FROM expense_report WHERE commission_id = ?', [$commission->getId()]);
+            $base->executeStatement('DELETE FROM caf_user_attr WHERE params_user_attr = ?', ['commission:' . $commission->getCode()]);
+            $base->executeStatement('DELETE FROM caf_commission WHERE id_commission = ?', [$commission->getId()]);
         }
 
         // Restaurer la valeur d'origine (définie, même vide, par .env) : la supprimer

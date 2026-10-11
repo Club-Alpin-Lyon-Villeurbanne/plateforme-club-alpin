@@ -79,7 +79,10 @@ class NoteDeFraisController extends AbstractController
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal('apiBaseUrl', $baseUrl);
 
         return $this->render('notes-de-frais/a-valider.html.twig', [
-            'donnees' => ['traitees' => $request->query->has('traitees')],
+            'donnees' => [
+                'traitees' => $request->query->has('traitees'),
+                'gestionnaire' => $this->isGranted(ExpenseReportVoter::MANAGE_EXPENSE_REPORTS),
+            ],
         ]);
     }
 

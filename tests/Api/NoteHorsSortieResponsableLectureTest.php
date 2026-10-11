@@ -158,7 +158,7 @@ class NoteHorsSortieResponsableLectureTest extends ExpenseReportApiTestCase
     /**
      * @dataProvider inactifProvider
      */
-    public function testUnResponsableInactifNEstPlusValideur(string $inactivite): void
+    public function testUnResponsableInactifNEstPlusValideur(string $inactivite, int $refus): void
     {
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
         $responsable = $this->em()->find(User::class, $this->responsable->getId());
@@ -166,14 +166,31 @@ class NoteHorsSortieResponsableLectureTest extends ExpenseReportApiTestCase
         $this->em()->flush();
 
         $this->assertSame([['Sam', 'PETIT']], $this->valideurs($this->adherent, $note));
-        // Un compte supprimé ne se connecte même plus (401).
-        $this->assertContains($this->show($this->responsable, $note)['status'], [401, 403]);
+        $this->assertResponseStatus($refus, $this->show($this->responsable, $note));
     }
 
     public static function inactifProvider(): iterable
     {
-        yield 'doit renouveler' => ['doitRenouveler'];
-        yield 'supprimé' => ['supprime'];
+        yield 'doit renouveler' => ['doitRenouveler', 403];
+        // Un compte supprimé ne se connecte même plus.
+        yield 'supprimé' => ['supprime', 401];
+    }
+
+    public function testLeResponsableLitUnBrouillonDeSaCommissionQuiNEstPasAValider(): void
+    {
+        $brouillon = $this->creerAchat($this->adherent, ExpenseReportStatusEnum::DRAFT, self::LIGNES_ACHAT, $this->commissionDeTest);
+        $this->em()->find(ExpenseReport::class, $brouillon->getId())->setRefundRequired(false);
+        $this->em()->flush();
+
+        $response = $this->show($this->responsable, $brouillon);
+
+        $this->assertResponseStatus(200, $response);
+        $this->assertArrayNotHasKey('refundRequired', $response['body']);
+        foreach ([[], ['status' => 'draft', 'inclure_brouillons' => 'true']] as $filtres) {
+            $liste = $this->list($this->responsable, '/api/notes-de-frais/a-valider', $filtres);
+            $this->assertResponseStatus(200, $liste);
+            $this->assertNotContains($brouillon->getId(), array_column($liste['body']['data'], 'id'));
+        }
     }
 
     public function testLesValideursSontRecalculesALaLecture(): void

@@ -147,21 +147,40 @@ class ValideursNoteHorsSortie implements ResetInterface
     }
 
     /**
-     * Le rôle `responsable-commission` sur une commission (role, commission), porté par un adhérent
-     * ni supprimé ni à renouveler (responsable).
+     * Condition DQL sur les notes de `$notes` (alias `$alias`) : elles ont au moins un valideur, ou
+     * aucun (elles vont alors à la trésorerie). Les paramètres sont posés sur `$notes`.
      */
-    private function responsablesActifs(): QueryBuilder
+    public function conditionValideurs(QueryBuilder $notes, string $alias, bool $avecValideurs): string
     {
+        $valideurs = $this->responsablesActifs('_valideur')
+            ->select('role_valideur.id')
+            ->andWhere(sprintf('commission_valideur.id = IDENTITY(%s.commission)', $alias))
+            ->andWhere(sprintf('responsable_valideur.id != IDENTITY(%s.user)', $alias));
+        foreach ($valideurs->getParameters() as $parametre) {
+            $notes->setParameter($parametre->getName(), $parametre->getValue());
+        }
+
+        return sprintf('%sEXISTS (%s)', $avecValideurs ? '' : 'NOT ', $valideurs->getDQL());
+    }
+
+    /**
+     * Le rôle `responsable-commission` sur une commission (role, commission), porté par un adhérent
+     * ni supprimé ni à renouveler (responsable). Le suffixe distingue les alias dans une sous-requête.
+     */
+    private function responsablesActifs(string $suffixe = ''): QueryBuilder
+    {
+        [$role, $responsable, $type, $commission] = array_map(static fn (string $alias) => $alias . $suffixe, ['role', 'responsable', 'type_de_role', 'commission']);
+
         return $this->em->createQueryBuilder()
-            ->from(UserAttr::class, 'role')
-            ->join('role.user', 'responsable')
-            ->join('role.userType', 'type_de_role')
-            ->from(Commission::class, 'commission')
-            ->andWhere("role.params = CONCAT('commission:', commission.code)")
-            ->andWhere('type_de_role.code = :responsable_commission')
-            ->andWhere('responsable.doitRenouveler = false')
-            ->andWhere('responsable.isDeleted = false')
-            ->setParameter('responsable_commission', UserAttr::RESPONSABLE_COMMISSION);
+            ->from(UserAttr::class, $role)
+            ->join(sprintf('%s.user', $role), $responsable)
+            ->join(sprintf('%s.userType', $role), $type)
+            ->from(Commission::class, $commission)
+            ->andWhere(sprintf("%s.params = CONCAT('commission:', %s.code)", $role, $commission))
+            ->andWhere(sprintf('%s.code = :responsable_commission%s', $type, $suffixe))
+            ->andWhere(sprintf('%s.doitRenouveler = false', $responsable))
+            ->andWhere(sprintf('%s.isDeleted = false', $responsable))
+            ->setParameter('responsable_commission' . $suffixe, UserAttr::RESPONSABLE_COMMISSION);
     }
 
     /**

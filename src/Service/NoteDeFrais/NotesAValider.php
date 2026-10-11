@@ -13,11 +13,18 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * Les notes hors sortie que l'utilisateur connecté peut traiter : la liste « notes de frais à
- * valider » et le compteur du menu partagent cette seule requête. Un gestionnaire les voit
- * toutes ; un responsable, celles des commissions dont il valide les notes.
+ * valider » et le compteur du menu partagent cette seule requête. Un responsable voit celles des
+ * commissions dont il valide les notes ; un gestionnaire les voit toutes.
+ *
+ * Le filtre `attente` sépare, pour un gestionnaire, les notes qui l'attendent (`moi` : sans
+ * valideur, ou de ses commissions) de celles qui attendent un responsable (`responsables`), qu'il
+ * peut traiter à leur place. Le compteur ne compte que les premières.
  */
 class NotesAValider
 {
+    public const POUR_MOI = 'moi';
+    public const CHEZ_LES_RESPONSABLES = 'responsables';
+
     public function __construct(
         private readonly Security $security,
         private readonly ExpenseReportRepository $notes,
@@ -46,7 +53,7 @@ class NotesAValider
         }
 
         $requete = $this->notes->createQueryBuilder('note')->select('COUNT(note.id)');
-        $this->restreindre($requete, 'note');
+        $this->restreindre($requete, 'note', ['attente' => self::POUR_MOI]);
 
         return (int) $requete->getQuery()->getSingleScalarResult();
     }
@@ -66,16 +73,34 @@ class NotesAValider
             return;
         }
 
-        if (!$this->security->isGranted(ExpenseReportVoter::MANAGE_EXPENSE_REPORTS)) {
-            $commissions = $this->valideurs->commissionsValideesPar($utilisateur);
-            // Trier par le choix entre don et remboursement le dévoilerait au responsable.
-            if ([] === $commissions || isset($filtres['refundRequired'])) {
-                $requete->andWhere('1 = 0');
+        $gestionnaire = $this->security->isGranted(ExpenseReportVoter::MANAGE_EXPENSE_REPORTS);
+        $commissions = $this->valideurs->commissionsValideesPar($utilisateur);
+        $attente = $filtres['attente'] ?? null;
+        // Trier par le choix entre don et remboursement le dévoilerait au responsable.
+        $sansDroit = !$gestionnaire && ([] === $commissions || isset($filtres['refundRequired']));
+        if ($sansDroit || (!$gestionnaire && self::CHEZ_LES_RESPONSABLES === $attente)) {
+            $requete->andWhere('1 = 0');
 
-                return;
+            return;
+        }
+
+        $deSesCommissions = sprintf('%s.commission IN (:a_valider_commissions)', $alias);
+        if (self::CHEZ_LES_RESPONSABLES === $attente) {
+            $requete->andWhere($this->valideurs->conditionValideurs($requete, $alias, true));
+            if ($commissions) {
+                $requete->andWhere(sprintf('NOT (%s)', $deSesCommissions))
+                    ->setParameter('a_valider_commissions', $commissions);
             }
-            $requete->andWhere(sprintf('%s.commission IN (:a_valider_commissions)', $alias))
-                ->setParameter('a_valider_commissions', $commissions);
+        } elseif (self::POUR_MOI === $attente || !$gestionnaire) {
+            $pourLui = [];
+            if ($commissions) {
+                $pourLui[] = $deSesCommissions;
+                $requete->setParameter('a_valider_commissions', $commissions);
+            }
+            if ($gestionnaire) {
+                $pourLui[] = $this->valideurs->conditionValideurs($requete, $alias, false);
+            }
+            $requete->andWhere($requete->expr()->orX(...$pourLui));
         }
 
         $requete

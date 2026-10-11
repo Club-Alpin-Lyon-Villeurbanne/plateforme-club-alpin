@@ -42,6 +42,19 @@ class StatusTransitionValidator
     {
         $newStatus = $expenseReport->getStatus();
 
+        // Plusieurs valideurs reçoivent la même note : celui qui décide après un autre doit
+        // l'apprendre, même s'il demande la décision déjà prise.
+        if ($expenseReport->getType()->estHorsSortie()
+            && \in_array($newStatus, [ExpenseReportStatusEnum::APPROVED, ExpenseReportStatusEnum::REJECTED], true)
+            && ExpenseReportStatusEnum::SUBMITTED !== $oldStatus
+            && !$this->actor->isOwnerOf($expenseReport)) {
+            $context->buildViolation('Cette demande a déjà été traitée.')
+                ->atPath('status')
+                ->addViolation();
+
+            return;
+        }
+
         if ($oldStatus === $newStatus) {
             return;
         }

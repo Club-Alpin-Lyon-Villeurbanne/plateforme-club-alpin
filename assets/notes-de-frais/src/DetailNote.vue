@@ -69,6 +69,16 @@ const decisionPrise = computed(() => {
 
 const messageRempli = computed(() => message.value.trim() !== "");
 
+// Récit 55 : la trésorerie peut décider à la place d'un responsable, mais doit savoir qu'elle le fait.
+const aLaPlaceDesResponsables = computed(() => {
+  const valideurs = note.value?.valideurs ?? [];
+  if (!note.value?.peutDecider || !props.donnees.gestionnaire || !valideurs.length || valideurs.some((valideur) => valideur.id === props.donnees.utilisateurId)) {
+    return null;
+  }
+
+  return `Cette note attend la décision de ${enumeration(valideurs.map(nomComplet), "ou")}. Vous pouvez la traiter à leur place.`;
+});
+
 // Une note envoyée sans les boutons : on dit pourquoi, et qui décidera.
 const attente = computed(() => {
   if (!note.value || note.value.status !== "submitted" || note.value.peutDecider) {
@@ -239,6 +249,7 @@ function renvoyer() {
       <p v-if="fait" ref="resultat" tabindex="-1" role="status" :class="['tw-text-right tw-text-sm tw-font-medium focus:tw-outline-none', fait.classe]">{{ fait.texte }}</p>
 
       <template v-else-if="note.peutDecider">
+        <p v-if="aLaPlaceDesResponsables" class="tw-mb-3 tw-text-sm tw-text-gray-700">{{ aLaPlaceDesResponsables }}</p>
         <div v-if="!renvoiOuvert" class="tw-flex tw-justify-end tw-gap-3">
           <button
             ref="boutonRenvoyer"

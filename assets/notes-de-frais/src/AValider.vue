@@ -1,75 +1,10 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, ref } from "vue";
-import { listerNotesAValider, messagesDErreur } from "./api";
-import { enumeration, euros, jourMoisDe, nomComplet } from "./format";
-import type { DonneesAValider, NoteDeFrais } from "./types";
+import ListeAValider from "./components/ListeAValider.vue";
+import type { DonneesAValider } from "./types";
 
-const props = defineProps<{ donnees: DonneesAValider }>();
+defineProps<{ donnees: DonneesAValider }>();
 
 const URL_LISTE = "/notes-de-frais/a-valider";
-
-const notes = ref<NoteDeFrais[]>([]);
-const total = ref(0);
-const chargement = ref(true);
-const chargementSuivant = ref(false);
-const erreur = ref<string | null>(null);
-const page = ref(0);
-const pages = ref(1);
-const liste = ref<HTMLUListElement | null>(null);
-
-const aUnePageSuivante = computed(() => !chargement.value && page.value < pages.value);
-
-const resume = computed(() => {
-  if (props.donnees.traitees) {
-    return total.value === 1 ? "1 demande déjà traitée." : `${total.value} demandes déjà traitées.`;
-  }
-  const commissions = enumeration(Array.from(new Set(notes.value.map((note) => note.commission?.title ?? "").filter(Boolean))));
-
-  return `${total.value} ${total.value === 1 ? "demande" : "demandes"} en attente pour ${commissions}.`;
-});
-
-async function charger() {
-  const dejaCharge = page.value > 0;
-  const premiereNouvelle = notes.value.length;
-  (dejaCharge ? chargementSuivant : chargement).value = true;
-  erreur.value = null;
-  try {
-    const suivante = await listerNotesAValider(page.value + 1, props.donnees.traitees);
-    notes.value = [...notes.value, ...suivante.notes];
-    total.value = suivante.total;
-    page.value += 1;
-    pages.value = suivante.pages;
-  } catch (e) {
-    erreur.value = messagesDErreur(e)[0];
-  } finally {
-    chargement.value = false;
-    chargementSuivant.value = false;
-  }
-  // Le bouton « plus anciennes » peut disparaître : le focus passe à la première demande ajoutée.
-  if (dejaCharge) {
-    await nextTick();
-    liste.value?.children[premiereNouvelle]?.querySelector("a")?.focus();
-  }
-}
-
-onMounted(charger);
-
-function contexte(note: NoteDeFrais): string {
-  const nature = note.type === "formation" ? "formation" : "achat";
-
-  return `${nomComplet(note.utilisateur)}, ${nature} pour ${note.commission?.title ?? ""}`;
-}
-
-function decision(note: NoteDeFrais): string | null {
-  const derniere = note.derniereDecision;
-  if (!derniere || note.status === "submitted") {
-    return null;
-  }
-
-  return derniere.statut === "approved"
-    ? `Validée par ${nomComplet(derniere.auteur)} le ${jourMoisDe(derniere.date)}.`
-    : `Renvoyée par ${nomComplet(derniere.auteur)} le ${jourMoisDe(derniere.date)}.`;
-}
 </script>
 
 <template>
@@ -78,54 +13,15 @@ function decision(note: NoteDeFrais): string | null {
   </div>
 
   <div class="expense-report-form tw-mx-[30px] tw-mb-8 tw-font-sans">
-    <p v-if="chargement" class="tw-bg-white tw-p-8 tw-text-sm tw-text-gray-600 tw-shadow-sm tw-ring-1 tw-ring-gray-200">Chargement des demandes…</p>
-    <p
-      v-else-if="erreur && notes.length === 0"
-      role="alert"
-      class="tw-bg-white tw-p-8 tw-text-sm tw-text-red-600 tw-shadow-sm tw-ring-1 tw-ring-gray-200"
-    >
-      {{ erreur }}
-    </p>
-    <p
-      v-else-if="notes.length === 0"
-      class="tw-bg-white tw-p-8 tw-text-sm tw-text-gray-600 tw-shadow-sm tw-ring-1 tw-ring-gray-200"
-    >
-      {{ donnees.traitees ? "Aucune demande déjà traitée." : "Aucune demande en attente." }}
-    </p>
-
-    <template v-else>
-      <p class="tw-mb-4 tw-text-sm tw-text-gray-600">{{ resume }}</p>
-      <ul ref="liste" class="tw-divide-y tw-divide-gray-100 tw-bg-white tw-shadow-sm tw-ring-1 tw-ring-gray-200">
-        <li v-for="note in notes" :key="note.id">
-          <a
-            :href="`/notes-de-frais/${note.id}`"
-            class="tw-flex tw-items-center tw-gap-4 tw-px-5 tw-py-4 tw-font-normal tw-no-underline hover:tw-bg-gray-50"
-          >
-            <span class="tw-min-w-0 tw-flex-1">
-              <span class="tw-block tw-font-medium tw-text-gray-900">{{ note.objet }}</span>
-              <span class="tw-block tw-text-xs tw-text-gray-500">{{ contexte(note) }}</span>
-              <span v-if="decision(note)" class="tw-mt-1 tw-block tw-text-xs tw-text-gray-500">{{ decision(note) }}</span>
-            </span>
-            <span class="tw-font-semibold tw-tabular-nums tw-text-gray-900">{{ euros(note.totalDeclare) }}</span>
-            <span class="tw-text-gray-300" aria-hidden="true">›</span>
-          </a>
-        </li>
-      </ul>
+    <ListeAValider v-if="donnees.traitees" :traitees="true" />
+    <!-- La trésorerie traite d'abord ses notes ; celles des responsables viennent ensuite, à part. -->
+    <template v-else-if="donnees.gestionnaire">
+      <ListeAValider :traitees="false" attente="moi" titre="Pour la trésorerie" />
+      <ListeAValider :traitees="false" attente="responsables" titre="Chez les responsables" :masquer-si-vide="true" />
     </template>
+    <ListeAValider v-else :traitees="false" />
 
-    <p v-if="erreur && notes.length > 0" role="alert" class="tw-mt-3 tw-text-sm tw-text-red-600">{{ erreur }}</p>
-    <div v-if="aUnePageSuivante" class="tw-mt-4 tw-text-center">
-      <button
-        type="button"
-        :disabled="chargementSuivant"
-        class="tw-text-sm tw-font-medium tw-text-sky-700 hover:tw-underline disabled:tw-opacity-50"
-        @click="charger"
-      >
-        Afficher les demandes plus anciennes
-      </button>
-    </div>
-
-    <p v-if="!chargement" class="tw-mt-4 tw-text-sm">
+    <p class="tw-text-sm">
       <a v-if="donnees.traitees" :href="URL_LISTE" class="tw-text-sky-700 hover:tw-underline">Demandes en attente</a>
       <a v-else :href="`${URL_LISTE}?traitees`" class="tw-text-sky-700 hover:tw-underline">Demandes déjà traitées</a>
     </p>
