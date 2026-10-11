@@ -2,7 +2,7 @@
 
 L'application gère deux circuits de notes de frais :
 - les notes de sortie, rattachées à une sortie : saisies sur le site, validées dans compta-club (sections suivantes) ;
-- les [notes hors sortie](#notes-hors-sortie) : une formation ou un achat fait pour le club, validés par les responsables de commission.
+- les [notes hors sortie](#notes-hors-sortie), pour une formation ou un achat fait pour le club : validées par le responsable de la commission, puis transmises à la trésorerie.
 
 ## Soumission des Notes de Frais
 
@@ -31,7 +31,7 @@ Une note hors sortie rembourse une formation ou un achat fait pour le club, sans
 
 ### Qui fait quoi
 
-- Le demandeur dépose une formation ou un achat depuis le menu « Notes de frais », avec un justificatif par dépense et le choix entre remboursement et don.
+- Le demandeur fait sa demande (formation ou achat) depuis le menu « Notes de frais » : une ligne par dépense avec son justificatif, puis le choix entre remboursement et don.
 - Le responsable de commission valide la note, ou la renvoie au demandeur avec un message. Il ne voit pas le choix entre remboursement et don.
 - La trésorerie reçoit par mail le récapitulatif de chaque note validée, puis paie ou prépare le reçu fiscal.
 
@@ -68,7 +68,7 @@ Le demandeur ne modifie sa note qu'en brouillon ou à corriger. Une note transmi
 
 ### Écrans
 
-La rubrique « Notes de frais » du menu adhérent. « notes de frais à valider » et son compteur n'apparaissent que pour les responsables et la trésorerie.
+Le menu adhérent gagne une rubrique « Notes de frais ». L'entrée « notes de frais à valider », avec son compteur, n'apparaît qu'aux responsables de commission et à la trésorerie.
 
 ![Menu adhérent avec la rubrique Notes de frais](images/notes-de-frais/hors-sortie-menu.png)
 
@@ -96,7 +96,7 @@ Détail d'une note vu par le responsable : dépenses, justificatifs et mot du de
 
 - `DISPLAY_NOTES_DE_FRAIS` : à faux, le site n'affiche aucune note de frais, de sortie ou hors sortie, et les pages hors sortie répondent 404.
 - `NOTES_DE_FRAIS_EMAIL_TRESORERIE` : adresse de la trésorerie. Elle reçoit le récapitulatif des notes validées, et les notes à valider d'une commission sans responsable. Si elle est vide, l'envoi et la validation aboutissent sans mail à la trésorerie, et l'erreur est journalisée (Sentry en prod).
-- `AUTHORIZED_IDS_FOR_EXPENSE_MANAGEMENT` : identifiants des gestionnaires, séparés par des virgules. À l'écran, ils forment « la trésorerie ».
+- `AUTHORIZED_IDS_FOR_EXPENSE_MANAGEMENT` : identifiants utilisateur des gestionnaires des notes de frais, séparés par des virgules. Sur le site, c'est eux qu'on appelle « la trésorerie ».
 - Rôle `responsable-commission`, donné sur une commission dans l'administration : ses titulaires valident les notes de cette commission, sauf s'ils sont supprimés ou doivent renouveler leur adhésion. Il n'y a rien d'autre à configurer.
 - `expense_report.horsSortie` dans `config/services.yaml` : délai d'envoi par type (`delaiEnvoiJours`), seuil d'avertissement (`seuilAvertissement`), taux kilométrique des formations (`formation.tauxKilometrique`) et plafonds par type (`<type>.plafonds`). Les valeurs suivent la politique de remboursement du club. Ce barème est distinct des taux des notes de sortie.
 
@@ -107,14 +107,16 @@ Détail d'une note vu par le responsable : dépenses, justificatifs et mot du de
 - Montants figés : à chaque envoi, `ExpenseReportCalculator::figerNoteHorsSortie()` enregistre le total déclaré, le total remboursable et, pour une formation, le taux kilométrique. Ce que le responsable a validé reste ce que la trésorerie paie, même si le barème change ensuite. Un brouillon ou une note à corriger suit le barème en vigueur.
 - Valideurs : `ValideursNoteHorsSortie` est la seule source. Les droits (`ResponsableNoteDeFraisVoter`), la liste « à valider », le compteur du menu, les mails et la phrase « Validée par … » en dépendent. Les valideurs sont recalculés à chaque lecture.
 - compta-club : `/admin/notes-de-frais` exclut les notes hors sortie (`ExpenseReportExtension`), car compta-club suppose qu'une note a une sortie. Voir la [décision](decisions/2026.10.11-notes_de_frais_hors_sortie.md).
-- Code : pages Vue dans `assets/notes-de-frais/`, routes dans `NoteDeFraisController`, services dans `src/Service/NoteDeFrais/`.
+- Code : application Vue dans `assets/notes-de-frais/`, pages dans `NoteDeFraisController`, opérations d'API sur l'entité `ExpenseReport`, services dans `src/Service/NoteDeFrais/`.
 - Tests : `tests/Api/NoteHorsSortie*Test.php`, sur le socle `ExpenseReportApiTestCase`. En local, ces fichiers peuvent dépasser la mémoire par défaut de PHP : `php -d memory_limit=1G bin/phpunit <fichier>`. Les pages n'ont pas de test automatisé.
 
-### Avant d'ouvrir l'outil dans un club
+### Avant l'ouverture à Lyon
 
 - [ ] Mettre en production le même jour dans tous les clubs : les migrations passent au déploiement.
 - [ ] Vérifier que `DISPLAY_NOTES_DE_FRAIS` vaut faux à Chambéry et à Clermont.
 - [ ] Renseigner `NOTES_DE_FRAIS_EMAIL_TRESORERIE`.
 - [ ] Vérifier en prod les responsables de chaque commission. Une commission sans responsable envoie tout à la trésorerie.
 - [ ] Faire la recette sur staging avec de vrais rôles, mails compris : les droits des données de démo ne reflètent pas la prod.
-- [ ] Groupes de travail, déclarés comme commissions masquées : prévus, mais pas encore ouverts. Une commission masquée n'apparaît pas dans le formulaire.
+- [ ] Ne pas créer de groupe de travail pour l'instant : prévus en commissions masquées, ils ne sont pas encore proposés dans le formulaire.
+
+Autre club : la phrase déclarée nomme le Club Alpin de Lyon et le barème est commun à tous les clubs ; à adapter avant d'activer `DISPLAY_NOTES_DE_FRAIS`.

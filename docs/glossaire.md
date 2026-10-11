@@ -30,7 +30,7 @@ Personnes qui reçoivent une note de frais hors sortie à valider : les responsa
 ### Notes de frais
 Remboursement des frais engagés pour le club. Deux circuits :
 - note de sortie : frais d'une sortie, déposés par l'encadrant sur la page de la sortie et validés par la comptabilité dans compta-club ;
-- note hors sortie : formation ou achat fait pour le club, validé par les [valideurs](#valideurs) puis transmis à la trésorerie.
+- note hors sortie : formation ou achat fait pour le club, sans sortie. La note est validée par les [valideurs](#valideurs) puis transmise à la trésorerie.
 
 Voir [Notes de frais](notes-de-frais.md).
 
