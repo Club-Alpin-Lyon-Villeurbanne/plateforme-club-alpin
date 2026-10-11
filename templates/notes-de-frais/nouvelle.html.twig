@@ -1,0 +1,8 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Demande de remboursement{% endblock %}
+
+{% block body %}
+    <div id="notes-de-frais" data-donnees="{{ donnees|json_encode }}"></div>
+    {{ vite_entry_script_tags('notes-de-frais') }}
+{% endblock %}

@@ -294,6 +294,17 @@
                             </div>
                         {% endif %}
 
+                            {% if display_notes_de_frais %}
+                                <div class="nav-user">
+                                    <p class="menutitle">Notes de frais</p>
+                                    <ul>
+                                        <li>
+                                            <a href="{{ path('notes_de_frais_nouvelle') }}">demander un remboursement</a>
+                                        </li>
+                                    </ul>
+                                </div>
+                            {% endif %}
+
                             <br  style="clear:both" />
 
                             {% if allowed('user_see_all') or allowed('user_create_manually') or allowed('user_updatefiles') or allowed('user_see_status_list') %}
