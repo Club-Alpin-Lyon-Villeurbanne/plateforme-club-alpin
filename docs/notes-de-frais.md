@@ -33,7 +33,7 @@ Une note hors sortie rembourse une formation ou un achat fait pour le club, sans
 
 - Le demandeur fait sa demande (formation ou achat) depuis le menu « Notes de frais » : une ligne par dépense avec son justificatif, puis le choix entre remboursement et don.
 - Le responsable de commission valide la note, qui passe alors à la trésorerie, ou la refuse avec un message : le demandeur la corrige et l'envoie à nouveau. Il ne voit pas le choix entre remboursement et don.
-- La trésorerie n'a aucune fonction sur le site et ne reçoit aucun mail : elle travaille dans compta-club, par l'API. Elle valide ou refuse la note après le responsable, ou dès l'envoi s'il n'y en a pas, puis la comptabilise.
+- La trésorerie n'a aucune fonction sur le site et ne reçoit aucun mail : elle travaille dans compta-club, par l'API. Elle valide ou refuse la note après le responsable, ou dès l'envoi s'il n'y en a pas, puis la comptabilise. Ses décisions sont signées « la trésorerie », jamais du nom de la personne qui la tient.
 - Le demandeur reçoit un mail à chaque étape : envoi, validation par le responsable, validation par la trésorerie, refus, comptabilisation.
 
 Règles à connaître :
@@ -112,6 +112,7 @@ Détail d'une note vu par le responsable : dépenses, justificatifs et mot du de
 - Montants figés : à chaque envoi, `ExpenseReportCalculator::figerNoteHorsSortie()` enregistre le total déclaré, le total remboursable et, pour une formation, le taux kilométrique. Ce que le responsable a validé reste ce que la trésorerie paie, même si le barème change ensuite. Un brouillon ou une note à corriger suit le barème en vigueur.
 - Valideurs : `ValideursNoteHorsSortie` est la seule source. Les droits (`ResponsableNoteDeFraisVoter`), la liste « à valider », le compteur du menu, les mails et la phrase « Validée par … » en dépendent. Les valideurs sont recalculés à chaque lecture.
 - Transitions : `StatusTransitionValidator`. Un valideur passe la note de `submitted` à `preapproved` ou `rejected` ; un gestionnaire décide depuis `preapproved`, ou depuis `submitted` si la note n'a pas de valideur, puis comptabilise. Un gestionnaire qui est aussi valideur agit en valideur tant que la note est `submitted`. Les notes de sortie n'utilisent jamais `preapproved`. La colonne `status` est une énumération MySQL : un nouveau statut demande une migration.
+- Niveau d'une décision (responsable ou trésorerie) : établi une fois, à l'écriture de l'historique (`ExpenseReportStatusHistoryListener`), parce que les valideurs changent ensuite. L'API l'expose dans `derniereDecision.niveau` ; les mails et les pages le lisent sans le recalculer. Voir les [champs d'une note hors sortie](api.md#champs-dune-note-hors-sortie).
 - Mails : tous ceux d'une note hors sortie partent de `NotificationsNoteHorsSortie`, une fois le changement de statut enregistré ; le listener Doctrine des notes de sortie les ignore. Ils vont au demandeur et aux valideurs, jamais à la trésorerie.
 - compta-club : `/admin/notes-de-frais` exclut les notes hors sortie (`ExpenseReportExtension`), car compta-club suppose qu'une note a une sortie. Voir la [décision](decisions/2026.10.11-notes_de_frais_hors_sortie.md).
 - Code : application Vue dans `assets/notes-de-frais/`, pages dans `NoteDeFraisController`, opérations d'API sur l'entité `ExpenseReport`, services dans `src/Service/NoteDeFrais/`.

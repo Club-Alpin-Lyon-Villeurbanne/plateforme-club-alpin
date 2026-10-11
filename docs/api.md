@@ -265,6 +265,15 @@ Content-Type: application/merge-patch+json
 }
 ```
 
+#### Champs d'une note hors sortie
+Une note de type `formation` ou `autre` porte en plus, en lecture seule :
+- `valideurs` : les responsables qui la valident avant la trésorerie ; vide, la trésorerie décide dès l'envoi.
+- `derniereDecision` : `{statut, niveau, auteur: {prenom, nom}, date, message}`, la dernière validation ou le dernier refus, `null` s'il n'y en a pas.
+  - `statut` : `preapproved` (validée par un responsable), `approved` ou `rejected`. La comptabilisation n'est pas une décision.
+  - `niveau` : `responsable` ou `tresorerie`. Il est établi au moment de la décision : un refus depuis `submitted` vient de la trésorerie si la note n'avait alors aucun valideur. `null` pour une décision plus ancienne que ce champ.
+- `validationResponsable` : `{auteur: {prenom, nom}, date}` du dernier passage en `preapproved`, conservé après la décision de la trésorerie ; `null` si aucun responsable ne l'a validée.
+- `peutDecider` : l'utilisateur connecté est valideur de la note et elle est `submitted`.
+
 ### 📎 Pièces jointes (Notes de frais)
 
 #### Ajouter une pièce jointe
@@ -324,6 +333,7 @@ GET /api/participation-sorties/{id}
 ### Statuts des notes de frais
 - `draft` : Brouillon
 - `submitted` : Soumise
+- `preapproved` : Validée par le responsable (note hors sortie seulement : elle attend la trésorerie)
 - `approved` : Approuvée
 - `rejected` : Rejetée
 - `accounted` : Comptabilisée
