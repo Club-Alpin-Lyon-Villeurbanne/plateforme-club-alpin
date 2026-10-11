@@ -1,0 +1,54 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{# Jamais le choix entre don et remboursement : il ne doit pas peser sur la validation. #}
+
+{% block subject -%}
+    Note de frais à valider : {{ objet }}
+{%- endblock %}
+
+{% block inner_html %}
+    <p>Bonjour,</p>
+    <p>{{ demandeur }} a envoyé une note de frais à valider.</p>
+    <ul>
+        <li><strong>Demandeur :</strong> {{ demandeur }}</li>
+        <li><strong>Type :</strong> {{ type }}</li>
+        <li><strong>Commission :</strong> {{ commission }}</li>
+        <li><strong>Objet :</strong> {{ objet }}</li>
+        <li><strong>Montant :</strong> {{ montant }}</li>
+    </ul>
+    {% if mot %}
+        <p><strong>Mot du demandeur :</strong><br>{{ mot|nl2br }}</p>
+    {% endif %}
+    {% if avertissements %}
+        <p><strong>À vérifier :</strong></p>
+        <ul>
+            {% for avertissement in avertissements %}
+                <li>{{ avertissement }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+{% endblock %}
+
+{% block inner_txt %}
+Bonjour,
+
+{{ demandeur }} a envoyé une note de frais à valider.
+
+- Demandeur : {{ demandeur }}
+- Type : {{ type }}
+- Commission : {{ commission }}
+- Objet : {{ objet }}
+- Montant : {{ montant }}
+{% if mot %}
+
+Mot du demandeur :
+{{ mot }}
+{% endif %}
+{% if avertissements %}
+
+À vérifier :
+{% for avertissement in avertissements %}
+- {{ avertissement }}
+{% endfor %}
+{% endif %}
+{% endblock %}

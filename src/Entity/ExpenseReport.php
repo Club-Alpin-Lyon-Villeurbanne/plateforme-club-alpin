@@ -16,6 +16,7 @@ use App\Dto\ExpenseReportCreateDto;
 use App\Repository\ExpenseReportRepository;
 use App\State\ExpenseReportCloneProcessor;
 use App\State\ExpenseReportCreateProcessor;
+use App\State\ExpenseReportPatchProcessor;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use App\Utils\Enums\ExpenseReportTypeEnum;
 use App\Validator\ValidExpenseReport;
@@ -63,6 +64,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             uriTemplate: '/notes-de-frais/{id}',
             security: "is_granted('access_expense_report', object)",
             denormalizationContext: ['groups' => ['report:write']],
+            processor: ExpenseReportPatchProcessor::class,
         ),
     ],
     security: "is_granted('ROLE_USER')",
@@ -344,6 +346,41 @@ class ExpenseReport
         $this->motPourResponsable = $motPourResponsable;
 
         return $this;
+    }
+
+    public function getTotalDeclare(): ?string
+    {
+        return $this->totalDeclare;
+    }
+
+    public function getTotalRemboursable(): ?string
+    {
+        return $this->totalRemboursable;
+    }
+
+    public function figerMontants(float $totalDeclare, float $totalRemboursable): self
+    {
+        $this->totalDeclare = number_format($totalDeclare, 2, '.', '');
+        $this->totalRemboursable = number_format($totalRemboursable, 2, '.', '');
+
+        return $this;
+    }
+
+    /**
+     * Lignes d'une note hors sortie, dans l'ordre de la saisie ; aucune si `details` n'est pas
+     * une liste de lignes.
+     *
+     * @return list<array<string, mixed>>
+     */
+    public function lignes(): array
+    {
+        $lignes = json_decode($this->details ?? '', true)['lignes'] ?? null;
+        if (!\is_array($lignes) || !array_is_list($lignes)) {
+            return [];
+        }
+
+        // Une ligne mal formée reste comptée : les messages numérotent les lignes comme l'écran.
+        return array_map(static fn (mixed $ligne): array => \is_array($ligne) ? $ligne : [], $lignes);
     }
 
     public function getCreatedAt(): ?\DateTimeImmutable

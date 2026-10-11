@@ -70,6 +70,7 @@ class NoteHorsSortieCoherenceTest extends ExpenseReportApiTestCase
         yield 'identifiant vide' => ['{"lignes":[{"id":"","montant":12}]}'];
         yield 'montant négatif' => ['{"lignes":[{"id":"ligne-1","montant":-12}]}'];
         yield 'montant en texte' => ['{"lignes":[{"id":"ligne-1","montant":"12"}]}'];
+        yield 'montant à plus de deux décimales' => ['{"lignes":[{"id":"ligne-1","montant":12.345}]}'];
         yield 'description qui n\'est pas un texte' => ['{"lignes":[{"id":"ligne-1","montant":12,"description":12}]}'];
         yield 'nature sur un achat' => ['{"lignes":[{"id":"ligne-1","montant":12,"nature":"stage"}]}'];
     }

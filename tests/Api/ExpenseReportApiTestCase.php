@@ -90,13 +90,13 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
         return $report;
     }
 
-    protected function creerAchat(User $demandeur, ExpenseReportStatusEnum $status = ExpenseReportStatusEnum::DRAFT, ?string $details = null, ?Commission $commission = null): ExpenseReport
+    protected function creerAchat(User $demandeur, ExpenseReportStatusEnum $status = ExpenseReportStatusEnum::DRAFT, ?string $details = null, ?Commission $commission = null, ?\DateTimeImmutable $dateDepense = null): ExpenseReport
     {
         $em = $this->em();
         $note = ExpenseReport::nouvelleNoteHorsSortie($em->find(User::class, $demandeur->getId()), ExpenseReportTypeEnum::AUTRE);
         $note->setCommission($em->find(Commission::class, ($commission ?? $this->commissionVisible())->getId()));
         $note->setObjet('Dégaines pour la SAE');
-        $note->setDateDepense(new \DateTimeImmutable('-3 days'));
+        $note->setDateDepense($dateDepense ?? new \DateTimeImmutable('-3 days'));
         $note->setStatus($status);
         $note->setDetails($details);
         $em->persist($note);
@@ -148,6 +148,31 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
         ], json_encode($body));
 
         return $this->lastResponse();
+    }
+
+    /**
+     * Un justificatif pour chacune de ces lignes, envoyé par le propriétaire de la note.
+     */
+    protected function joindreLesJustificatifs(ExpenseReport $note, string ...$lignes): void
+    {
+        foreach ($lignes as $ligne) {
+            $this->assertResponseStatus(201, $this->uploadAttachment($note->getUser(), $note, $ligne));
+        }
+    }
+
+    /**
+     * Envoi de la note par PATCH, choix entre don et remboursement fait sauf mention contraire.
+     *
+     * @return array{status: int, body: array}
+     */
+    protected function envoyer(User $as, ExpenseReport $note, array $champs = []): array
+    {
+        return $this->patch($as, $note, array_merge(['refundRequired' => true, 'status' => 'submitted'], $champs));
+    }
+
+    protected function configHorsSortie(): array
+    {
+        return $this->getContainer()->getParameter('expense_report')['horsSortie'];
     }
 
     /**
@@ -249,6 +274,18 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
         $this->assertResponseStatus(422, $response);
         $paths = array_column($response['body']['violations'] ?? [], 'propertyPath');
         $this->assertSame([$propertyPath], $paths, json_encode($response['body'], \JSON_UNESCAPED_UNICODE));
+    }
+
+    /**
+     * Refus de validation (422) portant sur ce seul champ, avec ce message parmi ceux du champ.
+     */
+    protected function assertRefusAvec(array $response, string $propertyPath, string $message): void
+    {
+        $this->assertResponseStatus(422, $response);
+        $violations = $response['body']['violations'] ?? [];
+        $contexte = json_encode($response['body'], \JSON_UNESCAPED_UNICODE);
+        $this->assertSame([$propertyPath], array_values(array_unique(array_column($violations, 'propertyPath'))), $contexte);
+        $this->assertContains($message, array_column($violations, 'message'), $contexte);
     }
 
     protected function reload(ExpenseReport $report): ExpenseReport

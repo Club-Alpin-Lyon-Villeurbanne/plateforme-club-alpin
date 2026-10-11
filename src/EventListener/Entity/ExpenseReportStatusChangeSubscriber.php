@@ -45,6 +45,12 @@ class ExpenseReportStatusChangeSubscriber
                 continue;
             }
 
+            if ($entity->getType()->estHorsSortie()) {
+                $this->mailer->send($entity->getUser(), 'transactional/expense-report-status-email', $this->parametresNoteHorsSortie($entity));
+
+                continue;
+            }
+
             $params = ['report' => $entity];
             $detailsArray = json_decode($entity->getDetails(), true);
             $summary = $this->calculator->calculateTotal($detailsArray);
@@ -74,5 +80,22 @@ class ExpenseReportStatusChangeSubscriber
                 $params
             );
         }
+    }
+
+    private function parametresNoteHorsSortie(ExpenseReport $note): array
+    {
+        $montants = $this->calculator->montantsNoteHorsSortie($note);
+        $lignes = array_map(fn (array $ligne) => [
+            'montant' => $this->calculator->formatEuros((float) ($ligne['montant'] ?? 0)),
+            'description' => $ligne['description'] ?? null,
+        ], $note->lignes());
+
+        return [
+            'report' => $note,
+            'status' => $note->getStatus()->value,
+            'lignes' => $lignes,
+            'formattedTotal' => $this->calculator->formatEuros($montants['totalDeclare']),
+            'formattedReimbursable' => $this->calculator->formatEuros($montants['totalRemboursable']),
+        ];
     }
 }

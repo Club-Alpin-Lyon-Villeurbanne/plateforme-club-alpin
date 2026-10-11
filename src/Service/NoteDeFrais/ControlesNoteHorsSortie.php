@@ -2,7 +2,9 @@
 
 namespace App\Service\NoteDeFrais;
 
+use App\Entity\ExpenseAttachment;
 use App\Entity\ExpenseReport;
+use App\Service\ExpenseReportCalculator;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
@@ -17,15 +19,24 @@ final class ControlesNoteHorsSortie
     public function __construct(
         #[Autowire(param: 'expense_report')]
         private readonly array $config,
+        private readonly ExpenseReportCalculator $calculator,
     ) {
     }
 
     /**
      * @return list<array{champ: string, message: string}>
      */
-    public function bloquants(ExpenseReport $note, MomentDeControle $moment): array
+    public function bloquants(ExpenseReport $note, MomentDeControle ...$moments): array
     {
-        return $this->constats($note, $moment, NiveauDeControle::BLOQUANT);
+        return $this->constats($note, $moments, NiveauDeControle::BLOQUANT);
+    }
+
+    /**
+     * @return list<string>
+     */
+    public function avertissements(ExpenseReport $note): array
+    {
+        return array_column($this->constats($note, [MomentDeControle::LECTURE], NiveauDeControle::AVERTISSEMENT), 'message');
     }
 
     /**
@@ -45,6 +56,36 @@ final class ControlesNoteHorsSortie
                 'moments' => [MomentDeControle::CREATION, MomentDeControle::PREMIERE_SOUMISSION],
                 'niveau' => NiveauDeControle::BLOQUANT,
                 'controle' => $this->delaiDEnvoiDepasse(...),
+            ],
+            [
+                'champ' => 'details',
+                'moments' => [MomentDeControle::CHAQUE_SOUMISSION],
+                'niveau' => NiveauDeControle::BLOQUANT,
+                'controle' => $this->sansDepense(...),
+            ],
+            [
+                'champ' => 'details',
+                'moments' => [MomentDeControle::CHAQUE_SOUMISSION],
+                'niveau' => NiveauDeControle::BLOQUANT,
+                'controle' => $this->montantsNonPositifs(...),
+            ],
+            [
+                'champ' => 'details',
+                'moments' => [MomentDeControle::CHAQUE_SOUMISSION],
+                'niveau' => NiveauDeControle::BLOQUANT,
+                'controle' => $this->justificatifsManquants(...),
+            ],
+            [
+                'champ' => 'refundRequired',
+                'moments' => [MomentDeControle::CHAQUE_SOUMISSION],
+                'niveau' => NiveauDeControle::BLOQUANT,
+                'controle' => $this->choixDonOuRemboursementManquant(...),
+            ],
+            [
+                'champ' => 'totalDeclare',
+                'moments' => [MomentDeControle::LECTURE],
+                'niveau' => NiveauDeControle::AVERTISSEMENT,
+                'controle' => $this->auDelaDuSeuil(...),
             ],
         ];
     }
@@ -72,10 +113,91 @@ final class ControlesNoteHorsSortie
             : null;
     }
 
+    private function sansDepense(ExpenseReport $note): ?string
+    {
+        return [] === $note->lignes() ? 'Il manque au moins une dépense.' : null;
+    }
+
+    private function montantsNonPositifs(ExpenseReport $note): ?string
+    {
+        $numeros = $this->numerosDesLignes($note, static function (array $ligne): bool {
+            $montant = $ligne['montant'] ?? null;
+
+            return !(\is_int($montant) || \is_float($montant)) || $montant <= 0;
+        });
+
+        return match (\count($numeros)) {
+            0 => null,
+            1 => sprintf('Le montant de la dépense %s doit être supérieur à zéro.', $numeros[0]),
+            default => sprintf('Les montants des dépenses %s doivent être supérieurs à zéro.', $this->enumerer($numeros)),
+        };
+    }
+
+    private function justificatifsManquants(ExpenseReport $note): ?string
+    {
+        $lignesJustifiees = $note->getAttachments()->map(static fn (ExpenseAttachment $justificatif) => $justificatif->getExpenseId())->toArray();
+        $numeros = $this->numerosDesLignes($note, static fn (array $ligne): bool => !\in_array($ligne['id'] ?? null, $lignesJustifiees, true));
+
+        return match (\count($numeros)) {
+            0 => null,
+            1 => sprintf('Il manque le justificatif de la dépense %s.', $numeros[0]),
+            default => sprintf('Il manque les justificatifs des dépenses %s.', $this->enumerer($numeros)),
+        };
+    }
+
+    private function choixDonOuRemboursementManquant(ExpenseReport $note): ?string
+    {
+        return null === $note->isRefundRequired() ? 'Il manque le choix entre remboursement et don.' : null;
+    }
+
+    private function auDelaDuSeuil(ExpenseReport $note): ?string
+    {
+        $seuil = $this->config['horsSortie']['seuilAvertissement'] ?? null;
+        if (null === $seuil || $this->calculator->montantsNoteHorsSortie($note)['totalDeclare'] <= $seuil) {
+            return null;
+        }
+
+        return sprintf(
+            'Plus de %s € : la dépense doit être au budget de la commission, ou acceptée par la trésorerie.',
+            (new \NumberFormatter('fr_FR', \NumberFormatter::DECIMAL))->format($seuil),
+        );
+    }
+
     /**
+     * Numéros (à partir de 1, comme à l'écran) des lignes qui remplissent la condition.
+     *
+     * @param callable(array<string, mixed>): bool $condition
+     *
+     * @return list<int>
+     */
+    private function numerosDesLignes(ExpenseReport $note, callable $condition): array
+    {
+        $numeros = [];
+        foreach ($note->lignes() as $index => $ligne) {
+            if ($condition($ligne)) {
+                $numeros[] = $index + 1;
+            }
+        }
+
+        return $numeros;
+    }
+
+    /**
+     * @param list<int> $numeros
+     */
+    private function enumerer(array $numeros): string
+    {
+        $dernier = array_pop($numeros);
+
+        return implode(', ', $numeros) . ' et ' . $dernier;
+    }
+
+    /**
+     * @param list<MomentDeControle> $moments
+     *
      * @return list<array{champ: string, message: string}>
      */
-    private function constats(ExpenseReport $note, MomentDeControle $moment, NiveauDeControle $niveau): array
+    private function constats(ExpenseReport $note, array $moments, NiveauDeControle $niveau): array
     {
         if (!$note->getType()->estHorsSortie()) {
             return [];
@@ -83,7 +205,8 @@ final class ControlesNoteHorsSortie
 
         $constats = [];
         foreach ($this->controles() as $controle) {
-            if ($controle['niveau'] !== $niveau || !\in_array($moment, $controle['moments'], true)) {
+            $aCeMoment = array_filter($moments, static fn (MomentDeControle $moment) => \in_array($moment, $controle['moments'], true));
+            if ($controle['niveau'] !== $niveau || [] === $aCeMoment) {
                 continue;
             }
 

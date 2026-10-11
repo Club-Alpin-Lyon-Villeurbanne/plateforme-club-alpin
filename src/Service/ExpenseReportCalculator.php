@@ -2,6 +2,8 @@
 
 namespace App\Service;
 
+use App\Entity\ExpenseReport;
+
 /**
  * Service pour calculer et formater une note de frais
  * à partir d'un tableau associatif (décodé depuis le JSON).
@@ -157,6 +159,43 @@ class ExpenseReportCalculator
             'total' => $total,
             'reimbursable' => $reimbursable,
         ];
+    }
+
+    /**
+     * Montants d'une note hors sortie : ceux figés à son dernier envoi, sauf quand elle est chez
+     * son demandeur (brouillon ou à corriger), où ils suivent ses lignes et le barème en vigueur.
+     *
+     * @return array{totalDeclare: float, totalRemboursable: float}
+     */
+    public function montantsNoteHorsSortie(ExpenseReport $note): array
+    {
+        if (!$note->getStatus()?->isEditableByOwner() && null !== $note->getTotalDeclare()) {
+            return [
+                'totalDeclare' => (float) $note->getTotalDeclare(),
+                'totalRemboursable' => (float) $note->getTotalRemboursable(),
+            ];
+        }
+
+        return $this->calculerNoteHorsSortie($note);
+    }
+
+    /**
+     * Un achat est retenu au réel, sans plafond : le total remboursable vaut le total déclaré.
+     *
+     * @return array{totalDeclare: float, totalRemboursable: float}
+     */
+    public function calculerNoteHorsSortie(ExpenseReport $note): array
+    {
+        $total = 0.0;
+        foreach ($note->lignes() as $ligne) {
+            $montant = $ligne['montant'] ?? null;
+            if (\is_int($montant) || \is_float($montant)) {
+                $total += $montant;
+            }
+        }
+        $total = round($total, 2);
+
+        return ['totalDeclare' => $total, 'totalRemboursable' => $total];
     }
 
     /**

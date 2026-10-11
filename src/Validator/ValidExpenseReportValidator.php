@@ -37,6 +37,8 @@ class ValidExpenseReportValidator extends ConstraintValidator
             throw new UnexpectedTypeException($value, ExpenseReport::class);
         }
 
+        $oldStatus = null;
+
         // Une note existante passe toujours par les contrôles de droits, quel que soit le statut demandé.
         if (null !== $value->getId()) {
             $oldStatus = $this->originalState->status($value);
@@ -57,15 +59,34 @@ class ValidExpenseReportValidator extends ConstraintValidator
         $this->coherenceValidator->validate($value, $this->context);
 
         if (null === $value->getId()) {
-            foreach ($this->controles->bloquants($value, MomentDeControle::CREATION) as $constat) {
-                $this->context->buildViolation($constat['message'])
-                    ->atPath($constat['champ'])
-                    ->addViolation();
-            }
+            $this->appliquerLesControles($value, MomentDeControle::CREATION);
         }
 
-        if (ExpenseReportStatusEnum::SUBMITTED === $value->getStatus()) {
+        if (ExpenseReportStatusEnum::SUBMITTED !== $value->getStatus()) {
+            return;
+        }
+
+        if (!$value->getType()->estHorsSortie()) {
             $this->detailsValidator->validate($value, $this->context);
+
+            return;
+        }
+
+        // Une note hors sortie est contrôlée à son envoi ; envoyée, elle n'est plus modifiable.
+        $moments = match ($oldStatus) {
+            ExpenseReportStatusEnum::DRAFT => [MomentDeControle::CHAQUE_SOUMISSION, MomentDeControle::PREMIERE_SOUMISSION],
+            ExpenseReportStatusEnum::REJECTED => [MomentDeControle::CHAQUE_SOUMISSION],
+            default => [],
+        };
+        $this->appliquerLesControles($value, ...$moments);
+    }
+
+    private function appliquerLesControles(ExpenseReport $note, MomentDeControle ...$moments): void
+    {
+        foreach ($this->controles->bloquants($note, ...$moments) as $constat) {
+            $this->context->buildViolation($constat['message'])
+                ->atPath($constat['champ'])
+                ->addViolation();
         }
     }
 }

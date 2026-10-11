@@ -99,6 +99,8 @@ class CoherenceValidator
             $montant = $ligne['montant'] ?? null;
             if (null !== $montant && (!(\is_int($montant) || \is_float($montant)) || $montant < 0)) {
                 $this->refuser($context, 'details', "Ligne {$numero} : le montant doit être un nombre positif.");
+            } elseif (\is_float($montant) && abs($montant * 100 - round($montant * 100)) > 1e-6) {
+                $this->refuser($context, 'details', "Ligne {$numero} : le montant ne peut pas avoir plus de deux décimales.");
             }
             if (isset($ligne['description']) && !\is_string($ligne['description'])) {
                 $this->refuser($context, 'details', "Ligne {$numero} : la description doit être un texte.");
