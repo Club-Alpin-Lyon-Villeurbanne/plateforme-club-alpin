@@ -148,31 +148,36 @@ class NoteHorsSortieDecisionMailsTest extends ExpenseReportApiTestCase
         }
     }
 
-    public function testLesPartiesTexteDesMailsGardentLesApostrophes(): void
+    public function testLObjetResteEnClairDansLeTexteEtEchappeDansLeHtml(): void
     {
-        $objet = 'Cordes pour l\'école d\'aventure';
+        $objet = 'Cordes <b>neuves</b> pour l\'école d\'aventure';
+        $objetEchappe = 'Cordes &lt;b&gt;neuves&lt;/b&gt; pour l&#039;école d&#039;aventure';
         $note = $this->creerAchat($this->owner, ExpenseReportStatusEnum::DRAFT, self::LIGNES_ACHAT);
         $this->assertResponseStatus(200, $this->patch($this->owner, $note, ['objet' => $objet]));
         $this->joindreLesJustificatifs($note, 'ligne-1', 'ligne-2');
 
         $this->assertResponseStatus(200, $this->envoyer($this->owner, $note));
-        $textes = array_map(static fn (Email $mail) => $mail->getTextBody(), $this->getMailerMessages());
+        $mails = $this->getMailerMessages();
         $this->assertResponseStatus(200, $this->renvoyer($this->manager, $note, 'Il manque l\'accord préalable.'));
-        $textes[] = $this->mailsA($this->owner->getEmail())[0]->getTextBody();
+        $renvoi = $this->mailsA($this->owner->getEmail())[0];
+        $mails[] = $renvoi;
         $this->assertResponseStatus(200, $this->envoyer($this->owner, $note));
         $this->assertResponseStatus(200, $this->patch($this->manager, $note, ['status' => 'approved']));
         $recapitulatif = $this->mailsA($this->adresseTresorerie())[0];
-        $textes[] = $recapitulatif->getTextBody();
-        $textes[] = $this->mailsA($this->owner->getEmail())[0]->getTextBody();
+        $mails[] = $recapitulatif;
+        $mails[] = $this->mailsA($this->owner->getEmail())[0];
 
-        $this->assertCount(5, $textes);
-        foreach ($textes as $texte) {
-            $this->assertStringContainsString($objet, $texte);
-            $this->assertStringNotContainsString('&#039;', $texte);
+        $this->assertCount(5, $mails);
+        foreach ($mails as $mail) {
+            $this->assertStringContainsString($objet, $mail->getSubject());
+            $this->assertStringContainsString($objet, $mail->getTextBody());
+            $this->assertStringNotContainsString('&#039;', $mail->getTextBody());
+            $this->assertStringNotContainsString('&lt;', $mail->getTextBody());
+            $this->assertMatchesRegularExpression('#<h1>[^<]*' . preg_quote($objetEchappe, '#') . '[^<]*</h1>#', $mail->getHtmlBody(), $mail->getSubject());
+            $this->assertStringNotContainsString('<b>neuves</b>', $mail->getHtmlBody());
         }
-        $this->assertStringContainsString('Il manque l\'accord préalable.', $textes[2]);
+        $this->assertStringContainsString('Il manque l\'accord préalable.', $renvoi->getTextBody());
         $this->assertStringContainsString(sprintf('Libellé de saisie : PETIT Sam NDF %s %s', (new \DateTimeImmutable('-3 days'))->format('d/m/Y'), $objet), $recapitulatif->getTextBody());
-        $this->assertStringContainsString('l&#039;école', $recapitulatif->getHtmlBody());
     }
 
     public function testApresCorrectionLeNouvelEnvoiPrevientLaTresorerieANouveau(): void

@@ -1,6 +1,6 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
-{# L'appelant échappe l'objet et l'auteur pour le HTML ; la partie texte les garde tels quels. #}
+{# L'appelant échappe l'objet et l'auteur pour le HTML, objet du mail compris (repris en titre du corps HTML) ; la partie texte les garde tels quels. #}
 {% macro phrase_hors_sortie(objet, status, auteur) -%}
     Votre note de frais « {{ objet|raw }} »
     {%- if status == 'submitted' %} est envoyée à la trésorerie
@@ -13,7 +13,7 @@
 {% block subject -%}
     {% import _self as notes -%}
     {% if report.type.estHorsSortie -%}
-    {{ notes.phrase_hors_sortie(report.objet, status, auteur|default(null)) }}
+    {{ notes.phrase_hors_sortie(report.objet|e, status, auteur|default(null)|e) }}
     {%- else -%}
     Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} 
     {%- if status == 'submitted' %} est envoyée à la comptabilité
