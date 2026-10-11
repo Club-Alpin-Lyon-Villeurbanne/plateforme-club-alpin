@@ -11,6 +11,8 @@ use App\Utils\Enums\ExpenseReportTypeEnum;
 use Doctrine\ORM\EntityManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 
 /**
  * Socle des tests API des notes de frais : acteurs, appels authentifiés par JWT, assertions.
@@ -23,24 +25,29 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
     // Montant gonflé (5 000 km) sans justificatif requis : seul le contrôle de droits peut refuser.
     protected const INFLATED_DETAILS = '{"transport":{"type":"PERSONAL_VEHICLE","distance":5000,"tollFee":0},"accommodations":[],"others":[]}';
 
+    protected const LIGNES_ACHAT = '{"lignes":[{"id":"ligne-1","montant":64.9,"description":"Dégaines (x6)"},{"id":"ligne-2","montant":21.5,"description":"Cordelette 6 mm"}]}';
+
     private const MANAGERS_ENV = 'AUTHORIZED_IDS_FOR_EXPENSE_MANAGEMENT';
+    private const ADRESSE_TRESORERIE_ENV = 'NOTES_DE_FRAIS_EMAIL_TRESORERIE';
 
     protected User $owner;
     protected User $manager;
     protected User $otherManager;
     protected User $stranger;
 
-    /** @var array{env: ?string, server: ?string} */
-    private array $originalManagersEnv;
+    /** @var array<string, array{env: ?string, server: ?string}> */
+    private array $originalEnv = [];
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->originalManagersEnv = [
-            'env' => $_ENV[self::MANAGERS_ENV] ?? null,
-            'server' => $_SERVER[self::MANAGERS_ENV] ?? null,
-        ];
+        foreach ([self::MANAGERS_ENV, self::ADRESSE_TRESORERIE_ENV] as $variable) {
+            $this->originalEnv[$variable] = [
+                'env' => $_ENV[$variable] ?? null,
+                'server' => $_SERVER[$variable] ?? null,
+            ];
+        }
 
         $this->owner = $this->signup();
         $this->manager = $this->signup();
@@ -53,11 +60,13 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
     {
         // Restaurer la valeur d'origine (définie, même vide, par .env) : la supprimer
         // ferait échouer tous les tests suivants qui instancient le voter.
-        foreach (['env' => '_ENV', 'server' => '_SERVER'] as $key => $superGlobal) {
-            if (null === $this->originalManagersEnv[$key]) {
-                unset($GLOBALS[$superGlobal][self::MANAGERS_ENV]);
-            } else {
-                $GLOBALS[$superGlobal][self::MANAGERS_ENV] = $this->originalManagersEnv[$key];
+        foreach ($this->originalEnv as $variable => $original) {
+            foreach (['env' => '_ENV', 'server' => '_SERVER'] as $key => $superGlobal) {
+                if (null === $original[$key]) {
+                    unset($GLOBALS[$superGlobal][$variable]);
+                } else {
+                    $GLOBALS[$superGlobal][$variable] = $original[$key];
+                }
             }
         }
 
@@ -170,9 +179,60 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
         return $this->patch($as, $note, array_merge(['refundRequired' => true, 'status' => 'submitted'], $champs));
     }
 
+    /**
+     * Achat de deux lignes, justificatifs joints, envoyé par son demandeur : la note a son
+     * historique d'envoi et ses montants figés.
+     */
+    protected function noteEnvoyee(User $demandeur, bool $remboursement = true, string $details = self::LIGNES_ACHAT): ExpenseReport
+    {
+        $note = $this->creerAchat($demandeur, ExpenseReportStatusEnum::DRAFT, $details);
+        $this->joindreLesJustificatifs($note, ...array_column(json_decode($details, true)['lignes'], 'id'));
+        $this->assertResponseStatus(200, $this->envoyer($demandeur, $note, ['refundRequired' => $remboursement]));
+
+        return $note;
+    }
+
+    protected function renvoyer(User $as, ExpenseReport $note, string $message = 'Merci de joindre la facture du magasin.'): array
+    {
+        return $this->patch($as, $note, ['status' => 'rejected', 'commentaireStatut' => $message]);
+    }
+
+    protected function nommer(User $utilisateur, string $prenom, string $nom): void
+    {
+        $this->em()->find(User::class, $utilisateur->getId())->setFirstname($prenom)->setLastname($nom);
+        $this->em()->flush();
+        $utilisateur->setFirstname($prenom)->setLastname($nom);
+    }
+
     protected function configHorsSortie(): array
     {
         return $this->getContainer()->getParameter('expense_report')['horsSortie'];
+    }
+
+    protected function adresseTresorerie(): string
+    {
+        $adresse = $_ENV[self::ADRESSE_TRESORERIE_ENV] ?? '';
+        $this->assertNotSame('', $adresse, 'L\'adresse de la trésorerie doit être définie pour les tests.');
+
+        return $adresse;
+    }
+
+    protected function sansAdresseDeTresorerie(): void
+    {
+        $_ENV[self::ADRESSE_TRESORERIE_ENV] = $_SERVER[self::ADRESSE_TRESORERIE_ENV] = '';
+    }
+
+    /**
+     * Mails de la dernière requête envoyés à cette adresse.
+     *
+     * @return list<Email>
+     */
+    protected function mailsA(string $adresse): array
+    {
+        return array_values(array_filter(
+            $this->getMailerMessages(),
+            static fn (Email $mail) => \in_array($adresse, array_map(static fn (Address $destinataire) => $destinataire->getAddress(), $mail->getTo()), true),
+        ));
     }
 
     /**

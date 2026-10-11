@@ -5,8 +5,6 @@ namespace App\Tests\Api;
 use App\Entity\ExpenseReport;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use Monolog\Handler\TestHandler;
-use Symfony\Component\Mime\Address;
-use Symfony\Component\Mime\Email;
 
 /**
  * Mails à l'envoi d'une note hors sortie : l'adresse de la trésorerie reçoit la note à valider,
@@ -14,34 +12,7 @@ use Symfony\Component\Mime\Email;
  */
 class NoteHorsSortieMailsTest extends ExpenseReportApiTestCase
 {
-    private const ADRESSE_TRESORERIE_ENV = 'NOTES_DE_FRAIS_EMAIL_TRESORERIE';
-    private const LIGNES = '{"lignes":[{"id":"ligne-1","montant":64.9,"description":"Dégaines (x6)"},{"id":"ligne-2","montant":21.5,"description":"Cordelette 6 mm"}]}';
-
-    /** @var array{env: ?string, server: ?string} */
-    private array $adresseTresorerieDOrigine;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        $this->adresseTresorerieDOrigine = [
-            'env' => $_ENV[self::ADRESSE_TRESORERIE_ENV] ?? null,
-            'server' => $_SERVER[self::ADRESSE_TRESORERIE_ENV] ?? null,
-        ];
-    }
-
-    protected function tearDown(): void
-    {
-        foreach (['env' => '_ENV', 'server' => '_SERVER'] as $cle => $superGlobale) {
-            if (null === $this->adresseTresorerieDOrigine[$cle]) {
-                unset($GLOBALS[$superGlobale][self::ADRESSE_TRESORERIE_ENV]);
-            } else {
-                $GLOBALS[$superGlobale][self::ADRESSE_TRESORERIE_ENV] = $this->adresseTresorerieDOrigine[$cle];
-            }
-        }
-
-        parent::tearDown();
-    }
+    private const LIGNES = self::LIGNES_ACHAT;
 
     public function testLEnvoiPrevientLaTresorerie(): void
     {
@@ -101,6 +72,18 @@ class NoteHorsSortieMailsTest extends ExpenseReportApiTestCase
         }
     }
 
+    public function testLeMailALaTresorerieOuvreLaDemande(): void
+    {
+        $note = $this->noteAEnvoyer();
+
+        $this->assertResponseStatus(200, $this->envoyer($this->owner, $note));
+
+        $mail = $this->mailsA($this->adresseTresorerie())[0];
+        $this->assertStringContainsString('Voir la demande', $mail->getHtmlBody());
+        $this->assertStringContainsString('href="http://localhost/notes-de-frais/' . $note->getId() . '"', $mail->getHtmlBody());
+        $this->assertStringContainsString('http://localhost/notes-de-frais/' . $note->getId(), $mail->getTextBody());
+    }
+
     public function testLeDemandeurApprendQueSaNoteEstEnvoyeeALaTresorerie(): void
     {
         $note = $this->noteAEnvoyer();
@@ -141,13 +124,13 @@ class NoteHorsSortieMailsTest extends ExpenseReportApiTestCase
     public function testSansAdresseDeLaTresorerieLEnvoiAboutitEtLOubliEstSignale(): void
     {
         $note = $this->noteAEnvoyer();
-        $_ENV[self::ADRESSE_TRESORERIE_ENV] = $_SERVER[self::ADRESSE_TRESORERIE_ENV] = '';
+        $this->sansAdresseDeTresorerie();
 
         $this->assertResponseStatus(200, $this->envoyer($this->owner, $note));
 
         $this->assertCount(1, $this->getMailerMessages());
         $this->assertCount(1, $this->mailsA($this->owner->getEmail()));
-        $this->assertTrue($this->getContainer()->get(TestHandler::class)->hasErrorThatContains(self::ADRESSE_TRESORERIE_ENV));
+        $this->assertTrue($this->getContainer()->get(TestHandler::class)->hasErrorThatContains('NOTES_DE_FRAIS_EMAIL_TRESORERIE'));
     }
 
     public function testUneNoteDeSortieNePrevientPasLaTresorerie(): void
@@ -171,24 +154,5 @@ class NoteHorsSortieMailsTest extends ExpenseReportApiTestCase
         $this->joindreLesJustificatifs($note, ...$justificatifs);
 
         return $note;
-    }
-
-    private function adresseTresorerie(): string
-    {
-        $adresse = $_ENV[self::ADRESSE_TRESORERIE_ENV] ?? '';
-        $this->assertNotSame('', $adresse, 'L\'adresse de la trésorerie doit être définie pour les tests.');
-
-        return $adresse;
-    }
-
-    /**
-     * @return list<Email>
-     */
-    private function mailsA(string $adresse): array
-    {
-        return array_values(array_filter(
-            $this->getMailerMessages(),
-            static fn (Email $mail) => \in_array($adresse, array_map(static fn (Address $destinataire) => $destinataire->getAddress(), $mail->getTo()), true),
-        ));
     }
 }

@@ -56,6 +56,11 @@ use Symfony\Component\Validator\Constraints as Assert;
             uriTemplate: '/admin/notes-de-frais',
             security: "is_granted('ROLE_ADMIN') or is_granted('manage_expense_reports')",
         ),
+        // Déclarée avant `/notes-de-frais/{id}`, qui la masquerait sinon. Filtrée par NotesAValider.
+        new GetCollection(
+            uriTemplate: '/notes-de-frais/a-valider',
+            security: "is_granted('ROLE_USER')",
+        ),
         new Get(
             uriTemplate: '/notes-de-frais/{id}',
             security: "is_granted('ROLE_ADMIN') or is_granted('access_expense_report', object)",

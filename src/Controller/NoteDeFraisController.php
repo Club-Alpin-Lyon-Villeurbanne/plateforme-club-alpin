@@ -59,6 +59,31 @@ class NoteDeFraisController extends AbstractController
         ]);
     }
 
+    #[Route(path: '/notes-de-frais/a-valider', name: 'notes_de_frais_a_valider', methods: ['GET'])]
+    public function aValider(Request $request, Environment $twig, string $baseUrl): Response
+    {
+        $this->pageDisponible();
+
+        $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal('apiBaseUrl', $baseUrl);
+
+        return $this->render('notes-de-frais/a-valider.html.twig', [
+            'donnees' => ['traitees' => $request->query->has('traitees')],
+        ]);
+    }
+
+    // Cible du lien « Voir la demande » des mails. L'API dit qui peut lire la note.
+    #[Route(path: '/notes-de-frais/{id}', name: 'notes_de_frais_detail', requirements: ['id' => '\d+'], methods: ['GET'])]
+    public function detail(int $id, Environment $twig, string $baseUrl): Response
+    {
+        $this->pageDisponible();
+
+        $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal('apiBaseUrl', $baseUrl);
+
+        return $this->render('notes-de-frais/detail.html.twig', [
+            'donnees' => ['noteId' => $id],
+        ]);
+    }
+
     private function pageDisponible(): void
     {
         // Les clubs qui n'utilisent pas les notes de frais ne doivent pas voir que la page existe.

@@ -27,6 +27,9 @@
             {% endfor %}
         </ul>
     {% endif %}
+    <p>
+        <a href="{{ lien }}" style="display: inline-block; padding: 8px 16px; border-radius: 6px; background-color: #0369a1; color: #ffffff; font-weight: bold; text-decoration: none;">Voir la demande</a>
+    </p>
 {% endblock %}
 
 {% block inner_txt %}
@@ -51,4 +54,6 @@ Mot du demandeur :
 - {{ avertissement }}
 {% endfor %}
 {% endif %}
+
+Voir la demande : {{ lien }}
 {% endblock %}

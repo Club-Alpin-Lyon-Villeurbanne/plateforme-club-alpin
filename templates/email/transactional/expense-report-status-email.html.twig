@@ -1,12 +1,18 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
-{% block subject -%}
-    {% if report.type.estHorsSortie -%}
+{% macro phrase_hors_sortie(report, status, auteur) -%}
     Votre note de frais « {{ report.objet }} »
     {%- if status == 'submitted' %} est envoyée à la trésorerie
-    {%- elseif status == 'rejected' %} a été refusée
+    {%- elseif status == 'rejected' %} vous est renvoyée pour correction
+    {%- elseif status == 'approved' %} a été validée{{ auteur ? ' par ' ~ auteur }} et transmise à la trésorerie
     {%- elseif status == 'accounted' %} a été comptabilisée
     {%- else %} a été acceptée{% endif %}.
+{%- endmacro %}
+
+{% block subject -%}
+    {% import _self as notes -%}
+    {% if report.type.estHorsSortie -%}
+    {{ notes.phrase_hors_sortie(report, status, auteur|default(null)) }}
     {%- else -%}
     Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} 
     {%- if status == 'submitted' %} est envoyée à la comptabilité
@@ -16,19 +22,15 @@
     {%- endif %}
 {%- endblock %}
 
-{% block inner_html %}{% if report.type.estHorsSortie %}
+{% block inner_html %}{% import _self as notes %}{% if report.type.estHorsSortie %}
 <div>
     <p>
-        Votre note de frais « {{ report.objet }} »
-            {%- if status == 'submitted' %} est envoyée à la trésorerie
-            {%- elseif status == 'rejected' %} a été refusée
-            {%- elseif status == 'accounted' %} a été comptabilisée
-            {%- else %} a été acceptée{% endif %}.
+        {{ notes.phrase_hors_sortie(report, status, auteur|default(null)) }}
     </p>
 
     {% if status == 'rejected' and report.statusComment %}
     <p>
-        Message laissé par la trésorerie : "{{ report.statusComment }}"
+        Message laissé par {{ auteur|default('la trésorerie') }} : "{{ report.statusComment }}"
     </p>
     {% endif %}
     <h2>Détails</h2>
@@ -199,15 +201,11 @@
 </div>
 {% endif %}{% endblock %}
 
-{% block inner_txt %}{% if report.type.estHorsSortie %}
-Votre note de frais « {{ report.objet }} »
-    {%- if status == 'submitted' %} est envoyée à la trésorerie
-    {%- elseif status == 'rejected' %} a été refusée
-    {%- elseif status == 'accounted' %} a été comptabilisée
-    {%- else %} a été acceptée{% endif %}.
+{% block inner_txt %}{% import _self as notes %}{% if report.type.estHorsSortie %}
+{{ notes.phrase_hors_sortie(report, status, auteur|default(null)) }}
 
 {% if status == 'rejected' and report.statusComment %}
-Message laissé par la trésorerie : "{{ report.statusComment }}"
+Message laissé par {{ auteur|default('la trésorerie') }} : "{{ report.statusComment }}"
 
 {% endif %}
 - Demandeur : {{ report.user.firstname }} {{ report.user.lastname }}

@@ -3,12 +3,14 @@
 namespace App\EventListener\Entity;
 
 use App\Entity\ExpenseReport;
+use App\Entity\User;
 use App\Mailer\Mailer;
 use App\Service\ExpenseReportCalculator;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 use Doctrine\ORM\UnitOfWork;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[AsDoctrineListener(event: Events::onFlush)]
@@ -18,6 +20,7 @@ class ExpenseReportStatusChangeSubscriber
         private readonly Mailer $mailer,
         private readonly ExpenseReportCalculator $calculator,
         private readonly UrlGeneratorInterface $urlGenerator,
+        private readonly Security $security,
     ) {
     }
 
@@ -90,8 +93,12 @@ class ExpenseReportStatusChangeSubscriber
             'description' => $ligne['description'] ?? null,
         ], $note->lignes());
 
+        // L'auteur du changement, celui que l'historique des statuts enregistre.
+        $auteur = $this->security->getUser();
+
         return [
             'report' => $note,
+            'auteur' => $auteur instanceof User ? $auteur->getFullName() : null,
             'status' => $note->getStatus()->value,
             'lignes' => $lignes,
             'formattedTotal' => $this->calculator->formatEuros($montants['totalDeclare']),

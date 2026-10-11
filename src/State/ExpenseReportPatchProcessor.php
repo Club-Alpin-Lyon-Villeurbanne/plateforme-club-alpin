@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 /**
  * Modification d'une note de frais. L'envoi d'une note hors sortie (brouillon ou note à
  * corriger qui passe à « envoyée ») fige ses montants dans la même écriture que le changement
- * de statut, puis prévient la trésorerie.
+ * de statut, puis prévient la trésorerie. Sa validation lui transmet le récapitulatif.
  */
 class ExpenseReportPatchProcessor implements ProcessorInterface
 {
@@ -30,6 +30,7 @@ class ExpenseReportPatchProcessor implements ProcessorInterface
     public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): mixed
     {
         $envoi = $data instanceof ExpenseReport && $this->estUnEnvoiHorsSortie($data);
+        $validation = $data instanceof ExpenseReport && $this->estUneValidationHorsSortie($data);
 
         if ($envoi) {
             $montants = $this->calculator->calculerNoteHorsSortie($data);
@@ -41,6 +42,9 @@ class ExpenseReportPatchProcessor implements ProcessorInterface
         if ($envoi) {
             $this->notifications->noteEnvoyee($data);
         }
+        if ($validation) {
+            $this->notifications->noteValidee($data);
+        }
 
         return $resultat;
     }
@@ -50,5 +54,12 @@ class ExpenseReportPatchProcessor implements ProcessorInterface
         return $note->getType()->estHorsSortie()
             && ExpenseReportStatusEnum::SUBMITTED === $note->getStatus()
             && \in_array($this->originalState->status($note), [ExpenseReportStatusEnum::DRAFT, ExpenseReportStatusEnum::REJECTED], true);
+    }
+
+    private function estUneValidationHorsSortie(ExpenseReport $note): bool
+    {
+        return $note->getType()->estHorsSortie()
+            && ExpenseReportStatusEnum::APPROVED === $note->getStatus()
+            && ExpenseReportStatusEnum::SUBMITTED === $this->originalState->status($note);
     }
 }

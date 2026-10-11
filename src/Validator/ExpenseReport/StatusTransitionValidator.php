@@ -45,6 +45,17 @@ class StatusTransitionValidator
                 ->setParameter('{{ newStatus }}', $newStatus->value)
                 ->atPath('status')
                 ->addViolation();
+
+            return;
+        }
+
+        // Une note hors sortie renvoyée doit dire au demandeur quoi corriger ; facultatif pour une sortie.
+        if ($expenseReport->getType()->estHorsSortie()
+            && ExpenseReportStatusEnum::REJECTED === $newStatus
+            && '' === trim((string) $expenseReport->getStatusComment())) {
+            $context->buildViolation('Un message au demandeur est obligatoire pour lui renvoyer la note.')
+                ->atPath('statusComment')
+                ->addViolation();
         }
     }
 

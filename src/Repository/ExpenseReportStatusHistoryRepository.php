@@ -31,4 +31,24 @@ class ExpenseReportStatusHistoryRepository extends ServiceEntityRepository
 
         return null === $date ? null : new \DateTimeImmutable($date);
     }
+
+    /**
+     * Dernière validation ou dernier renvoi de la note, avec son auteur.
+     */
+    public function derniereDecision(ExpenseReport $note): ?ExpenseReportStatusHistory
+    {
+        return $this->createQueryBuilder('h')
+            ->addSelect('auteur')
+            ->join('h.changedBy', 'auteur')
+            ->andWhere('h.expenseReport = :note')
+            ->andWhere('h.newStatus IN (:decisions)')
+            ->setParameter('note', $note)
+            ->setParameter('decisions', [ExpenseReportStatusEnum::APPROVED->value, ExpenseReportStatusEnum::REJECTED->value])
+            // Deux changements dans la même seconde : l'ordre d'insertion départage.
+            ->orderBy('h.changedAt', 'DESC')
+            ->addOrderBy('h.id', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
 }

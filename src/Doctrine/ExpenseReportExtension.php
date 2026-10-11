@@ -7,6 +7,7 @@ use ApiPlatform\Doctrine\Orm\Extension\QueryItemExtensionInterface;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use ApiPlatform\Metadata\Operation;
 use App\Entity\ExpenseReport;
+use App\Service\NoteDeFrais\NotesAValider;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use App\Utils\Enums\ExpenseReportTypeEnum;
 use Doctrine\ORM\QueryBuilder;
@@ -17,6 +18,7 @@ use Symfony\Bundle\SecurityBundle\Security;
  * - Par défaut : filtré par l'utilisateur connecté (sécurité par défaut)
  * - /admin/notes-de-frais : pas de filtrage par utilisateur (réservé aux admins/gestionnaires via security),
  *   mais seulement les notes de sortie : compta-club lit `sortie.*` sans tester le cas vide
+ * - /notes-de-frais/a-valider : les notes hors sortie que l'utilisateur peut traiter (NotesAValider)
  * - Exclut les brouillons par défaut (sauf si inclure_brouillons=true)
  * - Eager loading des relations pour éviter le problème N+1
  * - Tri par défaut : created_at DESC
@@ -24,7 +26,8 @@ use Symfony\Bundle\SecurityBundle\Security;
 final class ExpenseReportExtension implements QueryCollectionExtensionInterface, QueryItemExtensionInterface
 {
     public function __construct(
-        private Security $security
+        private Security $security,
+        private NotesAValider $notesAValider,
     ) {
     }
 
@@ -66,8 +69,12 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
             ->leftJoin(sprintf('%s.user', $rootAlias), 'user')
             ->leftJoin(sprintf('%s.event', $rootAlias), 'event');
 
-        // 1. Filtrage par utilisateur (sauf sur /admin/notes-de-frais, limité aux notes de sortie)
-        if ('/admin/notes-de-frais' === $operation?->getUriTemplate()) {
+        $filters = $context['filters'] ?? [];
+
+        // 1. Filtrage par utilisateur, sauf sur les listes de la trésorerie
+        if ('/notes-de-frais/a-valider' === $operation?->getUriTemplate()) {
+            $this->notesAValider->restreindre($queryBuilder, $rootAlias, isset($filters['status']));
+        } elseif ('/admin/notes-de-frais' === $operation?->getUriTemplate()) {
             $queryBuilder->andWhere(sprintf('%s.type = :type_sortie', $rootAlias))
                 ->setParameter('type_sortie', ExpenseReportTypeEnum::SORTIE->value);
         } elseif ($user) {
@@ -76,7 +83,6 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
         }
 
         // 2. Exclure les brouillons par défaut (sauf si inclure_brouillons=true)
-        $filters = $context['filters'] ?? [];
         $includeDrafts = isset($filters['inclure_brouillons']) && 'true' === $filters['inclure_brouillons'];
 
         if (!$includeDrafts) {
