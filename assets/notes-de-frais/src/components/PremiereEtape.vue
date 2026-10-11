@@ -1,7 +1,7 @@
 <template>
   <div class="tw-space-y-5 tw-p-8">
-    <!-- Le type ne change plus une fois la demande créée. -->
-    <div v-if="typeModifiable" class="tw-flex tw-gap-6 tw-text-sm" role="radiogroup" aria-label="Type de demande">
+    <!-- Le type ne change plus une fois la demande créée ; la formation n'est proposée qu'aux encadrants. -->
+    <div v-if="typeModifiable && formationPossible" class="tw-flex tw-gap-6 tw-text-sm" role="radiogroup" aria-label="Type de demande">
       <label v-for="(libelles, type) in TYPES" :key="type" class="tw-flex tw-items-center tw-gap-2">
         <input v-model="demande.type" type="radio" name="type" :value="type" /> {{ libelles.choix }}
       </label>
@@ -11,7 +11,7 @@
       <label for="f-commission" :class="libelle">Commission</label>
       <select id="f-commission" v-model="demande.commissionId" :class="['tw-mt-1', champ]" aria-describedby="f-valideurs">
         <option :value="null">Choisir…</option>
-        <option v-for="commission in commissions" :key="commission.id" :value="commission.id">
+        <option v-for="commission in commissionsProposees" :key="commission.id" :value="commission.id">
           {{ commission.titre }}
         </option>
       </select>
@@ -74,6 +74,8 @@ const props = defineProps<{
   /** Vrai tant que la demande n'est pas créée. */
   typeModifiable: boolean;
   commissions: CommissionProposee[];
+  /** Commission enregistrée d'une demande reprise : toujours proposée. */
+  commissionEnregistree: number | null;
   /** Null quand le délai ne s'applique pas : pas de délai pour le type, ou note renvoyée à corriger. */
   delaiEnvoiJours: number | null;
   erreurs: string[];
@@ -81,6 +83,28 @@ const props = defineProps<{
 }>();
 const demande = defineModel<Demande>({ required: true });
 const emit = defineEmits<{ continuer: [] }>();
+
+const formationPossible = computed(() => props.commissions.some((commission) => commission.formationPossible));
+
+// Une formation ne se demande que sur une commission où l'on encadre : la règle vient du serveur.
+const commissionsProposees = computed(() =>
+  demande.value.type === "formation"
+    ? props.commissions.filter((commission) => commission.formationPossible || commission.id === props.commissionEnregistree)
+    : props.commissions,
+);
+
+watch(
+  () => demande.value.type,
+  () => {
+    const ids = commissionsProposees.value.map((commission) => commission.id);
+    if (demande.value.commissionId !== null && !ids.includes(demande.value.commissionId)) {
+      demande.value.commissionId = null;
+    }
+    if (demande.value.commissionId === null && ids.length === 1) {
+      demande.value.commissionId = ids[0];
+    }
+  },
+);
 
 const valideurs = computed(() => {
   const commission = props.commissions.find((une) => une.id === demande.value.commissionId);

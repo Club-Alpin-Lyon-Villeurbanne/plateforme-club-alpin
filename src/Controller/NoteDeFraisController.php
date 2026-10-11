@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Repository\CommissionRepository;
 use App\Security\Voter\ExpenseReportVoter;
+use App\Service\ExpenseReportCalculator;
+use App\Service\NoteDeFrais\ControlesNoteHorsSortie;
 use App\Service\NoteDeFrais\ValideursNoteHorsSortie;
 use App\Twig\JavascriptGlobalsExtension;
 use App\Utils\Enums\ExpenseReportTypeEnum;
@@ -42,7 +44,7 @@ class NoteDeFraisController extends AbstractController
     }
 
     #[Route(path: '/notes-de-frais/nouvelle', name: 'notes_de_frais_nouvelle', methods: ['GET'])]
-    public function nouvelle(Request $request, CommissionRepository $commissionRepository, ValideursNoteHorsSortie $valideurs, Environment $twig, string $baseUrl): Response
+    public function nouvelle(Request $request, CommissionRepository $commissionRepository, ValideursNoteHorsSortie $valideurs, ControlesNoteHorsSortie $controles, ExpenseReportCalculator $calculator, Environment $twig, string $baseUrl): Response
     {
         $this->pageDisponible();
 
@@ -57,6 +59,8 @@ class NoteDeFraisController extends AbstractController
                 'id' => $commission->getId(),
                 'titre' => $commission->getTitle(),
                 'valideurs' => ValideursNoteHorsSortie::exposer($valideursParCommission[$commission->getId()] ?? []),
+                // La page ne propose une formation que là où l'API l'accepterait.
+                'formationPossible' => $utilisateur instanceof User && $controles->peutDemanderUneFormation($utilisateur, $commission),
             ];
         }
 
@@ -66,7 +70,11 @@ class NoteDeFraisController extends AbstractController
             'donnees' => [
                 'commissions' => $commissions,
                 'delaisEnvoiJours' => $this->configNotesDeFrais['horsSortie']['delaiEnvoiJours'],
-                'formation' => $this->baremeFormation(),
+                // Pour afficher le calcul d'une ligne de voiture pendant la saisie ; l'API fait foi.
+                'formation' => [
+                    'tauxKilometrique' => $calculator->tauxKilometriqueEnVigueur(),
+                    'natures' => ExpenseReportTypeEnum::FORMATION->natures(),
+                ],
                 // Reprise d'un brouillon : l'application le charge par l'API.
                 'noteId' => $request->query->getInt('id') ?: null,
             ],
@@ -104,23 +112,8 @@ class NoteDeFraisController extends AbstractController
                 // Pour expliquer à un gestionnaire pourquoi il ne peut pas valider sa propre note.
                 'utilisateurId' => $utilisateur instanceof User ? $utilisateur->getId() : null,
                 'gestionnaire' => $this->isGranted(ExpenseReportVoter::MANAGE_EXPENSE_REPORTS),
-                'formation' => $this->baremeFormation(),
             ],
         ]);
-    }
-
-    /**
-     * Natures d'une ligne de formation et taux kilométrique, pour afficher le calcul d'une ligne de
-     * voiture ; les totaux, le remboursable et les avertissements viennent de l'API.
-     *
-     * @return array{tauxKilometrique: float, natures: array<string, string>}
-     */
-    private function baremeFormation(): array
-    {
-        return [
-            'tauxKilometrique' => (float) $this->configNotesDeFrais['horsSortie']['formation']['tauxKilometrique'],
-            'natures' => ExpenseReportTypeEnum::FORMATION->natures(),
-        ];
     }
 
     private function pageDisponible(): void

@@ -2,8 +2,10 @@
 
 namespace App\Service\NoteDeFrais;
 
+use App\Entity\Commission;
 use App\Entity\ExpenseAttachment;
 use App\Entity\ExpenseReport;
+use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Repository\ExpenseReportStatusHistoryRepository;
 use App\Service\ExpenseReportCalculator;
@@ -101,12 +103,6 @@ final class ControlesNoteHorsSortie
                 'controle' => $this->choixDonOuRemboursementManquant(...),
             ],
             [
-                'champ' => 'totalRemboursable',
-                'moments' => [MomentDeControle::LECTURE],
-                'niveau' => NiveauDeControle::AVERTISSEMENT,
-                'controle' => $this->plafondApplique(...),
-            ],
-            [
                 'champ' => 'totalDeclare',
                 'moments' => [MomentDeControle::LECTURE],
                 'niveau' => NiveauDeControle::AVERTISSEMENT,
@@ -160,18 +156,28 @@ final class ControlesNoteHorsSortie
         $envoi = $this->historique->dateDernierEnvoi($note);
 
         return null !== $envoi && $date->modify(sprintf('+%d days', $delai)) < $envoi->setTime(0, 0)
-            ? sprintf('Achat daté de plus de %d jours avant son envoi.', $delai)
+            ? sprintf('%s daté de plus de %d jours avant son envoi.', ucfirst($note->getType()->libelle()), $delai)
             : null;
+    }
+
+    /**
+     * Règle du contrôle de création d'une formation, partagée avec la page de demande qui ne
+     * propose la formation que sur ces commissions.
+     */
+    public function peutDemanderUneFormation(User $demandeur, Commission $commission): bool
+    {
+        return $demandeur->hasAttribute(self::ROLES_D_ENCADREMENT, $commission->getCode());
     }
 
     private function formationSansRoleDEncadrement(ExpenseReport $note): ?string
     {
         $commission = $note->getCommission();
-        if (ExpenseReportTypeEnum::FORMATION !== $note->getType() || null === $commission) {
+        $demandeur = $note->getUser();
+        if (ExpenseReportTypeEnum::FORMATION !== $note->getType() || null === $commission || null === $demandeur) {
             return null;
         }
 
-        return $note->getUser()?->hasAttribute(self::ROLES_D_ENCADREMENT, $commission->getCode())
+        return $this->peutDemanderUneFormation($demandeur, $commission)
             ? null
             : 'Seuls les encadrants de la commission peuvent demander le remboursement d\'une formation.';
     }
@@ -213,15 +219,6 @@ final class ControlesNoteHorsSortie
     private function choixDonOuRemboursementManquant(ExpenseReport $note): ?string
     {
         return null === $note->isRefundRequired() ? 'Il manque le choix entre remboursement et don.' : null;
-    }
-
-    private function plafondApplique(ExpenseReport $note): ?string
-    {
-        $montants = $this->calculator->montantsNoteHorsSortie($note);
-
-        return $montants['totalRemboursable'] < $montants['totalDeclare']
-            ? sprintf('dont %s remboursables selon les plafonds du club', $this->calculator->formatEuros($montants['totalRemboursable']))
-            : null;
     }
 
     private function auDelaDuSeuil(ExpenseReport $note): ?string

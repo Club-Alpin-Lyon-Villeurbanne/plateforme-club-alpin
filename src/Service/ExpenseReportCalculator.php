@@ -15,9 +15,8 @@ class ExpenseReportCalculator
     private float $tauxKilometriqueVoiture;
     private float $tauxKilometriqueMinibus;
     private float $divisionPeage;
-    private float $tauxKilometriqueFormation;
-    /** @var array<string, array{montant: int|float, portee: string}> */
-    private array $plafondsFormation;
+    /** @var array<string, mixed> barème des notes hors sortie, lu seulement pour elles */
+    private array $horsSortie;
 
     /**
      * @param array $config Exemple :
@@ -34,8 +33,7 @@ class ExpenseReportCalculator
         $this->tauxKilometriqueVoiture = $config['tauxKilometriqueVoiture'] ?? 0.0;
         $this->tauxKilometriqueMinibus = $config['tauxKilometriqueMinibus'] ?? 0.0;
         $this->divisionPeage = $config['divisionPeage'] ?? 1.0;
-        $this->tauxKilometriqueFormation = (float) ($config['horsSortie']['formation']['tauxKilometrique'] ?? 0.0);
-        $this->plafondsFormation = $config['horsSortie']['formation']['plafonds'] ?? [];
+        $this->horsSortie = $config['horsSortie'] ?? [];
     }
 
     /**
@@ -175,7 +173,7 @@ class ExpenseReportCalculator
      */
     public function montantsNoteHorsSortie(ExpenseReport $note): array
     {
-        if (!$note->getStatus()?->isEditableByOwner() && null !== $note->getTotalDeclare()) {
+        if ($this->estFigee($note) && null !== $note->getTotalDeclare()) {
             return [
                 'totalDeclare' => (float) $note->getTotalDeclare(),
                 'totalRemboursable' => (float) $note->getTotalRemboursable(),
@@ -186,40 +184,125 @@ class ExpenseReportCalculator
     }
 
     /**
-     * Total déclaré et total remboursable d'après les lignes et le barème en vigueur. Un achat est
-     * retenu au réel, sans plafond. Une formation applique les plafonds de chaque nature, sur
-     * chaque ligne ou sur le total de la nature dans la note.
+     * À l'envoi : fige les montants, et le taux kilométrique d'une formation, du barème en vigueur.
+     */
+    public function figerNoteHorsSortie(ExpenseReport $note): void
+    {
+        $montants = $this->calculerNoteHorsSortie($note);
+        $taux = ExpenseReportTypeEnum::FORMATION === $note->getType() ? $this->tauxKilometriqueEnVigueur() : null;
+        $note->figerMontants($montants['totalDeclare'], $montants['totalRemboursable'], $taux);
+    }
+
+    /**
+     * Total déclaré et total remboursable d'après les lignes et le barème en vigueur : plafonds de
+     * chaque nature, sur chaque ligne ou sur le total de la nature dans la note, puis plafond du
+     * total de la note.
      *
      * @return array{totalDeclare: float, totalRemboursable: float}
      */
     public function calculerNoteHorsSortie(ExpenseReport $note): array
     {
-        $plafonds = ExpenseReportTypeEnum::FORMATION === $note->getType() ? $this->plafondsFormation : [];
+        $parNature = $this->bareme($note->getType()->value, 'plafonds', 'parNature');
+        $plafondDuTotal = $this->bareme($note->getType()->value, 'plafonds', 'total');
+        $taux = $this->tauxKilometriqueEnVigueur();
         $total = 0.0;
         $remboursable = 0.0;
-        $parNature = [];
+        $sommesParNature = [];
         foreach ($note->lignes() as $ligne) {
-            $montant = $this->montantDeLaLigne($ligne);
+            $montant = $this->montantDeLaLigne($ligne, $taux);
             $total += $montant;
 
             $nature = $ligne['nature'] ?? null;
-            $plafond = \is_string($nature) ? ($plafonds[$nature] ?? null) : null;
+            $plafond = \is_string($nature) ? ($parNature[$nature] ?? null) : null;
             if (null === $plafond) {
                 $remboursable += $montant;
             } elseif ('ligne' === $plafond['portee']) {
                 $remboursable += min($montant, (float) $plafond['montant']);
             } else {
-                $parNature[$nature] = ($parNature[$nature] ?? 0.0) + $montant;
+                $sommesParNature[$nature] = ($sommesParNature[$nature] ?? 0.0) + $montant;
             }
         }
         // Une portée inconnue de la configuration lève une erreur au lieu d'être ignorée.
-        foreach ($parNature as $nature => $somme) {
-            $remboursable += match ($plafonds[$nature]['portee']) {
-                'note' => min($somme, (float) $plafonds[$nature]['montant']),
+        foreach ($sommesParNature as $nature => $somme) {
+            $remboursable += match ($parNature[$nature]['portee']) {
+                'note' => min($somme, (float) $parNature[$nature]['montant']),
             };
+        }
+        if (null !== $plafondDuTotal) {
+            $remboursable = min($remboursable, (float) $plafondDuTotal);
         }
 
         return ['totalDeclare' => round($total, 2), 'totalRemboursable' => round($remboursable, 2)];
+    }
+
+    /**
+     * Lignes d'une note hors sortie telles que le détail et les mails les montrent : la description
+     * d'un achat ou la nature d'une formation, le calcul de la voiture, et le montant retenu. Une
+     * note envoyée garde le taux kilométrique de son envoi.
+     *
+     * @return list<array{id: ?string, nature: ?string, libelle: ?string, detail: ?string, montant: float}>
+     */
+    public function lignesAffichees(ExpenseReport $note): array
+    {
+        $natures = $note->getType()->natures();
+        $taux = ($this->estFigee($note) ? $note->tauxKilometriqueFige() : null) ?? $this->tauxKilometriqueEnVigueur();
+
+        return array_map(function (array $ligne) use ($natures, $taux): array {
+            $nature = \is_string($ligne['nature'] ?? null) ? $ligne['nature'] : null;
+            $libelle = null !== $nature ? ($natures[$nature] ?? $nature) : ($ligne['description'] ?? null);
+            $distance = $ligne['distance'] ?? null;
+
+            return [
+                'id' => \is_string($ligne['id'] ?? null) ? $ligne['id'] : null,
+                'nature' => $nature,
+                'libelle' => \is_string($libelle) && '' !== $libelle ? $libelle : null,
+                'detail' => 'distance' === ExpenseReportTypeEnum::champDeLaSaisie($ligne) && (\is_int($distance) || \is_float($distance))
+                    ? sprintf('%s km × %s', (new \NumberFormatter('fr_FR', \NumberFormatter::DECIMAL))->format($distance), $this->formatEuros($taux))
+                    : null,
+                'montant' => $this->montantDeLaLigne($ligne, $taux),
+            ];
+        }, $note->lignes());
+    }
+
+    /**
+     * « dont X € remboursables selon les plafonds du club », à lire avec le total quand un plafond
+     * s'applique.
+     *
+     * @param array{totalDeclare: float, totalRemboursable: float} $montants
+     */
+    public function partRemboursable(array $montants): ?string
+    {
+        return $montants['totalRemboursable'] < $montants['totalDeclare']
+            ? sprintf('dont %s remboursables selon les plafonds du club', $this->formatEuros($montants['totalRemboursable']))
+            : null;
+    }
+
+    public function tauxKilometriqueEnVigueur(): float
+    {
+        return (float) $this->bareme('formation', 'tauxKilometrique');
+    }
+
+    /**
+     * Une valeur du barème hors sortie ; une clé absente ou renommée arrête le calcul au lieu de
+     * donner un taux ou un plafond nul. Une valeur peut être nulle (~ : pas de plafond).
+     */
+    private function bareme(string ...$cles): mixed
+    {
+        $valeur = $this->horsSortie;
+        foreach ($cles as $cle) {
+            if (!\is_array($valeur) || !\array_key_exists($cle, $valeur)) {
+                throw new \LogicException(sprintf('Paramètre expense_report.horsSortie.%s absent de la configuration.', implode('.', $cles)));
+            }
+            $valeur = $valeur[$cle];
+        }
+
+        return $valeur;
+    }
+
+    // Une note qui a quitté son demandeur garde ce qui a été figé à son envoi.
+    private function estFigee(ExpenseReport $note): bool
+    {
+        return !$note->getStatus()?->isEditableByOwner();
     }
 
     /**
@@ -228,7 +311,7 @@ class ExpenseReportCalculator
      *
      * @param array<string, mixed> $ligne
      */
-    public function montantDeLaLigne(array $ligne): float
+    private function montantDeLaLigne(array $ligne, float $taux): float
     {
         $champ = ExpenseReportTypeEnum::champDeLaSaisie($ligne);
         $saisie = $ligne[$champ] ?? null;
@@ -236,50 +319,7 @@ class ExpenseReportCalculator
             return 0.0;
         }
 
-        return 'distance' === $champ
-            ? round($saisie * $this->tauxKilometriqueFormation, 2)
-            : (float) $saisie;
-    }
-
-    /**
-     * Lignes d'une note hors sortie telles que les mails les montrent : la description d'un achat
-     * ou la nature d'une formation, le détail de son calcul, et le montant retenu.
-     *
-     * @return list<array{id: ?string, libelle: ?string, detail: ?string, montant: string}>
-     */
-    public function lignesAffichees(ExpenseReport $note): array
-    {
-        $natures = $note->getType()->natures();
-
-        return array_map(function (array $ligne) use ($natures): array {
-            $nature = $ligne['nature'] ?? null;
-            $libelle = \is_string($nature) ? ($natures[$nature] ?? $nature) : ($ligne['description'] ?? null);
-
-            return [
-                'id' => \is_string($ligne['id'] ?? null) ? $ligne['id'] : null,
-                'libelle' => \is_string($libelle) && '' !== $libelle ? $libelle : null,
-                'detail' => $this->detailDeLaLigne($ligne),
-                'montant' => $this->formatEuros($this->montantDeLaLigne($ligne)),
-            ];
-        }, $note->lignes());
-    }
-
-    /**
-     * « 220 km × 0,40 € » pour la voiture, « 1 nuit » pour l'hébergement, qui se déclare nuit par nuit.
-     *
-     * @param array<string, mixed> $ligne
-     */
-    private function detailDeLaLigne(array $ligne): ?string
-    {
-        $distance = $ligne['distance'] ?? null;
-
-        return match ($ligne['nature'] ?? null) {
-            ExpenseReportTypeEnum::NATURE_EN_KILOMETRES => \is_int($distance) || \is_float($distance)
-                ? sprintf('%s km × %s', (new \NumberFormatter('fr_FR', \NumberFormatter::DECIMAL))->format($distance), $this->formatEuros($this->tauxKilometriqueFormation))
-                : null,
-            'hebergement' => '1 nuit',
-            default => null,
-        };
+        return 'distance' === $champ ? round($saisie * $taux, 2) : (float) $saisie;
     }
 
     /**

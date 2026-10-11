@@ -14,10 +14,10 @@ use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
- * Ajoute à une note hors sortie, en lecture seule, ce que le serveur calcule : montants,
- * avertissements, valideurs, date d'envoi, dernière décision, et si l'utilisateur connecté peut
- * la valider ou la renvoyer. Retire le choix entre don et remboursement pour qui ne doit pas le
- * connaître. Une note de sortie garde exactement sa forme.
+ * Ajoute à une note hors sortie, en lecture seule, ce que le serveur calcule : montants, lignes
+ * telles qu'affichées, avertissements, valideurs, date d'envoi, dernière décision, et si
+ * l'utilisateur connecté peut la valider ou la renvoyer. Retire le choix entre don et
+ * remboursement pour qui ne doit pas le connaître. Une note de sortie garde exactement sa forme.
  */
 final class NoteHorsSortieNormalizer implements NormalizerInterface, NormalizerAwareInterface
 {
@@ -51,6 +51,7 @@ final class NoteHorsSortieNormalizer implements NormalizerInterface, NormalizerA
             $donnees,
             $this->calculator->montantsNoteHorsSortie($object),
             [
+                'lignesAffichees' => $this->calculator->lignesAffichees($object),
                 'avertissements' => $this->controles->avertissements($object),
                 'dateEnvoi' => $this->dateEnvoi($object)?->format(\DATE_ATOM),
                 'valideurs' => ValideursNoteHorsSortie::exposer($this->valideurs->pour($object)),

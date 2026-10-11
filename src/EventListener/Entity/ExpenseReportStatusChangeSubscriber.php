@@ -100,9 +100,9 @@ class ExpenseReportStatusChangeSubscriber
             'status' => $note->getStatus()->value,
             // À qui la note est envoyée ; vide : à la trésorerie.
             'valideurs' => array_map(static fn (User $valideur) => $valideur->getFullName(), $this->valideurs->pour($note)),
-            'lignes' => $this->calculator->lignesAffichees($note),
+            'lignes' => array_map(fn (array $ligne) => array_merge($ligne, ['montant' => $this->calculator->formatEuros($ligne['montant'])]), $this->calculator->lignesAffichees($note)),
             'formattedTotal' => $this->calculator->formatEuros($montants['totalDeclare']),
-            'formattedReimbursable' => $this->calculator->formatEuros($montants['totalRemboursable']),
+            'partRemboursable' => $this->calculator->partRemboursable($montants),
         ];
     }
 }

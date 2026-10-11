@@ -1,5 +1,5 @@
 <template>
-  <div class="tw-grid tw-grid-cols-[1.25rem_8.5rem_7.5rem_minmax(0,1fr)_2rem] tw-items-center tw-gap-3 tw-py-2.5">
+  <div class="tw-grid tw-grid-cols-[1.25rem_11rem_6.5rem_minmax(0,1fr)_2rem] tw-items-center tw-gap-3 tw-py-2.5">
     <!-- Numéro repris par les messages de l'API (« dépense 2 ») ; les champs le portent déjà dans leur nom. -->
     <span class="tw-text-right tw-text-xs tw-tabular-nums tw-text-gray-500" aria-hidden="true">{{ numero }}.</span>
     <select v-model="nature" :class="champ" :aria-label="`Nature de la dépense ${numero}`">

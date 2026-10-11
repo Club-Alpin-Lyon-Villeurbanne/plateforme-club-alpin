@@ -12,6 +12,8 @@ export interface CommissionProposee {
   titre: string;
   /** Calculés pour l'utilisateur connecté, lui-même exclu ; vide : la trésorerie validera. */
   valideurs: Valideur[];
+  /** L'utilisateur y a un rôle d'encadrement : l'API accepterait qu'il y demande une formation. */
+  formationPossible: boolean;
 }
 
 /** Transmis par le gabarit pour afficher le calcul d'une ligne de voiture ; l'API fait foi pour les montants. */
@@ -52,6 +54,18 @@ export interface Ligne {
   nature?: string;
   /** Kilomètres d'une voiture. */
   distance?: number | null;
+}
+
+/** Une ligne telle que le serveur la présente, au taux kilométrique figé pour une note envoyée. */
+export interface LigneAffichee {
+  id: string | null;
+  /** Null pour un achat. */
+  nature: string | null;
+  /** Nature d'une formation, description d'un achat. */
+  libelle: string | null;
+  /** « 220 km × 0,40 € » pour la voiture. */
+  detail: string | null;
+  montant: number;
 }
 
 export interface PieceJointe {
@@ -101,6 +115,7 @@ export interface NoteDeFrais {
   /** Calculés par le serveur, figés à l'envoi. */
   totalDeclare: number;
   totalRemboursable: number;
+  lignesAffichees: LigneAffichee[];
   /** Messages à afficher tels quels. */
   avertissements: string[];
   /** Null pour un brouillon. */
@@ -127,7 +142,6 @@ export interface DonneesDetail {
   noteId: number;
   utilisateurId: number | null;
   gestionnaire: boolean;
-  formation: BaremeFormation;
 }
 
 export interface Refus {

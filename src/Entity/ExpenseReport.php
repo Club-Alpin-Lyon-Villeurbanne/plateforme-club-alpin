@@ -380,12 +380,30 @@ class ExpenseReport
         return $this->totalRemboursable;
     }
 
-    public function figerMontants(float $totalDeclare, float $totalRemboursable): self
+    /**
+     * Le taux kilométrique d'une formation est figé avec ses lignes, dans `details`, pour que ses
+     * lignes de voiture restent cohérentes avec les montants figés.
+     */
+    public function figerMontants(float $totalDeclare, float $totalRemboursable, ?float $tauxKilometrique = null): self
     {
         $this->totalDeclare = number_format($totalDeclare, 2, '.', '');
         $this->totalRemboursable = number_format($totalRemboursable, 2, '.', '');
 
+        if (null !== $tauxKilometrique) {
+            $details = json_decode($this->details ?? '', true);
+            $details = \is_array($details) ? $details : ['lignes' => []];
+            $details['tauxKilometrique'] = $tauxKilometrique;
+            $this->details = json_encode($details, \JSON_UNESCAPED_UNICODE | \JSON_UNESCAPED_SLASHES | \JSON_THROW_ON_ERROR);
+        }
+
         return $this;
+    }
+
+    public function tauxKilometriqueFige(): ?float
+    {
+        $taux = json_decode($this->details ?? '', true)['tauxKilometrique'] ?? null;
+
+        return \is_int($taux) || \is_float($taux) ? (float) $taux : null;
     }
 
     /**

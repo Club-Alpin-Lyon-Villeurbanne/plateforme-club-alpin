@@ -206,9 +206,9 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
     }
 
     /**
-     * Barème formation de la configuration : taux kilométrique et plafonds par nature.
+     * Barème formation de la configuration : taux kilométrique, plafonds par nature et du total.
      *
-     * @return array{tauxKilometrique: float, plafonds: array<string, array{montant: float, portee: string}>}
+     * @return array{tauxKilometrique: float, plafonds: array{parNature: array<string, array{montant: float, portee: string}>, total: ?float}}
      */
     protected function baremeFormation(): array
     {

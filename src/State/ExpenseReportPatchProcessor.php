@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * Modification d'une note de frais. L'envoi d'une note hors sortie (brouillon ou note à
- * corriger qui passe à « envoyée ») fige ses montants et efface le message du renvoi dans la
+ * corriger qui passe à « envoyée ») fige ses montants (et le taux kilométrique) et efface le message du renvoi dans la
  * même écriture que le changement de statut, puis prévient la trésorerie. Sa validation lui
  * transmet le récapitulatif.
  */
@@ -34,8 +34,7 @@ class ExpenseReportPatchProcessor implements ProcessorInterface
         $validation = $data instanceof ExpenseReport && $this->estUneValidationHorsSortie($data);
 
         if ($envoi) {
-            $montants = $this->calculator->calculerNoteHorsSortie($data);
-            $data->figerMontants($montants['totalDeclare'], $montants['totalRemboursable']);
+            $this->calculator->figerNoteHorsSortie($data);
             // Le message du renvoi est traité ; il reste dans l'historique. Un nouveau renvoi devra en écrire un.
             $data->setStatusComment(null);
         }

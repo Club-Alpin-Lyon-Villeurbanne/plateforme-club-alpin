@@ -29,6 +29,7 @@
       v-model="demande"
       :type-modifiable="note === null"
       :commissions="donnees.commissions"
+      :commission-enregistree="note?.commission?.id ?? null"
       :delai-envoi-jours="delaiEnvoiJours"
       :erreurs="erreursEtape1"
       :en-cours="enCours"
@@ -47,6 +48,7 @@
       :justificatifs="justificatifs"
       :envois-en-cours="envoisEnCours"
       :erreurs-justificatifs="erreursJustificatifs"
+      :part-remboursable="note ? partRemboursable(note) : null"
       :avertissements="note?.avertissements ?? []"
       :delai-depasse="delaiDepasse"
       :erreurs="erreursEtape2"
@@ -68,7 +70,7 @@ import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref } from "vue
 import PremiereEtape from "./components/PremiereEtape.vue";
 import SecondeEtape from "./components/SecondeEtape.vue";
 import { creerNote, enregistrerNote, envoyerJustificatif, lireNote, messagesDErreur, refusDeLApi, sessionExpiree } from "./api";
-import { aujourdhui, limiteEnvoi, messageDelaiDepasse, nomComplet, phrasePrevenus, phraseValideurs } from "./format";
+import { aujourdhui, limiteEnvoi, messageDelaiDepasse, nomComplet, partRemboursable, phrasePrevenus, phraseValideurs } from "./format";
 import { refusDuFichier } from "./justificatifs";
 import { ecrireLignes, lireLignes, nouvelleLigne } from "./lignes";
 import type { TypeHorsSortie } from "./typesDeNote";

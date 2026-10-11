@@ -2,10 +2,9 @@
 import { isAxiosError } from "axios";
 import { computed, nextTick, onMounted, ref } from "vue";
 import { enregistrerNote, lireNote, messagesDErreur, refusDeLApi, sessionExpiree } from "./api";
-import { dateFr, dateFrDe, enumeration, euros, jour, nomComplet } from "./format";
-import { calculDeLaVoiture, lireLignes, montantDeLaLigne, NATURE_EN_KILOMETRES } from "./lignes";
+import { dateFr, dateFrDe, enumeration, euros, jour, nomComplet, partRemboursable } from "./format";
 import { libellesDuType } from "./typesDeNote";
-import type { DonneesDetail, Ligne, NoteDeFrais } from "./types";
+import type { DonneesDetail, NoteDeFrais } from "./types";
 
 const props = defineProps<{ donnees: DonneesDetail }>();
 
@@ -47,26 +46,17 @@ const lignes = computed(() => {
   }
   const justificatifs = new Map(note.value.piecesJointes.map((pieceJointe) => [pieceJointe.expenseId, pieceJointe.fileUrl]));
 
-  const { natures, tauxKilometrique } = props.donnees.formation;
-
-  return lireLignes(note.value.details).map((ligne, index) => ({
-    id: ligne.id,
+  // Lignes calculées par le serveur. Une ligne de formation se présente par sa nature, une ligne
+  // d'achat par son numéro, suivi de sa description.
+  return note.value.lignesAffichees.map((ligne, index) => ({
+    id: ligne.id ?? `ligne-${index}`,
     numero: index + 1,
-    // Une ligne de formation se présente par sa nature, une ligne d'achat par son numéro.
-    libelle: ligne.nature ? (natures[ligne.nature] ?? ligne.nature) : `Dépense ${index + 1}`,
-    detail: detailDeLaLigne(ligne),
-    montant: montantDeLaLigne(ligne, tauxKilometrique),
-    justificatif: justificatifs.get(ligne.id) ?? null,
+    libelle: ligne.nature ? ligne.libelle : `Dépense ${index + 1}`,
+    detail: ligne.nature ? ligne.detail : ligne.libelle,
+    montant: ligne.montant,
+    justificatif: (ligne.id && justificatifs.get(ligne.id)) || null,
   }));
 });
-
-function detailDeLaLigne(ligne: Ligne): string {
-  if (ligne.nature === NATURE_EN_KILOMETRES) {
-    return typeof ligne.distance === "number" ? calculDeLaVoiture(ligne.distance, props.donnees.formation.tauxKilometrique) : "";
-  }
-
-  return ligne.nature === "hebergement" ? "1 nuit" : ligne.description;
-}
 
 const decisionPrise = computed(() => {
   const derniere = note.value?.derniereDecision;
@@ -225,7 +215,10 @@ function renvoyer() {
         <p class="tw-text-xs tw-text-gray-500">{{ contexte }}</p>
         <a v-if="note.lienFormation" :href="note.lienFormation" target="_blank" rel="noopener" class="tw-text-xs tw-text-sky-700 hover:tw-underline">Voir la formation</a>
       </div>
-      <p class="tw-text-2xl tw-font-semibold tw-tabular-nums tw-text-gray-900">{{ euros(note.totalDeclare) }}</p>
+      <div class="tw-text-right">
+        <p class="tw-text-2xl tw-font-semibold tw-tabular-nums tw-text-gray-900">{{ euros(note.totalDeclare) }}</p>
+        <p v-if="partRemboursable(note)" class="tw-text-xs tw-text-gray-500">{{ partRemboursable(note) }}</p>
+      </div>
     </div>
 
     <div class="tw-px-8">

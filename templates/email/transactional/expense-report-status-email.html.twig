@@ -54,10 +54,8 @@
         <li>{{ ligne.montant }}{{ ligne.libelle ? ' - ' ~ ligne.libelle }}{{ ligne.detail ? ' (' ~ ligne.detail ~ ')' }}</li>
     {% endfor %}
     </ul>
-    <p><strong>Total :</strong> {{ formattedTotal }}</p>
-    {% if formattedReimbursable != formattedTotal %}
-    <p><strong>Total remboursable :</strong> {{ formattedReimbursable }}</p>
-    {% endif %}
+    <p><strong>Total :</strong> {{ formattedTotal }}{% if partRemboursable %}<br>
+        {{ partRemboursable }}{% endif %}</p>
 
     <p>
         {% if report.refundRequired %}
@@ -239,8 +237,8 @@ DÉPENSES
 {% endfor %}
 
 Total : {{ formattedTotal }}
-{% if formattedReimbursable != formattedTotal %}
-Total remboursable : {{ formattedReimbursable }}
+{% if partRemboursable %}
+{{ partRemboursable }}
 {% endif %}
 
 {% if report.refundRequired %}

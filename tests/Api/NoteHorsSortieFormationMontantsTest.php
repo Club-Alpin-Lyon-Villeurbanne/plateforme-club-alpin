@@ -6,7 +6,7 @@ use App\Entity\ExpenseReport;
 
 /**
  * Montants d'une formation selon le barème de la configuration : voiture en kilomètres, plafonds
- * par note ou par ligne, avertissement quand un plafond s'applique, montants figés à l'envoi.
+ * par note ou par ligne, montants figés à l'envoi. Un plafond appliqué n'est pas un avertissement.
  */
 class NoteHorsSortieFormationMontantsTest extends ExpenseReportApiTestCase
 {
@@ -23,7 +23,7 @@ class NoteHorsSortieFormationMontantsTest extends ExpenseReportApiTestCase
 
     public function testLePlafondDeLaVoiturePorteSurLaNote(): void
     {
-        $this->assertSame('note', $this->baremeFormation()['plafonds']['voiture']['portee']);
+        $this->assertSame('note', $this->portee('voiture'));
         // Chaque trajet reste sous le plafond, leur somme le dépasse.
         $kilometres = (int) ceil($this->plafond('voiture') * 0.75 / $this->baremeFormation()['tauxKilometrique']);
         $note = $this->creerFormation($this->encadrant, $this->lignes(['voiture', $kilometres], ['voiture', $kilometres]));
@@ -36,7 +36,7 @@ class NoteHorsSortieFormationMontantsTest extends ExpenseReportApiTestCase
 
     public function testDeuxPeagesSontPlafonnesEnsemble(): void
     {
-        $this->assertSame('note', $this->baremeFormation()['plafonds']['peage']['portee']);
+        $this->assertSame('note', $this->portee('peage'));
         $peage = round($this->plafond('peage') * 0.75, 2);
         $note = $this->creerFormation($this->encadrant, $this->lignes(['peage', $peage], ['peage', $peage]));
 
@@ -57,9 +57,9 @@ class NoteHorsSortieFormationMontantsTest extends ExpenseReportApiTestCase
         $this->assertSame($this->plafond('train'), $montants['totalRemboursable']);
     }
 
-    public function testLHebergementEstPlafonneParNuit(): void
+    public function testChaqueNuitDHebergementEstPlafonnee(): void
     {
-        $this->assertSame('ligne', $this->baremeFormation()['plafonds']['hebergement']['portee']);
+        $this->assertSame('ligne', $this->portee('hebergement'));
         $plafond = $this->plafond('hebergement');
         $note = $this->creerFormation($this->encadrant, $this->lignes(['hebergement', $plafond + 10], ['hebergement', $plafond - 10]));
 
@@ -73,31 +73,21 @@ class NoteHorsSortieFormationMontantsTest extends ExpenseReportApiTestCase
     {
         $note = $this->creerFormation($this->encadrant, $this->lignes(['stage', 1500.0]));
 
-        $reponse = $this->show($this->encadrant, $note);
+        $montants = $this->montants($note);
 
-        $this->assertSame(1500.0, (float) $reponse['body']['totalDeclare']);
-        $this->assertSame(1500.0, (float) $reponse['body']['totalRemboursable']);
-        $this->assertSame([], $this->avertissementsDePlafond($reponse['body']['avertissements']));
+        $this->assertSame(1500.0, $montants['totalDeclare']);
+        $this->assertSame(1500.0, $montants['totalRemboursable']);
     }
 
-    public function testUnPlafondAppliqueEstSignaleAvecLeMontantRemboursable(): void
+    public function testUnPlafondAppliqueNEstPasUnAvertissement(): void
     {
         $peage = $this->plafond('peage') + 15;
         $note = $this->creerFormation($this->encadrant, $this->lignes(['peage', $peage]));
 
-        $avertissements = $this->show($this->encadrant, $note)['body']['avertissements'];
-
-        $this->assertContains(sprintf('dont %s remboursables selon les plafonds du club', $this->euros($this->plafond('peage'))), $avertissements);
-    }
-
-    public function testSansPlafondAppliqueAucunAvertissementDePlafond(): void
-    {
-        $note = $this->creerFormation($this->encadrant, self::LIGNES_FORMATION);
-
         $reponse = $this->show($this->encadrant, $note);
 
-        $this->assertSame((float) $reponse['body']['totalDeclare'], (float) $reponse['body']['totalRemboursable']);
-        $this->assertSame([], $this->avertissementsDePlafond($reponse['body']['avertissements']));
+        $this->assertSame($this->plafond('peage'), (float) $reponse['body']['totalRemboursable']);
+        $this->assertSame([], array_filter($reponse['body']['avertissements'], static fn (string $message) => str_contains($message, 'remboursable')));
     }
 
     public function testLeRemboursableEstFigeALEnvoi(): void
@@ -117,7 +107,6 @@ class NoteHorsSortieFormationMontantsTest extends ExpenseReportApiTestCase
         $reponse = $this->show($this->encadrant, $note);
         $this->assertSame($peage, (float) $reponse['body']['totalDeclare']);
         $this->assertSame($this->plafond('peage'), (float) $reponse['body']['totalRemboursable']);
-        $this->assertCount(1, $this->avertissementsDePlafond($reponse['body']['avertissements']));
     }
 
     /**
@@ -133,7 +122,12 @@ class NoteHorsSortieFormationMontantsTest extends ExpenseReportApiTestCase
 
     private function plafond(string $nature): float
     {
-        return (float) $this->baremeFormation()['plafonds'][$nature]['montant'];
+        return (float) $this->baremeFormation()['plafonds']['parNature'][$nature]['montant'];
+    }
+
+    private function portee(string $nature): string
+    {
+        return $this->baremeFormation()['plafonds']['parNature'][$nature]['portee'];
     }
 
     /**
@@ -148,15 +142,5 @@ class NoteHorsSortieFormationMontantsTest extends ExpenseReportApiTestCase
             'nature' => $ligne[0],
             ('voiture' === $ligne[0] ? 'distance' : 'montant') => $ligne[1],
         ], $lignes, array_keys($lignes))]);
-    }
-
-    /**
-     * @param list<string> $avertissements
-     *
-     * @return list<string>
-     */
-    private function avertissementsDePlafond(array $avertissements): array
-    {
-        return array_values(array_filter($avertissements, static fn (string $message) => str_contains($message, 'plafonds du club')));
     }
 }

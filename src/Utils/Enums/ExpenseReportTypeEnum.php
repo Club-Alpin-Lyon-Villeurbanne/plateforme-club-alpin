@@ -56,7 +56,8 @@ enum ExpenseReportTypeEnum: string
                 self::NATURE_EN_KILOMETRES => 'Voiture',
                 'peage' => 'Péage',
                 'train' => 'Train ou bus',
-                'hebergement' => 'Hébergement',
+                // Une ligne par nuit : le plafond de l'hébergement vaut par nuit.
+                'hebergement' => 'Nuit d\'hébergement',
                 'autre' => 'Autre',
             ],
             self::SORTIE, self::AUTRE => [],

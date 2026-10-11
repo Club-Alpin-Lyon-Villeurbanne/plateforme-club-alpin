@@ -7,7 +7,7 @@ use Symfony\Component\Mime\Email;
 
 /**
  * Mails d'une formation : le type, le lien vers la formation, les lignes avec leur nature et le
- * calcul de la voiture, le remboursable quand un plafond s'applique.
+ * calcul de la voiture, et la part remboursable avec le total quand un plafond s'applique.
  */
 class NoteHorsSortieFormationMailsTest extends ExpenseReportApiTestCase
 {
@@ -27,7 +27,7 @@ class NoteHorsSortieFormationMailsTest extends ExpenseReportApiTestCase
         $this->assertStringContainsString(sprintf('href="%s"', self::LIEN), $mails[0]->getHtmlBody());
     }
 
-    public function testLeMailAuxValideursSignaleLePlafondApplique(): void
+    public function testLeMailAuxValideursDonneLaPartRemboursableAvecLeMontant(): void
     {
         $peage = $this->plafondDuPeage() + 15;
         $this->envoyerLaFormation(json_encode(['lignes' => [['id' => 'ligne-1', 'nature' => 'peage', 'montant' => $peage]]]), 'ligne-1');
@@ -35,7 +35,19 @@ class NoteHorsSortieFormationMailsTest extends ExpenseReportApiTestCase
         $mails = $this->mailsA($this->responsable->getEmail());
         $this->assertCount(1, $mails);
         foreach ($this->corps($mails[0]) as $corps) {
-            $this->assertStringContainsString(sprintf('dont %s remboursables selon les plafonds du club', $this->euros($this->plafondDuPeage())), $corps);
+            $this->assertStringContainsString(sprintf('Montant : %s (dont %s remboursables selon les plafonds du club)', $this->euros($peage), $this->euros($this->plafondDuPeage())), $corps);
+            $this->assertStringNotContainsString('À vérifier', $corps);
+        }
+    }
+
+    public function testSansPlafondAppliqueLeMailNeParlePasDuRemboursable(): void
+    {
+        $this->envoyerLaFormation(self::LIGNES_FORMATION, 'ligne-1', 'ligne-3', 'ligne-4');
+
+        foreach ([$this->responsable->getEmail(), $this->encadrant->getEmail()] as $adresse) {
+            foreach ($this->corps($this->mailsA($adresse)[0]) as $corps) {
+                $this->assertStringNotContainsString('remboursables selon les plafonds du club', $corps);
+            }
         }
     }
 
@@ -49,6 +61,22 @@ class NoteHorsSortieFormationMailsTest extends ExpenseReportApiTestCase
             $this->assertStringContainsString('Date de la formation : ' . (new \DateTimeImmutable('-3 days'))->format('d/m/Y'), $corps);
             $this->assertStringContainsString('Formation : ' . self::LIEN, $corps);
             $this->assertLignesDeLaFormation($corps);
+        }
+    }
+
+    public function testLeDemandeurLitLaPartRemboursableSousLeTotal(): void
+    {
+        $peage = $this->plafondDuPeage() + 15;
+        $this->envoyerLaFormation(json_encode(['lignes' => [['id' => 'ligne-1', 'nature' => 'peage', 'montant' => $peage]]]), 'ligne-1');
+
+        $mails = $this->mailsA($this->encadrant->getEmail());
+        $this->assertCount(1, $mails);
+        foreach ($this->corps($mails[0]) as $corps) {
+            $this->assertMatchesRegularExpression(sprintf(
+                '/Total : %s\s+dont %s remboursables selon les plafonds du club/u',
+                preg_quote($this->euros($peage), '/'),
+                preg_quote($this->euros($this->plafondDuPeage()), '/'),
+            ), $corps);
         }
     }
 
@@ -75,9 +103,11 @@ class NoteHorsSortieFormationMailsTest extends ExpenseReportApiTestCase
             $this->assertStringContainsString('Stage', $corps);
             $this->assertStringContainsString(sprintf('Voiture (%s)', $this->calculDeLaVoiture(220)), $corps);
             $this->assertStringContainsString('Péage', $corps);
-            $this->assertStringContainsString('Hébergement (1 nuit)', $corps);
+            $this->assertStringContainsString('Nuit d\'hébergement', $corps);
+            $this->assertStringNotContainsString('1 nuit', $corps);
             $this->assertStringContainsString('Total : ' . $this->euros($declare), $corps);
             $this->assertStringContainsString('Remboursable : ' . $this->euros($remboursable), $corps);
+            $this->assertStringNotContainsString('remboursables selon les plafonds du club', $corps);
         }
     }
 
@@ -95,7 +125,8 @@ class NoteHorsSortieFormationMailsTest extends ExpenseReportApiTestCase
         $this->assertStringContainsString($this->euros(280) . ' - Stage', $corps);
         $this->assertStringContainsString(sprintf('%s - Voiture (%s)', $this->euros($this->voiture(220)), $this->calculDeLaVoiture(220)), $corps);
         $this->assertStringContainsString($this->euros(32) . ' - Péage', $corps);
-        $this->assertStringContainsString($this->euros(54) . ' - Hébergement (1 nuit)', $corps);
+        $this->assertStringContainsString($this->euros(54) . ' - Nuit d\'hébergement', $corps);
+        $this->assertStringNotContainsString('1 nuit', $corps);
     }
 
     private function voiture(int $kilometres): float
@@ -113,7 +144,7 @@ class NoteHorsSortieFormationMailsTest extends ExpenseReportApiTestCase
 
     private function plafondDuPeage(): float
     {
-        return (float) $this->baremeFormation()['plafonds']['peage']['montant'];
+        return (float) $this->baremeFormation()['plafonds']['parNature']['peage']['montant'];
     }
 
     /**

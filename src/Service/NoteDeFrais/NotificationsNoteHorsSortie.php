@@ -38,13 +38,15 @@ class NotificationsNoteHorsSortie
      */
     public function noteEnvoyee(ExpenseReport $note): void
     {
+        $montants = $this->calculator->montantsNoteHorsSortie($note);
         $contexte = [
             'demandeur' => $note->getUser()?->getFullName(),
             'type' => $note->getType()->libelle(),
             'commission' => $note->getCommission()?->getTitle(),
             'objet' => $note->getObjet(),
             'lienFormation' => $note->getLienFormation(),
-            'montant' => $this->calculator->formatEuros($this->calculator->montantsNoteHorsSortie($note)['totalDeclare']),
+            'montant' => $this->calculator->formatEuros($montants['totalDeclare']),
+            'partRemboursable' => $this->calculator->partRemboursable($montants),
             'mot' => $note->getMotPourResponsable(),
             'avertissements' => $this->controles->avertissements($note),
             'lien' => $this->lien($note),
@@ -111,7 +113,7 @@ class NotificationsNoteHorsSortie
     /**
      * Lignes dans l'ordre de la saisie, chacune avec l'adresse de son justificatif.
      *
-     * @return list<array{id: ?string, libelle: ?string, detail: ?string, montant: string, justificatif: ?string}>
+     * @return list<array{id: ?string, nature: ?string, libelle: ?string, detail: ?string, montant: string, justificatif: ?string}>
      */
     private function lignes(ExpenseReport $note): array
     {
@@ -122,9 +124,10 @@ class NotificationsNoteHorsSortie
             }
         }
 
-        return array_map(static fn (array $ligne) => $ligne + [
+        return array_map(fn (array $ligne) => array_merge($ligne, [
+            'montant' => $this->calculator->formatEuros($ligne['montant']),
             'justificatif' => $justificatifs[$ligne['id'] ?? ''] ?? null,
-        ], $this->calculator->lignesAffichees($note));
+        ]), $this->calculator->lignesAffichees($note));
     }
 
     private function lien(ExpenseReport $note): string

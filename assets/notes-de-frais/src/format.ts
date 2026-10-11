@@ -54,6 +54,13 @@ export function enumeration(elements: string[], conjonction: "et" | "ou" = "et")
     : `${elements.slice(0, -1).join(", ")} ${conjonction} ${elements[elements.length - 1]}`;
 }
 
+/** Sous le total, quand un plafond du club s'applique ; les montants viennent du serveur. */
+export function partRemboursable(montants: { totalDeclare: number; totalRemboursable: number }): string | null {
+  return montants.totalRemboursable < montants.totalDeclare
+    ? `dont ${euros(montants.totalRemboursable)} remboursables selon les plafonds du club`
+    : null;
+}
+
 /** Sous la commission choisie : qui validera la note. */
 export function phraseValideurs(valideurs: Personne[]): string {
   return valideurs.length

@@ -62,6 +62,7 @@
         <span class="tw-text-sm tw-text-gray-600">Total</span>
         <span class="tw-text-xl tw-font-semibold tw-tabular-nums tw-text-gray-900">{{ euros(total(lignes, formation.tauxKilometrique)) }}</span>
       </div>
+      <p :class="['tw-text-right', discret]" aria-live="polite">{{ partRemboursable }}</p>
 
       <div aria-live="polite">
         <p v-for="avertissement in avertissements" :key="avertissement" :class="['tw-mt-2', discret]">{{ avertissement }}</p>
@@ -144,6 +145,8 @@ const props = defineProps<{
   justificatifs: Record<string, Justificatif>;
   envoisEnCours: string[];
   erreursJustificatifs: Record<string, string>;
+  /** « dont X € remboursables… », d'après les montants renvoyés par l'API. */
+  partRemboursable: string | null;
   /** Renvoyés par l'API. */
   avertissements: string[];
   delaiDepasse: string | null;

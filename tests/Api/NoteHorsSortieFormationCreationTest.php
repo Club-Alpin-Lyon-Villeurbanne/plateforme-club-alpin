@@ -128,6 +128,17 @@ class NoteHorsSortieFormationCreationTest extends ExpenseReportApiTestCase
         $this->assertSame(ExpenseReportStatusEnum::SUBMITTED, $this->reload($note)->getStatus());
     }
 
+    public function testRenvoyerLaMemeCommissionNeRepassePasLeControle(): void
+    {
+        // La page renvoie la commission à chaque enregistrement, même inchangée.
+        $note = $this->creerFormation($this->adherent);
+
+        $this->assertResponseStatus(200, $this->patch($this->adherent, $note, [
+            'commission' => '/api/commissions/' . $this->commissionDeTest->getId(),
+            'objet' => 'Formation initiateur SAE, Grenoble',
+        ]));
+    }
+
     public function testMesNotesDeFraisListeLesFormations(): void
     {
         $formation = $this->creerFormation($this->encadrant);
