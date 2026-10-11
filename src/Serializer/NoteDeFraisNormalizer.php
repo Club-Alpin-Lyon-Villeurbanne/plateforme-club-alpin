@@ -3,6 +3,7 @@
 namespace App\Serializer;
 
 use App\Entity\ExpenseReport;
+use App\Entity\ExpenseReportStatusHistory;
 use App\Repository\ExpenseReportStatusHistoryRepository;
 use App\Security\ExpenseReportActor;
 use App\Service\ExpenseReportCalculator;
@@ -16,8 +17,9 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 /**
  * Ajoute à une note, en lecture seule, ses montants calculés par le serveur. Pour une note hors
  * sortie, aussi : lignes telles qu'affichées, avertissements, valideurs, date d'envoi, dernière
- * décision, et si l'utilisateur connecté peut la valider ou la refuser ; le choix entre don et
- * remboursement est retiré pour qui ne doit pas le connaître.
+ * décision et son niveau, dernière validation par un responsable, et si l'utilisateur connecté
+ * peut la valider ou la refuser ; le choix entre don et remboursement est retiré pour qui ne doit
+ * pas le connaître.
  */
 final class NoteDeFraisNormalizer implements NormalizerInterface, NormalizerAwareInterface
 {
@@ -58,6 +60,7 @@ final class NoteDeFraisNormalizer implements NormalizerInterface, NormalizerAwar
             'dateEnvoi' => $this->dateEnvoi($object)?->format(\DATE_ATOM),
             'valideurs' => ValideursNoteHorsSortie::exposer($this->valideurs->pour($object)),
             'derniereDecision' => $this->derniereDecision($object),
+            'validationResponsable' => $this->validationResponsable($object),
             // La trésorerie décide dans compta-club : le site ne lui propose rien.
             'peutDecider' => ExpenseReportStatusEnum::SUBMITTED === $object->getStatus() && $this->actor->isResponsableOf($object),
         ]);
@@ -88,10 +91,33 @@ final class NoteDeFraisNormalizer implements NormalizerInterface, NormalizerAwar
 
         return [
             'statut' => $decision->getNewStatus()->value,
-            'auteur' => ['prenom' => $decision->getChangedBy()?->getFirstname(), 'nom' => $decision->getChangedBy()?->getLastname()],
+            'niveau' => $decision->getNiveau()?->value,
+            'auteur' => $this->auteur($decision),
             'date' => $decision->getChangedAt()?->format(\DATE_ATOM),
             'message' => $decision->getMessage(),
         ];
+    }
+
+    private function validationResponsable(ExpenseReport $note): ?array
+    {
+        if (ExpenseReportStatusEnum::DRAFT === $note->getStatus()) {
+            return null;
+        }
+
+        $validation = $this->historique->dernierePreValidation($note);
+        if (null === $validation) {
+            return null;
+        }
+
+        return ['auteur' => $this->auteur($validation), 'date' => $validation->getChangedAt()?->format(\DATE_ATOM)];
+    }
+
+    /**
+     * @return array{prenom: ?string, nom: ?string}
+     */
+    private function auteur(ExpenseReportStatusHistory $ligne): array
+    {
+        return ['prenom' => $ligne->getChangedBy()?->getFirstname(), 'nom' => $ligne->getChangedBy()?->getLastname()];
     }
 
     public function supportsNormalization(mixed $data, ?string $format = null, array $context = []): bool

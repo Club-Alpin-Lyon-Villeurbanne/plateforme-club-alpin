@@ -34,13 +34,27 @@ class ExpenseReportStatusHistoryRepository extends ServiceEntityRepository
      */
     public function derniereDecision(ExpenseReport $note): ?ExpenseReportStatusHistory
     {
+        return $this->dernierPassage($note, ExpenseReportStatusEnum::PREAPPROVED, ExpenseReportStatusEnum::APPROVED, ExpenseReportStatusEnum::REJECTED);
+    }
+
+    /**
+     * Dernière validation de la note par un responsable, avec son auteur, même si la trésorerie a
+     * décidé ensuite.
+     */
+    public function dernierePreValidation(ExpenseReport $note): ?ExpenseReportStatusHistory
+    {
+        return $this->dernierPassage($note, ExpenseReportStatusEnum::PREAPPROVED);
+    }
+
+    private function dernierPassage(ExpenseReport $note, ExpenseReportStatusEnum ...$statuts): ?ExpenseReportStatusHistory
+    {
         return $this->createQueryBuilder('h')
             ->addSelect('auteur')
             ->join('h.changedBy', 'auteur')
             ->andWhere('h.expenseReport = :note')
-            ->andWhere('h.newStatus IN (:decisions)')
+            ->andWhere('h.newStatus IN (:statuts)')
             ->setParameter('note', $note)
-            ->setParameter('decisions', [ExpenseReportStatusEnum::PREAPPROVED->value, ExpenseReportStatusEnum::APPROVED->value, ExpenseReportStatusEnum::REJECTED->value])
+            ->setParameter('statuts', array_map(static fn (ExpenseReportStatusEnum $statut) => $statut->value, $statuts))
             // Deux changements dans la même seconde : l'ordre d'insertion départage.
             ->orderBy('h.changedAt', 'DESC')
             ->addOrderBy('h.id', 'DESC')

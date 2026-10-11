@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ExpenseReportStatusHistoryRepository;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use App\Utils\Enums\NiveauDeDecisionEnum;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Annotation\Groups;
@@ -40,6 +41,10 @@ class ExpenseReportStatusHistory
     // Message de la validation ou du renvoi ; le commentaire de statut de la note est effacé à son nouvel envoi.
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $message = null;
+
+    // Décision sur une note hors sortie ; null pour une note de sortie et pour un autre changement de statut.
+    #[ORM\Column(enumType: NiveauDeDecisionEnum::class, nullable: true)]
+    private ?NiveauDeDecisionEnum $niveau = null;
 
     public function getId(): ?int
     {
@@ -114,6 +119,18 @@ class ExpenseReportStatusHistory
     public function setMessage(?string $message): self
     {
         $this->message = $message;
+
+        return $this;
+    }
+
+    public function getNiveau(): ?NiveauDeDecisionEnum
+    {
+        return $this->niveau;
+    }
+
+    public function setNiveau(?NiveauDeDecisionEnum $niveau): self
+    {
+        $this->niveau = $niveau;
 
         return $this;
     }

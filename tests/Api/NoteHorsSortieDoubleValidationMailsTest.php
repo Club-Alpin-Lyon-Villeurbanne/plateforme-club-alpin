@@ -35,7 +35,7 @@ class NoteHorsSortieDoubleValidationMailsTest extends ExpenseReportApiTestCase
         }
     }
 
-    public function testLeRefusParLaTresorerieEstAttribueASonAuteur(): void
+    public function testLeRefusParLaTresorerieEstSigneDeLaTresorerie(): void
     {
         $note = $this->notePreValidee();
 
@@ -43,11 +43,12 @@ class NoteHorsSortieDoubleValidationMailsTest extends ExpenseReportApiTestCase
 
         $this->assertSeulsDestinataires([$this->adherent]);
         $mail = $this->seulMailAuDemandeur();
-        $this->assertSame('Votre note de frais « Dégaines pour la SAE » a été refusée par Lou MARTIN.', $mail->getSubject());
+        $this->assertSame('Votre note de frais « Dégaines pour la SAE » a été refusée par la trésorerie.', $mail->getSubject());
         foreach ($this->corps($mail) as $corps) {
-            $this->assertStringContainsString('Message laissé par Lou MARTIN', $corps);
+            $this->assertStringContainsString('Message laissé par la trésorerie', $corps);
             $this->assertStringContainsString(self::MESSAGE, $corps);
             $this->assertStringContainsString('Corriger ma demande', $corps);
+            $this->assertStringNotContainsString('Lou MARTIN', $corps);
         }
     }
 

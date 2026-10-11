@@ -29,7 +29,7 @@ class StatusTransitionValidator
 
     /**
      * La trésorerie, sur une note hors sortie, décide après le responsable puis comptabilise. Une
-     * note envoyée sans valideur lui revient dès l'envoi (voir managerTransitionsHorsSortie()).
+     * note envoyée sans valideur lui revient dès l'envoi (voir managerTransitions()).
      */
     private const MANAGER_TRANSITIONS_HORS_SORTIE = [
         ExpenseReportStatusEnum::PREAPPROVED->value => [ExpenseReportStatusEnum::APPROVED, ExpenseReportStatusEnum::REJECTED],
@@ -124,9 +124,7 @@ class StatusTransitionValidator
         }
 
         if ($this->actor->isManagerOf($expenseReport)) {
-            $allowedTargets = [...$allowedTargets, ...($expenseReport->getType()->estHorsSortie()
-                ? $this->managerTransitionsHorsSortie($expenseReport, $oldStatus)
-                : self::MANAGER_TRANSITIONS[$oldStatus->value] ?? [])];
+            $allowedTargets = [...$allowedTargets, ...$this->managerTransitions($expenseReport, $oldStatus)];
         }
 
         return $allowedTargets;
@@ -135,8 +133,12 @@ class StatusTransitionValidator
     /**
      * @return list<ExpenseReportStatusEnum>
      */
-    private function managerTransitionsHorsSortie(ExpenseReport $note, ExpenseReportStatusEnum $oldStatus): array
+    private function managerTransitions(ExpenseReport $note, ExpenseReportStatusEnum $oldStatus): array
     {
+        if (!$note->getType()->estHorsSortie()) {
+            return self::MANAGER_TRANSITIONS[$oldStatus->value] ?? [];
+        }
+
         if (ExpenseReportStatusEnum::SUBMITTED === $oldStatus) {
             return [] === $this->valideurs->pour($note) ? [ExpenseReportStatusEnum::APPROVED, ExpenseReportStatusEnum::REJECTED] : [];
         }

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { listerMesNotes, messagesDErreur } from "./api";
-import { aujourdhui, dateFr, dateFrDe, enumeration, euros, jourMoisDe, leJourDeLaDepense, limiteEnvoi, messageDelaiDepasse, nomComplet } from "./format";
+import { aujourdhui, chezLaTresorerie, dateFr, dateFrDe, enumeration, euros, jourMoisDe, leJourDeLaDepense, limiteEnvoi, messageDelaiDepasse, motifDuRefus, nomComplet, phraseDeLaDecision } from "./format";
 import { libellesDuType } from "./typesDeNote";
-import type { DonneesMesNotes, NoteDeFrais, NoteDeSortie } from "./types";
+import type { Decision, DonneesMesNotes, NoteDeFrais, NoteDeSortie } from "./types";
 
 const props = defineProps<{ donnees: DonneesMesNotes }>();
 
@@ -22,7 +22,6 @@ const FILTRES: { valeur: Filtre; libelle: string }[] = [
 const LIBELLES: Record<string, string> = {
   draft: "Brouillon",
   submitted: "Transmise à la trésorerie",
-  preapproved: "Transmise à la trésorerie",
   rejected: "À corriger",
   approved: "Validée",
   accounted: "Comptabilisée",
@@ -122,7 +121,10 @@ function dateLimite(note: Note): string | null {
 }
 
 function libelleStatut(note: Note): string {
-  if (note.status === "submitted" && !estDeSortie(note) && note.valideurs.length > 0) {
+  if (!estDeSortie(note) && chezLaTresorerie(note)) {
+    return "Transmise à la trésorerie";
+  }
+  if (!estDeSortie(note) && note.status === "submitted") {
     return "Transmise au responsable de commission";
   }
 
@@ -147,22 +149,16 @@ function messageDeRefus(note: Note): string | null {
   }
   const decision = note.derniereDecision;
 
-  return decision?.statut === "rejected" ? `${nomComplet(decision.auteur)} : « ${decision.message ?? ""} »` : null;
+  return decision?.statut === "rejected" ? motifDuRefus(decision) : null;
 }
 
-function valideeLe(note: Note): string | null {
-  if (estDeSortie(note)) {
-    return null;
-  }
-  const decision = note.derniereDecision;
-  if (note.status === "preapproved" && decision?.statut === "preapproved") {
-    return `Validée par ${nomComplet(decision.auteur)} le ${jourMoisDe(decision.date)}, transmise à la trésorerie.`;
-  }
-  if ((note.status !== "approved" && note.status !== "accounted") || decision?.statut !== "approved") {
-    return null;
-  }
+// La ligne reprend la décision qui a mis la note dans son statut.
+const DECISION_DU_STATUT: Record<string, Decision["statut"]> = { preapproved: "preapproved", approved: "approved", accounted: "approved" };
 
-  return `Validée par la trésorerie le ${jourMoisDe(decision.date)}.`;
+function valideeLe(note: Note): string | null {
+  const decision = estDeSortie(note) ? null : note.derniereDecision;
+
+  return decision && decision.statut === DECISION_DU_STATUT[note.status] ? phraseDeLaDecision(decision) : null;
 }
 
 const ACTIONS: Record<string, string> = { draft: "Reprendre", rejected: "Corriger" };

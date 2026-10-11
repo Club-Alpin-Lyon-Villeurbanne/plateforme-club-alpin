@@ -8,6 +8,7 @@ use App\Mailer\Mailer;
 use App\Repository\ExpenseReportStatusHistoryRepository;
 use App\Service\ExpenseReportCalculator;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use App\Utils\Enums\NiveauDeDecisionEnum;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
@@ -89,9 +90,12 @@ class NotificationsNoteHorsSortie
             ? $this->historique->derniereDecision($note)
             : null;
 
+        // La trésorerie signe ses décisions de son nom de rôle : la personne qui la tient n'a pas à être connue du demandeur.
+        $auteur = NiveauDeDecisionEnum::TRESORERIE === $decision?->getNiveau() ? 'la trésorerie' : $decision?->getChangedBy()?->getFullName();
+
         $this->mailer->send($demandeur, 'transactional/expense-report-status-email', [
             'report' => $note,
-            'auteur' => $decision?->getChangedBy()?->getFullName(),
+            'auteur' => $auteur,
             'lienCorrection' => $this->urlGenerator->generate('notes_de_frais_nouvelle', ['id' => $note->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'status' => $note->getStatus()->value,
             'valideurs' => array_map(static fn (User $valideur) => $valideur->getFullName(), $valideurs),

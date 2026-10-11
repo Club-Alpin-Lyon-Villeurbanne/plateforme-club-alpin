@@ -6,8 +6,8 @@ use App\Utils\Enums\ExpenseReportStatusEnum;
 use Symfony\Component\Mime\Email;
 
 /**
- * Mails de la décision : seul le demandeur est prévenu, par un mail qui nomme l'auteur d'un refus.
- * Rien ne part à la trésorerie.
+ * Mails de la décision sur une note sans valideur : seul le demandeur est prévenu, et la décision
+ * est signée de la trésorerie, jamais du nom de la personne. Rien ne part à la trésorerie.
  */
 class NoteHorsSortieDecisionMailsTest extends ExpenseReportApiTestCase
 {
@@ -58,7 +58,7 @@ class NoteHorsSortieDecisionMailsTest extends ExpenseReportApiTestCase
         $this->assertSeulsDestinataires([$this->owner]);
     }
 
-    public function testAuRenvoiLeMessageEstAttribueASonAuteur(): void
+    public function testAuRenvoiLeMessageEstSigneDeLaTresorerie(): void
     {
         $note = $this->noteEnvoyee($this->owner);
 
@@ -67,11 +67,11 @@ class NoteHorsSortieDecisionMailsTest extends ExpenseReportApiTestCase
         $this->assertSeulsDestinataires([$this->owner]);
         $mails = $this->mailsA($this->owner->getEmail());
         $this->assertCount(1, $mails);
-        $this->assertSame('Votre note de frais « Dégaines pour la SAE » a été refusée par Alex DURAND.', $mails[0]->getSubject());
+        $this->assertSame('Votre note de frais « Dégaines pour la SAE » a été refusée par la trésorerie.', $mails[0]->getSubject());
         foreach ($this->corps($mails[0]) as $corps) {
-            $this->assertStringContainsString('Message laissé par Alex DURAND', $corps);
+            $this->assertStringContainsString('Message laissé par la trésorerie', $corps);
             $this->assertStringContainsString('Merci de joindre la facture du magasin.', $corps);
-            $this->assertStringNotContainsString('Message laissé par la trésorerie', $corps);
+            $this->assertStringNotContainsString('Alex DURAND', $corps);
         }
     }
 
@@ -88,7 +88,7 @@ class NoteHorsSortieDecisionMailsTest extends ExpenseReportApiTestCase
         $this->assertStringContainsString($lien, $mail->getTextBody());
     }
 
-    public function testAuSecondRenvoiLeNouveauMessageEstAttribueASonAuteur(): void
+    public function testAuSecondRenvoiSeulLeNouveauMessageEstRappele(): void
     {
         $this->nommer($this->otherManager, 'Lou', 'Martin');
         $note = $this->noteEnvoyee($this->owner);
@@ -98,7 +98,7 @@ class NoteHorsSortieDecisionMailsTest extends ExpenseReportApiTestCase
         $this->assertResponseStatus(200, $this->renvoyer($this->otherManager, $note, 'Montant à revoir.'));
 
         foreach ($this->corps($this->mailsA($this->owner->getEmail())[0]) as $corps) {
-            $this->assertStringContainsString('Message laissé par Lou MARTIN', $corps);
+            $this->assertStringContainsString('Message laissé par la trésorerie', $corps);
             $this->assertStringContainsString('Montant à revoir.', $corps);
             $this->assertStringNotContainsString('Il manque un justificatif.', $corps);
         }

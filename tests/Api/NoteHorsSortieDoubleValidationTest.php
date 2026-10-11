@@ -167,6 +167,100 @@ class NoteHorsSortieDoubleValidationTest extends ExpenseReportApiTestCase
         $this->assertSame('approved', $this->show($this->adherent, $note)['body']['derniereDecision']['statut']);
     }
 
+    public function testLaDerniereDecisionDitSiElleVientDuResponsableOuDeLaTresorerie(): void
+    {
+        $note = $this->notePreValidee();
+        $this->assertSame('responsable', $this->derniereDecision($note)['niveau']);
+
+        $this->assertResponseStatus(200, $this->renvoyer($this->manager, $note));
+        $this->assertSame(['rejected', 'tresorerie'], [$this->derniereDecision($note)['statut'], $this->derniereDecision($note)['niveau']]);
+
+        $this->assertResponseStatus(200, $this->envoyer($this->adherent, $note));
+        $this->assertResponseStatus(200, $this->renvoyer($this->coResponsable, $note));
+        $this->assertSame(['rejected', 'responsable'], [$this->derniereDecision($note)['statut'], $this->derniereDecision($note)['niveau']]);
+
+        $this->assertResponseStatus(200, $this->envoyer($this->adherent, $note));
+        $this->assertResponseStatus(200, $this->patch($this->responsable, $note, ['status' => 'preapproved']));
+        $this->assertResponseStatus(200, $this->patch($this->manager, $note, ['status' => 'approved']));
+        $this->assertSame(['approved', 'tresorerie'], [$this->derniereDecision($note)['statut'], $this->derniereDecision($note)['niveau']]);
+    }
+
+    /**
+     * @dataProvider decisionsDeLaTresorerieProvider
+     */
+    public function testSansValideurLaDecisionVientDeLaTresorerie(array $decision): void
+    {
+        $note = $this->noteEnvoyee($this->adherent);
+
+        $this->assertResponseStatus(200, $this->patch($this->manager, $note, $decision));
+
+        $this->assertSame([$decision['status'], 'tresorerie'], [$this->derniereDecision($note)['statut'], $this->derniereDecision($note)['niveau']]);
+    }
+
+    /**
+     * Les valideurs sont recalculés à chaque lecture ; le niveau d'une décision est celui du moment où elle a été prise.
+     */
+    public function testLeNiveauNeChangePasQuandLesValideursChangent(): void
+    {
+        $refuseeParLeResponsable = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
+        $this->assertResponseStatus(200, $this->renvoyer($this->responsable, $refuseeParLeResponsable));
+        $refuseeParLaTresorerie = $this->noteEnvoyee($this->responsableAutreCommission, commission: $this->autreCommission);
+        $this->assertResponseStatus(200, $this->renvoyer($this->manager, $refuseeParLaTresorerie));
+
+        foreach ([$this->responsable, $this->coResponsable] as $responsable) {
+            $this->em()->find(User::class, $responsable->getId())->setDoitRenouveler(true);
+        }
+        $this->em()->flush();
+        $this->rendreResponsable($this->adherent, $this->autreCommission);
+
+        $this->assertSame([], $this->show($this->adherent, $refuseeParLeResponsable)['body']['valideurs']);
+        $this->assertSame('responsable', $this->derniereDecision($refuseeParLeResponsable)['niveau']);
+        $this->assertNotSame([], $this->show($this->responsableAutreCommission, $refuseeParLaTresorerie)['body']['valideurs']);
+        $this->assertSame('tresorerie', $this->show($this->responsableAutreCommission, $refuseeParLaTresorerie)['body']['derniereDecision']['niveau']);
+    }
+
+    public function testValidationResponsableSuitLeDernierPassageEnPreValidation(): void
+    {
+        $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
+        $this->assertNull($this->validationResponsable($note));
+
+        $avant = new \DateTimeImmutable('-1 minute');
+        $this->assertResponseStatus(200, $this->patch($this->responsable, $note, ['status' => 'preapproved']));
+        $premiere = $this->validationResponsable($note);
+        $this->assertSame(['auteur', 'date'], array_keys($premiere));
+        $this->assertSame(['prenom' => 'Alex', 'nom' => 'DURAND'], $premiere['auteur']);
+        $this->assertGreaterThanOrEqual($avant, new \DateTimeImmutable($premiere['date']));
+
+        $this->assertResponseStatus(200, $this->renvoyer($this->manager, $note));
+        $this->assertSame($premiere, $this->validationResponsable($note));
+
+        $this->assertResponseStatus(200, $this->envoyer($this->adherent, $note));
+        $this->assertResponseStatus(200, $this->patch($this->coResponsable, $note, ['status' => 'preapproved']));
+        $seconde = $this->validationResponsable($note);
+        $this->assertSame(['prenom' => 'Sam', 'nom' => 'PETIT'], $seconde['auteur']);
+
+        $this->assertResponseStatus(200, $this->patch($this->manager, $note, ['status' => 'approved']));
+        $this->assertSame($seconde, $this->validationResponsable($note));
+        $this->assertResponseStatus(200, $this->patch($this->manager, $note, ['status' => 'accounted']));
+        $this->assertSame($seconde, $this->validationResponsable($note));
+    }
+
+    public function testSansValideurIlNYAPasDeValidationDuResponsable(): void
+    {
+        $note = $this->noteEnvoyee($this->adherent);
+
+        $this->assertResponseStatus(200, $this->patch($this->manager, $note, ['status' => 'approved']));
+
+        $this->assertNull($this->validationResponsable($note));
+    }
+
+    public function testUneNoteDeSortieNExposePasDeValidationDuResponsable(): void
+    {
+        $report = $this->createReport($this->owner, ExpenseReportStatusEnum::SUBMITTED);
+
+        $this->assertArrayNotHasKey('validationResponsable', $this->show($this->manager, $report)['body']);
+    }
+
     public function testLeMessageLaisseALaPreValidationEstExpose(): void
     {
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
@@ -293,21 +387,30 @@ class NoteHorsSortieDoubleValidationTest extends ExpenseReportApiTestCase
         return $note;
     }
 
+    /**
+     * Hors une transition acceptée, rien ne change : ni le statut, ni l'historique, et aucun mail ne part.
+     */
     private function issue(User $acteur, ExpenseReport $note, string $cible): string
     {
-        $avant = $this->reload($note)->getStatus();
+        $avant = [$this->reload($note)->getStatus(), $this->lignesDHistorique($note)];
         $response = $this->patch($acteur, $note, ['status' => $cible] + ('rejected' === $cible ? ['commentaireStatut' => self::MESSAGE] : []));
-        $apres = $this->reload($note)->getStatus();
+        $apres = [$this->reload($note)->getStatus(), $this->lignesDHistorique($note)];
+        $inchangee = $apres === $avant && [] === $this->getMailerMessages();
         $surLeStatut = array_column(array_filter($response['body']['violations'] ?? [], static fn (array $violation) => 'status' === $violation['propertyPath']), 'message');
 
         return match (true) {
-            200 === $response['status'] && $apres->value === $cible && $apres !== $avant => self::OK,
-            200 === $response['status'] && $apres === $avant => self::SANS_EFFET,
-            403 === $response['status'] && $apres === $avant => self::INTERDITE,
-            422 === $response['status'] && $apres === $avant && [self::DEJA_TRAITEE] === $surLeStatut => self::DEJA,
-            422 === $response['status'] && $apres === $avant => self::NON,
-            default => sprintf('inattendu : %d, %s', $response['status'], $apres->value),
+            200 === $response['status'] && $apres[0]->value === $cible && $apres[0] !== $avant[0] => self::OK,
+            200 === $response['status'] && $inchangee => self::SANS_EFFET,
+            403 === $response['status'] && $inchangee => self::INTERDITE,
+            422 === $response['status'] && $inchangee && [self::DEJA_TRAITEE] === $surLeStatut => self::DEJA,
+            422 === $response['status'] && $inchangee => self::NON,
+            default => sprintf('inattendu : %d, %s, %d ligne(s) d\'historique, %d mail(s)', $response['status'], $apres[0]->value, $apres[1], \count($this->getMailerMessages())),
         };
+    }
+
+    private function lignesDHistorique(ExpenseReport $note): int
+    {
+        return $this->em()->getRepository(ExpenseReportStatusHistory::class)->count(['expenseReport' => $note->getId()]);
     }
 
     /**
@@ -319,6 +422,19 @@ class NoteHorsSortieDoubleValidationTest extends ExpenseReportApiTestCase
         $this->assertResponseStatus(200, $this->patch($this->responsable, $note, ['status' => 'preapproved']));
 
         return $note;
+    }
+
+    private function derniereDecision(ExpenseReport $note): array
+    {
+        return $this->show($this->adherent, $note)['body']['derniereDecision'];
+    }
+
+    private function validationResponsable(ExpenseReport $note): ?array
+    {
+        $lue = $this->show($this->adherent, $note);
+        $this->assertArrayHasKey('validationResponsable', $lue['body']);
+
+        return $lue['body']['validationResponsable'];
     }
 
     private function derniereLigneDHistorique(ExpenseReport $note): ExpenseReportStatusHistory

@@ -1,4 +1,4 @@
-import type { Personne } from "./types";
+import type { Decision, NoteDeFrais, Personne } from "./types";
 
 export function euros(montant: number): string {
   return montant.toLocaleString("fr-FR", { style: "currency", currency: "EUR" });
@@ -89,4 +89,80 @@ export function phrasePrevenus(valideurs: Personne[]): string {
   const noms = enumeration(valideurs.map(nomComplet));
 
   return valideurs.length > 1 ? `${noms} ont été prévenus.` : `${noms} a été prévenu·e.`;
+}
+
+// Phrases de l'avancement d'une note hors sortie, pour toutes les pages : le niveau de chaque
+// décision vient de l'API, il n'est jamais recalculé ici.
+
+/** La note attend la trésorerie : validée par un responsable, ou envoyée sans valideur. */
+export function chezLaTresorerie(note: Pick<NoteDeFrais, "status" | "valideurs">): boolean {
+  return note.status === "preapproved" || (note.status === "submitted" && note.valideurs.length === 0);
+}
+
+/** Un responsable est nommé ; la trésorerie signe de son rôle, pas du nom de la personne qui la tient. */
+export function auteurDeLaDecision(decision: Decision): string {
+  return decision.niveau === "tresorerie" ? "la trésorerie" : nomComplet(decision.auteur);
+}
+
+/** Sous une note dans une liste : « Validée par X le 12/10, transmise à la trésorerie. », « Refusée par la trésorerie le 12/10. » */
+export function phraseDeLaDecision(decision: Decision): string {
+  const par = `par ${auteurDeLaDecision(decision)} le ${jourMoisDe(decision.date)}`;
+  if (decision.statut === "preapproved") {
+    return `Validée ${par}, transmise à la trésorerie.`;
+  }
+
+  return decision.statut === "approved" ? `Validée ${par}.` : `Refusée ${par}.`;
+}
+
+/** Motif d'un refus, précédé de son auteur : « La trésorerie : « … » ». */
+export function motifDuRefus(decision: Decision): string {
+  const auteur = auteurDeLaDecision(decision);
+
+  return `${auteur.charAt(0).toUpperCase()}${auteur.slice(1)} : « ${decision.message ?? ""} »`;
+}
+
+export interface DecisionSurLaPage {
+  texte: string;
+  /** Motif du refus, affiché entre guillemets. */
+  message: string | null;
+  /** « Corrigée et renvoyée le … », « Comptabilisée. » */
+  suite: string | null;
+}
+
+/**
+ * Page d'une note : la décision prise, aux deux niveaux. Une note renvoyée après un refus rappelle
+ * ce refus ; une note comptabilisée le dit.
+ */
+export function decisionSurLaPage(note: NoteDeFrais): DecisionSurLaPage | null {
+  const derniere = note.derniereDecision;
+  if (!derniere) {
+    return null;
+  }
+  const par = `par ${auteurDeLaDecision(derniere)} le ${dateFrDe(derniere.date)}`;
+  if (derniere.statut === "preapproved") {
+    return { texte: `Validée ${par}.`, message: null, suite: null };
+  }
+
+  // Une décision de la trésorerie vient après la validation du responsable, quand la note en a une.
+  const validation = derniere.niveau === "tresorerie" ? note.validationResponsable : null;
+  const debut = validation && validation.date <= derniere.date ? `Validée par ${nomComplet(validation.auteur)} le ${dateFrDe(validation.date)}, puis ` : "";
+
+  if (derniere.statut === "approved") {
+    return { texte: debut ? `${debut}${par}.` : `Validée ${par}.`, message: null, suite: note.status === "accounted" ? "Comptabilisée." : null };
+  }
+
+  return {
+    texte: `${debut ? `${debut}refusée` : "Refusée"} ${par} :`,
+    message: derniere.message,
+    suite: note.status === "submitted" && note.dateEnvoi ? `Corrigée et renvoyée le ${dateFrDe(note.dateEnvoi)}.` : null,
+  };
+}
+
+/** Page d'une note qui attend une décision qu'on ne peut pas prendre soi-même : qui décidera. */
+export function enAttenteDe(note: NoteDeFrais): string | null {
+  if (chezLaTresorerie(note)) {
+    return "En attente de la trésorerie.";
+  }
+
+  return note.status === "submitted" ? `En attente de la décision de ${enumeration(note.valideurs.map(nomComplet), "ou")}.` : null;
 }

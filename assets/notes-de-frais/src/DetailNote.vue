@@ -2,7 +2,7 @@
 import { isAxiosError } from "axios";
 import { computed, nextTick, onMounted, ref } from "vue";
 import { enregistrerNote, lireNote, messagesDErreur, refusDeLApi, sessionExpiree } from "./api";
-import { dateFr, dateFrDe, enumeration, euros, jour, nomComplet, partRemboursable } from "./format";
+import { dateFr, dateFrDe, decisionSurLaPage, enAttenteDe, euros, jour, nomComplet, partRemboursable } from "./format";
 import { libellesDuType } from "./typesDeNote";
 import type { DonneesDetail, NoteDeFrais } from "./types";
 
@@ -58,38 +58,12 @@ const lignes = computed(() => {
   }));
 });
 
-const decisionPrise = computed(() => {
-  const derniere = note.value?.derniereDecision;
-  if (!note.value || !derniere) {
-    return null;
-  }
-  const le = dateFrDe(derniere.date);
-  if (derniere.statut === "preapproved") {
-    return { texte: `Validée par ${nomComplet(derniere.auteur)} le ${le}.`, message: null };
-  }
-  if (derniere.statut === "approved") {
-    return { texte: `Validée par la trésorerie le ${le}.`, message: null };
-  }
-  const par = `par ${nomComplet(derniere.auteur)} le ${le}`;
-
-  // Une note corrigée puis envoyée à nouveau garde la trace du refus.
-  return { texte: note.value.status === "submitted" ? `Refusée une première fois ${par} :` : `Refusée ${par} :`, message: derniere.message };
-});
+const decisionPrise = computed(() => (note.value ? decisionSurLaPage(note.value) : null));
 
 const messageRempli = computed(() => message.value.trim() !== "");
 
 // Une note en attente sans les boutons : on dit pourquoi, et qui décidera.
-const attente = computed(() => {
-  if (!note.value || note.value.peutDecider) {
-    return null;
-  }
-  const { status, valideurs } = note.value;
-  if (status === "preapproved" || (status === "submitted" && !valideurs.length)) {
-    return "En attente de la trésorerie.";
-  }
-
-  return status === "submitted" ? `En attente de la décision de ${enumeration(valideurs.map(nomComplet), "ou")}.` : null;
-});
+const attente = computed(() => (!note.value || note.value.peutDecider ? null : enAttenteDe(note.value)));
 
 onMounted(async () => {
   try {
@@ -243,10 +217,13 @@ function refuser() {
     </div>
 
     <div class="tw-mt-6 tw-border-t tw-border-gray-100 tw-bg-gray-50 tw-px-8 tw-py-5">
-      <p v-if="decisionPrise && !fait" class="tw-mb-3 tw-text-sm tw-text-gray-700">
-        {{ decisionPrise.texte }}
-        <span v-if="decisionPrise.message" class="tw-whitespace-pre-line">« {{ decisionPrise.message }} »</span>
-      </p>
+      <template v-if="decisionPrise && !fait">
+        <p class="tw-mb-3 tw-text-sm tw-text-gray-700">
+          {{ decisionPrise.texte }}
+          <span v-if="decisionPrise.message" class="tw-whitespace-pre-line">« {{ decisionPrise.message }} »</span>
+        </p>
+        <p v-if="decisionPrise.suite" class="tw-mb-3 tw-text-sm tw-text-gray-700">{{ decisionPrise.suite }}</p>
+      </template>
 
       <p v-if="fait" ref="resultat" tabindex="-1" role="status" :class="['tw-text-right tw-text-sm tw-font-medium focus:tw-outline-none', fait.classe]">{{ fait.texte }}</p>
 

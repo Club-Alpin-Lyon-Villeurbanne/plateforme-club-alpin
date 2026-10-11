@@ -116,7 +116,7 @@ class NoteHorsSortieDecisionTest extends ExpenseReportApiTestCase
 
         $decision = $this->show($this->owner, $note)['body']['derniereDecision'];
 
-        $this->assertSame('rejected', $decision['statut']);
+        $this->assertSame(['rejected', 'tresorerie'], [$decision['statut'], $decision['niveau']]);
         $this->assertSame(['prenom' => 'Alex', 'nom' => 'DURAND'], $decision['auteur']);
         $this->assertGreaterThanOrEqual($avant, new \DateTimeImmutable($decision['date']));
         $this->assertSame(self::MESSAGE, $decision['message']);

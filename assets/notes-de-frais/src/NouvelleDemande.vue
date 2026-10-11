@@ -71,7 +71,7 @@ import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref } from "vue
 import PremiereEtape from "./components/PremiereEtape.vue";
 import SecondeEtape from "./components/SecondeEtape.vue";
 import { creerNote, enregistrerNote, envoyerJustificatif, lireNote, messagesDErreur, refusDeLApi, sessionExpiree } from "./api";
-import { aujourdhui, limiteEnvoi, messageDelaiDepasse, nomComplet, partRemboursable, phrasePrevenus, phraseValideurs } from "./format";
+import { auteurDeLaDecision, aujourdhui, limiteEnvoi, messageDelaiDepasse, partRemboursable, phrasePrevenus, phraseValideurs } from "./format";
 import { refusDuFichier } from "./justificatifs";
 import { ecrireLignes, lireLignes, nouvelleLigne } from "./lignes";
 import type { TypeHorsSortie } from "./typesDeNote";
@@ -138,7 +138,7 @@ const messageDeRefus = computed(() => {
     return null;
   }
 
-  return `Refusée par ${nomComplet(decision.auteur)} : « ${decision.message ?? ""} »`;
+  return `Refusée par ${auteurDeLaDecision(decision)} : « ${decision.message ?? ""} »`;
 });
 
 // Une formation reprise reste une formation, même si le demandeur n'encadre plus nulle part.

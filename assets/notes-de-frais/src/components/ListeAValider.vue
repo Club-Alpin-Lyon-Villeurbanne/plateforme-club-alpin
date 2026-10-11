@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from "vue";
 import { listerNotesAValider, messagesDErreur } from "../api";
-import { enumeration, euros, jourMoisDe, leJourDeLaDepense, nomComplet } from "../format";
+import { enumeration, euros, leJourDeLaDepense, nomComplet, phraseDeLaDecision } from "../format";
 import { libellesDuType } from "../typesDeNote";
 import type { NoteDeFrais } from "../types";
 
@@ -59,15 +59,8 @@ function contexte(note: NoteDeFrais): string {
 
 function decision(note: NoteDeFrais): string | null {
   const derniere = note.derniereDecision;
-  if (!derniere || note.status === "submitted") {
-    return null;
-  }
-  const le = jourMoisDe(derniere.date);
-  if (derniere.statut === "preapproved") {
-    return `Validée par ${nomComplet(derniere.auteur)} le ${le}, transmise à la trésorerie.`;
-  }
 
-  return derniere.statut === "approved" ? `Validée par la trésorerie le ${le}.` : `Refusée par ${nomComplet(derniere.auteur)} le ${le}.`;
+  return !derniere || note.status === "submitted" ? null : phraseDeLaDecision(derniere);
 }
 </script>
 

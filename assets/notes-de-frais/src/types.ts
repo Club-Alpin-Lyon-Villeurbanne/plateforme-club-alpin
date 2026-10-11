@@ -90,6 +90,8 @@ export interface Personne {
 /** Dernière décision sur une note : validation par un responsable (preapproved) ou par la trésorerie, ou renvoi. */
 export interface Decision {
   statut: "preapproved" | "approved" | "rejected";
+  /** Qui a décidé, établi par le serveur au moment de la décision ; null pour une décision plus ancienne que ce champ. */
+  niveau: "responsable" | "tresorerie" | null;
   auteur: Personne;
   /** Date et heure ISO 8601. */
   date: string;
@@ -125,6 +127,8 @@ export interface NoteDeFrais {
   /** Vide : la note va directement à la trésorerie. */
   valideurs: Valideur[];
   derniereDecision: Decision | null;
+  /** Dernière validation par un responsable, conservée après la décision de la trésorerie. */
+  validationResponsable: { auteur: Personne; date: string } | null;
   /** L'utilisateur connecté peut valider ou renvoyer la note maintenant. */
   peutDecider: boolean;
 }
