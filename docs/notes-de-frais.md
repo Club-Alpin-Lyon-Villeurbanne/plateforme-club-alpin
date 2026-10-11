@@ -33,13 +33,13 @@ Une note hors sortie rembourse une formation ou un achat fait pour le club, sans
 
 - Le demandeur fait sa demande (formation ou achat) depuis le menu « Notes de frais » : une ligne par dépense avec son justificatif, puis le choix entre remboursement et don.
 - Le responsable de commission valide la note, ou la refuse avec un message : le demandeur la corrige et l'envoie à nouveau. Il ne voit pas le choix entre remboursement et don.
-- La trésorerie reçoit par mail le récapitulatif de chaque note validée, puis paie ou prépare le reçu fiscal.
+- La trésorerie n'a aucune fonction sur le site et ne reçoit aucun mail : elle travaille dans compta-club, par l'API.
 
 Règles à connaître :
 
 - Tout adhérent connecté peut demander le remboursement d'un achat. Une formation est réservée aux adhérents qui ont un rôle d'encadrement sur la commission (responsable, encadrant, coencadrant, stagiaire ou bénévole d'encadrement).
-- Personne ne valide sa propre note. Si la commission n'a pas d'autre responsable que le demandeur, la note va à la trésorerie.
-- La trésorerie voit toutes les notes hors sortie et peut valider ou refuser à la place d'un responsable.
+- Personne ne valide sa propre note, et un responsable sans adresse mail ne valide pas. S'il ne reste aucun responsable, la note va à la trésorerie.
+- Sur le site, un gestionnaire des notes de frais n'a rien de plus qu'un autre adhérent : « à valider » ne lui montre que les notes des commissions dont il est responsable.
 
 ### Circuit des statuts
 
@@ -68,7 +68,7 @@ Le demandeur ne modifie sa note qu'en brouillon ou à corriger. Une note transmi
 
 ### Écrans
 
-Le menu adhérent gagne une rubrique « Notes de frais ». L'entrée « notes de frais à valider », avec son compteur, n'apparaît qu'aux responsables de commission et à la trésorerie.
+Le menu adhérent gagne une rubrique « Notes de frais ». L'entrée « notes de frais à valider », avec son compteur, n'apparaît qu'aux responsables de commission.
 
 ![Menu adhérent avec la rubrique Notes de frais](images/notes-de-frais/hors-sortie-menu.png)
 
@@ -84,7 +84,7 @@ Seconde étape : une ligne par dépense avec son justificatif, le total, puis le
 
 ![Page Mes notes de frais](images/notes-de-frais/hors-sortie-mes-notes.png)
 
-« Notes de frais à valider » : les notes en attente dans les commissions du responsable. La trésorerie y voit deux groupes, « Pour la trésorerie » et « Chez les responsables ».
+« Notes de frais à valider » : les notes en attente dans les commissions du responsable.
 
 ![Page Notes de frais à valider](images/notes-de-frais/hors-sortie-a-valider.png)
 
@@ -95,9 +95,8 @@ Détail d'une note vu par le responsable : dépenses, justificatifs et mot du de
 ### Configuration
 
 - `DISPLAY_NOTES_DE_FRAIS` : à faux, le site n'affiche aucune note de frais, de sortie ou hors sortie, et les pages hors sortie répondent 404.
-- `NOTES_DE_FRAIS_EMAIL_TRESORERIE` : adresse de la trésorerie. Elle reçoit le récapitulatif des notes validées, et les notes à valider quand aucun responsable de la commission ne peut les recevoir (pas d'autre responsable que le demandeur, ou aucun avec une adresse mail valide). Si elle est vide, l'envoi et la validation aboutissent sans mail à la trésorerie, et l'erreur est journalisée (Sentry en prod).
-- `AUTHORIZED_IDS_FOR_EXPENSE_MANAGEMENT` : identifiants utilisateur des gestionnaires des notes de frais, séparés par des virgules. Sur le site, c'est eux qu'on appelle « la trésorerie ».
-- Rôle `responsable-commission`, donné sur une commission dans l'administration : ses titulaires valident les notes de cette commission, sauf s'ils sont supprimés ou doivent renouveler leur adhésion. Il n'y a rien d'autre à configurer.
+- `AUTHORIZED_IDS_FOR_EXPENSE_MANAGEMENT` : identifiants utilisateur des gestionnaires des notes de frais, séparés par des virgules. C'est la trésorerie : elle agit par l'API, depuis compta-club.
+- Rôle `responsable-commission`, donné sur une commission dans l'administration : ses titulaires valident les notes de cette commission, sauf s'ils sont supprimés, doivent renouveler leur adhésion ou n'ont pas d'adresse mail. Il n'y a rien d'autre à configurer.
 - `expense_report.horsSortie` dans `config/services.yaml` : délai d'envoi par type (`delaiEnvoiJours`), seuil d'avertissement (`seuilAvertissement`), taux kilométrique des formations (`formation.tauxKilometrique`) et plafonds par type (`<type>.plafonds`). Les valeurs suivent la politique de remboursement du club. Ce barème est distinct des taux des notes de sortie.
 
 ### Pour un développeur
@@ -106,7 +105,7 @@ Détail d'une note vu par le responsable : dépenses, justificatifs et mot du de
 - Plafonds : en configuration seulement. `<type>.plafonds.parNature` plafonne une nature sur chaque ligne (`portee: ligne`) ou sur son total dans la note (`portee: note`) ; `<type>.plafonds.total` plafonne le remboursable de la note.
 - Montants figés : à chaque envoi, `ExpenseReportCalculator::figerNoteHorsSortie()` enregistre le total déclaré, le total remboursable et, pour une formation, le taux kilométrique. Ce que le responsable a validé reste ce que la trésorerie paie, même si le barème change ensuite. Un brouillon ou une note à corriger suit le barème en vigueur.
 - Valideurs : `ValideursNoteHorsSortie` est la seule source. Les droits (`ResponsableNoteDeFraisVoter`), la liste « à valider », le compteur du menu, les mails et la phrase « Validée par … » en dépendent. Les valideurs sont recalculés à chaque lecture.
-- Mails : tous ceux d'une note hors sortie partent de `NotificationsNoteHorsSortie`, une fois le changement de statut enregistré ; le listener Doctrine des notes de sortie les ignore. Un valideur sans adresse valide n'est pas prévenu, et le demandeur lit le nom de ceux qui l'ont été.
+- Mails : tous ceux d'une note hors sortie partent de `NotificationsNoteHorsSortie`, une fois le changement de statut enregistré ; le listener Doctrine des notes de sortie les ignore. Ils vont au demandeur et aux valideurs, jamais à la trésorerie.
 - compta-club : `/admin/notes-de-frais` exclut les notes hors sortie (`ExpenseReportExtension`), car compta-club suppose qu'une note a une sortie. Voir la [décision](decisions/2026.10.11-notes_de_frais_hors_sortie.md).
 - Code : application Vue dans `assets/notes-de-frais/`, pages dans `NoteDeFraisController`, opérations d'API sur l'entité `ExpenseReport`, services dans `src/Service/NoteDeFrais/`.
 - Tests : `tests/Api/NoteHorsSortie*Test.php`, sur le socle `ExpenseReportApiTestCase`. En local, ces fichiers peuvent dépasser la mémoire par défaut de PHP : `php -d memory_limit=1G bin/phpunit <fichier>`. Les pages n'ont pas de test automatisé.
@@ -116,11 +115,10 @@ Détail d'une note vu par le responsable : dépenses, justificatifs et mot du de
 `DISPLAY_NOTES_DE_FRAIS` vaut déjà vrai à Lyon : la mise en production ouvre l'outil à Lyon. Dans l'ordre :
 
 1. [ ] Faire la recette sur staging avec de vrais rôles, mails compris : les droits des données de démo ne reflètent pas la prod.
-2. [ ] Renseigner `NOTES_DE_FRAIS_EMAIL_TRESORERIE`.
-3. [ ] Vérifier que `DISPLAY_NOTES_DE_FRAIS` vaut faux à Chambéry et à Clermont.
-4. [ ] Vérifier en prod les responsables de chaque commission. Une commission sans responsable envoie tout à la trésorerie.
-5. [ ] Décider si la formation est proposée dès maintenant : la politique de remboursement qui fixe son barème est-elle votée ?
-6. [ ] Mettre en production, le même jour dans tous les clubs : les migrations passent au déploiement.
+2. [ ] Vérifier que `DISPLAY_NOTES_DE_FRAIS` vaut faux à Chambéry et à Clermont.
+3. [ ] Vérifier en prod les responsables de chaque commission. Une commission sans responsable envoie tout à la trésorerie.
+4. [ ] Décider si la formation est proposée dès maintenant : la politique de remboursement qui fixe son barème est-elle votée ?
+5. [ ] Mettre en production, le même jour dans tous les clubs : les migrations passent au déploiement.
 
 Retour arrière : le `down()` de la première migration échoue dès qu'une note hors sortie existe, et revenir au code d'avant sans annuler la migration enverrait les notes hors sortie dans `/admin/notes-de-frais` (compta-club). Mieux vaut corriger en avant.
 
