@@ -110,13 +110,19 @@ Détail d'une note vu par le responsable : dépenses, justificatifs et mot du de
 - Code : application Vue dans `assets/notes-de-frais/`, pages dans `NoteDeFraisController`, opérations d'API sur l'entité `ExpenseReport`, services dans `src/Service/NoteDeFrais/`.
 - Tests : `tests/Api/NoteHorsSortie*Test.php`, sur le socle `ExpenseReportApiTestCase`. En local, ces fichiers peuvent dépasser la mémoire par défaut de PHP : `php -d memory_limit=1G bin/phpunit <fichier>`. Les pages n'ont pas de test automatisé.
 
-### Avant l'ouverture à Lyon
+### Avant la mise en production
 
-- [ ] Mettre en production le même jour dans tous les clubs : les migrations passent au déploiement.
-- [ ] Vérifier que `DISPLAY_NOTES_DE_FRAIS` vaut faux à Chambéry et à Clermont.
-- [ ] Renseigner `NOTES_DE_FRAIS_EMAIL_TRESORERIE`.
-- [ ] Vérifier en prod les responsables de chaque commission. Une commission sans responsable envoie tout à la trésorerie.
-- [ ] Faire la recette sur staging avec de vrais rôles, mails compris : les droits des données de démo ne reflètent pas la prod.
-- [ ] Ne pas créer de groupe de travail pour l'instant : prévus en commissions masquées, ils ne sont pas encore proposés dans le formulaire.
+`DISPLAY_NOTES_DE_FRAIS` vaut déjà vrai à Lyon : la mise en production ouvre l'outil à Lyon. Dans l'ordre :
+
+1. [ ] Faire la recette sur staging avec de vrais rôles, mails compris : les droits des données de démo ne reflètent pas la prod.
+2. [ ] Renseigner `NOTES_DE_FRAIS_EMAIL_TRESORERIE`.
+3. [ ] Vérifier que `DISPLAY_NOTES_DE_FRAIS` vaut faux à Chambéry et à Clermont.
+4. [ ] Vérifier en prod les responsables de chaque commission. Une commission sans responsable envoie tout à la trésorerie.
+5. [ ] Décider si la formation est proposée dès maintenant : la politique de remboursement qui fixe son barème est-elle votée ?
+6. [ ] Mettre en production, le même jour dans tous les clubs : les migrations passent au déploiement.
+
+Retour arrière : le `down()` de la première migration échoue dès qu'une note hors sortie existe, et revenir au code d'avant sans annuler la migration enverrait les notes hors sortie dans `/admin/notes-de-frais` (compta-club). Mieux vaut corriger en avant.
+
+Ne pas créer de groupe de travail pour l'instant : prévus en commissions masquées, ils ne sont pas encore proposés dans le formulaire.
 
 Autre club : la phrase déclarée nomme le Club Alpin de Lyon et le barème est commun à tous les clubs ; à adapter avant d'activer `DISPLAY_NOTES_DE_FRAIS`.
