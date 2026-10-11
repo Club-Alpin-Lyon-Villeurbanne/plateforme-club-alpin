@@ -10,6 +10,7 @@ use App\Utils\Enums\ExpenseReportTypeEnum;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Contracts\Service\ResetInterface;
 
 /**
  * Les notes hors sortie que l'utilisateur connecté peut traiter : la liste « notes de frais à
@@ -20,10 +21,13 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
  * valideur, ou de ses commissions) de celles qui attendent un responsable (`responsables`), qu'il
  * peut traiter à leur place. Le compteur ne compte que les premières.
  */
-class NotesAValider
+class NotesAValider implements ResetInterface
 {
     public const POUR_MOI = 'moi';
     public const CHEZ_LES_RESPONSABLES = 'responsables';
+
+    /** @var array<int, int> nombre en attente par utilisateur, le temps d'une requête : l'en-tête le lit deux fois */
+    private array $enAttente = [];
 
     public function __construct(
         private readonly Security $security,
@@ -48,14 +52,23 @@ class NotesAValider
      */
     public function nombreEnAttente(): ?int
     {
-        if (!$this->notesDeFraisActives || !$this->concerneLUtilisateur()) {
+        $utilisateur = $this->security->getUser();
+        if (!$this->notesDeFraisActives || !$utilisateur instanceof User || !$this->concerneLUtilisateur()) {
             return null;
         }
 
-        $requete = $this->notes->createQueryBuilder('note')->select('COUNT(note.id)');
-        $this->restreindre($requete, 'note', ['attente' => self::POUR_MOI]);
+        if (!\array_key_exists($utilisateur->getId(), $this->enAttente)) {
+            $requete = $this->notes->createQueryBuilder('note')->select('COUNT(note.id)');
+            $this->restreindre($requete, 'note', ['attente' => self::POUR_MOI]);
+            $this->enAttente[$utilisateur->getId()] = (int) $requete->getQuery()->getSingleScalarResult();
+        }
 
-        return (int) $requete->getQuery()->getSingleScalarResult();
+        return $this->enAttente[$utilisateur->getId()];
+    }
+
+    public function reset(): void
+    {
+        $this->enAttente = [];
     }
 
     /**

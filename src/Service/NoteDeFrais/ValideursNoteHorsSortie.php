@@ -37,7 +37,7 @@ class ValideursNoteHorsSortie implements ResetInterface
     public function pour(ExpenseReport $note): array
     {
         $commission = $note->getCommission();
-        if (!$note->getType()->estHorsSortie() || null === $commission) {
+        if (!$note->getType()->passeParUnResponsable() || null === $commission) {
             return [];
         }
 

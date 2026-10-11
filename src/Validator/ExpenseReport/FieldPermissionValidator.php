@@ -55,7 +55,7 @@ class FieldPermissionValidator
             && $oldStatus !== $expenseReport->getStatus();
 
         if (!$canComment && $this->changed($expenseReport, 'statusComment', $expenseReport->getStatusComment())) {
-            $context->buildViolation('The status comment can only be set by an expense manager when changing the status.')
+            $context->buildViolation('Seul un gestionnaire ou un responsable de la commission peut écrire ce commentaire, en changeant le statut de la note.')
                 ->atPath('statusComment')
                 ->addViolation();
         }
