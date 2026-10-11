@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from "vue";
 import { listerNotesAValider, messagesDErreur, type Attente } from "../api";
-import { enumeration, euros, jourMoisDe, nomComplet } from "../format";
+import { enumeration, euros, jourMoisDe, leJourDeLaDepense, nomComplet } from "../format";
 import { libellesDuType } from "../typesDeNote";
 import type { NoteDeFrais } from "../types";
 
@@ -62,7 +62,7 @@ async function charger() {
 onMounted(charger);
 
 function contexte(note: NoteDeFrais): string {
-  return `${nomComplet(note.utilisateur)}, ${libellesDuType(note.type).libelle.toLowerCase()} pour ${note.commission?.title ?? ""}`;
+  return `${nomComplet(note.utilisateur)}, ${libellesDuType(note.type).libelle.toLowerCase()} pour ${note.commission?.title ?? ""}${leJourDeLaDepense(note.dateDepense)}`;
 }
 
 function decision(note: NoteDeFrais): string | null {

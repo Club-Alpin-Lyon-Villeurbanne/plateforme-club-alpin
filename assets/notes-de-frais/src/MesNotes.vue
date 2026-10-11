@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { listerMesNotes, messagesDErreur } from "./api";
-import { aujourdhui, dateFr, dateFrDe, enumeration, euros, jourMoisDe, limiteEnvoi, messageDelaiDepasse, nomComplet } from "./format";
+import { aujourdhui, dateFr, dateFrDe, enumeration, euros, jourMoisDe, leJourDeLaDepense, limiteEnvoi, messageDelaiDepasse, nomComplet } from "./format";
 import { libellesDuType } from "./typesDeNote";
 import type { DonneesMesNotes, NoteDeFrais, NoteDeSortie } from "./types";
 
@@ -95,7 +95,7 @@ function contexte(note: Note): string {
     return `Sortie${commission}, le ${dateFrDe(note.sortie.startDate)}`;
   }
 
-  return `${libellesDuType(note.type).libelle} pour ${note.commission?.title ?? ""}`;
+  return `${libellesDuType(note.type).libelle} pour ${note.commission?.title ?? ""}${leJourDeLaDepense(note.dateDepense)}`;
 }
 
 function limite(note: Note): Date | null {

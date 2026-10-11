@@ -33,6 +33,11 @@ export function messageDelaiDepasse(delaiJours: number): string {
   return `Le délai de ${delaiJours} jours est dépassé : cette demande ne peut plus être envoyée.`;
 }
 
+/** « , le 13/09/2026 » après le type d'une note hors sortie ; rien tant que la date manque. */
+export function leJourDeLaDepense(dateDepense: string | null): string {
+  return dateDepense ? `, le ${dateFr(jour(dateDepense))}` : "";
+}
+
 /** JJ/MM/AAAA d'une date ISO 8601 (date et heure). */
 export function dateFrDe(iso: string): string {
   return new Date(iso).toLocaleDateString("fr-FR");
