@@ -20,16 +20,12 @@ class ExpenseReportStatusHistoryRepository extends ServiceEntityRepository
 
     public function dateDernierEnvoi(ExpenseReport $note): ?\DateTimeImmutable
     {
-        $date = $this->createQueryBuilder('h')
-            ->select('MAX(h.changedAt)')
-            ->andWhere('h.expenseReport = :note')
-            ->andWhere('h.newStatus = :envoyee')
-            ->setParameter('note', $note)
-            ->setParameter('envoyee', ExpenseReportStatusEnum::SUBMITTED)
-            ->getQuery()
-            ->getSingleScalarResult();
+        return $this->dateDEnvoi($note, 'MAX');
+    }
 
-        return null === $date ? null : new \DateTimeImmutable($date);
+    public function datePremierEnvoi(ExpenseReport $note): ?\DateTimeImmutable
+    {
+        return $this->dateDEnvoi($note, 'MIN');
     }
 
     /**
@@ -50,5 +46,22 @@ class ExpenseReportStatusHistoryRepository extends ServiceEntityRepository
             ->setMaxResults(1)
             ->getQuery()
             ->getOneOrNullResult();
+    }
+
+    /**
+     * @param 'MIN'|'MAX' $agregat
+     */
+    private function dateDEnvoi(ExpenseReport $note, string $agregat): ?\DateTimeImmutable
+    {
+        $date = $this->createQueryBuilder('h')
+            ->select(sprintf('%s(h.changedAt)', $agregat))
+            ->andWhere('h.expenseReport = :note')
+            ->andWhere('h.newStatus = :envoyee')
+            ->setParameter('note', $note)
+            ->setParameter('envoyee', ExpenseReportStatusEnum::SUBMITTED)
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return null === $date ? null : new \DateTimeImmutable($date);
     }
 }

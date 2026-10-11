@@ -154,7 +154,9 @@ final class ControlesNoteHorsSortie
 
     /**
      * Une note renvoyée repart sans contrôle du délai, et sa date peut changer pendant la
-     * correction : le valideur doit le voir. Rien tant que la note est chez son demandeur.
+     * correction : le valideur doit le voir. Le délai court jusqu'au premier envoi, pour qu'une
+     * correction demandée ne rende pas la note tardive. Rien tant que la note est chez son
+     * demandeur.
      */
     private function envoyeeApresLeDelai(ExpenseReport $note): ?string
     {
@@ -165,7 +167,7 @@ final class ControlesNoteHorsSortie
             return null;
         }
 
-        $envoi = $this->historique->dateDernierEnvoi($note);
+        $envoi = $this->historique->datePremierEnvoi($note);
 
         return null !== $envoi && $date->modify(sprintf('+%d days', $delai)) < $envoi->setTime(0, 0)
             ? sprintf('%s daté de plus de %d jours avant son envoi.', ucfirst($note->getType()->libelle()), $delai)

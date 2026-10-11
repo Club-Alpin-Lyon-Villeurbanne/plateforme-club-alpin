@@ -81,6 +81,25 @@ class NoteHorsSortieMontantsTest extends ExpenseReportApiTestCase
         $this->assertNotContains($message, $this->show($this->owner, $note)['body']['avertissements']);
     }
 
+    public function testUnAchatEnvoyeDansLeDelaiPuisCorrigeNeLeSignalePas(): void
+    {
+        $delai = $this->configHorsSortie()['delaiEnvoiJours']['autre'];
+        $note = $this->creerAchat($this->owner, ExpenseReportStatusEnum::DRAFT, self::LIGNES);
+        $this->joindreLesJustificatifs($note, 'ligne-1', 'ligne-2');
+        $this->assertResponseStatus(200, $this->envoyer($this->owner, $note));
+        // Comme si l'achat avait été envoyé deux jours après la dépense, il y a plus longtemps que le délai.
+        $base = $this->em()->getConnection();
+        $base->executeStatement('UPDATE expense_report SET date_depense = ? WHERE id = ?', [(new \DateTimeImmutable(sprintf('-%d days', $delai + 12)))->format('Y-m-d'), $note->getId()]);
+        $base->executeStatement('UPDATE expense_report_status_history SET changed_at = ? WHERE expense_report_id = ?', [(new \DateTimeImmutable(sprintf('-%d days', $delai + 10)))->format('Y-m-d H:i:s'), $note->getId()]);
+        $this->renvoyerAuDemandeur($note);
+
+        $envoi = $this->envoyer($this->owner, $note);
+
+        $this->assertResponseStatus(200, $envoi);
+        $this->assertSame([], $envoi['body']['avertissements']);
+        $this->assertSame([], $this->show($this->manager, $note)['body']['avertissements']);
+    }
+
     public function testUnAchatEnvoyeDansLeDelaiNeLeSignalePas(): void
     {
         $delai = $this->configHorsSortie()['delaiEnvoiJours']['autre'];
