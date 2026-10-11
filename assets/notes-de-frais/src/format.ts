@@ -30,3 +30,22 @@ export function limiteEnvoi(dateDepense: string, delaiJours: number): Date {
 export function messageDelaiDepasse(delaiJours: number): string {
   return `Le délai de ${delaiJours} jours est dépassé : cette demande ne peut plus être envoyée.`;
 }
+
+/** JJ/MM/AAAA d'une date ISO 8601 (date et heure). */
+export function dateFrDe(iso: string): string {
+  return new Date(iso).toLocaleDateString("fr-FR");
+}
+
+/** JJ/MM d'une date ISO 8601 (date et heure). */
+export function jourMoisDe(iso: string): string {
+  return new Date(iso).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
+}
+
+export function nomComplet(personne: { prenom: string; nom: string }): string {
+  return `${personne.prenom} ${personne.nom}`;
+}
+
+/** « Escalade », « Escalade et Alpinisme », « Escalade, Ski et Alpinisme ». */
+export function enumeration(elements: string[]): string {
+  return elements.length < 2 ? (elements[0] ?? "") : `${elements.slice(0, -1).join(", ")} et ${elements[elements.length - 1]}`;
+}

@@ -39,13 +39,30 @@ export interface Justificatif {
   nom: string | null;
 }
 
+export interface Personne {
+  prenom: string;
+  nom: string;
+}
+
+/** Dernière validation ou dernier renvoi d'une note. */
+export interface Decision {
+  statut: "approved" | "rejected";
+  auteur: Personne;
+  /** Date et heure ISO 8601. */
+  date: string;
+  /** Message du renvoi ; null pour une validation. */
+  message: string | null;
+}
+
 export interface NoteDeFrais {
   id: number;
   status: string;
   type: "sortie" | "formation" | "autre";
+  utilisateur: Personne & { id: number };
   commission: { id: number; title: string } | null;
   objet: string | null;
   dateDepense: string | null;
+  lienFormation: string | null;
   motPourResponsable: string | null;
   /** Null tant que le demandeur n'a pas choisi : true pour un remboursement, false pour un don. */
   refundRequired: boolean | null;
@@ -60,10 +77,22 @@ export interface NoteDeFrais {
   dateEnvoi: string | null;
   /** Vide : la note va directement à la trésorerie. */
   valideurs: { id: number; prenom: string; nom: string }[];
+  derniereDecision: Decision | null;
+  /** L'utilisateur connecté peut valider ou renvoyer la note maintenant. */
+  peutDecider: boolean;
 }
 
 export interface DonneesMesNotes {
   delaisEnvoiJours: Record<string, number>;
+}
+
+export interface DonneesAValider {
+  /** Demandes déjà traitées plutôt que demandes en attente. */
+  traitees: boolean;
+}
+
+export interface DonneesDetail {
+  noteId: number;
 }
 
 export interface Refus {

@@ -63,6 +63,16 @@ export async function listerMesNotes(page: number): Promise<PageDeNotes> {
   return { notes: reponse.data.data, pages: reponse.data.meta.pages };
 }
 
+/** Demandes que l'utilisateur peut traiter : en attente, ou déjà traitées. */
+export async function listerNotesAValider(page: number, traitees: boolean): Promise<PageDeNotes & { total: number }> {
+  const reponse = await api.get<{ data: NoteDeFrais[]; meta: { pages: number; total: number } }>("/notes-de-frais/a-valider", {
+    params: { page, ...(traitees ? { status: ["approved", "rejected", "accounted"] } : {}) },
+    paramsSerializer: { indexes: false },
+  });
+
+  return { notes: reponse.data.data, pages: reponse.data.meta.pages, total: reponse.data.meta.total };
+}
+
 export async function lireNote(id: number): Promise<NoteDeFrais> {
   return (await api.get<NoteDeFrais>(`/notes-de-frais/${id}`)).data;
 }

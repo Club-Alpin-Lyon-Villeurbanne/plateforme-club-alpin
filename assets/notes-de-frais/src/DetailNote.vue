@@ -1,0 +1,288 @@
+<script setup lang="ts">
+import { isAxiosError } from "axios";
+import { computed, nextTick, onMounted, ref } from "vue";
+import { enregistrerNote, lireNote, messagesDErreur, refusDeLApi, sessionExpiree } from "./api";
+import { dateFrDe, euros, nomComplet } from "./format";
+import { lireLignes } from "./lignes";
+import type { DonneesDetail, NoteDeFrais } from "./types";
+
+const props = defineProps<{ donnees: DonneesDetail }>();
+
+const URL_LISTE = "/notes-de-frais/a-valider";
+const MOTIFS = ["Il manque un justificatif", "Mauvaise commission", "Montant à revoir", "Pas d'accord préalable"];
+
+const note = ref<NoteDeFrais | null>(null);
+const chargement = ref(true);
+const erreurDeChargement = ref("");
+
+// Zone de décision : les deux boutons, puis le renvoi avec son message, puis le résultat.
+const renvoiOuvert = ref(false);
+const message = ref("");
+const enCours = ref(false);
+const refus = ref<string[]>([]);
+const fait = ref<{ texte: string; classe: string } | null>(null);
+
+const champMessage = ref<HTMLTextAreaElement | null>(null);
+const boutonRenvoyer = ref<HTMLButtonElement | null>(null);
+const resultat = ref<HTMLElement | null>(null);
+
+const demandeur = computed(() => (note.value ? nomComplet(note.value.utilisateur) : ""));
+
+const contexte = computed(() => {
+  if (!note.value) {
+    return "";
+  }
+  const nature = note.value.type === "formation" ? "Formation" : "Achat";
+  const envoi = note.value.dateEnvoi ? `, envoyée le ${dateFrDe(note.value.dateEnvoi)}` : "";
+
+  return `${nature} pour ${note.value.commission?.title ?? ""}${envoi}`;
+});
+
+// Un justificatif dont la ligne a été retirée reste rattaché à la note : on ne le montre pas.
+const lignes = computed(() => {
+  if (!note.value) {
+    return [];
+  }
+  const justificatifs = new Map(note.value.piecesJointes.map((pieceJointe) => [pieceJointe.expenseId, pieceJointe.fileUrl]));
+
+  return lireLignes(note.value.details).map((ligne, index) => ({
+    ...ligne,
+    numero: index + 1,
+    justificatif: justificatifs.get(ligne.id) ?? null,
+  }));
+});
+
+const decisionPrise = computed(() => {
+  const derniere = note.value?.derniereDecision;
+  if (!note.value || !derniere) {
+    return null;
+  }
+  const par = `par ${nomComplet(derniere.auteur)} le ${dateFrDe(derniere.date)}`;
+  if (derniere.statut === "approved") {
+    return { texte: `Validée ${par}.`, message: null };
+  }
+
+  // Une note corrigée puis envoyée à nouveau garde la trace du renvoi.
+  return { texte: note.value.status === "submitted" ? `Déjà renvoyée ${par} :` : `Renvoyée ${par} :`, message: derniere.message };
+});
+
+const messageRempli = computed(() => message.value.trim() !== "");
+
+onMounted(async () => {
+  try {
+    const lue = await lireNote(props.donnees.noteId);
+    if (lue.type === "sortie") {
+      erreurDeChargement.value = "Cette note de frais concerne une sortie : elle ne se traite pas sur cette page.";
+    } else {
+      note.value = lue;
+    }
+  } catch (erreur) {
+    erreurDeChargement.value = erreurDeLecture(erreur);
+  } finally {
+    chargement.value = false;
+  }
+});
+
+function erreurDeLecture(erreur: unknown): string {
+  if (sessionExpiree(erreur)) {
+    return messagesDErreur(erreur)[0];
+  }
+  const statut = isAxiosError(erreur) ? erreur.response?.status : undefined;
+  if (statut === 403) {
+    return "Vous n'avez pas accès à cette note de frais.";
+  }
+  if (statut === 404) {
+    return "Cette note de frais n'existe pas.";
+  }
+
+  return "Impossible de charger cette note de frais.";
+}
+
+function nomDuFichier(url: string): string {
+  return decodeURIComponent(url.split("/").pop() ?? url);
+}
+
+async function ouvrirLeRenvoi() {
+  renvoiOuvert.value = true;
+  await nextTick();
+  champMessage.value?.focus();
+}
+
+async function annulerLeRenvoi() {
+  renvoiOuvert.value = false;
+  refus.value = [];
+  await nextTick();
+  boutonRenvoyer.value?.focus();
+}
+
+function ajouterMotif(motif: string) {
+  message.value = `${message.value.trim() ? `${message.value.trim()} ` : ""}${motif}.`;
+}
+
+async function decider(corps: Record<string, unknown>, texte: string, classe: string) {
+  if (!note.value || enCours.value) {
+    return;
+  }
+
+  enCours.value = true;
+  refus.value = [];
+  try {
+    note.value = await enregistrerNote(note.value.id, corps);
+    fait.value = { texte, classe };
+    renvoiOuvert.value = false;
+    await nextTick();
+    resultat.value?.focus();
+  } catch (erreur) {
+    // Traitée entre-temps par quelqu'un d'autre : on montre sa décision.
+    if (refusDeLApi(erreur).some((un) => un.champ === "status")) {
+      note.value = await lireNote(note.value.id).catch(() => note.value);
+      renvoiOuvert.value = false;
+      refus.value = ["Cette demande a déjà été traitée."];
+    } else {
+      refus.value = messagesDErreur(erreur);
+    }
+  } finally {
+    enCours.value = false;
+  }
+}
+
+function valider() {
+  void decider({ status: "approved" }, `✓ Validée. La trésorerie et ${demandeur.value} sont prévenus.`, "tw-text-green-700");
+}
+
+function renvoyer() {
+  if (!messageRempli.value) {
+    return;
+  }
+  void decider(
+    { status: "rejected", commentaireStatut: message.value.trim() },
+    `Renvoyée à ${demandeur.value} avec votre message.`,
+    "tw-text-gray-700",
+  );
+}
+</script>
+
+<template>
+  <div class="main-type">
+    <p class="mini"><a :href="URL_LISTE">Notes de frais à valider</a></p>
+    <h1>{{ note?.objet ?? "Note de frais" }}</h1>
+  </div>
+
+  <p v-if="chargement" class="expense-report-form tw-mx-[30px] tw-mb-8 tw-bg-white tw-p-8 tw-font-sans tw-text-sm tw-text-gray-600 tw-shadow-sm tw-ring-1 tw-ring-gray-200">
+    Chargement de la note…
+  </p>
+  <p
+    v-else-if="erreurDeChargement || !note"
+    role="alert"
+    class="expense-report-form tw-mx-[30px] tw-mb-8 tw-bg-white tw-p-8 tw-font-sans tw-text-sm tw-text-red-600 tw-shadow-sm tw-ring-1 tw-ring-gray-200"
+  >
+    {{ erreurDeChargement }}
+  </p>
+
+  <div v-else class="expense-report-form tw-mx-[30px] tw-mb-8 tw-bg-white tw-font-sans tw-shadow-sm tw-ring-1 tw-ring-gray-200">
+    <div class="tw-flex tw-items-start tw-justify-between tw-gap-4 tw-px-8 tw-py-6">
+      <div>
+        <p class="tw-font-medium tw-text-gray-900">{{ demandeur }}</p>
+        <p class="tw-text-xs tw-text-gray-500">{{ contexte }}</p>
+        <a v-if="note.lienFormation" :href="note.lienFormation" target="_blank" rel="noopener" class="tw-text-xs tw-text-sky-700 hover:tw-underline">Voir la formation</a>
+      </div>
+      <p class="tw-text-2xl tw-font-semibold tw-tabular-nums tw-text-gray-900">{{ euros(note.totalDeclare) }}</p>
+    </div>
+
+    <div class="tw-px-8">
+      <p v-if="note.motPourResponsable" class="tw-mb-4 tw-whitespace-pre-line tw-border-l-2 tw-border-gray-300 tw-pl-3 tw-text-sm tw-text-gray-700">« {{ note.motPourResponsable }} »</p>
+      <p v-if="note.status === 'submitted'" class="tw-text-sm tw-text-green-700">✓ Justificatifs, délai et plafonds vérifiés.</p>
+      <p v-for="avertissement in note.avertissements" :key="avertissement" class="tw-mt-1 tw-text-sm tw-text-amber-700">{{ avertissement }}</p>
+
+      <table class="tw-mt-5 tw-w-full tw-text-sm">
+        <caption class="tw-sr-only">Dépenses</caption>
+        <tbody>
+        <tr v-for="ligne in lignes" :key="ligne.id" class="tw-border-t tw-border-gray-100">
+          <td class="tw-py-2.5 tw-text-gray-900">Dépense {{ ligne.numero }} <span class="tw-text-gray-500">{{ ligne.description }}</span></td>
+          <td class="tw-py-2.5 tw-text-right">
+            <a
+              v-if="ligne.justificatif"
+              :href="ligne.justificatif"
+              target="_blank"
+              rel="noopener"
+              :aria-label="`Justificatif de la dépense ${ligne.numero}`"
+              class="tw-text-xs tw-text-sky-700 hover:tw-underline"
+              >{{ nomDuFichier(ligne.justificatif) }}</a
+            >
+          </td>
+          <td class="tw-w-24 tw-py-2.5 tw-text-right tw-tabular-nums">{{ euros(ligne.montant ?? 0) }}</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="tw-mt-6 tw-border-t tw-border-gray-100 tw-bg-gray-50 tw-px-8 tw-py-5">
+      <p v-if="decisionPrise && !fait" class="tw-mb-3 tw-text-sm tw-text-gray-700">
+        {{ decisionPrise.texte }}
+        <span v-if="decisionPrise.message" class="tw-whitespace-pre-line">« {{ decisionPrise.message }} »</span>
+      </p>
+
+      <p v-if="fait" ref="resultat" tabindex="-1" role="status" :class="['tw-text-right tw-text-sm tw-font-medium focus:tw-outline-none', fait.classe]">{{ fait.texte }}</p>
+
+      <template v-else-if="note.peutDecider">
+        <div v-if="!renvoiOuvert" class="tw-flex tw-justify-end tw-gap-3">
+          <button
+            ref="boutonRenvoyer"
+            type="button"
+            class="tw-rounded-md tw-px-4 tw-py-2 tw-text-sm tw-font-semibold tw-text-gray-700 hover:tw-bg-gray-100"
+            @click="ouvrirLeRenvoi"
+          >
+            Renvoyer
+          </button>
+          <button
+            type="button"
+            :aria-disabled="enCours"
+            class="tw-rounded-md tw-bg-green-700 tw-px-5 tw-py-2 tw-text-sm tw-font-semibold tw-text-white hover:tw-bg-green-800 aria-disabled:tw-cursor-wait aria-disabled:tw-opacity-60"
+            @click="valider"
+          >
+            Valider
+          </button>
+        </div>
+        <div v-else>
+          <label for="message-renvoi" class="tw-block tw-text-sm tw-font-medium tw-text-gray-900">Que doit corriger {{ note.utilisateur.prenom }} ?</label>
+          <div class="tw-mt-2 tw-flex tw-flex-wrap tw-gap-2">
+            <button
+              v-for="motif in MOTIFS"
+              :key="motif"
+              type="button"
+              class="tw-rounded-full tw-border tw-border-gray-300 tw-bg-white tw-px-3 tw-py-1 tw-text-xs tw-text-gray-700 hover:tw-border-sky-400"
+              @click="ajouterMotif(motif)"
+            >
+              {{ motif }}
+            </button>
+          </div>
+          <textarea
+            id="message-renvoi"
+            ref="champMessage"
+            v-model="message"
+            rows="2"
+            class="tw-mt-3 tw-w-full tw-rounded-md tw-border tw-border-gray-300 tw-bg-white tw-p-2 tw-text-sm focus:tw-border-sky-500 focus:tw-outline-none"
+          ></textarea>
+          <div class="tw-mt-3 tw-flex tw-justify-end tw-gap-3">
+            <button type="button" class="tw-px-3 tw-py-2 tw-text-sm tw-text-gray-600 hover:tw-text-gray-900" @click="annulerLeRenvoi">Annuler</button>
+            <button
+              type="button"
+              :disabled="!messageRempli"
+              :aria-disabled="enCours"
+              class="tw-rounded-md tw-bg-red-600 tw-px-5 tw-py-2 tw-text-sm tw-font-semibold tw-text-white disabled:tw-opacity-40 aria-disabled:tw-cursor-wait aria-disabled:tw-opacity-60"
+              @click="enCours || renvoyer()"
+            >
+              Renvoyer à {{ demandeur }}
+            </button>
+          </div>
+        </div>
+      </template>
+
+      <p v-else-if="note.status === 'submitted'" class="tw-text-sm tw-text-gray-600">En attente de validation.</p>
+
+      <div aria-live="polite" class="tw-text-right tw-text-sm tw-text-red-600">
+        <p v-for="un in refus" :key="un" class="tw-mt-2">{{ un }}</p>
+      </div>
+    </div>
+  </div>
+</template>

@@ -20,6 +20,7 @@
     class="expense-report-form tw-mx-[30px] tw-mb-8 tw-bg-white tw-font-sans tw-shadow-sm tw-ring-1 tw-ring-gray-200"
     @submit.prevent
   >
+    <p v-if="messageDeRenvoi" class="tw-whitespace-pre-line tw-border-b tw-border-red-100 tw-bg-red-50 tw-px-8 tw-py-3 tw-text-sm tw-text-red-800">{{ messageDeRenvoi }}</p>
     <p v-if="chargement" class="tw-p-8 tw-text-sm tw-text-gray-600">Chargement de la demande…</p>
     <p v-else-if="erreurDeChargement" role="alert" class="tw-p-8 tw-text-sm tw-text-red-600">{{ erreurDeChargement }}</p>
 
@@ -64,7 +65,7 @@ import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref } from "vue
 import PremiereEtape from "./components/PremiereEtape.vue";
 import SecondeEtape from "./components/SecondeEtape.vue";
 import { creerNote, enregistrerNote, envoyerJustificatif, lireNote, messagesDErreur, refusDeLApi, sessionExpiree } from "./api";
-import { aujourdhui, limiteEnvoi, messageDelaiDepasse } from "./format";
+import { aujourdhui, limiteEnvoi, messageDelaiDepasse, nomComplet } from "./format";
 import { refusDuFichier } from "./justificatifs";
 import { ecrireLignes, lireLignes, nouvelleLigne } from "./lignes";
 import type { Demande, DonneesInitiales, Justificatif, Ligne, NoteDeFrais, Refus, Toastr } from "./types";
@@ -123,6 +124,16 @@ const delaiDepasse = computed(() => {
   }
 
   return aujourdhui() > limiteEnvoi(demande.value.dateDepense, delaiEnvoiJours.value) ? messageDelaiDepasse(delaiEnvoiJours.value) : null;
+});
+
+// Une note renvoyée rappelle ce qu'il faut corriger, sur les deux étapes.
+const messageDeRenvoi = computed(() => {
+  const decision = note.value?.derniereDecision;
+  if (note.value?.status !== "rejected" || decision?.statut !== "rejected") {
+    return null;
+  }
+
+  return `Renvoyée par ${nomComplet(decision.auteur)} : « ${decision.message ?? ""} »`;
 });
 
 const commissionTitre = computed(

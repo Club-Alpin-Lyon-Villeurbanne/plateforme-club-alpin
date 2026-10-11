@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from "vue";
 import { listerMesNotes, messagesDErreur } from "./api";
-import { aujourdhui, dateFr, euros, limiteEnvoi, messageDelaiDepasse } from "./format";
+import { aujourdhui, dateFr, euros, jourMoisDe, limiteEnvoi, messageDelaiDepasse, nomComplet } from "./format";
 import type { DonneesMesNotes, NoteDeFrais } from "./types";
 
 const props = defineProps<{ donnees: DonneesMesNotes }>();
@@ -88,15 +88,36 @@ function libelleStatut(note: NoteDeFrais): string {
 }
 
 function envoyeeLe(note: NoteDeFrais): string | null {
-  if (!note.dateEnvoi) {
+  if (note.status !== "submitted" || !note.dateEnvoi) {
     return null;
   }
-  const date = new Date(note.dateEnvoi).toLocaleDateString("fr-FR", { day: "2-digit", month: "2-digit" });
-  const valideurs = note.valideurs.length
-    ? note.valideurs.map((valideur) => `${valideur.prenom} ${valideur.nom}`).join(", ")
-    : "la trésorerie";
+  const valideurs = note.valideurs.length ? note.valideurs.map(nomComplet).join(", ") : "la trésorerie";
 
-  return `Envoyée le ${date} à ${valideurs}.`;
+  return `Envoyée le ${jourMoisDe(note.dateEnvoi)} à ${valideurs}.`;
+}
+
+function messageDeRenvoi(note: NoteDeFrais): string | null {
+  const decision = note.derniereDecision;
+  if (note.status !== "rejected" || decision?.statut !== "rejected") {
+    return null;
+  }
+
+  return `${nomComplet(decision.auteur)} : « ${decision.message ?? ""} »`;
+}
+
+function valideeLe(note: NoteDeFrais): string | null {
+  const decision = note.derniereDecision;
+  if ((note.status !== "approved" && note.status !== "accounted") || decision?.statut !== "approved") {
+    return null;
+  }
+
+  return `Validée par ${nomComplet(decision.auteur)} le ${jourMoisDe(decision.date)}.`;
+}
+
+const ACTIONS: Record<string, string> = { draft: "Reprendre", rejected: "Corriger" };
+
+function action(note: NoteDeFrais): string | null {
+  return ACTIONS[note.status] ?? null;
 }
 </script>
 
@@ -135,18 +156,20 @@ function envoyeeLe(note: NoteDeFrais): string | null {
         <div class="tw-min-w-0 tw-flex-1">
           <p class="tw-font-medium tw-text-gray-900">{{ note.objet }}</p>
           <p class="tw-text-xs tw-text-gray-500">{{ contexte(note) }}</p>
-          <p v-if="delaiDepasse(note)" class="tw-mt-1 tw-text-xs tw-text-red-700">{{ delaiDepasse(note) }}</p>
+          <p v-if="messageDeRenvoi(note)" class="tw-mt-2 tw-whitespace-pre-line tw-text-sm tw-text-red-800">{{ messageDeRenvoi(note) }}</p>
+          <p v-else-if="delaiDepasse(note)" class="tw-mt-1 tw-text-xs tw-text-red-700">{{ delaiDepasse(note) }}</p>
           <p v-else-if="dateLimite(note)" class="tw-mt-1 tw-text-xs tw-text-gray-500">À envoyer avant le {{ dateLimite(note) }}.</p>
           <p v-else-if="envoyeeLe(note)" class="tw-mt-1 tw-text-xs tw-text-gray-500">{{ envoyeeLe(note) }}</p>
+          <p v-else-if="valideeLe(note)" class="tw-mt-1 tw-text-xs tw-text-gray-500">{{ valideeLe(note) }}</p>
         </div>
         <div class="tw-flex tw-shrink-0 tw-flex-col tw-items-end tw-gap-2">
           <span class="tw-font-semibold tw-tabular-nums tw-text-gray-900">{{ euros(note.totalDeclare) }}</span>
           <span class="tw-whitespace-nowrap tw-rounded-full tw-px-3 tw-py-1 tw-text-xs tw-font-semibold" :class="STYLES[note.status]">{{ libelleStatut(note) }}</span>
           <a
-            v-if="note.status === 'draft'"
+            v-if="action(note)"
             :href="`${URL_NOUVELLE}?id=${note.id}`"
             class="tw-text-sm tw-font-medium tw-text-sky-700 hover:tw-underline"
-            >Reprendre</a
+            >{{ action(note) }}</a
           >
         </div>
       </li>

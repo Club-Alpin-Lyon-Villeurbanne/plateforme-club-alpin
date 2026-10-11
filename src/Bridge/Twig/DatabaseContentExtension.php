@@ -11,6 +11,7 @@ use App\Repository\ContentInlineRepository;
 use App\Repository\EventParticipationRepository;
 use App\Repository\EvtRepository;
 use App\Repository\PartenaireRepository;
+use App\Service\NoteDeFrais\NotesAValider;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -36,6 +37,7 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
             ContentInlineRepository::class,
             CommissionRepository::class,
             Notifications::class,
+            NotesAValider::class,
         ];
     }
 
@@ -54,6 +56,7 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
             new TwigFunction('notifications_counter_articles', [$this, 'getNotificationsValidationArticle']),
             new TwigFunction('notifications_counter_sorties', [$this, 'getNotificationsValidationSortie']),
             new TwigFunction('notifications_counter_sorties_president', [$this, 'getNotificationsValidationSortiePresident']),
+            new TwigFunction('notes_de_frais_a_valider', [$this, 'getNotesDeFraisAValider']),
             new TwigFunction('empietements', [$this, 'getEmpietements']),
         ];
     }
@@ -130,6 +133,17 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
     public function getNotificationsValidationSortiePresident(): int
     {
         return $this->locator->get(Notifications::class)->getValidationSortiePresident();
+    }
+
+    /**
+     * Null quand l'utilisateur ne valide aucune note de frais : l'entrée du menu est alors masquée.
+     *
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function getNotesDeFraisAValider(): ?int
+    {
+        return $this->locator->get(NotesAValider::class)->nombreEnAttente();
     }
 
     /**
