@@ -7,14 +7,15 @@ use App\Entity\User;
 use App\Mailer\Mailer;
 use App\Repository\ExpenseReportStatusHistoryRepository;
 use App\Service\ExpenseReportCalculator;
+use App\Utils\Enums\ExpenseReportStatusEnum;
 use App\Utils\FileUploader;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
- * Mails du circuit d'une note hors sortie aux valideurs et à l'adresse de la trésorerie, en plus
- * du mail de changement de statut envoyé au demandeur.
+ * Tous les mails d'une note hors sortie : au demandeur, aux valideurs et à l'adresse de la
+ * trésorerie. Le mail au demandeur nomme ceux qui ont réellement reçu la note.
  */
 class NotificationsNoteHorsSortie
 {
@@ -33,11 +34,29 @@ class NotificationsNoteHorsSortie
     }
 
     /**
-     * La note attend une validation : chaque valideur reçoit son mail, ou la trésorerie si aucun
-     * ne peut le recevoir. Jamais le choix entre don et remboursement, qui ne doit pas peser sur
-     * la décision. Une réponse au mail va au demandeur.
+     * À appeler une fois le nouveau statut enregistré, pour que l'historique nomme l'auteur de la
+     * décision.
      */
-    public function noteEnvoyee(ExpenseReport $note): void
+    public function statutChange(ExpenseReport $note): void
+    {
+        $valideursPrevenus = [];
+        if (ExpenseReportStatusEnum::SUBMITTED === $note->getStatus()) {
+            $valideursPrevenus = $this->noteEnvoyee($note);
+        } elseif (ExpenseReportStatusEnum::APPROVED === $note->getStatus()) {
+            $this->noteValidee($note);
+        }
+
+        $this->prevenirLeDemandeur($note, $valideursPrevenus);
+    }
+
+    /**
+     * La note attend une validation : chaque valideur joignable reçoit son mail, ou la trésorerie
+     * si aucun ne l'est. Jamais le choix entre don et remboursement, qui ne doit pas peser sur la
+     * décision. Une réponse au mail va au demandeur.
+     *
+     * @return list<User> les valideurs prévenus ; aucun si la note est partie à la trésorerie
+     */
+    private function noteEnvoyee(ExpenseReport $note): array
     {
         $montants = $this->calculator->montantsNoteHorsSortie($note);
         $contexte = [
@@ -54,30 +73,32 @@ class NotificationsNoteHorsSortie
         ];
 
         $valideurs = $this->valideurs->pour($note);
-        $joignables = array_filter($valideurs, fn (User $valideur) => $this->mailer->isValid($valideur->getEmail()));
+        $joignables = array_values(array_filter($valideurs, fn (User $valideur) => $this->mailer->isValid($valideur->getEmail())));
         if ([] === $joignables) {
             if ([] !== $valideurs) {
                 $this->logger->error(sprintf('Note de frais %d : aucun valideur n\'a d\'adresse mail valide, la note à valider part à la trésorerie.', $note->getId()));
             }
             $this->envoyerALaTresorerie($note, 'transactional/note-de-frais-a-valider', $contexte);
 
-            return;
+            return [];
         }
 
-        foreach ($valideurs as $valideur) {
-            $autres = array_filter($valideurs, static fn (User $autre) => $autre->getId() !== $valideur->getId());
+        foreach ($joignables as $valideur) {
+            $autres = array_filter($joignables, static fn (User $autre) => $autre->getId() !== $valideur->getId());
             $this->mailer->send($valideur, 'transactional/note-de-frais-a-valider', $contexte + [
                 'prenom' => $valideur->getFirstname(),
                 'autresValideurs' => array_values(array_map(static fn (User $autre) => $autre->getFullName(), $autres)),
             ], replyTo: $note->getUser());
         }
+
+        return $joignables;
     }
 
     /**
      * La note validée part à la trésorerie avec tout ce qu'il faut pour la payer, ou préparer le
      * reçu fiscal d'un don, sans rouvrir la note.
      */
-    public function noteValidee(ExpenseReport $note): void
+    private function noteValidee(ExpenseReport $note): void
     {
         $montants = $this->calculator->montantsNoteHorsSortie($note);
         $decision = $this->historique->derniereDecision($note);
@@ -101,6 +122,33 @@ class NotificationsNoteHorsSortie
             'valideeLe' => $decision?->getChangedAt()?->format('d/m/Y'),
             'libelleSaisie' => sprintf('%s %s NDF %s %s', mb_strtoupper((string) $demandeur?->getLastname()), $demandeur?->getFirstname(), $dateDepense, $note->getObjet()),
             'lien' => $this->lien($note),
+        ]);
+    }
+
+    /**
+     * @param list<User> $valideursPrevenus aucun : la note envoyée est partie à la trésorerie
+     */
+    private function prevenirLeDemandeur(ExpenseReport $note, array $valideursPrevenus): void
+    {
+        $demandeur = $note->getUser();
+        if (null === $demandeur) {
+            return;
+        }
+
+        $montants = $this->calculator->montantsNoteHorsSortie($note);
+        $decision = \in_array($note->getStatus(), [ExpenseReportStatusEnum::APPROVED, ExpenseReportStatusEnum::REJECTED], true)
+            ? $this->historique->derniereDecision($note)
+            : null;
+
+        $this->mailer->send($demandeur, 'transactional/expense-report-status-email', [
+            'report' => $note,
+            'auteur' => $decision?->getChangedBy()?->getFullName(),
+            'lienCorrection' => $this->urlGenerator->generate('notes_de_frais_nouvelle', ['id' => $note->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+            'status' => $note->getStatus()->value,
+            'valideurs' => array_map(static fn (User $valideur) => $valideur->getFullName(), $valideursPrevenus),
+            'lignes' => $this->lignes($note),
+            'formattedTotal' => $this->calculator->formatEuros($montants['totalDeclare']),
+            'partRemboursable' => $this->calculator->partRemboursable($montants),
         ]);
     }
 

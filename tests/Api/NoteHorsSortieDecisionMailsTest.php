@@ -104,6 +104,20 @@ class NoteHorsSortieDecisionMailsTest extends ExpenseReportApiTestCase
         }
     }
 
+    public function testLaComptabilisationNEstAnnonceeQuAuDemandeur(): void
+    {
+        $note = $this->noteEnvoyee($this->owner);
+        $this->assertResponseStatus(200, $this->patch($this->manager, $note, ['status' => 'approved']));
+
+        $this->assertResponseStatus(200, $this->patch($this->manager, $note, ['status' => 'accounted']));
+
+        $this->assertSame(
+            ['Votre note de frais « Dégaines pour la SAE » a été comptabilisée.'],
+            array_map(static fn (Email $mail) => $mail->getSubject(), $this->mailsA($this->owner->getEmail())),
+        );
+        $this->assertSame([], $this->mailsA($this->adresseTresorerie()));
+    }
+
     public function testAuRenvoiLeMessageEstAttribueASonAuteur(): void
     {
         $note = $this->noteEnvoyee($this->owner);

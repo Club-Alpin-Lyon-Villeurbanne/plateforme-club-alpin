@@ -139,6 +139,26 @@ class NoteHorsSortieResponsableMailsTest extends ExpenseReportApiTestCase
         $this->assertSame([], $this->mailsA($this->adresseTresorerie()));
     }
 
+    public function testSansAdresseValideChezLesValideursLeDemandeurApprendQueLaNotePartALaTresorerie(): void
+    {
+        $this->changerLAdresse($this->responsable, null);
+        $this->changerLAdresse($this->coResponsable, null);
+
+        $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
+
+        $this->assertSame(['Votre note de frais « Dégaines pour la SAE » est envoyée à la trésorerie.'], $this->sujetsA($this->adherent));
+    }
+
+    public function testUnValideurSansAdresseValideNEstPasNommeCommePrevenu(): void
+    {
+        $this->changerLAdresse($this->responsable, null);
+
+        $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
+
+        $this->assertStringNotContainsString('reçu aussi', $this->seulMailAValider($this->coResponsable)->getTextBody());
+        $this->assertSame(['Votre note de frais « Dégaines pour la SAE » est envoyée à Sam PETIT.'], $this->sujetsA($this->adherent));
+    }
+
     public function testLeDemandeurApprendAQuiSaNoteEstEnvoyee(): void
     {
         $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
@@ -156,10 +176,7 @@ class NoteHorsSortieResponsableMailsTest extends ExpenseReportApiTestCase
     {
         $this->noteEnvoyee($this->responsable, commission: $this->commissionDeTest);
 
-        $this->assertSame(
-            ['Votre note de frais « Dégaines pour la SAE » est envoyée à Sam PETIT.'],
-            array_map(static fn (Email $mail) => $mail->getSubject(), $this->mailsA($this->responsable->getEmail())),
-        );
+        $this->assertSame(['Votre note de frais « Dégaines pour la SAE » est envoyée à Sam PETIT.'], $this->sujetsA($this->responsable));
     }
 
     public function testApresCorrectionLesValideursRecoiventANouveauLaNote(): void
@@ -220,6 +237,14 @@ class NoteHorsSortieResponsableMailsTest extends ExpenseReportApiTestCase
     {
         $this->em()->find(User::class, $utilisateur->getId())->setEmail($adresse);
         $this->em()->flush();
+    }
+
+    /**
+     * @return list<string>
+     */
+    private function sujetsA(User $destinataire): array
+    {
+        return array_map(static fn (Email $mail) => $mail->getSubject(), $this->mailsA($destinataire->getEmail()));
     }
 
     /**
