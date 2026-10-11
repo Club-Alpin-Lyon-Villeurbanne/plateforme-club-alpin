@@ -3,6 +3,7 @@
 namespace App\Service\NoteDeFrais;
 
 use App\Entity\ExpenseReport;
+use App\Entity\User;
 use App\Mailer\Mailer;
 use App\Repository\ExpenseReportStatusHistoryRepository;
 use App\Service\ExpenseReportCalculator;
@@ -13,8 +14,8 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 /**
- * Mails du circuit d'une note hors sortie à l'adresse de la trésorerie, en plus du mail de
- * changement de statut envoyé au demandeur.
+ * Mails du circuit d'une note hors sortie aux valideurs et à l'adresse de la trésorerie, en plus
+ * du mail de changement de statut envoyé au demandeur.
  */
 class NotificationsNoteHorsSortie
 {
@@ -22,6 +23,7 @@ class NotificationsNoteHorsSortie
         private readonly Mailer $mailer,
         private readonly ExpenseReportCalculator $calculator,
         private readonly ControlesNoteHorsSortie $controles,
+        private readonly ValideursNoteHorsSortie $valideurs,
         private readonly ExpenseReportStatusHistoryRepository $historique,
         private readonly FileUploader $fileUploader,
         private readonly UrlGeneratorInterface $urlGenerator,
@@ -32,12 +34,12 @@ class NotificationsNoteHorsSortie
     }
 
     /**
-     * La note attend une validation : la trésorerie la reçoit, sans le choix entre don et
-     * remboursement, qui ne doit pas peser sur la décision.
+     * La note attend une validation : chaque valideur reçoit son mail, ou la trésorerie s'il n'y
+     * en a pas. Jamais le choix entre don et remboursement, qui ne doit pas peser sur la décision.
      */
     public function noteEnvoyee(ExpenseReport $note): void
     {
-        $this->envoyerALaTresorerie($note, 'transactional/note-de-frais-a-valider', [
+        $contexte = [
             'demandeur' => $note->getUser()?->getFullName(),
             'type' => $this->type($note),
             'commission' => $note->getCommission()?->getTitle(),
@@ -46,7 +48,22 @@ class NotificationsNoteHorsSortie
             'mot' => $note->getMotPourResponsable(),
             'avertissements' => $this->controles->avertissements($note),
             'lien' => $this->lien($note),
-        ]);
+        ];
+
+        $valideurs = $this->valideurs->pour($note);
+        if ([] === $valideurs) {
+            $this->envoyerALaTresorerie($note, 'transactional/note-de-frais-a-valider', $contexte);
+
+            return;
+        }
+
+        foreach ($valideurs as $valideur) {
+            $autres = array_filter($valideurs, static fn (User $autre) => $autre->getId() !== $valideur->getId());
+            $this->mailer->send($valideur, 'transactional/note-de-frais-a-valider', $contexte + [
+                'prenom' => $valideur->getFirstname(),
+                'autresValideurs' => array_values(array_map(static fn (User $autre) => $autre->getFullName(), $autres)),
+            ]);
+        }
     }
 
     /**

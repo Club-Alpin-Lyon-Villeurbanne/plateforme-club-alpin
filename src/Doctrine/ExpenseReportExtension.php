@@ -73,7 +73,7 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
 
         // 1. Filtrage par utilisateur, sauf sur les listes de la trésorerie
         if ('/notes-de-frais/a-valider' === $operation?->getUriTemplate()) {
-            $this->notesAValider->restreindre($queryBuilder, $rootAlias, isset($filters['status']));
+            $this->notesAValider->restreindre($queryBuilder, $rootAlias, $filters);
         } elseif ('/admin/notes-de-frais' === $operation?->getUriTemplate()) {
             $queryBuilder->andWhere(sprintf('%s.type = :type_sortie', $rootAlias))
                 ->setParameter('type_sortie', ExpenseReportTypeEnum::SORTIE->value);

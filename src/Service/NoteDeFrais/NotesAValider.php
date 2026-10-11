@@ -13,13 +13,15 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
 
 /**
  * Les notes hors sortie que l'utilisateur connecté peut traiter : la liste « notes de frais à
- * valider » et le compteur du menu partagent cette seule requête.
+ * valider » et le compteur du menu partagent cette seule requête. Un gestionnaire les voit
+ * toutes ; un responsable, celles des commissions dont il valide les notes.
  */
 class NotesAValider
 {
     public function __construct(
         private readonly Security $security,
         private readonly ExpenseReportRepository $notes,
+        private readonly ValideursNoteHorsSortie $valideurs,
         #[Autowire(env: 'bool:DISPLAY_NOTES_DE_FRAIS')]
         private readonly bool $notesDeFraisActives,
     ) {
@@ -27,7 +29,10 @@ class NotesAValider
 
     public function concerneLUtilisateur(): bool
     {
-        return $this->security->isGranted(ExpenseReportVoter::MANAGE_EXPENSE_REPORTS);
+        $utilisateur = $this->security->getUser();
+
+        return $this->security->isGranted(ExpenseReportVoter::MANAGE_EXPENSE_REPORTS)
+            || ($utilisateur instanceof User && [] !== $this->valideurs->commissionsValideesPar($utilisateur));
     }
 
     /**
@@ -41,7 +46,7 @@ class NotesAValider
         }
 
         $requete = $this->notes->createQueryBuilder('note')->select('COUNT(note.id)');
-        $this->restreindre($requete, 'note', false);
+        $this->restreindre($requete, 'note');
 
         return (int) $requete->getQuery()->getSingleScalarResult();
     }
@@ -49,14 +54,28 @@ class NotesAValider
     /**
      * Sans filtre de statut, seules les notes envoyées sont gardées. Un brouillon n'est jamais
      * à valider, et personne ne valide sa propre note.
+     *
+     * @param array<string, mixed> $filtres filtres de la requête d'API
      */
-    public function restreindre(QueryBuilder $requete, string $alias, bool $statutFiltre): void
+    public function restreindre(QueryBuilder $requete, string $alias, array $filtres = []): void
     {
         $utilisateur = $this->security->getUser();
-        if (!$utilisateur instanceof User || !$this->concerneLUtilisateur()) {
+        if (!$utilisateur instanceof User) {
             $requete->andWhere('1 = 0');
 
             return;
+        }
+
+        if (!$this->security->isGranted(ExpenseReportVoter::MANAGE_EXPENSE_REPORTS)) {
+            $commissions = $this->valideurs->commissionsValideesPar($utilisateur);
+            // Trier par le choix entre don et remboursement le dévoilerait au responsable.
+            if ([] === $commissions || isset($filtres['refundRequired'])) {
+                $requete->andWhere('1 = 0');
+
+                return;
+            }
+            $requete->andWhere(sprintf('%s.commission IN (:a_valider_commissions)', $alias))
+                ->setParameter('a_valider_commissions', $commissions);
         }
 
         $requete
@@ -67,7 +86,7 @@ class NotesAValider
             ->setParameter('a_valider_brouillon', ExpenseReportStatusEnum::DRAFT->value)
             ->setParameter('a_valider_valideur', $utilisateur);
 
-        if (!$statutFiltre) {
+        if (!isset($filtres['status'])) {
             $requete->andWhere(sprintf('%s.status = :a_valider_envoyee', $alias))
                 ->setParameter('a_valider_envoyee', ExpenseReportStatusEnum::SUBMITTED->value);
         }

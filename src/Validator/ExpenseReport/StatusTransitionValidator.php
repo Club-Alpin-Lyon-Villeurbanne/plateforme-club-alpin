@@ -26,6 +26,13 @@ class StatusTransitionValidator
         ExpenseReportStatusEnum::APPROVED->value => [ExpenseReportStatusEnum::ACCOUNTED],
     ];
 
+    /**
+     * Le responsable d'une note hors sortie décide ; il ne comptabilise pas.
+     */
+    private const RESPONSABLE_TRANSITIONS = [
+        ExpenseReportStatusEnum::SUBMITTED->value => [ExpenseReportStatusEnum::APPROVED, ExpenseReportStatusEnum::REJECTED],
+    ];
+
     public function __construct(
         private readonly ExpenseReportActor $actor,
     ) {
@@ -66,6 +73,10 @@ class StatusTransitionValidator
     {
         if ($this->actor->isManagerOf($expenseReport)) {
             return self::MANAGER_TRANSITIONS[$oldStatus->value] ?? [];
+        }
+
+        if ($this->actor->isResponsableOf($expenseReport)) {
+            return self::RESPONSABLE_TRANSITIONS[$oldStatus->value] ?? [];
         }
 
         if ($this->actor->isOwnerOf($expenseReport)) {

@@ -1,9 +1,9 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
-{# L'appelant échappe l'objet et l'auteur pour le HTML, objet du mail compris (repris en titre du corps HTML) ; la partie texte les garde tels quels. #}
-{% macro phrase_hors_sortie(objet, status, auteur) -%}
+{# L'appelant échappe l'objet, l'auteur et les valideurs pour le HTML, objet du mail compris (repris en titre du corps HTML) ; la partie texte les garde tels quels. #}
+{% macro phrase_hors_sortie(objet, status, auteur, valideurs) -%}
     Votre note de frais « {{ objet|raw }} »
-    {%- if status == 'submitted' %} est envoyée à la trésorerie
+    {%- if status == 'submitted' %} est envoyée à {{ valideurs ? valideurs|raw : 'la trésorerie' }}
     {%- elseif status == 'rejected' %} vous est renvoyée pour correction
     {%- elseif status == 'approved' %} a été validée{% if auteur %} par {{ auteur|raw }}{% endif %} et transmise à la trésorerie
     {%- elseif status == 'accounted' %} a été comptabilisée
@@ -13,7 +13,7 @@
 {% block subject -%}
     {% import _self as notes -%}
     {% if report.type.estHorsSortie -%}
-    {{ notes.phrase_hors_sortie(report.objet|e, status, auteur|default(null)|e) }}
+    {{ notes.phrase_hors_sortie(report.objet|e, status, auteur|default(null)|e, valideurs|default([])|join(', ', ' et ')|e) }}
     {%- else -%}
     Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} 
     {%- if status == 'submitted' %} est envoyée à la comptabilité
@@ -26,7 +26,7 @@
 {% block inner_html %}{% import _self as notes %}{% if report.type.estHorsSortie %}
 <div>
     <p>
-        {{ notes.phrase_hors_sortie(report.objet|e, status, auteur|default(null)|e) }}
+        {{ notes.phrase_hors_sortie(report.objet|e, status, auteur|default(null)|e, valideurs|default([])|join(', ', ' et ')|e) }}
     </p>
 
     {% if status == 'rejected' %}
@@ -212,7 +212,7 @@
 {% endautoescape %}{% else %}{{ parent() }}{% endif %}{% endblock %}
 
 {% block inner_txt %}{% import _self as notes %}{% if report.type.estHorsSortie %}{% autoescape false %}
-{{ notes.phrase_hors_sortie(report.objet, status, auteur|default(null)) }}
+{{ notes.phrase_hors_sortie(report.objet, status, auteur|default(null), valideurs|default([])|join(', ', ' et ')) }}
 
 {% if status == 'rejected' %}
 {% if report.statusComment %}

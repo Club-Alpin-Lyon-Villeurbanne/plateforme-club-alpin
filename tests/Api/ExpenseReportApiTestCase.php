@@ -5,6 +5,7 @@ namespace App\Tests\Api;
 use App\Entity\Commission;
 use App\Entity\ExpenseReport;
 use App\Entity\User;
+use App\Entity\UserAttr;
 use App\Tests\WebTestCase;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use App\Utils\Enums\ExpenseReportTypeEnum;
@@ -18,6 +19,9 @@ use Symfony\Component\Mime\Email;
  * Socle des tests API des notes de frais : acteurs, appels authentifiés par JWT, assertions.
  *
  * Acteurs : owner = adhérent propriétaire, manager / otherManager = gestionnaires, stranger = tiers.
+ * Sur la commission de test : responsable (Alex Durand), coResponsable (Sam Petit), encadrant, et
+ * adherent, un adhérent sans rôle qui y dépose ses notes ; responsableAutreCommission (Camille
+ * Roux) sur l'autre commission.
  */
 abstract class ExpenseReportApiTestCase extends WebTestCase
 {
@@ -34,6 +38,17 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
     protected User $manager;
     protected User $otherManager;
     protected User $stranger;
+
+    protected Commission $commissionDeTest;
+    protected Commission $autreCommission;
+    protected User $responsable;
+    protected User $coResponsable;
+    protected User $responsableAutreCommission;
+    protected User $encadrant;
+    protected User $adherent;
+
+    /** @var list<string> codes des commissions où le test a donné des rôles, nettoyées à la fin */
+    private array $commissionsAvecRoles = [];
 
     /** @var array<string, array{env: ?string, server: ?string}> */
     private array $originalEnv = [];
@@ -54,10 +69,29 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
         $this->otherManager = $this->signup();
         $this->stranger = $this->signup();
         $this->designateManagers($this->manager, $this->otherManager);
+
+        $this->commissionDeTest = $this->createCommission('Commission de test');
+        $this->autreCommission = $this->createCommission('Autre commission');
+        $this->responsable = $this->signup();
+        $this->nommer($this->responsable, 'Alex', 'Durand');
+        $this->coResponsable = $this->signup();
+        $this->nommer($this->coResponsable, 'Sam', 'Petit');
+        $this->responsableAutreCommission = $this->signup();
+        $this->nommer($this->responsableAutreCommission, 'Camille', 'Roux');
+        $this->encadrant = $this->signup();
+        $this->adherent = $this->signup();
+        $this->rendreResponsable($this->responsable, $this->commissionDeTest);
+        $this->rendreResponsable($this->coResponsable, $this->commissionDeTest);
+        $this->rendreResponsable($this->responsableAutreCommission, $this->autreCommission);
+        $this->donnerUnRole($this->encadrant, UserAttr::ENCADRANT, $this->commissionDeTest);
     }
 
     protected function tearDown(): void
     {
+        foreach (array_unique($this->commissionsAvecRoles) as $code) {
+            $this->em()->getConnection()->executeStatement('DELETE FROM caf_user_attr WHERE params_user_attr = ?', ['commission:' . $code]);
+        }
+
         // Restaurer la valeur d'origine (définie, même vide, par .env) : la supprimer
         // ferait échouer tous les tests suivants qui instancient le voter.
         foreach ($this->originalEnv as $variable => $original) {
@@ -71,6 +105,17 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
         }
 
         parent::tearDown();
+    }
+
+    protected function rendreResponsable(User $utilisateur, Commission $commission): void
+    {
+        $this->donnerUnRole($utilisateur, UserAttr::RESPONSABLE_COMMISSION, $commission);
+    }
+
+    protected function donnerUnRole(User $utilisateur, string $role, Commission $commission): void
+    {
+        $this->commissionsAvecRoles[] = $commission->getCode();
+        $this->addAttribute($this->em()->find(User::class, $utilisateur->getId()), $role, 'commission:' . $commission->getCode());
     }
 
     /**
@@ -115,10 +160,22 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
         return $note;
     }
 
+    /**
+     * Une commission visible sans responsable : ses notes vont directement à la trésorerie.
+     */
     protected function commissionVisible(int $rang = 0): Commission
     {
-        $commissions = $this->em()->getRepository(Commission::class)->findBy(['vis' => true], ['id' => 'ASC'], $rang + 1);
-        $this->assertArrayHasKey($rang, $commissions, 'La base de test doit contenir des commissions visibles.');
+        $commissions = $this->em()->createQuery(sprintf(
+            'SELECT c FROM %s c WHERE c.vis = true AND NOT EXISTS (
+                SELECT a.id FROM %s a JOIN a.userType t WHERE t.code = :responsable AND a.params = CONCAT(\'commission:\', c.code)
+            ) ORDER BY c.id ASC',
+            Commission::class,
+            UserAttr::class,
+        ))
+            ->setParameter('responsable', UserAttr::RESPONSABLE_COMMISSION)
+            ->setMaxResults($rang + 1)
+            ->getResult();
+        $this->assertArrayHasKey($rang, $commissions, 'La base de test doit contenir des commissions visibles sans responsable.');
 
         return $commissions[$rang];
     }
@@ -183,9 +240,9 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
      * Achat de deux lignes, justificatifs joints, envoyé par son demandeur : la note a son
      * historique d'envoi et ses montants figés.
      */
-    protected function noteEnvoyee(User $demandeur, bool $remboursement = true, string $details = self::LIGNES_ACHAT): ExpenseReport
+    protected function noteEnvoyee(User $demandeur, bool $remboursement = true, string $details = self::LIGNES_ACHAT, ?Commission $commission = null): ExpenseReport
     {
-        $note = $this->creerAchat($demandeur, ExpenseReportStatusEnum::DRAFT, $details);
+        $note = $this->creerAchat($demandeur, ExpenseReportStatusEnum::DRAFT, $details, $commission);
         $this->joindreLesJustificatifs($note, ...array_column(json_decode($details, true)['lignes'], 'id'));
         $this->assertResponseStatus(200, $this->envoyer($demandeur, $note, ['refundRequired' => $remboursement]));
 

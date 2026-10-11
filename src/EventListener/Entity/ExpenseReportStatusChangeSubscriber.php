@@ -6,6 +6,7 @@ use App\Entity\ExpenseReport;
 use App\Entity\User;
 use App\Mailer\Mailer;
 use App\Service\ExpenseReportCalculator;
+use App\Service\NoteDeFrais\ValideursNoteHorsSortie;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
@@ -21,6 +22,7 @@ class ExpenseReportStatusChangeSubscriber
         private readonly ExpenseReportCalculator $calculator,
         private readonly UrlGeneratorInterface $urlGenerator,
         private readonly Security $security,
+        private readonly ValideursNoteHorsSortie $valideurs,
     ) {
     }
 
@@ -101,6 +103,8 @@ class ExpenseReportStatusChangeSubscriber
             'auteur' => $auteur instanceof User ? $auteur->getFullName() : null,
             'lienCorrection' => $this->urlGenerator->generate('notes_de_frais_nouvelle', ['id' => $note->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'status' => $note->getStatus()->value,
+            // À qui la note est envoyée ; vide : à la trésorerie.
+            'valideurs' => array_map(static fn (User $valideur) => $valideur->getFullName(), $this->valideurs->pour($note)),
             'lignes' => $lignes,
             'formattedTotal' => $this->calculator->formatEuros($montants['totalDeclare']),
             'formattedReimbursable' => $this->calculator->formatEuros($montants['totalRemboursable']),

@@ -3,7 +3,6 @@
 namespace App\Serializer;
 
 use App\Entity\ExpenseReport;
-use App\Entity\User;
 use App\Repository\ExpenseReportStatusHistoryRepository;
 use App\Security\ExpenseReportActor;
 use App\Service\ExpenseReportCalculator;
@@ -17,7 +16,8 @@ use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 /**
  * Ajoute à une note hors sortie, en lecture seule, ce que le serveur calcule : montants,
  * avertissements, valideurs, date d'envoi, dernière décision, et si l'utilisateur connecté peut
- * la valider ou la renvoyer. Une note de sortie garde exactement sa forme.
+ * la valider ou la renvoyer. Retire le choix entre don et remboursement pour qui ne doit pas le
+ * connaître. Une note de sortie garde exactement sa forme.
  */
 final class NoteHorsSortieNormalizer implements NormalizerInterface, NormalizerAwareInterface
 {
@@ -43,18 +43,20 @@ final class NoteHorsSortieNormalizer implements NormalizerInterface, NormalizerA
             return $donnees;
         }
 
+        if (!$this->actor->voitLeChoixDuRemboursement($object)) {
+            unset($donnees['refundRequired']);
+        }
+
         return array_merge(
             $donnees,
             $this->calculator->montantsNoteHorsSortie($object),
             [
                 'avertissements' => $this->controles->avertissements($object),
                 'dateEnvoi' => $this->dateEnvoi($object)?->format(\DATE_ATOM),
-                'valideurs' => array_map(
-                    static fn (User $valideur) => ['id' => $valideur->getId(), 'prenom' => $valideur->getFirstname(), 'nom' => $valideur->getLastname()],
-                    $this->valideurs->pour($object),
-                ),
+                'valideurs' => ValideursNoteHorsSortie::exposer($this->valideurs->pour($object)),
                 'derniereDecision' => $this->derniereDecision($object),
-                'peutDecider' => ExpenseReportStatusEnum::SUBMITTED === $object->getStatus() && $this->actor->isManagerOf($object),
+                'peutDecider' => ExpenseReportStatusEnum::SUBMITTED === $object->getStatus()
+                    && ($this->actor->isManagerOf($object) || $this->actor->isResponsableOf($object)),
             ],
         );
     }

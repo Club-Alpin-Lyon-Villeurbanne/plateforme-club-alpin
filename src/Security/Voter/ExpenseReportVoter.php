@@ -11,6 +11,7 @@ class ExpenseReportVoter extends Voter
 {
     public const MANAGE_EXPENSE_REPORTS = 'manage_expense_reports';
     // Sujet : une ExpenseReport. Lecture de la note et de ses justificatifs, modification de la note.
+    // Le responsable d'une note hors sortie y a aussi accès : voir ResponsableNoteDeFraisVoter.
     public const ACCESS_EXPENSE_REPORT = 'access_expense_report';
 
     private array $authorizedManagerIds;

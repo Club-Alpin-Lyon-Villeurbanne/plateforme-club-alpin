@@ -5,6 +5,7 @@ namespace App\Security;
 use App\Entity\ExpenseReport;
 use App\Entity\User;
 use App\Security\Voter\ExpenseReportVoter;
+use App\Security\Voter\ResponsableNoteDeFraisVoter;
 use Symfony\Bundle\SecurityBundle\Security;
 
 /**
@@ -36,5 +37,24 @@ class ExpenseReportActor
     {
         return !$this->isOwnerOf($expenseReport)
             && $this->security->isGranted(ExpenseReportVoter::MANAGE_EXPENSE_REPORTS);
+    }
+
+    /**
+     * Valideur d'une note hors sortie : responsable de sa commission, et pas son demandeur. Un
+     * gestionnaire peut l'être aussi ; ses droits de gestionnaire priment.
+     */
+    public function isResponsableOf(ExpenseReport $expenseReport): bool
+    {
+        return !$this->isOwnerOf($expenseReport)
+            && $this->security->isGranted(ResponsableNoteDeFraisVoter::RESPONSABLE_DE_LA_NOTE, $expenseReport);
+    }
+
+    /**
+     * Le choix entre don et remboursement ne doit pas peser sur la décision du responsable : seuls
+     * le demandeur et la trésorerie le connaissent.
+     */
+    public function voitLeChoixDuRemboursement(ExpenseReport $expenseReport): bool
+    {
+        return $this->isOwnerOf($expenseReport) || $this->isManagerOf($expenseReport);
     }
 }

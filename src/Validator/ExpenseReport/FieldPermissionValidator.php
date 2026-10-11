@@ -12,7 +12,8 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  *
  * - details / refundRequired, et les champs d'une note hors sortie (commission, objet, date,
  *   lien, mot pour le responsable) : le propriétaire, tant que la note est en brouillon ou rejetée ;
- * - statusComment : un gestionnaire (non propriétaire), dans la requête où il change le statut.
+ * - statusComment : un gestionnaire (non propriétaire) ou le responsable de la note, dans la
+ *   requête où il change le statut.
  *
  * Renvoyer la valeur déjà enregistrée n'est pas une modification.
  */
@@ -57,7 +58,8 @@ class FieldPermissionValidator
 
         // La validité de la transition elle-même est contrôlée par StatusTransitionValidator :
         // un commentaire accompagnant une transition refusée est refusé avec elle.
-        $canComment = $this->actor->isManagerOf($expenseReport) && $oldStatus !== $expenseReport->getStatus();
+        $canComment = ($this->actor->isManagerOf($expenseReport) || $this->actor->isResponsableOf($expenseReport))
+            && $oldStatus !== $expenseReport->getStatus();
 
         if (!$canComment && $this->changed($expenseReport, 'statusComment', $expenseReport->getStatusComment())) {
             $context->buildViolation('The status comment can only be set by an expense manager when changing the status.')
