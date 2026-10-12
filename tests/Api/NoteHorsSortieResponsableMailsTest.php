@@ -3,7 +3,6 @@
 namespace App\Tests\Api;
 
 use App\Entity\User;
-use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 
 /**
@@ -214,7 +213,8 @@ class NoteHorsSortieResponsableMailsTest extends ExpenseReportApiTestCase
         $this->assertStringContainsString('Message laissé par Sam PETIT :', $mail->getTextBody());
         $this->assertStringContainsString('Mauvaise commission.', $mail->getTextBody());
         $this->assertSeulsDestinataires([$this->adherent]);
-        $this->assertSame([$this->coResponsable->getEmail()], array_map(static fn (Address $adresse) => $adresse->getAddress(), $mail->getReplyTo()));
+        // L'adresse d'un responsable n'est pas montrée aux adhérents : pas de réponse directe.
+        $this->assertSame([], $mail->getReplyTo());
     }
 
     public function testLesNomsSontEnClairDansLeTexteEtEchappesDansLeHtml(): void

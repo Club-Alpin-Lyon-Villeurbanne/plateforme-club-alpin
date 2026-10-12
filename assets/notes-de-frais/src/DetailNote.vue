@@ -151,7 +151,7 @@ async function decider(corps: Record<string, unknown>, texte: string, classe: st
   enCours.value = true;
   refus.value = [];
   try {
-    note.value = await enregistrerNote(note.value.id, corps);
+    note.value = await enregistrerNote(note.value.id, { ...corps, version: note.value.version });
     fait.value = { texte, classe };
     refusOuvert.value = false;
     await nextTick();
@@ -166,10 +166,11 @@ async function decider(corps: Record<string, unknown>, texte: string, classe: st
       await nextTick();
       retourALaListe.value?.focus();
     } else if (conflit(erreur)) {
-      // Une autre décision au même moment : la page relit la note, le refus en cours reste ouvert s'il a encore lieu d'être.
+      // Modifiée depuis l'ouverture de la page (renvoyée corrigée, autre décision) : la page relit la note,
+      // le refus en cours reste ouvert s'il a encore lieu d'être.
       note.value = await lireNote(note.value.id).catch(() => note.value);
       refusOuvert.value = refusOuvert.value && Boolean(note.value?.peutDecider);
-      refus.value = messagesDErreur(erreur);
+      refus.value = ["Cette note a été modifiée depuis que vous l'avez ouverte : relisez-la avant de décider."];
     } else {
       refus.value = messagesDErreur(erreur);
     }

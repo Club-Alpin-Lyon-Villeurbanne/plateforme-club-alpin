@@ -15,13 +15,27 @@ class NoteDeFraisVersionTest extends ExpenseReportApiTestCase
     private const AUTRE_ONGLET = 'Cette note a été modifiée dans un autre onglet ou sur un autre appareil.';
     private const LIGNES_AILLEURS = '{"lignes":[{"id":"ligne-1","montant":64.9,"description":"Dégaines (x6)"},{"id":"ligne-3","montant":12,"description":"Ajoutée sur le téléphone"}]}';
 
-    public function testSeulLeDemandeurLitLaVersion(): void
+    public function testChaqueLecteurLitLaVersion(): void
     {
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
 
-        $this->assertIsInt($this->show($this->adherent, $note)['body']['version']);
-        $this->assertArrayNotHasKey('version', $this->show($this->responsable, $note)['body']);
-        $this->assertArrayNotHasKey('version', $this->show($this->manager, $note)['body']);
+        foreach ([$this->adherent, $this->responsable, $this->manager] as $lecteur) {
+            $this->assertIsInt($this->show($lecteur, $note)['body']['version']);
+        }
+    }
+
+    public function testUneDecisionPriseSurUnePagePerimeeEstRefusee(): void
+    {
+        $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
+        $versionDeLaPageOuverte = $this->show($this->responsable, $note)['body']['version'];
+        $this->assertResponseStatus(200, $this->renvoyer($this->coResponsable, $note));
+        $this->assertResponseStatus(200, $this->envoyer($this->adherent, $this->reload($note)));
+
+        $reponse = $this->patch($this->responsable, $note, ['status' => 'preapproved', 'version' => $versionDeLaPageOuverte]);
+
+        $this->assertResponseStatus(409, $reponse);
+        $this->assertSame(ExpenseReportStatusEnum::SUBMITTED, $this->reload($note)->getStatus());
+        $this->assertCount(0, $this->getMailerMessages());
     }
 
     public function testUnEnregistrementAvecLaBonneVersionPasseEtLaFaitAvancer(): void

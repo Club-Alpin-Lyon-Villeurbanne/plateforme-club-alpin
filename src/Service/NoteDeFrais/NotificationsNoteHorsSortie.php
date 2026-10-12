@@ -94,8 +94,6 @@ class NotificationsNoteHorsSortie
 
         // La trésorerie signe ses décisions de son nom de rôle : la personne qui la tient n'a pas à être connue du demandeur.
         $auteur = NiveauDeDecisionEnum::TRESORERIE === $decision?->getNiveau() ? 'la trésorerie' : $decision?->getChangedBy()?->getFullName();
-        // Le demandeur répond au responsable qui lui a renvoyé sa note, comme le responsable lui répond.
-        $refusDuResponsable = ExpenseReportStatusEnum::REJECTED === $note->getStatus() && NiveauDeDecisionEnum::RESPONSABLE === $decision?->getNiveau();
 
         $this->mailer->send($demandeur, 'transactional/expense-report-status-email', [
             'report' => $note,
@@ -107,7 +105,7 @@ class NotificationsNoteHorsSortie
             'lignes' => $this->lignes($note),
             'formattedTotal' => $this->calculator->formatEuros($montants['totalDeclare']),
             'partRemboursable' => $this->calculator->partRemboursable($montants, false === $note->isRefundRequired()),
-        ], replyTo: $refusDuResponsable ? $decision?->getChangedBy() : null);
+        ]);
     }
 
     /**

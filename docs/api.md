@@ -276,7 +276,7 @@ Content-Type: application/merge-patch+json
 }
 ```
 
-`version`, facultatif : la version de la note lue par le client (le demandeur la lit avec sa note hors sortie). Si la note a changé depuis, la modification est refusée (409). Sans `version`, la dernière écriture passe.
+`version`, facultatif : la version de la note lue par le client (elle est renvoyée avec chaque note hors sortie). Si la note a changé depuis, la modification est refusée (409). Sans `version`, la dernière écriture passe.
 
 **Refus :**
 - `422` sur `status`, « Cette note a déjà été traitée. » : une décision sur une note qui a quitté l'étape de celui qui décide (deux onglets, deux personnes en même temps). compta-club reconnaît ce texte exact (`app/lib/apiError.ts`) : le changer demande de changer compta-club.
@@ -304,7 +304,7 @@ Une note de type `formation` ou `autre` porte en plus, en lecture seule :
 - `validationResponsable` : `{auteur: {prenom, nom}, date}` de la validation par un responsable depuis le dernier envoi (passage en `preapproved`), conservée après la décision de la trésorerie ; `null` si aucun responsable ne l'a validée depuis. Une note renvoyée après un refus repart à `null` jusqu'à sa nouvelle validation : celle d'avant le renvoi ne compte plus.
 - `libelleComptable` : « NOM Prénom NDF JJ/MM/AAAA objet », avec le nom du demandeur et la date de la dépense, ce que la trésorerie saisit en comptabilité ; `null` pour un brouillon.
 - `peutDecider` : l'utilisateur connecté est valideur de la note et elle est `submitted`.
-- `version` : pour le demandeur seulement, la version de la note, à renvoyer avec chaque modification (voir « Modifier une note de frais »).
+- `version` : la version de la note, à renvoyer avec chaque modification ou décision (voir « Modifier une note de frais »).
 
 ### 📎 Pièces jointes (Notes de frais)
 
