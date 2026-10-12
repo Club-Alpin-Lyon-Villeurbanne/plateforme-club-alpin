@@ -193,6 +193,12 @@ class ExpenseReport
     #[SerializedName('piecesJointes')]
     private Collection $attachments;
 
+    // Verrou optimiste : de deux écritures simultanées, la seconde est refusée au lieu d'écraser la
+    // première (un envoi croisé avec une modification des lignes, deux décisions en même temps).
+    #[ORM\Version]
+    #[ORM\Column(type: Types::INTEGER, options: ['default' => 1])]
+    private int $version = 1;
+
     public function __construct()
     {
         $this->attachments = new ArrayCollection();

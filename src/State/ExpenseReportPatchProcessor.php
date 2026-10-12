@@ -9,7 +9,9 @@ use App\Service\ExpenseReportCalculator;
 use App\Service\NoteDeFrais\NotificationsNoteHorsSortie;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use App\Validator\ExpenseReport\ExpenseReportOriginalState;
+use Doctrine\ORM\OptimisticLockException;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 
 /**
  * Modification d'une note de frais. L'envoi d'une note hors sortie (brouillon ou note à
@@ -40,7 +42,12 @@ class ExpenseReportPatchProcessor implements ProcessorInterface
             $data->setStatusComment(null);
         }
 
-        $resultat = $this->persistProcessor->process($data, $operation, $uriVariables, $context);
+        try {
+            $resultat = $this->persistProcessor->process($data, $operation, $uriVariables, $context);
+        } catch (OptimisticLockException $conflit) {
+            // Rien n'est écrit : la note a changé depuis que cette requête l'a lue.
+            throw new ConflictHttpException('Cette note a été modifiée en même temps par une autre action. Rechargez la page.', $conflit);
+        }
 
         if ($changementDeStatut) {
             $this->notifications->statutChange($data);
