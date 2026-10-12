@@ -271,15 +271,21 @@ Content-Type: application/merge-patch+json
 
 {
   "status": "submitted",
-  "details": "{...}"
+  "details": "{...}",
+  "version": 3
 }
 ```
+
+`version`, facultatif : la version de la note lue par le client (le demandeur la lit avec sa note hors sortie). Si la note a changé depuis, la modification est refusée (409). Sans `version`, la dernière écriture passe.
 
 **Refus :**
 - `422` sur `status`, « Cette note a déjà été traitée. » : une décision sur une note qui a quitté l'étape de celui qui décide (deux onglets, deux personnes en même temps). compta-club reconnaît ce texte exact (`app/lib/apiError.ts`) : le changer demande de changer compta-club.
 - `422` sur `status`, les autres changements de statut refusés : « Cette note attend encore la décision du responsable de la commission. » (la trésorerie sur une note hors sortie qui attend un responsable), « Vous ne pouvez pas décider sur votre propre note de frais. », sinon « Ce changement de statut n'est pas permis. ».
 - `422` sur `commentaireStatut` : un message au demandeur est obligatoire pour refuser une note hors sortie.
-- `409`, « Cette note a été modifiée en même temps par une autre action. Rechargez la page. » : une autre requête a modifié la note depuis que celle-ci l'a lue (verrou optimiste). Rien n'est enregistré : relire la note avant de réessayer.
+- `422` sur le champ modifié (`details`, `refundRequired`, `objet`…), « Cette note a déjà été envoyée : elle ne peut plus être modifiée. » : le demandeur modifie une note qui n'est plus en brouillon ni à corriger (le site reconnaît ce texte exact). Pour toute autre personne : « Seul le demandeur peut modifier cette note. ».
+- `409`, « Cette note a été modifiée dans un autre onglet ou sur un autre appareil. » : la `version` envoyée n'est plus celle de la note. Rien n'est écrit : relire la note.
+- `409`, « Cette note a été modifiée en même temps par une autre action. » : une autre requête a modifié la note entre la lecture et l'écriture de celle-ci (verrou optimiste). La note n'est pas modifiée, mais pour une note de sortie le mail du changement de statut est déjà en file et part quand même. Relire la note avant de réessayer.
+- `400` : `version` n'est pas un nombre entier.
 
 #### Type et montants de toute note
 Toute note porte `type` (`sortie`, `formation` ou `autre`), `totalDeclare` et `totalRemboursable` : figés au dernier envoi pour une note hors sortie (en brouillon ou à corriger, ils suivent ses lignes et le barème en vigueur), calculés avec les taux en vigueur pour une note de sortie. Dans ce calcul, une valeur de `details` qui n'est pas un nombre fini compte pour 0.
@@ -298,6 +304,7 @@ Une note de type `formation` ou `autre` porte en plus, en lecture seule :
 - `validationResponsable` : `{auteur: {prenom, nom}, date}` de la validation par un responsable depuis le dernier envoi (passage en `preapproved`), conservée après la décision de la trésorerie ; `null` si aucun responsable ne l'a validée depuis. Une note renvoyée après un refus repart à `null` jusqu'à sa nouvelle validation : celle d'avant le renvoi ne compte plus.
 - `libelleComptable` : « NOM Prénom NDF JJ/MM/AAAA objet », avec le nom du demandeur et la date de la dépense, ce que la trésorerie saisit en comptabilité ; `null` pour un brouillon.
 - `peutDecider` : l'utilisateur connecté est valideur de la note et elle est `submitted`.
+- `version` : pour le demandeur seulement, la version de la note, à renvoyer avec chaque modification (voir « Modifier une note de frais »).
 
 ### 📎 Pièces jointes (Notes de frais)
 

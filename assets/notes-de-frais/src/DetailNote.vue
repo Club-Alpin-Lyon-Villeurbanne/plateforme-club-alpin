@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { isAxiosError } from "axios";
 import { computed, nextTick, onMounted, ref } from "vue";
-import { enregistrerNote, lireNote, messagesDErreur, refusDeLApi, sessionExpiree } from "./api";
+import { conflit, enregistrerNote, lireNote, messagesDErreur, refusDeLApi, sessionExpiree } from "./api";
 import { choixDuDemandeur, dateFr, dateFrDe, decisionSurLaPage, enAttenteDe, euros, jour, lienWeb, nomComplet, partRemboursable } from "./format";
 import { libellesDuType } from "./typesDeNote";
 import type { DonneesDetail, NoteDeFrais } from "./types";
@@ -141,6 +141,11 @@ async function decider(corps: Record<string, unknown>, texte: string, classe: st
       note.value = await lireNote(note.value.id).catch(() => note.value);
       refusOuvert.value = false;
       refus.value = ["Cette note a déjà été traitée."];
+    } else if (conflit(erreur)) {
+      // Une autre décision au même moment : la page relit la note, le refus en cours reste ouvert s'il a encore lieu d'être.
+      note.value = await lireNote(note.value.id).catch(() => note.value);
+      refusOuvert.value = refusOuvert.value && Boolean(note.value?.peutDecider);
+      refus.value = messagesDErreur(erreur);
     } else {
       refus.value = messagesDErreur(erreur);
     }

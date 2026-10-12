@@ -19,7 +19,7 @@ use Doctrine\ORM\Events;
  */
 class NoteDeFraisEcrituresConcurrentesTest extends ExpenseReportApiTestCase
 {
-    private const CONFLIT = 'Cette note a été modifiée en même temps par une autre action. Rechargez la page.';
+    private const CONFLIT = 'Cette note a été modifiée en même temps par une autre action.';
 
     private ?ExpenseReport $noteDeSortie = null;
 

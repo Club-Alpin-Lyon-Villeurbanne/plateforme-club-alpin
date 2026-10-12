@@ -27,23 +27,17 @@ class FieldPermissionValidator
 
     public function validate(ExpenseReport $expenseReport, ExpenseReportStatusEnum $oldStatus, ExecutionContextInterface $context): void
     {
-        $canEditClaim = $this->actor->isOwnerOf($expenseReport) && $oldStatus->isEditableByOwner();
+        $proprietaire = $this->actor->isOwnerOf($expenseReport);
+        $canEditClaim = $proprietaire && $oldStatus->isEditableByOwner();
+        // Le formulaire du site reconnaît ce texte (onglet resté ouvert après l'envoi) et passe à l'état « envoyée ».
+        $refus = $proprietaire
+            ? 'Cette note a déjà été envoyée : elle ne peut plus être modifiée.'
+            : 'Seul le demandeur peut modifier cette note.';
 
-        if (!$canEditClaim && $this->changed($expenseReport, 'details', $expenseReport->getDetails())) {
-            $context->buildViolation('Details can only be modified by their owner while the expense report is a draft or rejected.')
-                ->atPath('details')
-                ->addViolation();
-        }
-
-        if (!$canEditClaim && $this->changed($expenseReport, 'refundRequired', $expenseReport->isRefundRequired())) {
-            $context->buildViolation('The refund choice can only be modified by its owner while the expense report is a draft or rejected.')
-                ->atPath('refundRequired')
-                ->addViolation();
-        }
-
-        foreach ($expenseReport->champsHorsSortie() as $champ => $valeur) {
+        $champs = ['details' => $expenseReport->getDetails(), 'refundRequired' => $expenseReport->isRefundRequired(), ...$expenseReport->champsHorsSortie()];
+        foreach ($champs as $champ => $valeur) {
             if (!$canEditClaim && $this->changed($expenseReport, $champ, $valeur)) {
-                $context->buildViolation('Seul le demandeur peut modifier ce champ, tant que la note est en brouillon ou à corriger.')
+                $context->buildViolation($refus)
                     ->atPath($champ)
                     ->addViolation();
             }

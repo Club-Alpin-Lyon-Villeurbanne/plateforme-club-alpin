@@ -4,6 +4,9 @@ import type { NoteDeFrais, NoteDeSortie, PieceJointe, Refus } from "./types";
 const MESSAGE_SESSION_EXPIREE =
   "Votre session a expiré. Reconnectez-vous dans un autre onglet, puis réessayez : votre saisie reste sur cette page.";
 
+/** Refus de l'API (FieldPermissionValidator) quand la note est partie depuis un autre onglet. */
+export const NOTE_DEJA_ENVOYEE = "Cette note a déjà été envoyée : elle ne peut plus être modifiée.";
+
 const api = axios.create({
   baseURL: ((window as any).globals?.apiBaseUrl ?? "") + "/api",
   headers: { Accept: "application/json" },
@@ -94,7 +97,16 @@ export async function envoyerJustificatif(noteId: number, ligneId: string, fichi
 }
 
 export function sessionExpiree(erreur: unknown): boolean {
-  return isAxiosError(erreur) && erreur.response?.status === 401;
+  return statutDuRefus(erreur) === 401;
+}
+
+/** La note a changé depuis sa lecture : ailleurs, ou en même temps par une autre requête. */
+export function conflit(erreur: unknown): boolean {
+  return statutDuRefus(erreur) === 409;
+}
+
+export function statutDuRefus(erreur: unknown): number | undefined {
+  return isAxiosError(erreur) ? erreur.response?.status : undefined;
 }
 
 /** Refus de l'API, avec le champ en cause quand c'est une violation de validation. */

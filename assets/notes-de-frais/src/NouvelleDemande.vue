@@ -22,7 +22,10 @@
   >
     <p v-if="messageDeRefus" class="tw-whitespace-pre-line tw-border-b tw-border-red-100 tw-bg-red-50 tw-px-8 tw-py-3 tw-text-sm tw-text-red-800">{{ messageDeRefus }}</p>
     <p v-if="chargement" class="tw-p-8 tw-text-sm tw-text-gray-600">Chargement de la note…</p>
-    <p v-else-if="erreurDeChargement" role="alert" class="tw-p-8 tw-text-sm tw-text-red-600">{{ erreurDeChargement }}</p>
+    <div v-else-if="erreurDeChargement" class="tw-p-8 tw-text-sm">
+      <p role="alert" class="tw-text-red-600">{{ erreurDeChargement }}</p>
+      <a :href="URL_MES_NOTES" class="tw-mt-4 tw-inline-block tw-font-medium tw-text-sky-700 hover:tw-underline">Voir mes notes de frais</a>
+    </div>
 
     <PremiereEtape
       v-else-if="etape === 1"
@@ -39,6 +42,7 @@
 
     <SecondeEtape
       v-else
+      :key="rechargements"
       v-model:lignes="lignes"
       v-model:mot="motPourResponsable"
       v-model:choix="choix"
@@ -57,11 +61,13 @@
       :refus-sur-le-choix="refusSurLeChoix"
       :en-cours="enCours"
       :envoi-en-cours="envoiEnCours"
+      :conflit="conflitDeVersion"
       @modifier="afficherEtape(1)"
       @enregistrer="enregistrer"
       @envoyer="envoyer"
       @justificatif="joindre"
       @montants-modifies="enregistrerLignes"
+      @recharger="recharger"
     />
   </form>
 </template>
@@ -70,7 +76,7 @@
 import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
 import PremiereEtape from "./components/PremiereEtape.vue";
 import SecondeEtape from "./components/SecondeEtape.vue";
-import { creerNote, enregistrerNote, envoyerJustificatif, lireNote, messagesDErreur, refusDeLApi, sessionExpiree } from "./api";
+import { conflit, creerNote, enregistrerNote, envoyerJustificatif, lireNote, messagesDErreur, NOTE_DEJA_ENVOYEE, refusDeLApi, sessionExpiree, statutDuRefus } from "./api";
 import { auteurDeLaDecision, aujourdhui, limiteEnvoi, messageDelaiDepasse, partRemboursable, phrasePrevenus, phraseValideurs } from "./format";
 import { refusDuFichier } from "./justificatifs";
 import { ecrireLignes, lireLignes, nouvelleLigne } from "./lignes";
@@ -104,6 +110,10 @@ const chargement = ref(props.donnees.noteId !== null);
 const erreurDeChargement = ref("");
 const envoyee = ref(false);
 const titreEnvoyee = ref<HTMLElement | null>(null);
+// La note a changé ailleurs depuis sa lecture : plus rien ne s'enregistre avant « Recharger ».
+const conflitDeVersion = ref<string | null>(null);
+// Remonte la seconde étape sur la version rechargée.
+const rechargements = ref(0);
 
 // Le choix, une fois fait, rend son refus caduc ; les autres refus attendent le prochain envoi.
 const erreursEtape2 = computed(() =>
@@ -209,7 +219,7 @@ function reprendre(noteLue: NoteDeFrais) {
     return;
   }
   if (noteLue.status !== "draft" && noteLue.status !== "rejected") {
-    erreurDeChargement.value = "Cette note a été envoyée : elle ne peut plus être modifiée.";
+    noteDejaEnvoyee();
     return;
   }
 
@@ -227,6 +237,7 @@ function reprendre(noteLue: NoteDeFrais) {
   if (!lignes.value.length) {
     lignes.value.push(nouvelleLigne(demande.value.type));
   }
+  justificatifs.value = {};
   for (const pieceJointe of noteLue.piecesJointes) {
     justificatifs.value[pieceJointe.expenseId] = { fileUrl: pieceJointe.fileUrl, nom: null };
   }
@@ -300,20 +311,28 @@ async function enregistrer() {
   if (note.value === null || enCours.value) {
     return;
   }
+  if (conflitDeVersion.value) {
+    await montrerLesRefus();
+    return;
+  }
 
   enCours.value = true;
   refusEnregistrement.value = [];
-  if (await attendreLesEnregistrementsEnCours()) {
+  if (await attendreLesJustificatifs()) {
     // Le résultat de l'enregistrement s'affiche en pied de page, pas en double sous les lignes.
     erreursJustificatifs.value = {};
   }
-  const empreinte = empreintes();
   try {
-    note.value = await enregistrerNote(note.value.id, corpsDeLaNote());
-    enregistre.value = empreinte;
+    await dansLOrdre(async () => {
+      const empreinte = empreintes();
+      await ecrire(corpsDeLaNote());
+      enregistre.value = empreinte;
+    });
     toastr?.info("Enregistrée. Vous la retrouverez dans « mes notes de frais ».");
   } catch (erreur) {
-    refusEnregistrement.value = messagesDErreur(erreur);
+    if (!ongletPerime(erreur)) {
+      refusEnregistrement.value = messagesDErreur(erreur);
+    }
     await montrerLesRefus();
   } finally {
     enCours.value = false;
@@ -324,6 +343,10 @@ async function envoyer() {
   if (note.value === null || enCours.value) {
     return;
   }
+  if (conflitDeVersion.value) {
+    await montrerLesRefus();
+    return;
+  }
 
   enCours.value = true;
   envoiEnCours.value = true;
@@ -331,7 +354,7 @@ async function envoyer() {
   refusEnregistrement.value = [];
   try {
     // Sinon la note partirait avec l'ancien justificatif, et le nouveau serait refusé sur une note envoyée.
-    if (!(await attendreLesEnregistrementsEnCours())) {
+    if (!(await attendreLesJustificatifs())) {
       refusEnvoi.value = [{ champ: null, message: "Un justificatif n'a pas pu être envoyé : la note n'est pas partie." }];
       await montrerLesRefus();
       return;
@@ -339,7 +362,7 @@ async function envoyer() {
     erreursJustificatifs.value = {};
     // Une ligne restée vide n'est pas une dépense ; la retirer garde la numérotation des messages de l'API.
     lignes.value = lignes.value.filter(renseignee);
-    note.value = await enregistrerNote(note.value.id, { ...corpsDeLaNote(), status: "submitted" });
+    await dansLOrdre(() => ecrire({ ...corpsDeLaNote(), status: "submitted" }));
     enregistre.value = empreintes();
     envoyee.value = true;
     await nextTick();
@@ -350,7 +373,9 @@ async function envoyer() {
     if (!lignes.value.length) {
       lignes.value.push(nouvelleLigne(demande.value.type));
     }
-    refusEnvoi.value = refusDeLApi(erreur);
+    if (!ongletPerime(erreur)) {
+      refusEnvoi.value = refusDeLApi(erreur);
+    }
     await montrerLesRefus();
   } finally {
     enCours.value = false;
@@ -364,20 +389,80 @@ async function montrerLesRefus() {
   formulaire.value?.querySelector<HTMLElement>("#f-refus")?.focus();
 }
 
+// —— Écritures, une à la fois ——
+
+// Chaque écriture renvoie la version de la note reçue avec la précédente : deux écritures parties
+// ensemble de ce formulaire se contrediraient, la seconde serait refusée comme venant d'un onglet périmé.
+let fileDesEcritures: Promise<unknown> = Promise.resolve();
+
+function dansLOrdre<T>(ecriture: () => Promise<T>): Promise<T> {
+  const resultat = fileDesEcritures.then(ecriture);
+  fileDesEcritures = resultat.catch(() => undefined);
+
+  return resultat;
+}
+
+async function ecrire(corps: Record<string, unknown>): Promise<void> {
+  if (note.value === null) {
+    return;
+  }
+  note.value = await enregistrerNote(note.value.id, { ...corps, version: note.value.version });
+}
+
+/** Un autre onglet ou un autre appareil est passé avant : vrai si l'erreur le dit, et la page le montre. */
+function ongletPerime(erreur: unknown): boolean {
+  if (conflit(erreur)) {
+    conflitDeVersion.value = messagesDErreur(erreur)[0];
+    return true;
+  }
+  if (refusDeLApi(erreur).some((refus) => refus.message === NOTE_DEJA_ENVOYEE)) {
+    noteDejaEnvoyee();
+    return true;
+  }
+
+  return false;
+}
+
+// Plus rien ne peut s'enregistrer : la page le dit, sans retenir le départ.
+function noteDejaEnvoyee() {
+  note.value = null;
+  erreurDeChargement.value = "Cette note a été envoyée : elle ne peut plus être modifiée.";
+}
+
+// La saisie non enregistrée est remplacée par la note telle qu'elle est enregistrée.
+async function recharger() {
+  if (note.value === null) {
+    return;
+  }
+
+  try {
+    const lue = await lireNote(note.value.id);
+    conflitDeVersion.value = null;
+    refusEnvoi.value = [];
+    refusEnregistrement.value = [];
+    erreursEnregistrementAuto.value = [];
+    erreursJustificatifs.value = {};
+    rechargements.value += 1;
+    reprendre(lue);
+    await afficherEtape(2);
+  } catch (erreur) {
+    conflitDeVersion.value = messagesDErreur(erreur)[0];
+  }
+}
+
 // —— Justificatifs et enregistrement automatique des lignes ——
 
 // Envois de justificatifs en cours, chacun résolu à vrai s'il a réussi.
 const envoisDeJustificatifs = new Set<Promise<boolean>>();
 
-/** Attend les justificatifs et l'enregistrement des lignes en cours ; faux si un justificatif a échoué. */
-async function attendreLesEnregistrementsEnCours(): Promise<boolean> {
+/** Attend les justificatifs en cours ; faux si l'un a échoué. Leurs lignes s'enregistrent avant ce qui suit. */
+async function attendreLesJustificatifs(): Promise<boolean> {
   let reussis = true;
   // Un justificatif choisi pendant l'attente est attendu lui aussi.
   while (envoisDeJustificatifs.size) {
     const resultats = await Promise.all(Array.from(envoisDeJustificatifs));
     reussis = reussis && resultats.every(Boolean);
   }
-  await enregistrementDesLignes;
 
   return reussis;
 }
@@ -407,6 +492,11 @@ async function envoyerLeJustificatif(ligneId: string, fichier: File): Promise<bo
     const pieceJointe = await envoyerJustificatif(note.value.id, ligneId, fichier);
     justificatifs.value[ligneId] = { fileUrl: pieceJointe.fileUrl, nom: fichier.name };
   } catch (erreur) {
+    // Le serveur ne refuse un justificatif valide que sur une note déjà envoyée.
+    if (statutDuRefus(erreur) === 422) {
+      noteDejaEnvoyee();
+      return false;
+    }
     erreursJustificatifs.value[ligneId] = sessionExpiree(erreur)
       ? messagesDErreur(erreur)[0]
       : "Le justificatif n'a pas pu être envoyé. Réessayez avec un fichier JPG, PNG ou PDF.";
@@ -420,30 +510,25 @@ async function envoyerLeJustificatif(ligneId: string, fichier: File): Promise<bo
   return true;
 }
 
-// Enregistrement des seules lignes : en cours, « Enregistrer » et « Envoyer » l'attendent.
-let enregistrementDesLignes: Promise<void> = Promise.resolve();
-
 /**
  * Un justificatif est rattaché à sa ligne : la ligne doit exister en base dès qu'il est envoyé.
  * Un montant modifié est enregistré aussitôt, pour afficher les avertissements du serveur.
  */
 function enregistrerLignes(): Promise<void> {
-  enregistrementDesLignes = enregistrementDesLignes.then(async () => {
-    if (note.value === null || envoyee.value) {
+  return dansLOrdre(async () => {
+    if (note.value === null || envoyee.value || conflitDeVersion.value) {
       return;
     }
 
     const empreinte = empreintes().lignes;
     try {
-      note.value = await enregistrerNote(note.value.id, { details: ecrireLignes(lignes.value) });
+      await ecrire({ details: ecrireLignes(lignes.value) });
       enregistre.value = { ...enregistre.value, lignes: empreinte };
       erreursEnregistrementAuto.value = [];
       erreursJustificatifs.value = {};
     } catch (erreur) {
-      erreursEnregistrementAuto.value = messagesDErreur(erreur);
+      erreursEnregistrementAuto.value = ongletPerime(erreur) ? [] : messagesDErreur(erreur);
     }
   });
-
-  return enregistrementDesLignes;
 }
 </script>

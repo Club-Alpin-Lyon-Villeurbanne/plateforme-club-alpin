@@ -440,6 +440,11 @@ class ExpenseReport
         return array_map(static fn (mixed $ligne): array => \is_array($ligne) ? $ligne : [], $lignes);
     }
 
+    public function getVersion(): int
+    {
+        return $this->version;
+    }
+
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;

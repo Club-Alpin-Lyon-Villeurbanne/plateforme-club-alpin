@@ -99,6 +99,16 @@
     <!-- Reçoit le focus après un refus : le Tab suivant repart des boutons. -->
     <div id="f-refus" tabindex="-1" class="tw-px-8 tw-pb-3 tw-text-right tw-text-sm tw-text-red-600 focus:tw-outline-none" aria-live="polite">
       <p v-for="erreur in erreurs" :key="erreur">{{ erreur }}</p>
+      <p v-if="conflit" class="tw-flex tw-flex-wrap tw-items-center tw-justify-end tw-gap-x-3 tw-gap-y-2">
+        {{ conflit }}
+        <button
+          type="button"
+          class="tw-rounded-md tw-border tw-border-gray-300 tw-bg-white tw-px-3 tw-py-1.5 tw-text-sm tw-font-medium tw-text-gray-800 hover:tw-bg-gray-50"
+          @click="emit('recharger')"
+        >
+          Recharger la dernière version
+        </button>
+      </p>
     </div>
     <!-- aria-disabled plutôt que disabled : un bouton désactivé perdrait le focus pendant l'appel. -->
     <div class="tw-flex tw-items-center tw-justify-end tw-gap-5 tw-border-t tw-border-gray-100 tw-bg-gray-50 tw-px-8 tw-py-4">
@@ -152,6 +162,8 @@ const props = defineProps<{
   refusSurLeChoix: boolean;
   enCours: boolean;
   envoiEnCours: boolean;
+  /** La note a changé ailleurs : message de l'API, et le formulaire propose de recharger. */
+  conflit: string | null;
 }>();
 const lignes = defineModel<Ligne[]>("lignes", { required: true });
 const mot = defineModel<string>("mot", { required: true });
@@ -163,6 +175,7 @@ const emit = defineEmits<{
   envoyer: [];
   justificatif: [ligneId: string, fichier: File];
   montantsModifies: [];
+  recharger: [];
 }>();
 
 const declaration = computed(() => {

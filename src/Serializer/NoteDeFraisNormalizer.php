@@ -51,6 +51,10 @@ final class NoteDeFraisNormalizer implements NormalizerInterface, NormalizerAwar
         if (!$this->actor->voitLeChoixDuRemboursement($object)) {
             unset($donnees['refundRequired']);
         }
+        // Le formulaire du demandeur la renvoie avec chaque modification : un onglet périmé est refusé.
+        if ($this->actor->isOwnerOf($object)) {
+            $donnees['version'] = $object->getVersion();
+        }
 
         return array_merge($donnees, [
             'lignesAffichees' => $this->calculator->lignesAffichees($object),
