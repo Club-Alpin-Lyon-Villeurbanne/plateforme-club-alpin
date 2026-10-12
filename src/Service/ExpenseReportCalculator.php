@@ -53,48 +53,21 @@ class ExpenseReportCalculator
      */
     public function calculateTransportTotal(array $transport): float
     {
-        $type = $transport['type'] ?? null;
+        $distance = $this->nombre($transport['distance'] ?? null);
+        $tollFee = $this->nombre($transport['tollFee'] ?? null);
+        $fuelExpense = $this->nombre($transport['fuelExpense'] ?? null);
+        $passengerCount = $this->nombre($transport['passengerCount'] ?? null);
 
-        switch ($type) {
-            case 'PERSONAL_VEHICLE':
-                $distance = $transport['distance'] ?? 0.0;
-                $tollFee = $transport['tollFee'] ?? 0.0;
+        $total = match ($transport['type'] ?? null) {
+            'PERSONAL_VEHICLE' => ($distance * $this->tauxKilometriqueVoiture) + ($tollFee / $this->divisionPeage),
+            'CLUB_MINIBUS' => $passengerCount > 0 ? (($distance * $this->tauxKilometriqueMinibus) + $fuelExpense + $tollFee) / $passengerCount : 0.0,
+            'RENTAL_MINIBUS' => $passengerCount > 0 ? ($this->nombre($transport['rentalPrice'] ?? null) + $fuelExpense + $tollFee) / $passengerCount : 0.0,
+            'PUBLIC_TRANSPORT' => $this->nombre($transport['ticketPrice'] ?? null),
+            // Type inconnu ou non renseigné
+            default => 0.0,
+        };
 
-                return ($distance * $this->tauxKilometriqueVoiture)
-                     + ($tollFee / $this->divisionPeage);
-
-            case 'CLUB_MINIBUS':
-                $distance = $transport['distance'] ?? 0.0;
-                $fuelExpense = $transport['fuelExpense'] ?? 0.0;
-                $tollFee = $transport['tollFee'] ?? 0.0;
-                $passengerCount = $transport['passengerCount'] ?? 0;
-                if ($passengerCount <= 0) {
-                    return 0.0;
-                }
-                $total = ($distance * $this->tauxKilometriqueMinibus)
-                       + $fuelExpense
-                       + $tollFee;
-
-                return $total / $passengerCount;
-
-            case 'RENTAL_MINIBUS':
-                $rentalPrice = $transport['rentalPrice'] ?? 0.0;
-                $fuelExpense = $transport['fuelExpense'] ?? 0.0;
-                $tollFee = $transport['tollFee'] ?? 0.0;
-                $passengerCount = $transport['passengerCount'] ?? 0;
-                if ($passengerCount <= 0) {
-                    return 0.0;
-                }
-
-                return ($rentalPrice + $fuelExpense + $tollFee) / $passengerCount;
-
-            case 'PUBLIC_TRANSPORT':
-                return $transport['ticketPrice'] ?? 0.0;
-
-            default:
-                // Type inconnu ou non renseigné
-                return 0.0;
-        }
+        return $this->nombre($total);
     }
 
     /**
@@ -108,13 +81,13 @@ class ExpenseReportCalculator
         ];
 
         foreach ($accommodations as $acc) {
-            $price = (float) ($acc['price'] ?? 0);
+            $price = $this->nombre($acc['price'] ?? null);
             $res['total'] += $price;
             // Plafond par nuit
             $res['reimbursable'] += min($price, $this->nuiteeMaxRemboursable);
         }
 
-        return $res;
+        return array_map($this->nombre(...), $res);
     }
 
     /**
@@ -124,10 +97,10 @@ class ExpenseReportCalculator
     {
         $sum = 0.0;
         foreach ($others as $other) {
-            $sum += (float) ($other['price'] ?? 0);
+            $sum += $this->nombre($other['price'] ?? null);
         }
 
-        return $sum;
+        return $this->nombre($sum);
     }
 
     /**
@@ -143,15 +116,15 @@ class ExpenseReportCalculator
     public function calculateTotal(array $details): array
     {
         // Transport
-        $transportData = $details['transport'] ?? [];
+        $transportData = \is_array($details['transport'] ?? null) ? $details['transport'] : [];
         $transportTotal = $this->calculateTransportTotal($transportData);
 
         // Hébergements
-        $accommodationsData = $details['accommodations'] ?? [];
+        $accommodationsData = \is_array($details['accommodations'] ?? null) ? $details['accommodations'] : [];
         $accTotals = $this->calculateAccommodationTotals($accommodationsData);
 
         // Autres dépenses
-        $othersData = $details['others'] ?? [];
+        $othersData = \is_array($details['others'] ?? null) ? $details['others'] : [];
         $othersTotal = $this->calculateOthersTotal($othersData);
 
         // Somme brute
@@ -160,8 +133,8 @@ class ExpenseReportCalculator
         $reimbursable = $transportTotal + $accTotals['reimbursable'] + $othersTotal;
 
         return [
-            'total' => $total,
-            'reimbursable' => $reimbursable,
+            'total' => $this->nombre($total),
+            'reimbursable' => $this->nombre($reimbursable),
         ];
     }
 
@@ -250,7 +223,7 @@ class ExpenseReportCalculator
             $remboursable = min($remboursable, (float) $plafondDuTotal);
         }
 
-        return ['totalDeclare' => round($total, 2), 'totalRemboursable' => round($remboursable, 2)];
+        return ['totalDeclare' => round($this->nombre($total), 2), 'totalRemboursable' => round($this->nombre($remboursable), 2)];
     }
 
     /**
@@ -264,7 +237,7 @@ class ExpenseReportCalculator
     public function lignesAffichees(ExpenseReport $note): array
     {
         $natures = $note->getType()->natures();
-        $taux = ($this->estFigee($note) ? $note->tauxKilometriqueFige() : null) ?? $this->tauxKilometriqueEnVigueur();
+        $taux = $this->tauxDesLignes($note);
 
         return array_map(function (array $ligne) use ($natures, $taux): array {
             $nature = \is_string($ligne['nature'] ?? null) ? $ligne['nature'] : null;
@@ -276,7 +249,7 @@ class ExpenseReportCalculator
                 'nature' => $nature,
                 'libelle' => \is_string($libelle) && '' !== $libelle ? $libelle : null,
                 'detail' => match (true) {
-                    'distance' === ExpenseReportTypeEnum::champDeLaSaisie($ligne) && (\is_int($distance) || \is_float($distance)) => sprintf('%s km × %s', (new \NumberFormatter('fr_FR', \NumberFormatter::DECIMAL))->format($distance), $this->formatEuros($taux)),
+                    'distance' === ExpenseReportTypeEnum::champDeLaSaisie($ligne) && (\is_int($distance) || \is_float($distance)) => sprintf('%s km × %s', (new \NumberFormatter('fr_FR', \NumberFormatter::DECIMAL))->format($this->nombre($distance)), $this->formatEuros($taux)),
                     ExpenseReportTypeEnum::NATURE_A_PRECISER === $nature => ExpenseReportTypeEnum::descriptionDeLaLigne($ligne),
                     default => null,
                 },
@@ -335,12 +308,32 @@ class ExpenseReportCalculator
     private function montantDeLaLigne(array $ligne, float $taux): float
     {
         $champ = ExpenseReportTypeEnum::champDeLaSaisie($ligne);
-        $saisie = $ligne[$champ] ?? null;
-        if (!\is_int($saisie) && !\is_float($saisie)) {
-            return 0.0;
-        }
+        $saisie = $this->nombre($ligne[$champ] ?? null);
 
-        return 'distance' === $champ ? round($saisie * $taux, 2) : (float) $saisie;
+        return $this->nombre('distance' === $champ ? round($saisie * $taux, 2) : $saisie);
+    }
+
+    /**
+     * Taux kilométrique des lignes d'une formation : celui figé à son dernier envoi, sinon celui en
+     * vigueur.
+     */
+    private function tauxDesLignes(ExpenseReport $note): float
+    {
+        $fige = $this->estFigee($note) ? $note->tauxKilometriqueFige() : null;
+
+        return null !== $fige ? $this->nombre($fige) : $this->tauxKilometriqueEnVigueur();
+    }
+
+    /**
+     * Toute valeur lue dans `details`, ou calculée à partir d'elle, passe par ici : un nombre fini,
+     * sinon 0. Un texte ou un `1e400` (infini) enregistré en base ne doit faire échouer aucune
+     * lecture, puisque l'encodage JSON refuse l'infini.
+     */
+    private function nombre(mixed $valeur): float
+    {
+        $nombre = is_numeric($valeur) ? (float) $valeur : 0.0;
+
+        return is_finite($nombre) ? $nombre : 0.0;
     }
 
     /**

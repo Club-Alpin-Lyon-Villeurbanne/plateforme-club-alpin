@@ -488,7 +488,7 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
         return $this->getContainer()->get(EntityManagerInterface::class);
     }
 
-    private function jwt(User $user): string
+    protected function jwt(User $user): string
     {
         return $this->getContainer()->get(JWTTokenManagerInterface::class)->create($user);
     }

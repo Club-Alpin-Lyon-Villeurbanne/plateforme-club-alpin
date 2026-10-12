@@ -73,6 +73,43 @@ class NoteHorsSortieCoherenceTest extends ExpenseReportApiTestCase
         yield 'montant à plus de deux décimales' => ['{"lignes":[{"id":"ligne-1","montant":12.345}]}'];
         yield 'description qui n\'est pas un texte' => ['{"lignes":[{"id":"ligne-1","montant":12,"description":12}]}'];
         yield 'nature sur un achat' => ['{"lignes":[{"id":"ligne-1","montant":12,"nature":"stage"}]}'];
+        yield 'montant non fini' => ['{"lignes":[{"id":"ligne-1","montant":1e400}]}'];
+        yield 'identifiant en double' => ['{"lignes":[{"id":"ligne-1","montant":12},{"id":"ligne-1","montant":30}]}'];
+    }
+
+    /**
+     * @dataProvider nombresDemesuresProvider
+     */
+    public function testUnNombreDemesureEstRefuseAvecSonMessage(string $type, string $details, string $message): void
+    {
+        $note = 'formation' === $type ? $this->creerFormation($this->encadrant) : $this->creerAchat($this->owner);
+
+        $this->assertRefusAvec($this->patch($note->getUser(), $note, ['details' => $details]), 'details', $message);
+    }
+
+    public static function nombresDemesuresProvider(): iterable
+    {
+        yield 'montant non fini' => ['autre', '{"lignes":[{"id":"ligne-1","montant":1e400,"description":"Dégaines"}]}', 'Ligne 1 : le montant ne peut pas dépasser 100 000.'];
+        yield 'montant au-delà de 100 000' => ['autre', '{"lignes":[{"id":"ligne-1","montant":100000.01,"description":"Dégaines"}]}', 'Ligne 1 : le montant ne peut pas dépasser 100 000.'];
+        yield 'distance non finie' => ['formation', '{"lignes":[{"id":"ligne-1","nature":"stage","montant":280},{"id":"ligne-2","nature":"voiture","distance":1e400}]}', 'Ligne 2 : la distance ne peut pas dépasser 100 000.'];
+    }
+
+    public function testUnMontantDe100000EstAccepte(): void
+    {
+        $note = $this->creerAchat($this->owner);
+
+        $this->assertResponseStatus(200, $this->patch($this->owner, $note, ['details' => '{"lignes":[{"id":"ligne-1","montant":100000,"description":"Minibus"}]}']));
+    }
+
+    public function testDeuxLignesNePartagentPasUnIdentifiant(): void
+    {
+        $note = $this->creerAchat($this->owner);
+
+        $this->assertRefusAvec(
+            $this->patch($this->owner, $note, ['details' => '{"lignes":[{"id":"ligne-1","montant":20},{"id":"ligne-2","montant":30},{"id":"ligne-1","montant":40}]}']),
+            'details',
+            'Ligne 3 : identifiant en double.',
+        );
     }
 
     public function testUnBrouillonPeutGarderDesLignesIncompletes(): void

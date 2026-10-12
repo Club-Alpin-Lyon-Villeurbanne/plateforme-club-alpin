@@ -13,6 +13,9 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  */
 class CoherenceValidator
 {
+    // Garde-fou technique (colonnes DECIMAL, valeurs absurdes), pas une valeur de la politique de remboursement.
+    private const NOMBRE_MAXIMAL = 100000;
+
     public function __construct(
         private readonly ExpenseReportOriginalState $originalState,
     ) {
@@ -80,6 +83,7 @@ class CoherenceValidator
         }
 
         $naturesPermises = $note->getType()->naturesPermises();
+        $identifiants = [];
         foreach ($details['lignes'] as $index => $ligne) {
             $numero = $index + 1;
 
@@ -88,6 +92,11 @@ class CoherenceValidator
 
                 continue;
             }
+            // Le justificatif d'une ligne se retrouve par son identifiant.
+            if (isset($identifiants[$ligne['id']])) {
+                $this->refuser($context, 'details', "Ligne {$numero} : identifiant en double.");
+            }
+            $identifiants[$ligne['id']] = true;
 
             $this->validerNombre($context, $numero, $ligne['montant'] ?? null, 'le montant');
             $this->validerNombre($context, $numero, $ligne['distance'] ?? null, 'la distance');
@@ -112,7 +121,7 @@ class CoherenceValidator
 
     /**
      * Un montant ou une distance : vide tant que la ligne est en cours de saisie, sinon un
-     * nombre positif au centième près.
+     * nombre positif au centième près. `1e400` se lit comme un nombre infini.
      */
     private function validerNombre(ExecutionContextInterface $context, int $numero, mixed $valeur, string $quoi): void
     {
@@ -122,6 +131,8 @@ class CoherenceValidator
 
         if (!(\is_int($valeur) || \is_float($valeur)) || $valeur < 0) {
             $this->refuser($context, 'details', "Ligne {$numero} : {$quoi} doit être un nombre positif.");
+        } elseif (!is_finite((float) $valeur) || $valeur > self::NOMBRE_MAXIMAL) {
+            $this->refuser($context, 'details', sprintf('Ligne %d : %s ne peut pas dépasser %s.', $numero, $quoi, number_format(self::NOMBRE_MAXIMAL, 0, ',', ' ')));
         } elseif (\is_float($valeur) && abs($valeur * 100 - round($valeur * 100)) > 1e-6) {
             $this->refuser($context, 'details', "Ligne {$numero} : {$quoi} ne peut pas avoir plus de deux décimales.");
         }
