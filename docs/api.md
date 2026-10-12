@@ -190,7 +190,7 @@ Retourne uniquement les notes de frais de l'utilisateur connecté.
 GET /api/admin/notes-de-frais
 ```
 
-La liste de compta-club. Retourne les notes de frais de tous les utilisateurs : toutes les notes de sortie, et les notes hors sortie qui attendent la trésorerie ou qu'elle a traitées. Une note hors sortie n'y figure ni en brouillon, ni `submitted` tant qu'elle a des valideurs (elle attend alors un responsable). Réservé aux administrateurs et aux utilisateurs ayant le droit `manage_expense_reports`.
+La liste de compta-club. Retourne les notes de frais de tous les utilisateurs : toutes les notes de sortie, et les notes hors sortie qui attendent la trésorerie ou qu'elle a traitées, et celles qu'un responsable a refusées. Une note hors sortie n'y figure ni en brouillon, ni `submitted` tant qu'elle a des valideurs (elle attend alors un responsable). Réservé aux administrateurs et aux utilisateurs ayant le droit `manage_expense_reports`.
 
 **Sécurité :** `ROLE_ADMIN` ou droit `manage_expense_reports`
 
