@@ -199,7 +199,7 @@ La liste de compta-club. Retourne les notes de frais de tous les utilisateurs : 
 - `type` : `sortie`, `formation` ou `autre` (achat)
 - `refundRequired` : `true` (remboursement) ou `false` (don)
 - `user.lastname` : nom du demandeur, recherche partielle
-- `event.titre` (recherche partielle) et `event.startDate[after]`, `event.startDate[before]`, `event.startDate[strictly_after]`, `event.startDate[strictly_before]` : ne portent que sur les notes de sortie ; une note hors sortie reste dans la liste quand ils sont actifs
+- `event.titre` (recherche partielle) et `event.startDate[after]`, `event.startDate[before]`, `event.startDate[strictly_after]`, `event.startDate[strictly_before]` : ne portent que sur les notes de sortie ; une note hors sortie reste dans la liste quand ils sont actifs (compta-club, lui, ne demande alors que des sorties : `type=sortie`)
 - `event` : Filtrer par ID de sortie
 - `inclure_brouillons` : `true` pour inclure les brouillons des notes de sortie
 - `pagination` : `false` pour désactiver la pagination
@@ -275,11 +275,22 @@ Content-Type: application/merge-patch+json
 }
 ```
 
+**Refus :**
+- `422` sur `status`, « Cette demande a déjà été traitée. » : une décision sur une note qui a quitté l'étape de celui qui décide (deux onglets, deux personnes en même temps). compta-club reconnaît ce texte exact (`app/lib/apiError.ts`) : le changer demande de changer compta-club.
+- `422` sur `status`, les autres changements de statut refusés : « Cette demande attend encore la décision du responsable de la commission. » (la trésorerie sur une note hors sortie qui attend un responsable), « Vous ne pouvez pas décider sur votre propre note de frais. », sinon « Ce changement de statut n'est pas permis. ».
+- `422` sur `commentaireStatut` : un message au demandeur est obligatoire pour refuser une note hors sortie.
+- `409`, « Cette note a été modifiée en même temps par une autre action. Rechargez la page. » : une autre requête a modifié la note depuis que celle-ci l'a lue (verrou optimiste). Rien n'est enregistré : relire la note avant de réessayer.
+
+#### Type et montants de toute note
+Toute note porte `type` (`sortie`, `formation` ou `autre`), `totalDeclare` et `totalRemboursable` : figés au dernier envoi pour une note hors sortie (en brouillon ou à corriger, ils suivent ses lignes et le barème en vigueur), calculés avec les taux en vigueur pour une note de sortie. Dans ce calcul, une valeur de `details` qui n'est pas un nombre fini compte pour 0.
+
 #### Champs d'une note hors sortie
-Toute note porte `type` (`sortie`, `formation` ou `autre`), `totalDeclare` et `totalRemboursable` : figés au dernier envoi pour une note hors sortie (en brouillon ou à corriger, ils suivent ses lignes et le barème en vigueur), calculés avec les taux en vigueur pour une note de sortie. Une note hors sortie remplit aussi `commission`, `objet`, `dateDepense` (date de l'achat ou de la formation), `lienFormation` et `motPourResponsable`, nuls sur une note de sortie. Sur une note hors sortie, `refundRequired` (don ou remboursement) n'est lu que par le demandeur et les gestionnaires : il est absent pour un responsable de commission.
+Une note hors sortie remplit `commission`, `objet`, `dateDepense` (date de l'achat ou de la formation), `lienFormation` et `motPourResponsable`, nuls sur une note de sortie. Sur une note hors sortie, `refundRequired` (don ou remboursement) n'est lu que par le demandeur et les gestionnaires : il est absent pour un responsable de commission.
 
 Une note de type `formation` ou `autre` porte en plus, en lecture seule :
-- `lignesAffichees` : ses dépenses dans l'ordre de la saisie, avec leur libellé, leur détail et leur montant ; `avertissements` : les messages des contrôles ; `dateEnvoi` : son dernier envoi, `null` pour un brouillon.
+- `lignesAffichees` : ses dépenses dans l'ordre de la saisie, avec leur libellé, leur détail et leur montant.
+- `avertissements` : les messages des contrôles.
+- `dateEnvoi` : son dernier envoi, `null` pour un brouillon.
 - `valideurs` : les responsables qui la valident avant la trésorerie ; vide, la trésorerie décide dès l'envoi.
 - `derniereDecision` : `{statut, niveau, auteur: {prenom, nom}, date, message}`, la dernière validation ou le dernier refus, `null` s'il n'y en a pas.
   - `statut` : `preapproved` (validée par un responsable), `approved` ou `rejected`. La comptabilisation n'est pas une décision.

@@ -15,11 +15,9 @@ use Symfony\Component\Serializer\Normalizer\NormalizerAwareTrait;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 
 /**
- * Ajoute à une note, en lecture seule, ses montants calculés par le serveur. Pour une note hors
- * sortie, aussi : lignes telles qu'affichées, avertissements, valideurs, date d'envoi, dernière
- * décision et son niveau, validation par un responsable depuis le dernier envoi, libellé
- * comptable, et si l'utilisateur connecté peut la valider ou la refuser ; le choix entre don et
- * remboursement est retiré pour qui ne doit pas le connaître.
+ * Ajoute à une note, en lecture seule, ce que seul le serveur sait calculer (montants, et pour une
+ * note hors sortie son circuit et ses contrôles), et retire le choix entre don et remboursement
+ * pour qui ne doit pas le connaître. Liste des champs : docs/api.md.
  */
 final class NoteDeFraisNormalizer implements NormalizerInterface, NormalizerAwareInterface
 {
