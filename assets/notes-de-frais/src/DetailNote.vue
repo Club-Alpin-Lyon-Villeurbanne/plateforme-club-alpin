@@ -2,6 +2,7 @@
 import { computed, nextTick, onMounted, ref } from "vue";
 import { conflit, enregistrerNote, erreurDeLecture, lireNote, messagesDErreur, refusDeLApi } from "./api";
 import { choixDuDemandeur, dateFr, dateFrDe, decisionSurLaPage, enAttenteDe, euros, jour, lienWeb, nomComplet, partRemboursable } from "./format";
+import { EXTENSIONS_D_IMAGE } from "./justificatifs";
 import { libellesDuType } from "./typesDeNote";
 import type { DonneesDetail, NoteDeFrais } from "./types";
 
@@ -113,7 +114,7 @@ function libelleDuJustificatif(url: string): string {
     return "Justificatif (PDF)";
   }
 
-  return extension === "jpg" || extension === "jpeg" || extension === "png" ? "Justificatif (image)" : "Justificatif";
+  return extension && EXTENSIONS_D_IMAGE.includes(extension) ? "Justificatif (image)" : "Justificatif";
 }
 
 async function ouvrirLeRefus() {

@@ -254,7 +254,11 @@ final class ControlesNoteHorsSortie
 
     private function montantsNonPositifs(ExpenseReport $note): ?string
     {
-        $numeros = $this->numerosDesLignes($note, static fn (array $ligne): bool => null !== self::saisie($ligne) && self::saisie($ligne) <= 0);
+        $numeros = $this->numerosDesLignes($note, static function (array $ligne): bool {
+            $saisie = self::saisie($ligne);
+
+            return null !== $saisie && $saisie <= 0;
+        });
 
         return match (\count($numeros)) {
             0 => null,

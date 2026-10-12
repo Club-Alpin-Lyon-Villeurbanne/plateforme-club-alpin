@@ -1,5 +1,6 @@
 // Mêmes règles que l'envoi côté serveur (ExpenseAttachmentController).
-const EXTENSIONS = ["jpg", "jpeg", "png", "pdf"];
+export const EXTENSIONS_D_IMAGE = ["jpg", "jpeg", "png"];
+const EXTENSIONS = [...EXTENSIONS_D_IMAGE, "pdf"];
 const TAILLE_MAX = 8_000_000;
 
 export const FORMATS_ACCEPTES = ".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf";
