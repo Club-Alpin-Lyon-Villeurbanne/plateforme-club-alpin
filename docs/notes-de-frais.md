@@ -1,8 +1,8 @@
 # Notes de Frais
 
 L'application gère deux circuits de notes de frais :
-- les notes de sortie, rattachées à une sortie : saisies sur le site, validées dans compta-club (sections suivantes) ;
-- les [notes hors sortie](#notes-hors-sortie), pour une formation ou un achat fait pour le club : validées par le responsable de la commission, puis par la trésorerie.
+- les notes de sortie, rattachées à une sortie : saisies sur le site, validées et comptabilisées par la trésorerie dans compta-club (sections suivantes) ;
+- les [notes hors sortie](#notes-hors-sortie), pour une formation ou un achat fait pour le club : validées sur le site par le responsable de la commission, puis par la trésorerie dans compta-club.
 
 ## Soumission des Notes de Frais
 
@@ -20,29 +20,25 @@ Les taux d'indemnités kilométriques sont configurés à deux endroits :
 
 ## Validation des Notes de Frais
 
-Interface distincte développée en NextJS : [compta-club](https://github.com/Club-Alpin-Lyon-Villeurbanne/compta-club)
+Interface distincte développée en NextJS : [compta-club](https://github.com/Club-Alpin-Lyon-Villeurbanne/compta-club). La trésorerie y valide, refuse et comptabilise toutes les notes, de sortie comme hors sortie, et télécharge leur PDF. Elle passe par l'API de la plateforme.
 
 Les taux d'indemnités kilométriques sont également configurés dans :
 https://github.com/Club-Alpin-Lyon-Villeurbanne/compta-club/blob/main/app/config.ts
 
+
 ## Notes hors sortie
 
-Une note hors sortie rembourse une formation ou un achat fait pour le club, sans lien avec une sortie. Elle remplace le fichier Excel « Note de frais divers » : la demande, l'accord du responsable et le choix entre remboursement et don sont désormais tracés sur le site.
+Une note hors sortie rembourse une formation ou un achat fait pour le club, sans lien avec une sortie. Elle remplace le fichier Excel « Note de frais divers » : la demande, les validations et le choix entre remboursement et don sont désormais tracés.
 
-### Qui fait quoi
+### Le circuit
 
-- Le demandeur fait sa demande (formation ou achat) depuis le menu « Notes de frais » : une ligne par dépense avec son justificatif, puis le choix entre remboursement et don.
-- Le responsable de commission valide la note, qui passe alors à la trésorerie, ou la refuse avec un message : le demandeur la corrige et l'envoie à nouveau. Il ne voit pas le choix entre remboursement et don.
-- La trésorerie n'a aucune fonction sur le site et ne reçoit aucun mail : elle travaille dans compta-club, par l'API. Elle valide ou refuse la note après le responsable, ou dès l'envoi s'il n'y en a pas, puis la comptabilise. Ses décisions sont signées « la trésorerie » sur le site et dans les mails.
-- Le demandeur reçoit un mail à chaque étape : envoi, validation par le responsable, validation par la trésorerie, refus, comptabilisation.
+Deux validations, puis la comptabilisation :
 
-Règles à connaître :
+1. Le demandeur fait sa demande sur le site, depuis le menu « Notes de frais » : une ligne par dépense avec son justificatif, puis le choix entre remboursement et don.
+2. Le responsable de la commission valide la note ou la refuse, sur le site. Il ne voit pas le choix entre remboursement et don.
+3. La trésorerie valide la note ou la refuse, dans compta-club, puis la comptabilise.
 
-- Tout adhérent connecté peut demander le remboursement d'un achat. Une formation est réservée aux adhérents qui ont un rôle d'encadrement sur la commission (responsable, encadrant, coencadrant, stagiaire ou bénévole d'encadrement).
-- Personne ne valide sa propre note, et un responsable sans adresse mail ne valide pas. S'il ne reste aucun responsable, la note va à la trésorerie.
-- Sur le site, un gestionnaire des notes de frais n'a rien de plus qu'un autre adhérent : « à valider » ne lui montre que les notes des commissions dont il est responsable.
-
-### Circuit des statuts
+Une note sans valideur (voir les règles ci-dessous) va directement à la trésorerie dès l'envoi.
 
 ```mermaid
 stateDiagram-v2
@@ -58,10 +54,10 @@ stateDiagram-v2
     [*] --> brouillon
     brouillon --> envoi : Envoyer
     corriger --> envoi : Envoyer à nouveau
-    envoi --> responsable : la commission a un responsable autre que le demandeur
+    envoi --> responsable : la note a des valideurs
     envoi --> tresorerie : sinon
-    responsable --> prevalidee : Valider
-    responsable --> corriger : Refuser, avec un message
+    responsable --> prevalidee : le responsable valide
+    responsable --> corriger : le responsable refuse, avec un message
     prevalidee --> validee : la trésorerie valide
     prevalidee --> corriger : la trésorerie refuse, avec un message
     tresorerie --> validee : la trésorerie valide
@@ -70,66 +66,98 @@ stateDiagram-v2
     comptabilisee --> [*]
 ```
 
-Le demandeur ne modifie sa note qu'en brouillon ou à corriger. Corrigée, une note refusée par la trésorerie repasse par le responsable. Celui qui décide d'une note qui a quitté son étape (un second responsable, ou un responsable après la trésorerie) lit « Cette demande a déjà été traitée. ».
+Règles à connaître :
+
+- Tout adhérent connecté peut demander le remboursement d'un achat. Une formation est réservée aux adhérents qui ont un rôle d'encadrement sur la commission (responsable, encadrant, coencadrant, stagiaire ou bénévole d'encadrement).
+- Les valideurs d'une note sont les responsables de sa commission, sauf le demandeur et ceux qui n'ont pas d'adresse mail. Ils sont recalculés à chaque lecture : si l'on retire son rôle à un responsable qui ne répond pas, ses notes restent aux autres responsables de la commission, ou passent à la trésorerie s'il n'en reste aucun.
+- Un refus porte toujours un message. Le demandeur corrige sa note et l'envoie à nouveau : elle repasse par le responsable s'il y en a un, même quand c'est la trésorerie qui l'a refusée.
+- Le demandeur ne modifie sa note qu'en brouillon ou à corriger. Celui qui décide d'une note qui a quitté son étape lit « Cette demande a déjà été traitée. ».
+- Le demandeur reçoit un mail à chaque étape : envoi, validation par le responsable, validation par la trésorerie, refus (avec le message et le lien « Corriger ma demande »), comptabilisation. Chaque valideur reçoit « Note de frais à valider ». Aucun mail ne part vers la trésorerie.
+
+### La trésorerie travaille dans compta-club
+
+Le site n'a aucune fonction de trésorerie : ni liste, ni compteur, ni bouton, ni mail à une adresse de trésorerie. Un gestionnaire des notes de frais n'y a aucune fonction de plus qu'un autre adhérent ; ses droits sur l'API servent à compta-club.
+
+Dans compta-club, la trésorerie :
+
+- trouve dans « À valider » les notes qui l'attendent : celles qu'un responsable a validées, et celles qui lui arrivent directement (« Directement à la trésorerie ») ; une note encore chez son responsable n'y apparaît pas ;
+- ouvre la page d'une note : validation du responsable, dépenses et justificatifs, total déclaré et total remboursable, don ou remboursement, libellé comptable ;
+- approuve, refuse avec un message, comptabilise, et télécharge le PDF d'une note approuvée ou comptabilisée.
+
+Ses décisions sont signées « la trésorerie » sur le site, dans les mails et dans compta-club. Le détail est dans la documentation de compta-club ([README](https://github.com/Club-Alpin-Lyon-Villeurbanne/compta-club#readme) et [API.md](https://github.com/Club-Alpin-Lyon-Villeurbanne/compta-club/blob/main/API.md)).
 
 ### Écrans
 
 Le menu adhérent gagne une rubrique « Notes de frais ». L'entrée « notes de frais à valider », avec son compteur, n'apparaît qu'aux responsables de commission.
 
-![Menu adhérent avec la rubrique Notes de frais](images/notes-de-frais/hors-sortie-menu.png)
+![Menu adhérent d'un responsable de commission, avec la rubrique Notes de frais](images/notes-de-frais/hors-sortie-menu.png)
 
-Première étape : type, commission, objet et date. Sous la commission, le demandeur voit à qui sa note sera transmise : le responsable de la commission, ou la trésorerie.
+Première étape de la demande : type, commission, objet et date. Sous la commission, le demandeur voit à qui sa note sera transmise : le responsable de la commission, ou la trésorerie.
 
 ![Première étape d'une demande de formation](images/notes-de-frais/hors-sortie-premiere-etape.png)
 
-Seconde étape : une ligne par dépense avec son justificatif, le total, puis le choix entre remboursement et don, obligatoire pour envoyer.
+Seconde étape : une ligne par dépense avec son justificatif, le total, le choix entre remboursement et don (obligatoire pour envoyer), et un mot facultatif pour le responsable.
 
-![Seconde étape d'une demande d'achat](images/notes-de-frais/hors-sortie-seconde-etape.png)
+![Seconde étape d'une demande de formation](images/notes-de-frais/hors-sortie-seconde-etape.png)
 
-« Mes notes de frais » : toutes les notes du demandeur, de sortie comme hors sortie, filtrables par type. Pour chacune : le statut, le message en cas de refus, et les liens « Reprendre » ou « Corriger ». Une note de sortie renvoie vers la page de sa sortie, où elle se remplit.
+« Mes notes de frais » : toutes les notes du demandeur, de sortie comme hors sortie, filtrables par type. Pour chacune : où elle en est (« Transmise au responsable de commission », « Transmise à la trésorerie », « Validée », « Comptabilisée », « À corriger » avec le message du refus), et les liens « Reprendre » ou « Corriger ». Une note de sortie renvoie vers la page de sa sortie.
 
 ![Page Mes notes de frais](images/notes-de-frais/hors-sortie-mes-notes.png)
 
-« Notes de frais à valider » : les notes en attente dans les commissions du responsable.
+« Notes de frais à valider » : les notes qui attendent le responsable dans ses commissions.
 
 ![Page Notes de frais à valider](images/notes-de-frais/hors-sortie-a-valider.png)
 
-Détail d'une note vu par le responsable : dépenses, justificatifs et mot du demandeur, puis « Refuser » ou « Valider ».
+Page d'une note vue par le responsable : dépenses, justificatifs et mot du demandeur, puis « Refuser » ou « Valider ». Une fois la note passée, la page dit qui l'attend ou ce qui a été décidé.
 
-![Détail d'une note vu par le responsable](images/notes-de-frais/hors-sortie-detail-responsable.png)
+![Page d'une note vue par le responsable](images/notes-de-frais/hors-sortie-detail-responsable.png)
 
 ### Configuration
 
 - `DISPLAY_NOTES_DE_FRAIS` : à faux, le site n'affiche aucune note de frais, de sortie ou hors sortie, et les pages hors sortie répondent 404.
-- `AUTHORIZED_IDS_FOR_EXPENSE_MANAGEMENT` : identifiants utilisateur des gestionnaires des notes de frais, séparés par des virgules. C'est la trésorerie : elle agit par l'API, depuis compta-club.
-- Rôle `responsable-commission`, donné sur une commission dans l'administration : ses titulaires valident les notes de cette commission, sauf s'ils sont supprimés, doivent renouveler leur adhésion ou n'ont pas d'adresse mail. Il n'y a rien d'autre à configurer.
+- `AUTHORIZED_IDS_FOR_EXPENSE_MANAGEMENT` : identifiants utilisateur des gestionnaires des notes de frais, séparés par des virgules. C'est la trésorerie, qui agit depuis compta-club.
+- Rôle `responsable-commission`, donné sur une commission dans l'administration : ses titulaires valident les notes de cette commission, sauf s'ils sont supprimés, doivent renouveler leur adhésion ou n'ont pas d'adresse mail.
 - `expense_report.horsSortie` dans `config/services.yaml` : délai d'envoi par type (`delaiEnvoiJours`), seuil d'avertissement (`seuilAvertissement`), taux kilométrique des formations (`formation.tauxKilometrique`) et plafonds par type (`<type>.plafonds`). Les valeurs suivent la politique de remboursement du club. Ce barème est distinct des taux des notes de sortie.
+
+Il n'y a pas d'adresse de trésorerie à configurer : aucun mail ne lui est envoyé.
 
 ### Pour un développeur
 
-- Contrôles : `src/Service/NoteDeFrais/ControlesNoteHorsSortie.php`. Chaque contrôle a un moment (création, chaque envoi, premier envoi, changement de commission, lecture) et un niveau : bloquant, l'API refuse ; avertissement, l'API l'expose dans `avertissements`. Ajouter un contrôle, c'est une fonction, une ligne dans `controles()` et un test API. Les pages affichent les messages renvoyés par l'API : un nouveau contrôle ne les change pas.
+- Statuts : une note hors sortie utilise `preapproved` (`ExpenseReportStatusEnum::PREAPPROVED`) entre la validation du responsable et la décision de la trésorerie ; une note de sortie ne l'utilise jamais. Transitions, dans `StatusTransitionValidator` :
+  - le demandeur : `draft → submitted`, `rejected → submitted` ;
+  - un valideur de la note : `submitted → preapproved | rejected` ;
+  - un gestionnaire (compta-club) : `preapproved → approved | rejected`, `submitted → approved | rejected` si la note n'a pas de valideur, `approved → accounted`. Un gestionnaire qui est aussi valideur agit en valideur tant que la note est `submitted`.
+- Valideurs : `ValideursNoteHorsSortie` est la seule règle « qui valide en premier », avec sa variante SQL `conditionValideurs()`. Les droits (`ResponsableNoteDeFraisVoter`), la liste « à valider », le compteur du menu, la liste de compta-club, les mails et les phrases « Validée par … » en dépendent. Une liste vide : la trésorerie décide directement. Une note rattachée un jour à un code analytique plutôt qu'à une commission n'aura qu'à changer ce module et le formulaire.
+- Niveau d'une décision (`responsable` ou `tresorerie`, `NiveauDeDecisionEnum`) : écrit dans l'historique des statuts au moment de la décision (`ExpenseReportStatusHistoryListener`), parce que les valideurs changent ensuite. L'API l'expose dans `derniereDecision.niveau` ; les mails et les pages le lisent sans le recalculer.
+- Ce que lit compta-club :
+  - `/admin/notes-de-frais` : les notes de sortie et les notes hors sortie qui attendent la trésorerie ou qu'elle a traitées, ni brouillon ni note `submitted` qui a des valideurs (`ExpenseReportExtension`). Filtres `status` (plusieurs valeurs), `type`, `refundRequired`, `user.lastname` ; la recherche et la date de la sortie ne portent que sur les notes de sortie (`src/Doctrine/Filter/`) ;
+  - `GET /notes-de-frais/{id}` pour la page d'une note ;
+  - les champs d'une note hors sortie, ajoutés par `NoteDeFraisNormalizer` : `valideurs`, `derniereDecision`, `validationResponsable` (validation du responsable depuis le dernier envoi), `libelleComptable` (« NOM Prénom NDF JJ/MM/AAAA objet »), `lignesAffichees`, `totalDeclare`, `totalRemboursable`. Voir la [liste](api.md#liste-des-notes-de-frais-admincomptabilité) et les [champs d'une note hors sortie](api.md#champs-dune-note-hors-sortie).
+- Mails : tous ceux d'une note hors sortie partent de `NotificationsNoteHorsSortie`, une fois le changement de statut enregistré ; le listener Doctrine des notes de sortie les ignore. Ils vont au demandeur et aux valideurs.
+- Contrôles : `ControlesNoteHorsSortie`. Chaque contrôle a un moment (création, chaque envoi, premier envoi, changement de commission, lecture) et un niveau : bloquant, l'API refuse ; avertissement, l'API l'expose dans `avertissements`. Ajouter un contrôle, c'est une fonction, une ligne dans `controles()` et un test API. Les pages affichent les messages de l'API : un nouveau contrôle ne les change pas.
 - Plafonds : en configuration seulement. `<type>.plafonds.parNature` plafonne une nature sur chaque ligne (`portee: ligne`) ou sur son total dans la note (`portee: note`) ; `<type>.plafonds.total` plafonne le remboursable de la note.
 - Montants figés : à chaque envoi, `ExpenseReportCalculator::figerNoteHorsSortie()` enregistre le total déclaré, le total remboursable et, pour une formation, le taux kilométrique. Ce que le responsable a validé reste ce que la trésorerie paie, même si le barème change ensuite. Un brouillon ou une note à corriger suit le barème en vigueur.
-- Valideurs : `ValideursNoteHorsSortie` est la seule source. Les droits (`ResponsableNoteDeFraisVoter`), la liste « à valider », le compteur du menu, la liste de compta-club (variante SQL `conditionValideurs()`), les mails et la phrase « Validée par … » en dépendent. Les valideurs sont recalculés à chaque lecture.
-- Transitions : `StatusTransitionValidator`. Un valideur passe la note de `submitted` à `preapproved` ou `rejected` ; un gestionnaire décide depuis `preapproved`, ou depuis `submitted` si la note n'a pas de valideur, puis comptabilise. Un gestionnaire qui est aussi valideur agit en valideur tant que la note est `submitted`. Les notes de sortie n'utilisent jamais `preapproved`. La colonne `status` est une énumération MySQL : un nouveau statut demande une migration.
-- Niveau d'une décision (responsable ou trésorerie) : établi une fois, à l'écriture de l'historique (`ExpenseReportStatusHistoryListener`), parce que les valideurs changent ensuite. L'API l'expose dans `derniereDecision.niveau` ; les mails et les pages le lisent sans le recalculer. Voir les [champs d'une note hors sortie](api.md#champs-dune-note-hors-sortie).
-- Mails : tous ceux d'une note hors sortie partent de `NotificationsNoteHorsSortie`, une fois le changement de statut enregistré ; le listener Doctrine des notes de sortie les ignore. Ils vont au demandeur et aux valideurs, jamais à la trésorerie.
-- compta-club : `/admin/notes-de-frais` renvoie les notes de sortie et les notes hors sortie qui attendent la trésorerie ou qu'elle a traitées : ni les brouillons, ni les notes `submitted` qui ont des valideurs (`ExpenseReportExtension`). La recherche sur le titre et la date de la sortie ne porte que sur les notes de sortie (`src/Doctrine/Filter/`). Voir la [liste et les champs d'une note hors sortie](api.md#liste-des-notes-de-frais-admincomptabilité).
+- Migrations (jouées au déploiement par `clevercloud/post_build.sh`) :
+  - `Version20261011120000` : type de note, sortie facultative, commission, objet, date de la dépense, lien de la formation, mot pour le responsable, totaux figés ;
+  - `Version20261011150000` : message de chaque décision dans l'historique des statuts ;
+  - `Version20261011180000` : `preapproved` ajouté à la colonne `status`, une énumération MySQL (tout nouveau statut demande une migration) ;
+  - `Version20261012090000` : colonne `niveau` de l'historique des statuts.
 - Code : application Vue dans `assets/notes-de-frais/`, pages dans `NoteDeFraisController`, opérations d'API sur l'entité `ExpenseReport`, services dans `src/Service/NoteDeFrais/`.
 - Tests : `tests/Api/NoteHorsSortie*Test.php`, sur le socle `ExpenseReportApiTestCase`. En local, ces fichiers peuvent dépasser la mémoire par défaut de PHP : `php -d memory_limit=1G bin/phpunit <fichier>`. Les pages n'ont pas de test automatisé.
 
 ### Avant la mise en production
 
-`DISPLAY_NOTES_DE_FRAIS` vaut déjà vrai à Lyon : la mise en production ouvre l'outil à Lyon. Dans l'ordre :
+`DISPLAY_NOTES_DE_FRAIS` vaut déjà vrai à Lyon : la mise en production ouvre l'outil à Lyon. compta-club part en premier : il marche avec l'API d'aujourd'hui, qui ne lui envoie aucune note hors sortie. Dans l'ordre :
 
-1. [ ] Faire la recette sur staging avec de vrais rôles, mails compris : les droits des données de démo ne reflètent pas la prod.
-2. [ ] Vérifier que `DISPLAY_NOTES_DE_FRAIS` vaut faux à Chambéry et à Clermont.
-3. [ ] Vérifier en prod les responsables de chaque commission. Une commission sans responsable envoie tout à la trésorerie.
-4. [ ] Décider si la formation est proposée dès maintenant : la politique de remboursement qui fixe son barème est-elle votée ?
-5. [ ] Déployer compta-club avant la plateforme : `/admin/notes-de-frais` lui enverra des notes hors sortie et le statut `preapproved`.
-6. [ ] Mettre en production, le même jour dans tous les clubs : les migrations passent au déploiement.
+1. [ ] Vérifier la nouvelle version de compta-club contre staging, qui tourne encore sur `main`, sans les notes hors sortie (préversion Vercel ou poste local, `NEXT_PUBLIC_API_URL` sur l'API de staging) : connexion, liste « À valider », filtres, page et PDF d'une note de sortie.
+2. [ ] Déployer compta-club, avant la plateforme, avec en une seule fois la liste, la page d'une note et le PDF des notes hors sortie : la plateforme lui enverra ces notes et le statut `preapproved`.
+3. [ ] Faire la recette de la plateforme sur staging avec de vrais rôles, mails et compta-club compris : les droits des données de démo ne reflètent pas la prod.
+4. [ ] Vérifier que `DISPLAY_NOTES_DE_FRAIS` vaut faux à Chambéry et à Clermont.
+5. [ ] Vérifier en prod les responsables de chaque commission et leur adresse mail. Une commission sans responsable joignable envoie tout à la trésorerie.
+6. [ ] Décider si la formation est proposée dès maintenant : la politique de remboursement qui fixe son barème est-elle votée ?
+7. [ ] Mettre en production la plateforme, le même jour dans tous les clubs, et vérifier que les quatre migrations ont été jouées (`doctrine:migrations:status`).
 
-Retour arrière : le `down()` de la première migration échoue dès qu'une note hors sortie existe, et revenir au code d'avant sans annuler la migration enverrait dans `/admin/notes-de-frais` (compta-club) les notes hors sortie qui attendent un responsable. Mieux vaut corriger en avant.
+Retour arrière : mieux vaut corriger en avant. Le code d'avant ne connaît pas le statut `preapproved` (une note à ce statut ferait échouer les listes) et enverrait à compta-club les notes qui attendent un responsable ; les `down()` des migrations échouent dès qu'une note hors sortie ou une note `preapproved` existe.
 
 Ne pas créer de groupe de travail pour l'instant : prévus en commissions masquées, ils ne sont pas encore proposés dans le formulaire.
 

@@ -276,7 +276,10 @@ Content-Type: application/merge-patch+json
 ```
 
 #### Champs d'une note hors sortie
+Toute note porte `type` (`sortie`, `formation` ou `autre`), `totalDeclare` et `totalRemboursable` : figés au dernier envoi pour une note hors sortie (en brouillon ou à corriger, ils suivent ses lignes et le barème en vigueur), calculés avec les taux en vigueur pour une note de sortie. Une note hors sortie remplit aussi `commission`, `objet`, `dateDepense` (date de l'achat ou de la formation), `lienFormation` et `motPourResponsable`, nuls sur une note de sortie. Sur une note hors sortie, `refundRequired` (don ou remboursement) n'est lu que par le demandeur et les gestionnaires : il est absent pour un responsable de commission.
+
 Une note de type `formation` ou `autre` porte en plus, en lecture seule :
+- `lignesAffichees` : ses dépenses dans l'ordre de la saisie, avec leur libellé, leur détail et leur montant ; `avertissements` : les messages des contrôles ; `dateEnvoi` : son dernier envoi, `null` pour un brouillon.
 - `valideurs` : les responsables qui la valident avant la trésorerie ; vide, la trésorerie décide dès l'envoi.
 - `derniereDecision` : `{statut, niveau, auteur: {prenom, nom}, date, message}`, la dernière validation ou le dernier refus, `null` s'il n'y en a pas.
   - `statut` : `preapproved` (validée par un responsable), `approved` ou `rejected`. La comptabilisation n'est pas une décision.
