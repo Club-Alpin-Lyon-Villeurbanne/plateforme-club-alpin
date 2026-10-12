@@ -92,7 +92,7 @@ Le menu adhérent gagne une rubrique « Notes de frais ». L'entrée « notes de
 
 ![Menu adhérent d'un responsable de commission, avec la rubrique Notes de frais](images/notes-de-frais/hors-sortie-menu.png)
 
-Première étape de la demande : type, commission, objet et date. Sous la commission, le demandeur voit à qui sa note sera transmise : le responsable de la commission, ou la trésorerie.
+Première étape du formulaire : type, commission, objet et date. Sous la commission, le demandeur voit à qui sa note sera transmise : le responsable de la commission, ou la trésorerie.
 
 ![Première étape d'une note de formation](images/notes-de-frais/hors-sortie-premiere-etape.png)
 
