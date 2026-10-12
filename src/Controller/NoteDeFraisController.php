@@ -98,7 +98,7 @@ class NoteDeFraisController extends AbstractController
 
     // Cible du lien « Voir la note » des mails. L'API dit qui peut lire la note.
     #[Route(path: '/notes-de-frais/{id}', name: 'notes_de_frais_detail', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function detail(int $id, ExpenseReportRepository $notes, Environment $twig, string $baseUrl): Response
+    public function detail(int $id, ExpenseReportRepository $notes, ValideursNoteHorsSortie $valideurs, Environment $twig, string $baseUrl): Response
     {
         $this->pageDisponible();
 
@@ -111,6 +111,8 @@ class NoteDeFraisController extends AbstractController
                 'noteId' => $id,
                 // Le fil d'Ariane et le choix entre don et remboursement ne sont que pour lui.
                 'estDemandeur' => $utilisateur instanceof User && $demandeur?->getId() === $utilisateur->getId(),
+                // Le fil d'Ariane des autres suit leur rôle, pas la note : une note interdite ou inconnue n'y paraît pas.
+                'estValideur' => $utilisateur instanceof User && [] !== $valideurs->commissionsValideesPar($utilisateur),
             ],
         ]);
     }

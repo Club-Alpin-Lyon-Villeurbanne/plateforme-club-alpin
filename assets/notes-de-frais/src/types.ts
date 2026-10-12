@@ -159,6 +159,8 @@ export interface DonneesDetail {
   noteId: number;
   /** L'utilisateur connecté a fait la note. */
   estDemandeur: boolean;
+  /** L'utilisateur connecté valide les notes d'au moins une commission. */
+  estValideur: boolean;
 }
 
 export interface Refus {

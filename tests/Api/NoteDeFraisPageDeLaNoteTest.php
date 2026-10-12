@@ -20,6 +20,17 @@ class NoteDeFraisPageDeLaNoteTest extends ExpenseReportApiTestCase
         $this->assertFalse($this->donneesDeLaPage($this->adherent, 999999999)['estDemandeur']);
     }
 
+    public function testSurUneNoteInterditeOuInconnueLaPageNeDitQueLeRoleDeLUtilisateur(): void
+    {
+        $interdite = $this->noteEnvoyee($this->owner, commission: $this->autreCommission);
+        $this->assertResponseStatus(403, $this->show($this->responsable, $interdite));
+
+        foreach ([$interdite->getId(), 999999999] as $id) {
+            $this->assertSame(['noteId' => $id, 'estDemandeur' => false, 'estValideur' => true], $this->donneesDeLaPage($this->responsable, $id));
+            $this->assertSame(['noteId' => $id, 'estDemandeur' => false, 'estValideur' => false], $this->donneesDeLaPage($this->adherent, $id));
+        }
+    }
+
     private function donneesDeLaPage(User $utilisateur, int $id): array
     {
         $this->signin($this->em()->find(User::class, $utilisateur->getId()));

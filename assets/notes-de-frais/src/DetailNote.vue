@@ -10,6 +10,7 @@ const props = defineProps<{ donnees: DonneesDetail }>();
 const URL_LISTE = "/notes-de-frais/a-valider";
 const URL_MES_NOTES = "/notes-de-frais";
 const MOTIFS = ["Il manque un justificatif", "Mauvaise commission", "Montant à revoir", "Pas d'accord préalable"];
+const DEJA_TRAITEE = "Cette note a déjà été traitée.";
 const TITRE_DE_L_ONGLET = document.title;
 
 const note = ref<NoteDeFrais | null>(null);
@@ -26,6 +27,7 @@ const fait = ref<{ texte: string; classe: string } | null>(null);
 const champMessage = ref<HTMLTextAreaElement | null>(null);
 const boutonRefuser = ref<HTMLButtonElement | null>(null);
 const resultat = ref<HTMLElement | null>(null);
+const retourALaListe = ref<HTMLAnchorElement | null>(null);
 
 const demandeur = computed(() => (note.value ? nomComplet(note.value.utilisateur) : ""));
 const lienFormation = computed(() => lienWeb(note.value?.lienFormation ?? null));
@@ -78,6 +80,7 @@ const verification = computed(() => {
 });
 
 const messageRempli = computed(() => message.value.trim() !== "");
+const dejaTraitee = computed(() => refus.value.includes(DEJA_TRAITEE));
 
 // Une note en attente sans les boutons : on dit pourquoi, et qui décidera.
 const attente = computed(() => (!note.value || note.value.peutDecider ? null : enAttenteDe(note.value)));
@@ -157,7 +160,10 @@ async function decider(corps: Record<string, unknown>, texte: string, classe: st
     if (refusDeLApi(erreur).some((un) => un.champ === "status")) {
       note.value = await lireNote(note.value.id).catch(() => note.value);
       refusOuvert.value = false;
-      refus.value = ["Cette note a déjà été traitée."];
+      refus.value = [DEJA_TRAITEE];
+      // Le bouton cliqué a disparu avec les boutons de décision.
+      await nextTick();
+      retourALaListe.value?.focus();
     } else if (conflit(erreur)) {
       // Une autre décision au même moment : la page relit la note, le refus en cours reste ouvert s'il a encore lieu d'être.
       note.value = await lireNote(note.value.id).catch(() => note.value);
@@ -190,8 +196,8 @@ function refuser() {
 <template>
   <div class="main-type">
     <p class="mini">
-      <a v-if="donnees.estDemandeur" :href="URL_MES_NOTES">Mes notes de frais</a>
-      <a v-else :href="URL_LISTE">Notes de frais à valider</a>
+      <a v-if="donnees.estValideur && !donnees.estDemandeur" :href="URL_LISTE">Notes de frais à valider</a>
+      <a v-else :href="URL_MES_NOTES">Mes notes de frais</a>
     </p>
     <h1>{{ note?.objet ?? "Note de frais" }}</h1>
   </div>
@@ -218,12 +224,12 @@ function refuser() {
       <div class="tw-text-right">
         <p class="tw-text-2xl tw-font-semibold tw-tabular-nums tw-text-gray-900">{{ euros(note.totalDeclare) }}</p>
         <!-- Le choix du demandeur redit déjà le montant retenu ; le total en bas de la table le garde. -->
-        <p v-if="choix" class="tw-mt-1 tw-text-sm tw-text-gray-700">{{ choix }}</p>
-        <p v-else-if="plafonds" class="tw-text-xs tw-text-gray-500">{{ plafonds }}</p>
+        <p v-if="plafonds && !choix" class="tw-text-xs tw-text-gray-500">{{ plafonds }}</p>
       </div>
     </div>
 
     <div class="tw-px-8">
+      <p v-if="choix" class="tw-mb-4 tw-text-sm tw-text-gray-700">{{ choix }}</p>
       <p v-if="note.motPourResponsable" class="tw-mb-4 tw-whitespace-pre-line tw-border-l-2 tw-border-gray-300 tw-pl-3 tw-text-sm tw-text-gray-700">«&nbsp;{{ note.motPourResponsable }}&nbsp;»</p>
       <p v-if="note.status === 'submitted'" class="tw-text-sm tw-text-green-700">{{ verification }}</p>
       <p v-for="avertissement in note.avertissements" :key="avertissement" class="tw-mt-1 tw-text-sm tw-text-amber-700">{{ avertissement }}</p>
@@ -340,6 +346,7 @@ function refuser() {
       <div aria-live="polite" class="tw-text-right tw-text-sm tw-text-red-600">
         <p v-for="un in refus" :key="un" class="tw-mt-2">{{ un }}</p>
       </div>
+      <p v-if="dejaTraitee" class="tw-mt-2 tw-text-right tw-text-sm"><a ref="retourALaListe" :href="URL_LISTE" class="tw-font-medium tw-text-sky-700 hover:tw-underline">Retour aux notes à valider</a></p>
     </div>
   </div>
 </template>
