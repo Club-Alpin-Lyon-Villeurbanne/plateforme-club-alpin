@@ -344,11 +344,18 @@ async function enregistrer() {
     erreursJustificatifs.value = {};
   }
   try {
-    await dansLOrdre(async () => {
+    const ecrite = await dansLOrdre(async () => {
       const empreinte = empreintes();
-      await ecrire(corpsDeLaNote());
+      if (!(await ecrire(corpsDeLaNote()))) {
+        return false;
+      }
       enregistre.value = empreinte;
+      return true;
     });
+    if (!ecrite) {
+      await montrerLesRefus();
+      return;
+    }
     const maintenant = new Date();
     const heure = `${maintenant.getHours()}\u00a0h\u00a0${String(maintenant.getMinutes()).padStart(2, "0")}`;
     // Une saisie faite pendant l'enregistrement n'est pas enregistrée : pas de confirmation.
@@ -388,7 +395,11 @@ async function envoyer() {
     erreursJustificatifs.value = {};
     // Une ligne restée vide n'est pas une dépense ; la retirer garde la numérotation des messages de l'API.
     lignes.value = lignes.value.filter(renseignee);
-    await dansLOrdre(() => ecrire({ ...corpsDeLaNote(), status: "submitted" }));
+    // Une écriture passée avant dans la file a pu trouver la note déjà envoyée ou modifiée ailleurs.
+    if (!(await dansLOrdre(() => ecrire({ ...corpsDeLaNote(), status: "submitted" })))) {
+      await montrerLesRefus();
+      return;
+    }
     enregistre.value = empreintes();
     envoyee.value = true;
     await nextTick();
@@ -428,11 +439,14 @@ function dansLOrdre<T>(ecriture: () => Promise<T>): Promise<T> {
   return resultat;
 }
 
-async function ecrire(corps: Record<string, unknown>): Promise<void> {
-  if (note.value === null) {
-    return;
+/** Faux, sans rien envoyer, quand la note est déjà envoyée ou modifiée ailleurs. */
+async function ecrire(corps: Record<string, unknown>): Promise<boolean> {
+  if (note.value === null || conflitDeVersion.value) {
+    return false;
   }
   note.value = await enregistrerNote(note.value.id, { ...corps, version: note.value.version });
+
+  return true;
 }
 
 /** Un autre onglet ou un autre appareil est passé avant : vrai si l'erreur le dit, et la page le montre. */

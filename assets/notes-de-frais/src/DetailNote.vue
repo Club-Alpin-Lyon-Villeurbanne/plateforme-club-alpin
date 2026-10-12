@@ -64,7 +64,8 @@ const decisionPrise = computed(() => (note.value ? decisionSurLaPage(note.value)
 
 // Un gestionnaire lit aussi le choix dans l'API : la page ne le montre qu'au demandeur.
 const choix = computed(() => (note.value && props.donnees.estDemandeur ? choixDuDemandeur(note.value) : null));
-const plafonds = computed(() => (note.value ? partRemboursable(note.value, note.value.refundRequired === false) : null));
+const don = computed(() => props.donnees.estDemandeur && note.value?.refundRequired === false);
+const plafonds = computed(() => (note.value ? partRemboursable(note.value, don.value) : null));
 
 // Les plafonds s'appliquent sans être un défaut : la phrase dit ce que le club retient.
 const verification = computed(() => {
@@ -73,7 +74,7 @@ const verification = computed(() => {
   }
   const retenu = euros(note.value.totalRemboursable);
 
-  return `✓ Justificatifs joints. Plafonds du club appliqués : ${note.value.refundRequired === false ? `${retenu} dans les plafonds du club` : `${retenu} remboursables`}.`;
+  return `✓ Justificatifs joints. Plafonds du club appliqués : ${don.value ? `${retenu} dans les plafonds du club` : `${retenu} remboursables`}.`;
 });
 
 const messageRempli = computed(() => message.value.trim() !== "");

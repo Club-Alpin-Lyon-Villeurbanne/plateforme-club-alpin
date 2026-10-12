@@ -107,6 +107,15 @@ class NoteDeFraisVersionTest extends ExpenseReportApiTestCase
         $this->assertRefusAvec($reponse, $champ, self::DEJA_ENVOYEE);
     }
 
+    public function testUnAutreQueLeDemandeurApprendQueLaNoteNEstPasLaSienne(): void
+    {
+        $note = $this->noteEnvoyee($this->owner, commission: $this->commissionDeTest);
+
+        $reponse = $this->patch($this->manager, $note, ['details' => self::LIGNES_AILLEURS]);
+
+        $this->assertRefusAvec($reponse, 'details', 'Seul le demandeur peut modifier cette note.');
+    }
+
     public static function champsDuDemandeurProvider(): iterable
     {
         yield 'lignes' => ['details', self::LIGNES_AILLEURS];
