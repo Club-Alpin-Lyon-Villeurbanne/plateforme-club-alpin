@@ -100,15 +100,15 @@ Seconde étape : une ligne par dépense avec son justificatif, le total, le choi
 
 ![Seconde étape d'une note de formation](images/notes-de-frais/hors-sortie-seconde-etape.png)
 
-« Mes notes de frais » : toutes les notes du demandeur, de sortie comme hors sortie, filtrables par type. Pour chacune : où elle en est (« Transmise au responsable de commission », « Transmise à la trésorerie », « Validée », « Comptabilisée », « À corriger » avec le message du refus), et les liens « Reprendre » ou « Corriger ». Le titre d'une note hors sortie ouvre sa page ; sous son montant, « dont X € remboursables » quand un plafond du club s'applique, ou « Don au club ». Une note de sortie renvoie vers la page de sa sortie.
+« Mes notes de frais » : toutes les notes du demandeur, de sortie comme hors sortie, filtrables par type, et le bouton « Nouvelle note de frais ». Pour chacune : où elle en est (« Brouillon », « Transmise au responsable de commission », « Transmise à la trésorerie », « Validée », « Comptabilisée », « À corriger » avec le message du refus), et les liens « Reprendre » ou « Corriger ». Le titre d'une note hors sortie ouvre sa page ; sous son montant, « dont X € remboursables » quand un plafond du club s'applique, ou « Don au club ». Une note de sortie renvoie vers la page de sa sortie.
 
 ![Page Mes notes de frais](images/notes-de-frais/hors-sortie-mes-notes.png)
 
-« Notes de frais à valider » : les notes qui attendent le responsable dans ses commissions.
+« Notes de frais à valider » : les notes qui attendent le responsable dans ses commissions, leur nombre en tête (« 3 notes en attente pour Sorties familles. »), puis le lien « Notes déjà traitées ».
 
 ![Page Notes de frais à valider](images/notes-de-frais/hors-sortie-a-valider.png)
 
-Page d'une note vue par le responsable : dépenses, justificatifs et mot du demandeur, puis « Refuser » ou « Valider ». Une fois la note passée, la page dit qui l'attend ou ce qui a été décidé. Le demandeur voit la même page, avec son choix (« Votre choix : remboursement, X € selon les plafonds du club. » ou « Votre choix : don au club. ») ; le responsable ne le voit pas.
+Page d'une note vue par le responsable : dépenses, justificatifs et mot du demandeur, puis « Refuser » ou « Valider ». Après sa décision, ou si la note a déjà été traitée entre-temps (« Cette note a déjà été traitée. »), la page propose « Retour aux notes à valider ». Une fois la note passée, la page dit qui l'attend ou ce qui a été décidé. Le demandeur voit la même page, avec son choix sous l'en-tête (« Votre choix : remboursement. », « Votre choix : remboursement, X € selon les plafonds du club. » ou « Votre choix : don au club. ») ; le responsable ne le voit pas.
 
 ![Page d'une note vue par le responsable](images/notes-de-frais/hors-sortie-detail-responsable.png)
 
@@ -138,10 +138,10 @@ Il n'y a pas d'adresse de trésorerie à configurer.
 - Plafonds : en configuration seulement. `<type>.plafonds.parNature` plafonne une nature sur chaque ligne (`portee: ligne`) ou sur son total dans la note (`portee: note`) ; `<type>.plafonds.total` plafonne le remboursable de la note.
 - Montants figés : à chaque envoi, `ExpenseReportCalculator::figerNoteHorsSortie()` enregistre le total déclaré, le total remboursable et, pour une formation, le taux kilométrique. Ce que le responsable a validé reste ce que la trésorerie paie, même si le barème change ensuite. Un brouillon ou une note à corriger suit le barème en vigueur.
 - Lecture de `details` : l'API refuse un montant ou une distance qui n'est pas un nombre positif d'au plus 100 000 (garde-fou technique), et deux lignes de même identifiant (`CoherenceValidator`). À la lecture, toute valeur passe par `ExpenseReportCalculator::nombre()` : un texte ou un nombre infini écrit en base compte pour 0, pour qu'aucune note, de sortie comme hors sortie, ne fasse échouer une liste.
-- Écritures simultanées : la note a un verrou optimiste (colonne `version`, qui avance à chaque écriture de la note).
+- Écritures simultanées : la note a un verrou optimiste (colonne `version`, qui avance à chaque modification de la note).
   - Onglet périmé : le demandeur lit `version` avec sa note, et le formulaire la renvoie dans chaque `PATCH`. Si la note a changé depuis (autre onglet, autre appareil), l'API répond 409 « Cette note a été modifiée dans un autre onglet ou sur un autre appareil. » sans rien écrire, et le formulaire propose « Recharger la dernière version ». Les écritures d'un même formulaire (enregistrement automatique des lignes, « Enregistrer pour plus tard », envoi) partent une par une, chacune avec la version reçue de la précédente : sinon le formulaire se contredirait lui-même. `version` est facultatif : compta-club ne l'envoie pas, et sans lui la dernière écriture passe.
   - Écritures croisées : de deux requêtes qui écrivent en même temps à partir de la même version (un envoi et une modification des lignes, deux décisions), la seconde reçoit un 409 « Cette note a été modifiée en même temps par une autre action. » et ne modifie pas la note. Le mail d'une note de sortie, lui, est mis en file pendant l'écriture : sur un conflit, il part quand même, et deux décisions différentes au même moment peuvent envoyer les deux mails au demandeur.
-  - Note partie depuis un autre onglet : une modification reçoit 422 « Cette note a déjà été envoyée : elle ne peut plus être modifiée. », et le formulaire passe à l'état « envoyée ».
+  - Note partie depuis un autre onglet : une modification, ou l'envoi d'un justificatif, reçoit 422 « Cette note a déjà été envoyée : elle ne peut plus être modifiée. », et le formulaire passe à l'état « envoyée ».
   - Le téléversement d'un justificatif verrouille la note et relit son statut avant d'écrire le fichier ; il ne fait pas avancer la version.
 - Migrations (jouées au déploiement par `clevercloud/post_build.sh`) :
   - `Version20261011120000` : type de note, sortie facultative, commission, objet, date de la dépense, lien de la formation, mot pour le responsable, totaux figés ;
@@ -159,7 +159,7 @@ Il n'y a pas d'adresse de trésorerie à configurer.
 1. [ ] Vérifier la nouvelle version de compta-club contre staging, qui tourne encore sur `main`, sans les notes hors sortie (préversion Vercel ou poste local, `NEXT_PUBLIC_API_URL` sur l'API de staging) : connexion, liste « À valider », filtres, page et PDF d'une note de sortie.
 2. [ ] Faire la recette de la plateforme sur staging avec de vrais rôles, mails et compta-club compris : la préversion Vercel de compta-club ou un poste local, `NEXT_PUBLIC_API_URL` sur l'API de staging. Les droits des données de démo ne reflètent pas la prod.
 3. [ ] Sur une copie de la prod, lire toutes les notes existantes par la nouvelle API : `GET /admin/notes-de-frais?pagination=false&inclure_brouillons=true` en gestionnaire, puis la liste du demandeur (« Mes notes de frais », `GET /notes-de-frais?inclure_brouillons=true`). Aucune ne doit faire échouer la lecture : une seule note illisible bloquerait compta-club.
-4. [ ] Sur la même copie, repérer les notes de sortie dont un montant ou une distance est écrit en texte : un texte qui n'est pas un nombre (« 45,50 », « abc ») compte désormais pour 0, et le total de la note baisse d'autant. La requête, en lecture seule, liste aussi les nombres écrits entre guillemets (« 12 »), qui gardent leur valeur, et les `details` qui ne sont pas du JSON lisible. Corriger les notes listées avec la trésorerie avant la mise en production.
+4. [ ] Sur la même copie, repérer les notes de sortie dont un montant ou une distance est écrit en texte : un texte qui n'est pas un nombre (« 45,50 », « abc ») compte désormais pour 0, et le total de la note baisse d'autant. La requête, en lecture seule, liste aussi les nombres écrits entre guillemets (« 12 »), qui gardent leur valeur, et les `details` qui ne sont pas du JSON lisible. Corriger les notes listées avec la trésorerie avant la mise en production. La requête n'a été essayée que sur MySQL 8 : la lancer d'abord sur staging (MySQL 5.7) pour vérifier qu'elle passe.
 
    ```sql
    SELECT id, status, user_id, LEFT(texte, 200) AS details
