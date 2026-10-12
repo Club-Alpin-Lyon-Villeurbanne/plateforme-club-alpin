@@ -82,7 +82,7 @@
     
     {% if status == 'rejected' and report.statusComment %}
     <p>
-        Message laissé par la comptabilité : "{{ report.statusComment }}"
+        Message laissé par la trésorerie : "{{ report.statusComment }}"
     </p>
     {% endif %}
     <h2>Détails</h2>
@@ -203,7 +203,7 @@
      {% if status == 'submitted' %}
     <p>
         Si vous avez fait une erreur et souhaitez modifier votre note de frais,
-        merci d'en faire la demande auprès de la comptabilité :
+        merci d'en faire la demande auprès de la trésorerie :
         <a href="mailto:comptabilite@clubalpinlyon.fr">comptabilite@clubalpinlyon.fr</a>
         en indiquant le nom et la date de la sortie.
     </p>
@@ -261,7 +261,7 @@ Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif
     {% if report.event and event_url is defined %}({{ event_url }}){% endif %}
 
     {% if status == 'rejected' and report.statusComment %}
-Message laissé par la comptabilité : "{{ report.statusComment }}"
+Message laissé par la trésorerie : "{{ report.statusComment }}"
     {% endif %}
 
 - Encadrant.e : {{ report.user.firstname }} {{ report.user.lastname }}
@@ -350,6 +350,6 @@ Don au club (un reçu fiscal vous sera envoyé en fin d'année).
     {% endif %}
 
 Si vous avez fait une erreur et souhaitez modifier votre note de frais, 
-merci d'en faire la demande auprès de la comptabilité : comptabilite@clubalpinlyon.fr 
+merci d'en faire la demande auprès de la trésorerie : comptabilite@clubalpinlyon.fr 
 en indiquant le nom et la date de la sortie.
 {% endif %}{% endblock %}
