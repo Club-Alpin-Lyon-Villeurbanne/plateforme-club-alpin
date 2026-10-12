@@ -61,7 +61,7 @@ class NoteDeFraisController extends AbstractController
                 'valideurs' => ValideursNoteHorsSortie::exposer($valideursParCommission[$commission->getId()] ?? []),
                 // La page ne propose une formation que là où l'API l'accepterait.
                 'formationPossible' => $utilisateur instanceof User && $controles->peutDemanderUneFormation($utilisateur, $commission),
-                // Sans autre valideur, la page lui dit qu'il est le seul responsable.
+                // Sans autre valideur, la page lui dit pourquoi sa note va directement à la trésorerie.
                 'demandeurResponsable' => \in_array($commission->getId(), $commissionsDontIlEstResponsable, true),
             ];
         }

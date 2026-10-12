@@ -2,7 +2,7 @@
 import { isAxiosError } from "axios";
 import { computed, nextTick, onMounted, ref } from "vue";
 import { enregistrerNote, lireNote, messagesDErreur, refusDeLApi, sessionExpiree } from "./api";
-import { dateFr, dateFrDe, decisionSurLaPage, enAttenteDe, euros, jour, nomComplet, partRemboursable } from "./format";
+import { dateFr, dateFrDe, decisionSurLaPage, enAttenteDe, euros, jour, lienWeb, nomComplet, partRemboursable } from "./format";
 import { libellesDuType } from "./typesDeNote";
 import type { DonneesDetail, NoteDeFrais } from "./types";
 
@@ -27,6 +27,7 @@ const boutonRefuser = ref<HTMLButtonElement | null>(null);
 const resultat = ref<HTMLElement | null>(null);
 
 const demandeur = computed(() => (note.value ? nomComplet(note.value.utilisateur) : ""));
+const lienFormation = computed(() => lienWeb(note.value?.lienFormation ?? null));
 
 const contexte = computed(() => {
   if (!note.value) {
@@ -181,7 +182,8 @@ function refuser() {
       <div>
         <p class="tw-font-medium tw-text-gray-900">{{ demandeur }}</p>
         <p class="tw-text-xs tw-text-gray-500">{{ contexte }}</p>
-        <a v-if="note.lienFormation" :href="note.lienFormation" target="_blank" rel="noopener" class="tw-text-xs tw-text-sky-700 hover:tw-underline">Voir la formation</a>
+        <a v-if="lienFormation" :href="lienFormation" target="_blank" rel="noopener" class="tw-text-xs tw-text-sky-700 hover:tw-underline">Voir la formation</a>
+        <p v-else-if="note.lienFormation" class="tw-break-all tw-text-xs tw-text-gray-500">{{ note.lienFormation }}</p>
       </div>
       <div class="tw-text-right">
         <p class="tw-text-2xl tw-font-semibold tw-tabular-nums tw-text-gray-900">{{ euros(note.totalDeclare) }}</p>

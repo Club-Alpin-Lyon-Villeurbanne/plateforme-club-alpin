@@ -76,9 +76,24 @@ export function phraseValideurs(commission: { valideurs: Personne[]; demandeurRe
     return `Sera transmise au responsable de la commission : ${noms}.`;
   }
 
+  // Sans affirmer qu'il n'y a pas de responsable : il peut en avoir un sans adresse mail, ou qui doit renouveler.
   return commission.demandeurResponsable
-    ? "Sera transmise à la trésorerie : vous êtes le seul responsable de cette commission."
-    : "Sera transmise à la trésorerie : la commission n'a pas de responsable.";
+    ? "Sera transmise directement à la trésorerie : un responsable ne valide pas sa propre note."
+    : "Sera transmise directement à la trésorerie.";
+}
+
+/** Lien saisi par le demandeur, seulement s'il est en http ou https ; sinon il s'affiche en texte. */
+export function lienWeb(adresse: string | null): string | null {
+  if (!adresse?.trim()) {
+    return null;
+  }
+  try {
+    const url = new URL(adresse.trim());
+
+    return url.protocol === "http:" || url.protocol === "https:" ? url.href : null;
+  } catch {
+    return null;
+  }
 }
 
 /** Après l'envoi : qui a reçu la note à valider. La trésorerie, elle, ne reçoit pas de mail. */

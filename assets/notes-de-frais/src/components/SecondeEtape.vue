@@ -4,14 +4,10 @@
       <div>
         <p class="tw-font-semibold tw-text-gray-900">{{ demande.objet }}</p>
         <p :class="discret">{{ contexte }}</p>
-        <a
-          v-if="demande.type === 'formation' && demande.lienFormation.trim()"
-          :href="demande.lienFormation.trim()"
-          target="_blank"
-          rel="noopener"
-          class="tw-text-xs tw-text-sky-700 hover:tw-underline"
-          >Voir la formation</a
-        >
+        <template v-if="demande.type === 'formation'">
+          <a v-if="lienFormation" :href="lienFormation" target="_blank" rel="noopener" class="tw-text-xs tw-text-sky-700 hover:tw-underline">Voir la formation</a>
+          <p v-else-if="demande.lienFormation.trim()" class="tw-break-all tw-text-xs tw-text-gray-500">{{ demande.lienFormation.trim() }}</p>
+        </template>
       </div>
       <button type="button" class="tw-text-sm tw-text-sky-700 hover:tw-underline" @click="emit('modifier')">Modifier</button>
     </div>
@@ -131,7 +127,7 @@ import { computed, nextTick, ref } from "vue";
 import LigneAchat from "./LigneAchat.vue";
 import LigneFormation from "./LigneFormation.vue";
 import { discret, libelle } from "../classes";
-import { dateFr, euros, jour } from "../format";
+import { dateFr, euros, jour, lienWeb } from "../format";
 import { nouvelleLigne, total } from "../lignes";
 import { TYPES } from "../typesDeNote";
 import type { BaremeFormation, Demande, Justificatif, Ligne } from "../types";
@@ -178,6 +174,8 @@ const declaration = computed(() => {
     ? "En envoyant, vous déclarez : « Je demande au Club Alpin de Lyon le remboursement de cette note de frais, limité au plafond décidé par le Comité Directeur. »"
     : "En envoyant, vous déclarez : « Je renonce au remboursement du montant de ces frais pour en faire don au Club Alpin de Lyon. »";
 });
+
+const lienFormation = computed(() => lienWeb(props.demande.lienFormation));
 
 const contexte = computed(() => {
   const type = TYPES[props.demande.type];
