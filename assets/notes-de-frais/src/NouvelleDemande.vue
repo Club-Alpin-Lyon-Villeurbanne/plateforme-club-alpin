@@ -24,7 +24,7 @@
     <p v-if="messageDeRefus" class="tw-whitespace-pre-line tw-border-b tw-border-red-100 tw-bg-red-50 tw-px-8 tw-py-3 tw-text-sm tw-text-red-800">{{ messageDeRefus }}</p>
     <p v-if="chargement" class="tw-p-8 tw-text-sm tw-text-gray-600">Chargement de la note…</p>
     <div v-else-if="erreurDeChargement" class="tw-p-8 tw-text-sm">
-      <p role="alert" class="tw-text-red-600">{{ erreurDeChargement }}</p>
+      <p ref="messageDeChargement" role="alert" tabindex="-1" class="tw-text-red-600 focus:tw-outline-none">{{ erreurDeChargement }}</p>
       <a :href="URL_MES_NOTES" class="tw-mt-4 tw-inline-block tw-font-medium tw-text-sky-700 hover:tw-underline">Voir mes notes de frais</a>
     </div>
 
@@ -116,6 +116,7 @@ const enCours = ref(false);
 const envoiEnCours = ref(false);
 const chargement = ref(props.donnees.noteId !== null);
 const erreurDeChargement = ref("");
+const messageDeChargement = ref<HTMLElement | null>(null);
 const envoyee = ref(false);
 const titreEnvoyee = ref<HTMLElement | null>(null);
 // La note a changé ailleurs depuis sa lecture : plus rien ne s'enregistre avant « Recharger ».
@@ -240,7 +241,7 @@ function reprendre(noteLue: NoteDeFrais) {
     return;
   }
   if (noteLue.status !== "draft" && noteLue.status !== "rejected") {
-    noteDejaEnvoyee();
+    void noteDejaEnvoyee();
     return;
   }
 
@@ -456,17 +457,21 @@ function ongletPerime(erreur: unknown): boolean {
     return true;
   }
   if (refusDeLApi(erreur).some((refus) => refus.message === NOTE_DEJA_ENVOYEE)) {
-    noteDejaEnvoyee();
+    void noteDejaEnvoyee();
     return true;
   }
 
   return false;
 }
 
-// Plus rien ne peut s'enregistrer : la page le dit, sans retenir le départ.
-function noteDejaEnvoyee() {
+// Plus rien ne peut s'enregistrer : la page le dit, sans retenir le départ. Le formulaire se réduit
+// à ce message : comme après un envoi, la page remonte pour qu'il ne reste pas au-dessus de l'écran.
+async function noteDejaEnvoyee() {
   note.value = null;
   erreurDeChargement.value = "Cette note a été envoyée : elle ne peut plus être modifiée.";
+  await nextTick();
+  window.scrollTo({ top: 0 });
+  messageDeChargement.value?.focus({ preventScroll: true });
 }
 
 // La saisie non enregistrée est remplacée par la note telle qu'elle est enregistrée.
@@ -534,7 +539,7 @@ async function envoyerLeJustificatif(ligneId: string, fichier: File): Promise<bo
   } catch (erreur) {
     // Le serveur ne refuse un justificatif valide que sur une note déjà envoyée.
     if (statutDuRefus(erreur) === 422) {
-      noteDejaEnvoyee();
+      void noteDejaEnvoyee();
       return false;
     }
     erreursJustificatifs.value[ligneId] = sessionExpiree(erreur)

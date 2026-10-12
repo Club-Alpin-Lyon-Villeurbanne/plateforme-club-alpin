@@ -46,6 +46,7 @@
       <label for="f-date" :class="libelle">{{ TYPES[demande.type].date }}</label>
       <input
         id="f-date"
+        ref="champDate"
         v-model="demande.dateDepense"
         type="date"
         :class="['tw-mt-1', dateRefusee || dateManquante ? champEnErreur : champ, 'tw-w-48']"
@@ -161,6 +162,8 @@ const aideDate = computed(() => {
   return limite.value ? `À envoyer avant le ${dateFr(limite.value)}.` : "";
 });
 
+const champDate = ref<HTMLInputElement | null>(null);
+
 function continuer() {
   const manquants = [];
   if (demande.value.commissionId === null) {
@@ -169,14 +172,20 @@ function continuer() {
   if (!demande.value.objet.trim()) {
     manquants.push("l'objet");
   }
-  if (date.value === null || dateRefusee.value) {
+  // Une date saisie mais refusée ne manque pas : la phrase sous le champ dit pourquoi.
+  if (date.value === null) {
     manquants.push("une date valide");
   }
 
   manque.value = manquants.length ? `Il manque ${enumeration(manquants)}.` : "";
   tentative.value = manquants.length > 0;
-  if (!manquants.length) {
-    emit("continuer");
+  if (manquants.length) {
+    return;
   }
+  if (dateRefusee.value) {
+    champDate.value?.focus();
+    return;
+  }
+  emit("continuer");
 }
 </script>
