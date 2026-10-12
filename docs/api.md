@@ -317,6 +317,8 @@ file: [fichier]
 expenseId: "transport"
 ```
 
+Réservé au demandeur (`404` pour toute autre personne). Remplace le justificatif déjà envoyé pour le même `expenseId`. Refus : `422`, « Cette note a déjà été envoyée : elle ne peut plus être modifiée. », sur une note qui n'est plus en brouillon ni à corriger ; `400` pour un fichier absent, trop lourd (8 Mo) ou d'un autre format que JPG, PNG ou PDF, ou sans `expenseId`.
+
 #### Liste des pièces jointes
 ```http
 GET /api/notes-de-frais/{expenseReportId}/pieces-jointes

@@ -7,6 +7,7 @@ use App\Entity\ExpenseAttachment;
 use App\Repository\ExpenseAttachmentRepository;
 use App\Repository\ExpenseReportRepository;
 use App\Utils\FileUploader;
+use App\Validator\ExpenseReport\FieldPermissionValidator;
 use Doctrine\DBAL\LockMode;
 use Doctrine\ORM\EntityManagerInterface;
 use Proxies\__CG__\App\Entity\Expense;
@@ -51,7 +52,7 @@ class ExpenseAttachmentController extends AbstractController
 
             // Avant toute écriture sur disque : une fois la note soumise, ses justificatifs sont figés.
             if (!$expenseReport->getStatus()?->isEditableByOwner()) {
-                throw new UnprocessableEntityHttpException('Attachments cannot be modified once the expense report is submitted.');
+                throw new UnprocessableEntityHttpException(FieldPermissionValidator::NOTE_DEJA_ENVOYEE);
             }
 
             $file = $request->files->get('file');

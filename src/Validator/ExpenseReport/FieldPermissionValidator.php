@@ -19,6 +19,9 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  */
 class FieldPermissionValidator
 {
+    // Le formulaire du site reconnaît ce texte (onglet resté ouvert après l'envoi) et passe à l'état « envoyée ».
+    public const NOTE_DEJA_ENVOYEE = 'Cette note a déjà été envoyée : elle ne peut plus être modifiée.';
+
     public function __construct(
         private readonly ExpenseReportOriginalState $originalState,
         private readonly ExpenseReportActor $actor,
@@ -29,10 +32,7 @@ class FieldPermissionValidator
     {
         $proprietaire = $this->actor->isOwnerOf($expenseReport);
         $canEditClaim = $proprietaire && $oldStatus->isEditableByOwner();
-        // Le formulaire du site reconnaît ce texte (onglet resté ouvert après l'envoi) et passe à l'état « envoyée ».
-        $refus = $proprietaire
-            ? 'Cette note a déjà été envoyée : elle ne peut plus être modifiée.'
-            : 'Seul le demandeur peut modifier cette note.';
+        $refus = $proprietaire ? self::NOTE_DEJA_ENVOYEE : 'Seul le demandeur peut modifier cette note.';
 
         $champs = ['details' => $expenseReport->getDetails(), 'refundRequired' => $expenseReport->isRefundRequired(), ...$expenseReport->champsHorsSortie()];
         foreach ($champs as $champ => $valeur) {
