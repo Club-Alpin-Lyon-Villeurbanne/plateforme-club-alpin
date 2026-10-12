@@ -20,7 +20,8 @@ class NoteHorsSortieFormationMailsTest extends ExpenseReportApiTestCase
         $this->assertCount(1, $mails);
         $this->assertSame('Note de frais à valider : Formation initiateur SAE', $mails[0]->getSubject());
         foreach ($this->corps($mails[0]) as $corps) {
-            $this->assertStringContainsString('Type : formation', $corps);
+            $this->assertStringContainsString('Type : Formation', $corps);
+            $this->assertStringContainsString('Date de la formation : ' . (new \DateTimeImmutable('-3 days'))->format('d/m/Y'), $corps);
             $this->assertStringContainsString('Formation : ' . self::LIEN, $corps);
         }
         $this->assertStringContainsString(sprintf('href="%s"', self::LIEN), $mails[0]->getHtmlBody());
@@ -76,6 +77,26 @@ class NoteHorsSortieFormationMailsTest extends ExpenseReportApiTestCase
                 preg_quote($this->euros($peage), '/'),
                 preg_quote($this->euros($this->plafondDuPeage()), '/'),
             ), $corps);
+        }
+    }
+
+    public function testUnDonNePrometNiRemboursementNiRecu(): void
+    {
+        $peage = $this->plafondDuPeage() + 15;
+        $note = $this->creerFormation($this->encadrant, json_encode(['lignes' => [['id' => 'ligne-1', 'nature' => 'peage', 'montant' => $peage]]]), null, self::LIEN);
+        $this->joindreLesJustificatifs($note, 'ligne-1');
+
+        $this->assertResponseStatus(200, $this->envoyer($this->encadrant, $note, ['refundRequired' => false]));
+
+        foreach ($this->corps($this->mailsA($this->encadrant->getEmail())[0]) as $corps) {
+            $this->assertStringContainsString(sprintf('dont %s dans les plafonds du club', $this->euros($this->plafondDuPeage())), $corps);
+            $this->assertStringContainsString('Don au club.', $corps);
+            $this->assertStringNotContainsString('remboursables', $corps);
+            $this->assertStringNotContainsString('reçu', $corps);
+        }
+        // Le responsable ne doit pas deviner le choix : son mail garde la même phrase.
+        foreach ($this->corps($this->mailsA($this->responsable->getEmail())[0]) as $corps) {
+            $this->assertStringContainsString(sprintf('dont %s remboursables selon les plafonds du club', $this->euros($this->plafondDuPeage())), $corps);
         }
     }
 

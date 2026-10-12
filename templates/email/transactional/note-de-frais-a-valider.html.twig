@@ -15,6 +15,9 @@
         <li><strong>Type :</strong> {{ type }}</li>
         <li><strong>Commission :</strong> {{ commission }}</li>
         <li><strong>Objet :</strong> {{ objet }}</li>
+        {% if dateDepense %}
+            <li><strong>{{ libelleDeLaDate }} :</strong> {{ dateDepense }}</li>
+        {% endif %}
         <li><strong>Montant :</strong> {{ montant }}{% if partRemboursable %} ({{ partRemboursable }}){% endif %}</li>
         {% if lienFormation %}
             <li><strong>Formation :</strong> <a href="{{ lienFormation }}">{{ lienFormation }}</a></li>
@@ -55,6 +58,9 @@ Bonjour{% if prenom %} {{ prenom }}{% endif %},
 - Type : {{ type }}
 - Commission : {{ commission }}
 - Objet : {{ objet }}
+{% if dateDepense %}
+- {{ libelleDeLaDate }} : {{ dateDepense }}
+{% endif %}
 - Montant : {{ montant }}{% if partRemboursable %} ({{ partRemboursable }}){% endif %}
 
 {% if lienFormation %}

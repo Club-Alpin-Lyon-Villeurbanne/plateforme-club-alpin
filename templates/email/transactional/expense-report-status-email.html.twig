@@ -65,7 +65,7 @@
         {% if report.refundRequired %}
         Remboursement demandé.
         {% elseif report.refundRequired is not null %}
-        Don au club (un reçu fiscal vous sera envoyé en fin d'année).
+        Don au club.
         {% endif %}
     </p>
 </div>
@@ -249,7 +249,7 @@ Total : {{ formattedTotal }}
 {% if report.refundRequired %}
 Remboursement demandé.
 {% elseif report.refundRequired is not null %}
-Don au club (un reçu fiscal vous sera envoyé en fin d'année).
+Don au club.
 {% endif %}
 {% endautoescape %}{% else %}
 Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} 

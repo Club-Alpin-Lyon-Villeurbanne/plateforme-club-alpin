@@ -52,9 +52,11 @@ class NotificationsNoteHorsSortie
         $montants = $this->calculator->montantsNoteHorsSortie($note);
         $contexte = [
             'demandeur' => $note->getUser()?->getFullName(),
-            'type' => $note->getType()->libelle(),
+            'type' => ucfirst($note->getType()->libelle()),
             'commission' => $note->getCommission()?->getTitle(),
             'objet' => $note->getObjet(),
+            'libelleDeLaDate' => $note->getType()->libelleDeLaDate(),
+            'dateDepense' => $note->getDateDepense()?->format('d/m/Y'),
             'lienFormation' => $note->getLienFormation(),
             'montant' => $this->calculator->formatEuros($montants['totalDeclare']),
             'partRemboursable' => $this->calculator->partRemboursable($montants),
@@ -92,6 +94,8 @@ class NotificationsNoteHorsSortie
 
         // La trésorerie signe ses décisions de son nom de rôle : la personne qui la tient n'a pas à être connue du demandeur.
         $auteur = NiveauDeDecisionEnum::TRESORERIE === $decision?->getNiveau() ? 'la trésorerie' : $decision?->getChangedBy()?->getFullName();
+        // Le demandeur répond au responsable qui lui a renvoyé sa note, comme le responsable lui répond.
+        $refusDuResponsable = ExpenseReportStatusEnum::REJECTED === $note->getStatus() && NiveauDeDecisionEnum::RESPONSABLE === $decision?->getNiveau();
 
         $this->mailer->send($demandeur, 'transactional/expense-report-status-email', [
             'report' => $note,
@@ -102,8 +106,8 @@ class NotificationsNoteHorsSortie
             'valideurs' => array_map(static fn (User $valideur) => $valideur->getFullName(), $valideurs),
             'lignes' => $this->lignes($note),
             'formattedTotal' => $this->calculator->formatEuros($montants['totalDeclare']),
-            'partRemboursable' => $this->calculator->partRemboursable($montants),
-        ]);
+            'partRemboursable' => $this->calculator->partRemboursable($montants, false === $note->isRefundRequired()),
+        ], replyTo: $refusDuResponsable ? $decision?->getChangedBy() : null);
     }
 
     /**

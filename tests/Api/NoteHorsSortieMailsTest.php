@@ -27,7 +27,8 @@ class NoteHorsSortieMailsTest extends ExpenseReportApiTestCase
         $this->assertReponseAuDemandeur($mails[0], $this->owner);
         foreach ([$mails[0]->getTextBody(), $mails[0]->getHtmlBody()] as $corps) {
             $this->assertStringContainsStringIgnoringCase('Lou Martin', $corps);
-            $this->assertStringContainsString('achat', $corps);
+            $this->assertMatchesRegularExpression('#Type :(</strong>)? Achat#', $corps);
+            $this->assertMatchesRegularExpression('#Date de l(\'|&\#039;)achat :(</strong>)? ' . (new \DateTimeImmutable('-3 days'))->format('d/m/Y') . '#', $corps);
             $this->assertStringContainsString('Commission de test', $corps);
             $this->assertStringContainsString('Dégaines pour la SAE', $corps);
             $this->assertStringContainsString('86,40', $corps);
