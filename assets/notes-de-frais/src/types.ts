@@ -155,6 +155,8 @@ export interface DonneesAValider {
 
 export interface DonneesDetail {
   noteId: number;
+  /** L'utilisateur connecté a fait la note. */
+  estDemandeur: boolean;
 }
 
 export interface Refus {

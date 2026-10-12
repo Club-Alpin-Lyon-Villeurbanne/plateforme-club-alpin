@@ -2,13 +2,14 @@
 import { isAxiosError } from "axios";
 import { computed, nextTick, onMounted, ref } from "vue";
 import { enregistrerNote, lireNote, messagesDErreur, refusDeLApi, sessionExpiree } from "./api";
-import { dateFr, dateFrDe, decisionSurLaPage, enAttenteDe, euros, jour, lienWeb, nomComplet, partRemboursable } from "./format";
+import { choixDuDemandeur, dateFr, dateFrDe, decisionSurLaPage, enAttenteDe, euros, jour, lienWeb, nomComplet, partRemboursable } from "./format";
 import { libellesDuType } from "./typesDeNote";
 import type { DonneesDetail, NoteDeFrais } from "./types";
 
 const props = defineProps<{ donnees: DonneesDetail }>();
 
 const URL_LISTE = "/notes-de-frais/a-valider";
+const URL_MES_NOTES = "/notes-de-frais";
 const MOTIFS = ["Il manque un justificatif", "Mauvaise commission", "Montant à revoir", "Pas d'accord préalable"];
 
 const note = ref<NoteDeFrais | null>(null);
@@ -60,6 +61,10 @@ const lignes = computed(() => {
 });
 
 const decisionPrise = computed(() => (note.value ? decisionSurLaPage(note.value) : null));
+
+// Un gestionnaire lit aussi le choix dans l'API : la page ne le montre qu'au demandeur.
+const choix = computed(() => (note.value && props.donnees.estDemandeur ? choixDuDemandeur(note.value) : null));
+const plafonds = computed(() => (note.value ? partRemboursable(note.value, note.value.refundRequired === false) : null));
 
 const messageRempli = computed(() => message.value.trim() !== "");
 
@@ -162,7 +167,10 @@ function refuser() {
 
 <template>
   <div class="main-type">
-    <p class="mini"><a :href="URL_LISTE">Notes de frais à valider</a></p>
+    <p class="mini">
+      <a v-if="donnees.estDemandeur" :href="URL_MES_NOTES">Mes notes de frais</a>
+      <a v-else :href="URL_LISTE">Notes de frais à valider</a>
+    </p>
     <h1>{{ note?.objet ?? "Note de frais" }}</h1>
   </div>
 
@@ -187,7 +195,8 @@ function refuser() {
       </div>
       <div class="tw-text-right">
         <p class="tw-text-2xl tw-font-semibold tw-tabular-nums tw-text-gray-900">{{ euros(note.totalDeclare) }}</p>
-        <p v-if="partRemboursable(note)" class="tw-text-xs tw-text-gray-500">{{ partRemboursable(note) }}</p>
+        <p v-if="plafonds" class="tw-text-xs tw-text-gray-500">{{ plafonds }}</p>
+        <p v-if="choix" class="tw-mt-1 tw-text-sm tw-text-gray-700">{{ choix }}</p>
       </div>
     </div>
 

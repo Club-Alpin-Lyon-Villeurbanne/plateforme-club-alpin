@@ -72,7 +72,7 @@ Règles à connaître :
 - Les valideurs d'une note sont les responsables de sa commission, sauf le demandeur et ceux qui n'ont pas d'adresse mail. Ils sont recalculés à chaque lecture : si l'on retire son rôle à un responsable qui ne répond pas, ses notes restent aux autres responsables de la commission, ou passent à la trésorerie s'il n'en reste aucun.
 - Un refus porte toujours un message. Le demandeur corrige sa note et l'envoie à nouveau : elle repasse par le responsable s'il y en a un, même quand c'est la trésorerie qui l'a refusée.
 - Le demandeur ne modifie sa note qu'en brouillon ou à corriger. Celui qui décide d'une note qui a quitté son étape lit « Cette note a déjà été traitée. ».
-- Le demandeur reçoit un mail à chaque étape : envoi, validation par le responsable, validation par la trésorerie, refus (avec le message et le lien « Corriger ma note »), comptabilisation. Chaque valideur reçoit « Note de frais à valider ». Aucun mail ne part vers la trésorerie.
+- Le demandeur reçoit un mail à chaque étape, avec le lien « Voir ma note » : envoi, validation par le responsable, validation par la trésorerie, refus (avec le message et le lien « Corriger ma note »), comptabilisation. Chaque valideur reçoit « Note de frais à valider ». Aucun mail ne part vers la trésorerie.
 
 ### La trésorerie travaille dans compta-club
 
@@ -100,7 +100,7 @@ Seconde étape : une ligne par dépense avec son justificatif, le total, le choi
 
 ![Seconde étape d'une demande de formation](images/notes-de-frais/hors-sortie-seconde-etape.png)
 
-« Mes notes de frais » : toutes les notes du demandeur, de sortie comme hors sortie, filtrables par type. Pour chacune : où elle en est (« Transmise au responsable de commission », « Transmise à la trésorerie », « Validée », « Comptabilisée », « À corriger » avec le message du refus), et les liens « Reprendre » ou « Corriger ». Une note de sortie renvoie vers la page de sa sortie.
+« Mes notes de frais » : toutes les notes du demandeur, de sortie comme hors sortie, filtrables par type. Pour chacune : où elle en est (« Transmise au responsable de commission », « Transmise à la trésorerie », « Validée », « Comptabilisée », « À corriger » avec le message du refus), et les liens « Reprendre » ou « Corriger ». Le titre d'une note hors sortie ouvre sa page ; sous son montant, « dont X € remboursables » quand un plafond du club s'applique, ou « Don au club ». Une note de sortie renvoie vers la page de sa sortie.
 
 ![Page Mes notes de frais](images/notes-de-frais/hors-sortie-mes-notes.png)
 
@@ -108,7 +108,7 @@ Seconde étape : une ligne par dépense avec son justificatif, le total, le choi
 
 ![Page Notes de frais à valider](images/notes-de-frais/hors-sortie-a-valider.png)
 
-Page d'une note vue par le responsable : dépenses, justificatifs et mot du demandeur, puis « Refuser » ou « Valider ». Une fois la note passée, la page dit qui l'attend ou ce qui a été décidé.
+Page d'une note vue par le responsable : dépenses, justificatifs et mot du demandeur, puis « Refuser » ou « Valider ». Une fois la note passée, la page dit qui l'attend ou ce qui a été décidé. Le demandeur voit la même page, avec son choix (« Votre choix : remboursement, X € selon les plafonds du club. » ou « Votre choix : don au club. ») ; le responsable ne le voit pas.
 
 ![Page d'une note vue par le responsable](images/notes-de-frais/hors-sortie-detail-responsable.png)
 

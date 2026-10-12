@@ -59,11 +59,32 @@ export function enumeration(elements: string[], conjonction: "et" | "ou" = "et")
     : `${elements.slice(0, -1).join(", ")} ${conjonction} ${elements[elements.length - 1]}`;
 }
 
-/** Sous le total, quand un plafond du club s'applique ; les montants viennent du serveur. */
-export function partRemboursable(montants: { totalDeclare: number; totalRemboursable: number }): string | null {
-  return montants.totalRemboursable < montants.totalDeclare
-    ? `dont ${euros(montants.totalRemboursable)} remboursables selon les plafonds du club`
-    : null;
+/**
+ * Sous le total, quand un plafond du club s'applique ; les montants viennent du serveur. Un don
+ * n'est pas remboursé : sans promettre de reçu ni de montant de reçu, on dit seulement les plafonds.
+ */
+export function partRemboursable(montants: { totalDeclare: number; totalRemboursable: number }, don = false): string | null {
+  if (montants.totalRemboursable >= montants.totalDeclare) {
+    return null;
+  }
+
+  return don
+    ? `dont ${euros(montants.totalRemboursable)} dans les plafonds du club`
+    : `dont ${euros(montants.totalRemboursable)} remboursables selon les plafonds du club`;
+}
+
+/** Page d'une note, pour son demandeur : ce qu'il a choisi ; rien tant qu'il n'a pas choisi. */
+export function choixDuDemandeur(note: Pick<NoteDeFrais, "refundRequired" | "totalDeclare" | "totalRemboursable">): string | null {
+  if (note.refundRequired === false) {
+    return "Votre choix : don au club.";
+  }
+  if (note.refundRequired !== true) {
+    return null;
+  }
+
+  return note.totalRemboursable < note.totalDeclare
+    ? `Votre choix : remboursement, ${euros(note.totalRemboursable)} selon les plafonds du club.`
+    : "Votre choix : remboursement.";
 }
 
 /** Sous la commission choisie : à qui la note sera transmise. */

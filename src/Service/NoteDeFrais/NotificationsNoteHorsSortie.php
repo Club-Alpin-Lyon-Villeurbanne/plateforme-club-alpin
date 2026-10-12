@@ -97,6 +97,7 @@ class NotificationsNoteHorsSortie
             'report' => $note,
             'auteur' => $auteur,
             'lienCorrection' => $this->urlGenerator->generate('notes_de_frais_nouvelle', ['id' => $note->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+            'lienNote' => $this->lien($note),
             'status' => $note->getStatus()->value,
             'valideurs' => array_map(static fn (User $valideur) => $valideur->getFullName(), $valideurs),
             'lignes' => $this->lignes($note),

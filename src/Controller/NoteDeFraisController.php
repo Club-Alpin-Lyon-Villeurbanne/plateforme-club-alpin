@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\CommissionRepository;
+use App\Repository\ExpenseReportRepository;
 use App\Service\ExpenseReportCalculator;
 use App\Service\NoteDeFrais\ControlesNoteHorsSortie;
 use App\Service\NoteDeFrais\ValideursNoteHorsSortie;
@@ -97,14 +98,20 @@ class NoteDeFraisController extends AbstractController
 
     // Cible du lien « Voir la note » des mails. L'API dit qui peut lire la note.
     #[Route(path: '/notes-de-frais/{id}', name: 'notes_de_frais_detail', requirements: ['id' => '\d+'], methods: ['GET'])]
-    public function detail(int $id, Environment $twig, string $baseUrl): Response
+    public function detail(int $id, ExpenseReportRepository $notes, Environment $twig, string $baseUrl): Response
     {
         $this->pageDisponible();
 
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal('apiBaseUrl', $baseUrl);
+        $demandeur = $notes->find($id)?->getUser();
+        $utilisateur = $this->getUser();
 
         return $this->render('notes-de-frais/detail.html.twig', [
-            'donnees' => ['noteId' => $id],
+            'donnees' => [
+                'noteId' => $id,
+                // Le fil d'Ariane et le choix entre don et remboursement ne sont que pour lui.
+                'estDemandeur' => $utilisateur instanceof User && $demandeur?->getId() === $utilisateur->getId(),
+            ],
         ]);
     }
 

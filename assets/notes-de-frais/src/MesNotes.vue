@@ -161,6 +161,18 @@ function valideeLe(note: Note): string | null {
   return decision && decision.statut === DECISION_DU_STATUT[note.status] ? phraseDeLaDecision(decision) : null;
 }
 
+// Ce que le demandeur touchera ; l'API ne donne son choix entre don et remboursement qu'à lui.
+function sousLeMontant(note: Note): string | null {
+  if (estDeSortie(note)) {
+    return null;
+  }
+  if (note.refundRequired === false) {
+    return "Don au club";
+  }
+
+  return note.totalRemboursable < note.totalDeclare ? `dont ${euros(note.totalRemboursable)} remboursables` : null;
+}
+
 const ACTIONS: Record<string, string> = { draft: "Reprendre", rejected: "Corriger" };
 
 // Une note de sortie se remplit sur la page de sa sortie.
@@ -222,7 +234,10 @@ function action(note: Note): { libelle: string; lien: string } | null {
     <ul v-else class="tw-divide-y tw-divide-gray-100 tw-bg-white tw-shadow-sm tw-ring-1 tw-ring-gray-200">
       <li v-for="note in notes" :key="note.id" class="tw-flex tw-items-start tw-gap-4 tw-px-5 tw-py-4">
         <div class="tw-min-w-0 tw-flex-1">
-          <p class="tw-font-medium tw-text-gray-900">{{ titre(note) }}</p>
+          <p class="tw-font-medium tw-text-gray-900">
+            <a v-if="!estDeSortie(note)" :href="`/notes-de-frais/${note.id}`" class="tw-text-sky-800 hover:tw-underline">{{ titre(note) }}</a>
+            <template v-else>{{ titre(note) }}</template>
+          </p>
           <p class="tw-text-xs tw-text-gray-500">{{ contexte(note) }}</p>
           <p v-if="messageDeRefus(note)" class="tw-mt-2 tw-whitespace-pre-line tw-text-sm tw-text-red-800">{{ messageDeRefus(note) }}</p>
           <p v-else-if="delaiDepasse(note)" class="tw-mt-1 tw-text-xs tw-text-red-700">{{ delaiDepasse(note) }}</p>
@@ -231,7 +246,10 @@ function action(note: Note): { libelle: string; lien: string } | null {
           <p v-else-if="valideeLe(note)" class="tw-mt-1 tw-text-xs tw-text-gray-500">{{ valideeLe(note) }}</p>
         </div>
         <div class="tw-flex tw-shrink-0 tw-flex-col tw-items-end tw-gap-2">
-          <span class="tw-font-semibold tw-tabular-nums tw-text-gray-900">{{ euros(note.totalDeclare) }}</span>
+          <span class="tw-text-right">
+            <span class="tw-block tw-font-semibold tw-tabular-nums tw-text-gray-900">{{ euros(note.totalDeclare) }}</span>
+            <span v-if="sousLeMontant(note)" class="tw-block tw-text-xs tw-text-gray-500">{{ sousLeMontant(note) }}</span>
+          </span>
           <span class="tw-rounded-full tw-px-3 tw-py-1 tw-text-right tw-text-xs tw-font-semibold" :class="STYLES[note.status]">{{ libelleStatut(note) }}</span>
           <a v-if="action(note)" :href="action(note)!.lien" class="tw-text-sm tw-font-medium tw-text-sky-700 hover:tw-underline">{{ action(note)!.libelle }}</a>
         </div>

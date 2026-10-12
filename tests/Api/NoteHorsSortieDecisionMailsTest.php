@@ -88,6 +88,22 @@ class NoteHorsSortieDecisionMailsTest extends ExpenseReportApiTestCase
         $this->assertStringContainsString($lien, $mail->getTextBody());
     }
 
+    public function testChaqueMailAuDemandeurOuvreSaNote(): void
+    {
+        $note = $this->noteEnvoyee($this->owner, commission: $this->commissionDeTest);
+        $mails = [$this->mailsA($this->owner->getEmail())[0]];
+        $this->assertResponseStatus(200, $this->patch($this->responsable, $note, ['status' => 'preapproved']));
+        $mails[] = $this->mailsA($this->owner->getEmail())[0];
+        $this->assertResponseStatus(200, $this->renvoyer($this->manager, $note, self::MESSAGE));
+        $mails[] = $this->mailsA($this->owner->getEmail())[0];
+
+        $lien = 'http://localhost/notes-de-frais/' . $note->getId();
+        foreach ($mails as $mail) {
+            $this->assertMatchesRegularExpression('#<a href="' . preg_quote($lien, '#') . '"[^>]*>Voir ma note</a>#', $mail->getHtmlBody(), $mail->getSubject());
+            $this->assertStringContainsString('Voir ma note : ' . $lien . "\n", $mail->getTextBody(), $mail->getSubject());
+        }
+    }
+
     public function testAuSecondRenvoiSeulLeNouveauMessageEstRappele(): void
     {
         $this->nommer($this->otherManager, 'Lou', 'Martin');
@@ -141,7 +157,9 @@ class NoteHorsSortieDecisionMailsTest extends ExpenseReportApiTestCase
         $this->assertResponseStatus(200, $this->patch($this->manager, $report, ['status' => 'approved']));
 
         $this->assertSeulsDestinataires([$this->owner]);
-        $this->assertStringContainsString('a été validée par la trésorerie', $this->mailsA($this->owner->getEmail())[0]->getTextBody());
+        $mail = $this->mailsA($this->owner->getEmail())[0];
+        $this->assertStringContainsString('a été validée par la trésorerie', $mail->getTextBody());
+        $this->assertStringNotContainsString('Voir ma note', $mail->getHtmlBody());
     }
 
     /**
