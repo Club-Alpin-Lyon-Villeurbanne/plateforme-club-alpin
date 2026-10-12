@@ -23,7 +23,11 @@ final class Version20261011120000 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
-        // Échoue tant qu'il reste des notes hors sortie : elles n'ont ni sortie ni, parfois, de choix entre don et remboursement.
+        // Sans ce contrôle, le retour arrière échouerait à mi-chemin (une note hors sortie n'a pas de sortie), ou effacerait leurs données.
+        $this->abortIf(
+            (int) $this->connection->fetchOne("SELECT COUNT(*) FROM expense_report WHERE type <> 'sortie'") > 0,
+            'Des notes de frais hors sortie (formation, achat) existent : les supprimer avant de revenir en arrière.',
+        );
         $this->addSql('ALTER TABLE expense_report DROP FOREIGN KEY FK_280A691202D1EB2');
         $this->addSql('DROP INDEX IDX_280A691202D1EB2 ON expense_report');
         $this->addSql('ALTER TABLE expense_report DROP type, DROP commission_id, DROP objet, DROP date_depense, DROP lien_formation, DROP mot_pour_responsable, DROP total_declare, DROP total_remboursable, CHANGE event_id event_id INT NOT NULL, CHANGE refund_required refund_required TINYINT(1) NOT NULL');
