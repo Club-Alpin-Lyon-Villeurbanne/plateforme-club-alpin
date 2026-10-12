@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onMounted, ref } from "vue";
+import { computed, nextTick, onMounted, ref } from "vue";
 import { listerMesNotes, messagesDErreur } from "./api";
 import { aujourdhui, chezLaTresorerie, dateFr, dateFrDe, enumeration, euros, jourMoisDe, leJourDeLaDepense, limiteEnvoi, messageDelaiDepasse, motifDuRefus, nomComplet, phraseDeLaDecision } from "./format";
 import { libellesDuType } from "./typesDeNote";
@@ -12,11 +12,12 @@ const URL_NOUVELLE = "/notes-de-frais/nouvelle";
 type Note = NoteDeFrais | NoteDeSortie;
 type Filtre = NoteDeFrais["type"] | null;
 
-const FILTRES: { valeur: Filtre; libelle: string }[] = [
-  { valeur: null, libelle: "Toutes" },
-  { valeur: "sortie", libelle: "Sorties" },
-  { valeur: "formation", libelle: "Formations" },
-  { valeur: "autre", libelle: "Achats" },
+// Singulier et pluriel : « 1 formation », « 4 formations », annoncés après un filtre.
+const FILTRES: { valeur: Filtre; libelle: string; une: string; plusieurs: string }[] = [
+  { valeur: null, libelle: "Toutes", une: "note", plusieurs: "notes" },
+  { valeur: "sortie", libelle: "Sorties", une: "sortie", plusieurs: "sorties" },
+  { valeur: "formation", libelle: "Formations", une: "formation", plusieurs: "formations" },
+  { valeur: "autre", libelle: "Achats", une: "achat", plusieurs: "achats" },
 ];
 
 const LIBELLES: Record<string, string> = {
@@ -43,11 +44,23 @@ const chargementSuivant = ref(false);
 const erreur = ref<string | null>(null);
 const page = ref(0);
 const pages = ref(1);
+const total = ref<number | null>(null);
+const liste = ref<HTMLUListElement | null>(null);
 
 const aUnePageSuivante = computed(() => !chargement.value && page.value < pages.value);
 
+const annonce = computed(() => {
+  const choix = FILTRES.find((un) => un.valeur === filtre.value);
+  if (total.value === null || !choix) {
+    return "";
+  }
+
+  return `${total.value} ${total.value > 1 ? choix.plusieurs : choix.une}`;
+});
+
 async function charger() {
   const dejaCharge = page.value > 0;
+  const premiereNouvelle = notes.value.length;
   const demande = filtre.value;
   (dejaCharge ? chargementSuivant : chargement).value = true;
   erreur.value = null;
@@ -60,11 +73,17 @@ async function charger() {
     notes.value = [...notes.value, ...suivante.notes];
     page.value += 1;
     pages.value = suivante.pages;
+    total.value = suivante.total;
   } catch (e) {
     erreur.value = messagesDErreur(e)[0];
   } finally {
     chargement.value = false;
     chargementSuivant.value = false;
+  }
+  // Le bouton « plus anciennes » peut disparaître : le focus passe à la première note ajoutée.
+  if (dejaCharge) {
+    await nextTick();
+    liste.value?.children[premiereNouvelle]?.querySelector("a")?.focus();
   }
 }
 
@@ -76,6 +95,7 @@ function filtrer(valeur: Filtre) {
   notes.value = [];
   page.value = 0;
   pages.value = 1;
+  total.value = null;
   void charger();
 }
 
@@ -91,7 +111,7 @@ function titre(note: Note): string {
 
 function contexte(note: Note): string {
   if (estDeSortie(note)) {
-    const commission = note.sortie.commission ? ` pour ${note.sortie.commission.title}` : "";
+    const commission = note.sortie.commission ? ` de la commission ${note.sortie.commission.title}` : "";
 
     return `Sortie${commission}, le ${dateFrDe(note.sortie.startDate)}`;
   }
@@ -145,7 +165,7 @@ function messageDeRefus(note: Note): string | null {
     return null;
   }
   if (estDeSortie(note)) {
-    return note.commentaireStatut ? `« ${note.commentaireStatut} »` : null;
+    return note.commentaireStatut ? `«\u00a0${note.commentaireStatut}\u00a0»` : null;
   }
   const decision = note.derniereDecision;
 
@@ -193,13 +213,12 @@ function action(note: Note): { libelle: string; lien: string } | null {
 
   <div class="expense-report-form tw-mx-[30px] tw-mb-8 tw-font-sans">
     <div class="tw-mb-4 tw-flex tw-items-center tw-justify-between tw-gap-4">
-      <div class="tw-flex tw-flex-wrap tw-gap-2" role="radiogroup" aria-label="Type de note">
+      <div class="tw-flex tw-flex-wrap tw-gap-2" role="group" aria-label="Type de note">
         <button
           v-for="choix in FILTRES"
           :key="choix.libelle"
           type="button"
-          role="radio"
-          :aria-checked="filtre === choix.valeur"
+          :aria-pressed="filtre === choix.valeur"
           :class="[
             'tw-rounded-full tw-border tw-px-3 tw-py-1 tw-text-sm',
             filtre === choix.valeur ? 'tw-border-sky-600 tw-bg-sky-50 tw-font-semibold tw-text-sky-800' : 'tw-border-gray-300 tw-bg-white tw-text-gray-700 hover:tw-border-sky-400',
@@ -211,11 +230,12 @@ function action(note: Note): { libelle: string; lien: string } | null {
       </div>
       <a
         :href="URL_NOUVELLE"
-        class="tw-shrink-0 tw-rounded-md tw-bg-sky-600 tw-px-4 tw-py-2 tw-text-sm tw-font-semibold tw-text-white tw-no-underline hover:tw-bg-sky-700"
+        class="tw-shrink-0 tw-rounded-md tw-bg-sky-700 tw-px-4 tw-py-2 tw-text-sm tw-font-semibold tw-text-white tw-no-underline hover:tw-bg-sky-800"
         >Nouvelle note de frais</a
       >
     </div>
 
+    <p class="tw-sr-only" aria-live="polite">{{ annonce }}</p>
     <p v-if="chargement" class="tw-bg-white tw-p-8 tw-text-sm tw-text-gray-600 tw-shadow-sm tw-ring-1 tw-ring-gray-200">Chargement de vos notes…</p>
     <p
       v-else-if="erreur && notes.length === 0"
@@ -231,7 +251,7 @@ function action(note: Note): { libelle: string; lien: string } | null {
       {{ filtre === null ? "Aucune note de frais pour l'instant." : "Aucune note de frais de ce type." }}
     </p>
 
-    <ul v-else class="tw-divide-y tw-divide-gray-100 tw-bg-white tw-shadow-sm tw-ring-1 tw-ring-gray-200">
+    <ul v-else ref="liste" class="tw-divide-y tw-divide-gray-100 tw-bg-white tw-shadow-sm tw-ring-1 tw-ring-gray-200">
       <li v-for="note in notes" :key="note.id" class="tw-flex tw-items-start tw-gap-4 tw-px-5 tw-py-4">
         <div class="tw-min-w-0 tw-flex-1">
           <p class="tw-font-medium tw-text-gray-900">

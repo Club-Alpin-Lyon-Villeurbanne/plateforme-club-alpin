@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { isAxiosError } from "axios";
 import { computed, nextTick, onMounted, ref } from "vue";
-import { conflit, enregistrerNote, lireNote, messagesDErreur, refusDeLApi, sessionExpiree } from "./api";
+import { conflit, enregistrerNote, erreurDeLecture, lireNote, messagesDErreur, refusDeLApi } from "./api";
 import { choixDuDemandeur, dateFr, dateFrDe, decisionSurLaPage, enAttenteDe, euros, jour, lienWeb, nomComplet, partRemboursable } from "./format";
 import { libellesDuType } from "./typesDeNote";
 import type { DonneesDetail, NoteDeFrais } from "./types";
@@ -11,6 +10,7 @@ const props = defineProps<{ donnees: DonneesDetail }>();
 const URL_LISTE = "/notes-de-frais/a-valider";
 const URL_MES_NOTES = "/notes-de-frais";
 const MOTIFS = ["Il manque un justificatif", "Mauvaise commission", "Montant à revoir", "Pas d'accord préalable"];
+const TITRE_DE_L_ONGLET = document.title;
 
 const note = ref<NoteDeFrais | null>(null);
 const chargement = ref(true);
@@ -66,6 +66,16 @@ const decisionPrise = computed(() => (note.value ? decisionSurLaPage(note.value)
 const choix = computed(() => (note.value && props.donnees.estDemandeur ? choixDuDemandeur(note.value) : null));
 const plafonds = computed(() => (note.value ? partRemboursable(note.value, note.value.refundRequired === false) : null));
 
+// Les plafonds s'appliquent sans être un défaut : la phrase dit ce que le club retient.
+const verification = computed(() => {
+  if (!note.value || note.value.totalRemboursable >= note.value.totalDeclare) {
+    return "✓ Justificatifs joints.";
+  }
+  const retenu = euros(note.value.totalRemboursable);
+
+  return `✓ Justificatifs joints. Plafonds du club appliqués : ${note.value.refundRequired === false ? `${retenu} dans les plafonds du club` : `${retenu} remboursables`}.`;
+});
+
 const messageRempli = computed(() => message.value.trim() !== "");
 
 // Une note en attente sans les boutons : on dit pourquoi, et qui décidera.
@@ -78,6 +88,8 @@ onMounted(async () => {
       erreurDeChargement.value = "Cette note de frais concerne une sortie : elle ne se traite pas sur cette page.";
     } else {
       note.value = lue;
+      const objet = lue.objet ?? "";
+      document.title = `${TITRE_DE_L_ONGLET} : ${objet.length > 60 ? `${objet.slice(0, 59).trimEnd()}…` : objet}`;
     }
   } catch (erreur) {
     erreurDeChargement.value = erreurDeLecture(erreur);
@@ -86,23 +98,18 @@ onMounted(async () => {
   }
 });
 
-function erreurDeLecture(erreur: unknown): string {
-  if (sessionExpiree(erreur)) {
-    return messagesDErreur(erreur)[0];
-  }
-  const statut = isAxiosError(erreur) ? erreur.response?.status : undefined;
-  if (statut === 403) {
-    return "Vous n'avez pas accès à cette note de frais.";
-  }
-  if (statut === 404) {
-    return "Cette note de frais n'existe pas.";
-  }
-
-  return "Impossible de charger cette note.";
-}
-
 function nomDuFichier(url: string): string {
   return decodeURIComponent(url.split("/").pop() ?? url);
+}
+
+// Le nom enregistré porte un suffixe aléatoire : on montre seulement le type du fichier.
+function libelleDuJustificatif(url: string): string {
+  const extension = nomDuFichier(url).split(".").pop()?.toLowerCase();
+  if (extension === "pdf") {
+    return "Justificatif (PDF)";
+  }
+
+  return extension === "jpg" || extension === "jpeg" || extension === "png" ? "Justificatif (image)" : "Justificatif";
 }
 
 async function ouvrirLeRefus() {
@@ -118,7 +125,16 @@ async function annulerLeRefus() {
   boutonRefuser.value?.focus();
 }
 
-function ajouterMotif(motif: string) {
+function contientLeMotif(motif: string): boolean {
+  return message.value.includes(`${motif}.`);
+}
+
+// Un second clic retire le motif.
+function basculerLeMotif(motif: string) {
+  if (contientLeMotif(motif)) {
+    message.value = message.value.replace(`${motif}.`, "").replace(/ {2,}/g, " ").trim();
+    return;
+  }
   message.value = `${message.value.trim() ? `${message.value.trim()} ` : ""}${motif}.`;
 }
 
@@ -182,13 +198,13 @@ function refuser() {
   <p v-if="chargement" class="expense-report-form tw-mx-[30px] tw-mb-8 tw-bg-white tw-p-8 tw-font-sans tw-text-sm tw-text-gray-600 tw-shadow-sm tw-ring-1 tw-ring-gray-200">
     Chargement de la note…
   </p>
-  <p
+  <div
     v-else-if="erreurDeChargement || !note"
-    role="alert"
-    class="expense-report-form tw-mx-[30px] tw-mb-8 tw-bg-white tw-p-8 tw-font-sans tw-text-sm tw-text-red-600 tw-shadow-sm tw-ring-1 tw-ring-gray-200"
+    class="expense-report-form tw-mx-[30px] tw-mb-8 tw-bg-white tw-p-8 tw-font-sans tw-text-sm tw-shadow-sm tw-ring-1 tw-ring-gray-200"
   >
-    {{ erreurDeChargement }}
-  </p>
+    <p role="alert" class="tw-text-red-600">{{ erreurDeChargement }}</p>
+    <a :href="URL_MES_NOTES" class="tw-mt-4 tw-inline-block tw-font-medium tw-text-sky-700 hover:tw-underline">Voir mes notes de frais</a>
+  </div>
 
   <div v-else class="expense-report-form tw-mx-[30px] tw-mb-8 tw-bg-white tw-font-sans tw-shadow-sm tw-ring-1 tw-ring-gray-200">
     <div class="tw-flex tw-items-start tw-justify-between tw-gap-4 tw-px-8 tw-py-6">
@@ -200,21 +216,24 @@ function refuser() {
       </div>
       <div class="tw-text-right">
         <p class="tw-text-2xl tw-font-semibold tw-tabular-nums tw-text-gray-900">{{ euros(note.totalDeclare) }}</p>
-        <p v-if="plafonds" class="tw-text-xs tw-text-gray-500">{{ plafonds }}</p>
+        <!-- Le choix du demandeur redit déjà le montant retenu ; le total en bas de la table le garde. -->
         <p v-if="choix" class="tw-mt-1 tw-text-sm tw-text-gray-700">{{ choix }}</p>
+        <p v-else-if="plafonds" class="tw-text-xs tw-text-gray-500">{{ plafonds }}</p>
       </div>
     </div>
 
     <div class="tw-px-8">
-      <p v-if="note.motPourResponsable" class="tw-mb-4 tw-whitespace-pre-line tw-border-l-2 tw-border-gray-300 tw-pl-3 tw-text-sm tw-text-gray-700">« {{ note.motPourResponsable }} »</p>
-      <p v-if="note.status === 'submitted'" class="tw-text-sm tw-text-green-700">✓ Justificatifs et plafonds vérifiés.</p>
+      <p v-if="note.motPourResponsable" class="tw-mb-4 tw-whitespace-pre-line tw-border-l-2 tw-border-gray-300 tw-pl-3 tw-text-sm tw-text-gray-700">«&nbsp;{{ note.motPourResponsable }}&nbsp;»</p>
+      <p v-if="note.status === 'submitted'" class="tw-text-sm tw-text-green-700">{{ verification }}</p>
       <p v-for="avertissement in note.avertissements" :key="avertissement" class="tw-mt-1 tw-text-sm tw-text-amber-700">{{ avertissement }}</p>
 
       <table class="tw-mt-5 tw-w-full tw-text-sm">
         <caption class="tw-sr-only">Dépenses</caption>
         <tbody>
         <tr v-for="ligne in lignes" :key="ligne.id" class="tw-border-t tw-border-gray-100">
-          <td class="tw-py-2.5 tw-text-gray-900">{{ ligne.libelle }} <span class="tw-text-gray-500">{{ ligne.detail }}</span></td>
+          <td class="tw-py-2.5 tw-text-gray-900">
+            {{ ligne.libelle }}<template v-if="ligne.detail"> · <span class="tw-text-gray-500">{{ ligne.detail }}</span></template>
+          </td>
           <td class="tw-py-2.5 tw-text-right">
             <a
               v-if="ligne.justificatif"
@@ -222,13 +241,24 @@ function refuser() {
               target="_blank"
               rel="noopener"
               :aria-label="`Justificatif de la dépense ${ligne.numero}`"
-              class="tw-text-xs tw-text-sky-700 hover:tw-underline"
-              >{{ nomDuFichier(ligne.justificatif) }}</a
+              :title="nomDuFichier(ligne.justificatif)"
+              class="tw-whitespace-nowrap tw-text-xs tw-text-sky-700 hover:tw-underline"
+              >{{ libelleDuJustificatif(ligne.justificatif) }}</a
             >
           </td>
           <td class="tw-w-24 tw-py-2.5 tw-text-right tw-tabular-nums">{{ euros(ligne.montant) }}</td>
         </tr>
         </tbody>
+        <!-- Avec beaucoup de lignes, le total en haut est loin des boutons. -->
+        <tfoot>
+          <tr class="tw-border-t tw-border-gray-200">
+            <td colspan="2" class="tw-pt-3 tw-text-right tw-text-gray-600">Total</td>
+            <td class="tw-pt-3 tw-text-right tw-font-semibold tw-tabular-nums tw-text-gray-900">{{ euros(note.totalDeclare) }}</td>
+          </tr>
+          <tr v-if="plafonds">
+            <td colspan="3" class="tw-text-right tw-text-xs tw-text-gray-500">{{ plafonds }}</td>
+          </tr>
+        </tfoot>
       </table>
     </div>
 
@@ -236,12 +266,15 @@ function refuser() {
       <template v-if="decisionPrise && !fait">
         <p class="tw-mb-3 tw-text-sm tw-text-gray-700">
           {{ decisionPrise.texte }}
-          <span v-if="decisionPrise.message" class="tw-whitespace-pre-line">« {{ decisionPrise.message }} »</span>
+          <span v-if="decisionPrise.message" class="tw-whitespace-pre-line">«&nbsp;{{ decisionPrise.message }}&nbsp;»</span>
         </p>
         <p v-if="decisionPrise.suite" class="tw-mb-3 tw-text-sm tw-text-gray-700">{{ decisionPrise.suite }}</p>
       </template>
 
-      <p v-if="fait" ref="resultat" tabindex="-1" role="status" :class="['tw-text-right tw-text-sm tw-font-medium focus:tw-outline-none', fait.classe]">{{ fait.texte }}</p>
+      <template v-if="fait">
+        <p ref="resultat" tabindex="-1" role="status" :class="['tw-text-right tw-text-sm tw-font-medium focus:tw-outline-none', fait.classe]">{{ fait.texte }}</p>
+        <p class="tw-mt-2 tw-text-right tw-text-sm"><a :href="URL_LISTE" class="tw-font-medium tw-text-sky-700 hover:tw-underline">Retour aux notes à valider</a></p>
+      </template>
 
       <template v-else-if="note.peutDecider">
         <div v-if="!refusOuvert" class="tw-flex tw-justify-end tw-gap-3">
@@ -269,8 +302,12 @@ function refuser() {
               v-for="motif in MOTIFS"
               :key="motif"
               type="button"
-              class="tw-rounded-full tw-border tw-border-gray-300 tw-bg-white tw-px-3 tw-py-1 tw-text-xs tw-text-gray-700 hover:tw-border-sky-400"
-              @click="ajouterMotif(motif)"
+              :aria-pressed="contientLeMotif(motif)"
+              :class="[
+                'tw-rounded-full tw-border tw-px-3 tw-py-1 tw-text-xs',
+                contientLeMotif(motif) ? 'tw-border-sky-600 tw-bg-sky-50 tw-font-semibold tw-text-sky-800' : 'tw-border-gray-300 tw-bg-white tw-text-gray-700 hover:tw-border-sky-400',
+              ]"
+              @click="basculerLeMotif(motif)"
             >
               {{ motif }}
             </button>

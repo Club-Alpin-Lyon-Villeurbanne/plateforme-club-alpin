@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Notes de frais à valider{% endblock %}
+{% block title %}{{ donnees.traitees ? 'Notes de frais déjà traitées' : 'Notes de frais à valider' }}{% endblock %}
 
 {% block body %}
     <div id="notes-de-frais" data-page="a-valider" data-donnees="{{ donnees|json_encode }}"></div>
