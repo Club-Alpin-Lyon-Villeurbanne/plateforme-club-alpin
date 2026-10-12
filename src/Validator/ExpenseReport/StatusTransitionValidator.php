@@ -72,9 +72,7 @@ class StatusTransitionValidator
         }
 
         if (!\in_array($newStatus, $allowedTargets, true)) {
-            $context->buildViolation('Invalid status transition from "{{ oldStatus }}" to "{{ newStatus }}".')
-                ->setParameter('{{ oldStatus }}', $oldStatus->value)
-                ->setParameter('{{ newStatus }}', $newStatus->value)
+            $context->buildViolation($this->motifDuRefus($expenseReport, $oldStatus, $newStatus))
                 ->atPath('status')
                 ->addViolation();
 
@@ -105,6 +103,28 @@ class StatusTransitionValidator
             && \in_array($oldStatus, [...self::DECISIONS, ExpenseReportStatusEnum::ACCOUNTED], true)
             && [] === array_filter($allowedTargets, static fn (ExpenseReportStatusEnum $target) => \in_array($target, self::DECISIONS, true))
             && !$this->actor->isOwnerOf($expenseReport);
+    }
+
+    /**
+     * Affiché tel quel par le site et par compta-club.
+     */
+    private function motifDuRefus(ExpenseReport $note, ExpenseReportStatusEnum $oldStatus, ExpenseReportStatusEnum $newStatus): string
+    {
+        if ($this->actor->isOwnerOf($note) && \in_array($newStatus, [...self::DECISIONS, ExpenseReportStatusEnum::ACCOUNTED], true)) {
+            return 'Vous ne pouvez pas décider sur votre propre note de frais.';
+        }
+
+        // La trésorerie a pu ouvrir la note quand elle n'avait pas de valideur : la synchronisation
+        // de la nuit a pu, depuis, rendre son responsable de nouveau actif.
+        if ($note->getType()->estHorsSortie()
+            && ExpenseReportStatusEnum::SUBMITTED === $oldStatus
+            && $this->actor->isManagerOf($note)
+            && !$this->actor->isResponsableOf($note)
+            && [] !== $this->valideurs->pour($note)) {
+            return 'Cette demande attend encore la décision du responsable de la commission.';
+        }
+
+        return 'Ce changement de statut n\'est pas permis.';
     }
 
     /**
