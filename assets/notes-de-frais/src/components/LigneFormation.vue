@@ -22,7 +22,7 @@
         :aria-invalid="saisieManquante"
         @change="arrondirLaSaisie"
       />
-      <span class="tw-pointer-events-none tw-absolute tw-inset-y-0 tw-right-3 tw-flex tw-items-center tw-text-sm tw-text-gray-400">{{ voiture ? "km" : "€" }}</span>
+      <span class="tw-pointer-events-none tw-absolute tw-inset-y-0 tw-right-3 tw-flex tw-items-center tw-text-sm tw-text-gray-500">{{ voiture ? "km" : "€" }}</span>
     </div>
     <div>
       <!-- La voiture se passe de justificatif : la ligne montre son calcul à la place. -->

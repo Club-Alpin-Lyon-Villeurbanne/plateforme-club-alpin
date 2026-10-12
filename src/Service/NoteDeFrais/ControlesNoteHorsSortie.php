@@ -100,6 +100,12 @@ final class ControlesNoteHorsSortie
                 'champ' => 'details',
                 'moments' => [MomentDeControle::CHAQUE_SOUMISSION],
                 'niveau' => NiveauDeControle::BLOQUANT,
+                'controle' => $this->montantsManquants(...),
+            ],
+            [
+                'champ' => 'details',
+                'moments' => [MomentDeControle::CHAQUE_SOUMISSION],
+                'niveau' => NiveauDeControle::BLOQUANT,
                 'controle' => $this->montantsNonPositifs(...),
             ],
             [
@@ -235,20 +241,38 @@ final class ControlesNoteHorsSortie
         };
     }
 
+    private function montantsManquants(ExpenseReport $note): ?string
+    {
+        $numeros = $this->numerosDesLignes($note, static fn (array $ligne): bool => null === self::saisie($ligne));
+
+        return match (\count($numeros)) {
+            0 => null,
+            1 => sprintf('Il manque le montant de la dépense %s.', $numeros[0]),
+            default => sprintf('Il manque les montants des dépenses %s.', $this->enumerer($numeros)),
+        };
+    }
+
     private function montantsNonPositifs(ExpenseReport $note): ?string
     {
-        // La distance d'une voiture compte comme son montant.
-        $numeros = $this->numerosDesLignes($note, static function (array $ligne): bool {
-            $saisie = $ligne[ExpenseReportTypeEnum::champDeLaSaisie($ligne)] ?? null;
-
-            return !(\is_int($saisie) || \is_float($saisie)) || $saisie <= 0;
-        });
+        $numeros = $this->numerosDesLignes($note, static fn (array $ligne): bool => null !== self::saisie($ligne) && self::saisie($ligne) <= 0);
 
         return match (\count($numeros)) {
             0 => null,
             1 => sprintf('Le montant de la dépense %s doit être supérieur à zéro.', $numeros[0]),
             default => sprintf('Les montants des dépenses %s doivent être supérieurs à zéro.', $this->enumerer($numeros)),
         };
+    }
+
+    /**
+     * Le montant saisi sur la ligne, la distance pour une voiture ; null s'il n'y en a pas.
+     *
+     * @param array<string, mixed> $ligne
+     */
+    private static function saisie(array $ligne): int|float|null
+    {
+        $saisie = $ligne[ExpenseReportTypeEnum::champDeLaSaisie($ligne)] ?? null;
+
+        return \is_int($saisie) || \is_float($saisie) ? $saisie : null;
     }
 
     private function justificatifsManquants(ExpenseReport $note): ?string

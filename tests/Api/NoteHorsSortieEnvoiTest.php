@@ -53,7 +53,7 @@ class NoteHorsSortieEnvoiTest extends ExpenseReportApiTestCase
     /**
      * @dataProvider montantNonPositifProvider
      */
-    public function testEnvoiRefuseAvecUnMontantNulOuNegatif(?float $montant): void
+    public function testEnvoiRefuseAvecUnMontantNulOuNegatif(?float $montant, string $message): void
     {
         $lignes = json_encode(['lignes' => [
             ['id' => 'ligne-1', 'montant' => 64.9, 'description' => 'Dégaines (x6)'],
@@ -62,22 +62,25 @@ class NoteHorsSortieEnvoiTest extends ExpenseReportApiTestCase
         $note = $this->creerAchat($this->owner, ExpenseReportStatusEnum::DRAFT, $lignes);
         $this->joindreLesJustificatifs($note, 'ligne-1', 'ligne-2');
 
-        $this->assertRefusAvec($this->envoyer($this->owner, $note), 'details', 'Le montant de la dépense 2 doit être supérieur à zéro.');
+        $this->assertRefusAvec($this->envoyer($this->owner, $note), 'details', $message);
     }
 
     public static function montantNonPositifProvider(): iterable
     {
-        yield 'montant nul' => [0.0];
-        yield 'montant absent' => [null];
-        yield 'montant négatif' => [-5.0];
+        yield 'montant nul' => [0.0, 'Le montant de la dépense 2 doit être supérieur à zéro.'];
+        yield 'montant absent' => [null, 'Il manque le montant de la dépense 2.'];
+        yield 'montant négatif' => [-5.0, 'Le montant de la dépense 2 doit être supérieur à zéro.'];
     }
 
     public function testLesMontantsEnDefautSontTousNommes(): void
     {
-        $note = $this->creerAchat($this->owner, ExpenseReportStatusEnum::DRAFT, '{"lignes":[{"id":"ligne-1","montant":0},{"id":"ligne-2","montant":12},{"id":"ligne-3","montant":null}]}');
-        $this->joindreLesJustificatifs($note, 'ligne-1', 'ligne-2', 'ligne-3');
+        $note = $this->creerAchat($this->owner, ExpenseReportStatusEnum::DRAFT, '{"lignes":[{"id":"ligne-1","montant":0},{"id":"ligne-2","montant":12},{"id":"ligne-3","montant":-1},{"id":"ligne-4","montant":null},{"id":"ligne-5"}]}');
+        $this->joindreLesJustificatifs($note, 'ligne-1', 'ligne-2', 'ligne-3', 'ligne-4', 'ligne-5');
 
-        $this->assertRefusAvec($this->envoyer($this->owner, $note), 'details', 'Les montants des dépenses 1 et 3 doivent être supérieurs à zéro.');
+        $reponse = $this->envoyer($this->owner, $note);
+
+        $this->assertRefusAvec($reponse, 'details', 'Les montants des dépenses 1 et 3 doivent être supérieurs à zéro.');
+        $this->assertRefusAvec($reponse, 'details', 'Il manque les montants des dépenses 4 et 5.');
     }
 
     public function testEnvoiRefuseSansJustificatif(): void

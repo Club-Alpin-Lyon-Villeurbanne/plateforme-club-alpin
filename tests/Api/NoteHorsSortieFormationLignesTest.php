@@ -158,17 +158,17 @@ class NoteHorsSortieFormationLignesTest extends ExpenseReportApiTestCase
     /**
      * @dataProvider voitureSansKilometresProvider
      */
-    public function testUneVoitureSansKilometresNeSEnvoiePas(string $details): void
+    public function testUneVoitureSansKilometresNeSEnvoiePas(string $details, string $message): void
     {
         $note = $this->creerFormation($this->encadrant, $details);
 
-        $this->assertRefusAvec($this->envoyer($this->encadrant, $note), 'details', 'Le montant de la dépense 1 doit être supérieur à zéro.');
+        $this->assertRefusAvec($this->envoyer($this->encadrant, $note), 'details', $message);
     }
 
     public static function voitureSansKilometresProvider(): iterable
     {
-        yield 'zéro kilomètre' => ['{"lignes":[{"id":"ligne-1","nature":"voiture","distance":0}]}'];
-        yield 'distance vide' => ['{"lignes":[{"id":"ligne-1","nature":"voiture","distance":null}]}'];
+        yield 'zéro kilomètre' => ['{"lignes":[{"id":"ligne-1","nature":"voiture","distance":0}]}', 'Le montant de la dépense 1 doit être supérieur à zéro.'];
+        yield 'distance vide' => ['{"lignes":[{"id":"ligne-1","nature":"voiture","distance":null}]}', 'Il manque le montant de la dépense 1.'];
     }
 
     public function testUneFormationAncienneSEnvoieSansDelai(): void

@@ -9,7 +9,13 @@
 
     <div>
       <label for="f-commission" :class="libelle">Commission</label>
-      <select id="f-commission" v-model="demande.commissionId" :class="['tw-mt-1', champ]" aria-describedby="f-valideurs">
+      <select
+        id="f-commission"
+        v-model="demande.commissionId"
+        :class="['tw-mt-1', commissionManquante ? champEnErreur : champ]"
+        aria-describedby="f-valideurs"
+        :aria-invalid="commissionManquante"
+      >
         <option :value="null">Choisir…</option>
         <option v-for="commission in commissionsProposees" :key="commission.id" :value="commission.id">
           {{ commission.titre }}
@@ -24,8 +30,10 @@
         id="f-objet"
         v-model="demande.objet"
         type="text"
-        :class="['tw-mt-1', champ]"
+        maxlength="255"
+        :class="['tw-mt-1', objetManquant ? champEnErreur : champ]"
         :placeholder="TYPES[demande.type].exempleObjet"
+        :aria-invalid="objetManquant"
       />
     </div>
 
@@ -40,9 +48,9 @@
         id="f-date"
         v-model="demande.dateDepense"
         type="date"
-        :class="['tw-mt-1', champ, 'tw-w-48']"
+        :class="['tw-mt-1', dateRefusee || dateManquante ? champEnErreur : champ, 'tw-w-48']"
         aria-describedby="f-date-aide"
-        :aria-invalid="dateRefusee"
+        :aria-invalid="dateRefusee || dateManquante"
       />
       <p id="f-date-aide" :class="['tw-mt-1 tw-text-xs', dateRefusee ? 'tw-text-red-600' : 'tw-text-gray-500']">
         {{ aideDate }}
@@ -51,11 +59,12 @@
 
     <div class="tw-flex tw-items-center tw-justify-end tw-gap-4 tw-pt-2">
       <p class="tw-text-sm tw-text-red-600" aria-live="polite">{{ manque || erreurs.join(" ") }}</p>
+      <!-- Bouton d'envoi du formulaire : Entrée dans un champ le déclenche. -->
       <button
-        type="button"
+        type="submit"
         :disabled="enCours"
         class="tw-rounded-md tw-bg-sky-700 tw-px-5 tw-py-2 tw-text-sm tw-font-semibold tw-text-white hover:tw-bg-sky-800"
-        @click="continuer"
+        @click.prevent="continuer"
       >
         Continuer
       </button>
@@ -65,8 +74,8 @@
 
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
-import { champ, discret, libelle } from "../classes";
-import { aujourdhui, dateFr, jour, limiteEnvoi, messageDelaiDepasse, phraseValideurs } from "../format";
+import { champ, champEnErreur, discret, libelle } from "../classes";
+import { aujourdhui, dateFr, enumeration, jour, limiteEnvoi, messageDelaiDepasse, phraseValideurs } from "../format";
 import { TYPES } from "../typesDeNote";
 import type { CommissionProposee, Demande } from "../types";
 
@@ -127,6 +136,10 @@ const valideurs = computed(() => {
 
 const manque = ref("");
 watch(demande, () => (manque.value = ""), { deep: true });
+// Après un « Continuer » refusé, chaque champ manquant reste signalé jusqu'à ce qu'il soit rempli.
+const tentative = ref(false);
+const commissionManquante = computed(() => tentative.value && demande.value.commissionId === null);
+const objetManquant = computed(() => tentative.value && !demande.value.objet.trim());
 
 const date = computed(() => (demande.value.dateDepense ? jour(demande.value.dateDepense) : null));
 const dansLeFutur = computed(() => date.value !== null && date.value > aujourdhui());
@@ -135,6 +148,7 @@ const limite = computed(() =>
 );
 const horsDelai = computed(() => limite.value !== null && aujourdhui() > limite.value);
 const dateRefusee = computed(() => dansLeFutur.value || horsDelai.value);
+const dateManquante = computed(() => tentative.value && date.value === null);
 
 const aideDate = computed(() => {
   if (dansLeFutur.value) {
@@ -159,7 +173,8 @@ function continuer() {
     manquants.push("une date valide");
   }
 
-  manque.value = manquants.length ? `Il manque ${manquants.join(", ")}.` : "";
+  manque.value = manquants.length ? `Il manque ${enumeration(manquants)}.` : "";
+  tentative.value = manquants.length > 0;
   if (!manquants.length) {
     emit("continuer");
   }

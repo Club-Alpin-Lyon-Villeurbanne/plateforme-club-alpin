@@ -13,7 +13,7 @@
         :aria-invalid="montantManquant"
         @change="arrondirLeMontant"
       />
-      <span class="tw-pointer-events-none tw-absolute tw-inset-y-0 tw-right-3 tw-flex tw-items-center tw-text-sm tw-text-gray-400">€</span>
+      <span class="tw-pointer-events-none tw-absolute tw-inset-y-0 tw-right-3 tw-flex tw-items-center tw-text-sm tw-text-gray-500">€</span>
     </div>
     <input
       v-model="ligne.description"

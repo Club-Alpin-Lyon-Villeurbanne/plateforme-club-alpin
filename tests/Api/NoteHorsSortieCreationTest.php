@@ -52,6 +52,12 @@ class NoteHorsSortieCreationTest extends ExpenseReportApiTestCase
         $this->assertRefused($this->create($this->owner, $this->achat(['objet' => '   '])), 'objet');
     }
 
+    public function testUnObjetTropLongEstRefuseEnLeNommant(): void
+    {
+        $this->assertRefusAvec($this->create($this->owner, $this->achat(['objet' => str_repeat('a', 256)])), 'objet', 'L\'objet doit faire au plus 255 caractères.');
+        $this->assertResponseStatus(201, $this->create($this->owner, $this->achat(['objet' => str_repeat('a', 255)])));
+    }
+
     public function testUneCommissionInconnueEstRefusee(): void
     {
         $this->assertRefused($this->create($this->owner, $this->achat(['commissionId' => 999999999])), 'commission');

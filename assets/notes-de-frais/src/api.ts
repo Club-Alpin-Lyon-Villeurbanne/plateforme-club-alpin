@@ -57,12 +57,12 @@ export interface PageDeNotes {
 }
 
 /** Notes du demandeur, brouillons compris, des plus récentes aux plus anciennes ; toutes si aucun type n'est demandé. */
-export async function listerMesNotes(page: number, type: NoteDeFrais["type"] | null): Promise<{ notes: (NoteDeFrais | NoteDeSortie)[]; pages: number }> {
-  const reponse = await api.get<{ data: (NoteDeFrais | NoteDeSortie)[]; meta: { pages: number } }>("/notes-de-frais", {
+export async function listerMesNotes(page: number, type: NoteDeFrais["type"] | null): Promise<{ notes: (NoteDeFrais | NoteDeSortie)[]; pages: number; total: number }> {
+  const reponse = await api.get<{ data: (NoteDeFrais | NoteDeSortie)[]; meta: { pages: number; total: number } }>("/notes-de-frais", {
     params: { inclure_brouillons: true, page, ...(type ? { type } : {}) },
   });
 
-  return { notes: reponse.data.data, pages: reponse.data.meta.pages };
+  return { notes: reponse.data.data, pages: reponse.data.meta.pages, total: reponse.data.meta.total };
 }
 
 /** Notes que l'utilisateur peut traiter comme responsable : en attente, ou déjà traitées. */
@@ -107,6 +107,22 @@ export function conflit(erreur: unknown): boolean {
 
 export function statutDuRefus(erreur: unknown): number | undefined {
   return isAxiosError(erreur) ? erreur.response?.status : undefined;
+}
+
+/** Une note qui ne se lit pas : pas le droit, inconnue, ou autre erreur. */
+export function erreurDeLecture(erreur: unknown): string {
+  if (sessionExpiree(erreur)) {
+    return messagesDErreur(erreur)[0];
+  }
+  const statut = statutDuRefus(erreur);
+  if (statut === 403) {
+    return "Vous n'avez pas accès à cette note de frais.";
+  }
+  if (statut === 404) {
+    return "Cette note de frais n'existe pas.";
+  }
+
+  return "Impossible de charger cette note.";
 }
 
 /** Refus de l'API, avec le champ en cause quand c'est une violation de validation. */

@@ -10,14 +10,15 @@
   </div>
 
   <div v-if="!envoyee" class="main-type">
-    <h1>Demande de remboursement</h1>
-    <p>{{ formationPossible ? "Pour une formation ou un achat fait pour le club." : "Pour un achat fait pour le club." }}</p>
+    <h1>{{ titre }}</h1>
+    <p v-if="!erreurDeChargement">{{ formationPossible ? "Pour une formation ou un achat fait pour le club." : "Pour un achat fait pour le club." }}</p>
   </div>
 
   <form
     v-if="!envoyee"
     ref="formulaire"
     class="expense-report-form tw-mx-[30px] tw-mb-8 tw-bg-white tw-font-sans tw-shadow-sm tw-ring-1 tw-ring-gray-200"
+    novalidate
     @submit.prevent
   >
     <p v-if="messageDeRefus" class="tw-whitespace-pre-line tw-border-b tw-border-red-100 tw-bg-red-50 tw-px-8 tw-py-3 tw-text-sm tw-text-red-800">{{ messageDeRefus }}</p>
@@ -42,6 +43,7 @@
 
     <SecondeEtape
       v-else
+      ref="secondeEtape"
       :key="rechargements"
       v-model:lignes="lignes"
       v-model:mot="motPourResponsable"
@@ -62,6 +64,9 @@
       :en-cours="enCours"
       :envoi-en-cours="envoiEnCours"
       :conflit="conflitDeVersion"
+      :confirmation="confirmation"
+      :brouillon="note?.status === 'draft'"
+      :destinataire-du-mot="versLaTresorerie ? 'la trésorerie' : 'le responsable'"
       @modifier="afficherEtape(1)"
       @enregistrer="enregistrer"
       @envoyer="envoyer"
@@ -73,22 +78,25 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, nextTick, onBeforeUnmount, onMounted, ref } from "vue";
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import PremiereEtape from "./components/PremiereEtape.vue";
 import SecondeEtape from "./components/SecondeEtape.vue";
-import { conflit, creerNote, enregistrerNote, envoyerJustificatif, lireNote, messagesDErreur, NOTE_DEJA_ENVOYEE, refusDeLApi, sessionExpiree, statutDuRefus } from "./api";
+import { conflit, creerNote, enregistrerNote, envoyerJustificatif, erreurDeLecture, lireNote, messagesDErreur, NOTE_DEJA_ENVOYEE, refusDeLApi, sessionExpiree, statutDuRefus } from "./api";
 import { auteurDeLaDecision, aujourdhui, limiteEnvoi, messageDelaiDepasse, partRemboursable, phrasePrevenus, phraseValideurs } from "./format";
 import { refusDuFichier } from "./justificatifs";
-import { ecrireLignes, lireLignes, nouvelleLigne } from "./lignes";
+import { ecrireLignes, lireLignes, nouvelleLigne, total } from "./lignes";
 import type { TypeHorsSortie } from "./typesDeNote";
-import type { Demande, DonneesInitiales, Justificatif, Ligne, NoteDeFrais, Refus, Toastr } from "./types";
+import type { Demande, DonneesInitiales, Justificatif, Ligne, NoteDeFrais, Refus } from "./types";
 
 const URL_MES_NOTES = "/notes-de-frais";
+// Texte de l'API (ControlesNoteHorsSortie) : il ne vaut plus dès qu'une dépense est saisie.
+const SANS_DEPENSE = "Il manque au moins une dépense.";
+const TITRE_DE_L_ONGLET = document.title;
 
 const props = defineProps<{ donnees: DonneesInitiales }>();
-const toastr = inject<Toastr>("toastr");
 
 const formulaire = ref<HTMLFormElement | null>(null);
+const secondeEtape = ref<InstanceType<typeof SecondeEtape> | null>(null);
 const note = ref<NoteDeFrais | null>(null);
 const etape = ref<1 | 2>(1);
 const demande = ref<Demande>({ type: "autre", commissionId: null, objet: "", dateDepense: "", lienFormation: "" });
@@ -114,12 +122,19 @@ const titreEnvoyee = ref<HTMLElement | null>(null);
 const conflitDeVersion = ref<string | null>(null);
 // Remonte la seconde étape sur la version rechargée.
 const rechargements = ref(0);
+// « Enregistrer pour plus tard » a réussi : la confirmation reste jusqu'à la prochaine modification.
+const confirmation = ref<string | null>(null);
 
-// Le choix, une fois fait, rend son refus caduc ; les autres refus attendent le prochain envoi.
+// Le choix, une fois fait, rend son refus caduc, comme une dépense saisie le refus d'une note sans
+// dépense ; les autres refus attendent le prochain envoi.
+const uneDepenseSaisie = computed(() => total(lignes.value, props.donnees.formation.tauxKilometrique) > 0);
 const erreursEtape2 = computed(() =>
   Array.from(
     new Set([
-      ...refusEnvoi.value.filter((un) => un.champ !== "refundRequired" || choix.value === null).map((un) => un.message),
+      ...refusEnvoi.value
+        .filter((un) => un.champ !== "refundRequired" || choix.value === null)
+        .filter((un) => un.message !== SANS_DEPENSE || !uneDepenseSaisie.value)
+        .map((un) => un.message),
       ...refusEnregistrement.value,
       ...erreursEnregistrementAuto.value,
     ]),
@@ -148,8 +163,11 @@ const messageDeRefus = computed(() => {
     return null;
   }
 
-  return `Refusée par ${auteurDeLaDecision(decision)} : « ${decision.message ?? ""} »`;
+  return `Refusée par ${auteurDeLaDecision(decision)} : «\u00a0${decision.message ?? ""}\u00a0»`;
 });
+
+const titre = computed(() => (note.value?.status === "rejected" ? "Corriger la note" : "Demande de remboursement"));
+watch(titre, (nouveau) => (document.title = TITRE_DE_L_ONGLET.replace("Demande de remboursement", nouveau)));
 
 // Une formation reprise reste une formation, même si le demandeur n'encadre plus nulle part.
 const formationPossible = computed(
@@ -161,6 +179,8 @@ const commissionChoisie = computed(() => props.donnees.commissions.find((commiss
 const commissionTitre = computed(() => commissionChoisie.value?.titre ?? note.value?.commission?.title ?? "");
 
 const phraseDesValideurs = computed(() => (commissionChoisie.value ? phraseValideurs(commissionChoisie.value) : ""));
+
+const versLaTresorerie = computed(() => (commissionChoisie.value?.valideurs ?? note.value?.valideurs ?? []).length === 0);
 
 // —— Ce qui est enregistré, pour prévenir avant de quitter la page ——
 
@@ -186,6 +206,7 @@ const enregistre = ref(empreintes());
 const nonEnregistre = computed(
   () => note.value !== null && JSON.stringify(empreintes()) !== JSON.stringify(enregistre.value),
 );
+watch(() => JSON.stringify(empreintes()), () => (confirmation.value = null));
 
 function avertirAvantDeQuitter(evenement: BeforeUnloadEvent) {
   if (nonEnregistre.value) {
@@ -207,7 +228,7 @@ onMounted(async () => {
   try {
     reprendre(await lireNote(props.donnees.noteId));
   } catch (erreur) {
-    erreurDeChargement.value = sessionExpiree(erreur) ? messagesDErreur(erreur)[0] : "Impossible de charger cette note.";
+    erreurDeChargement.value = erreurDeLecture(erreur);
   } finally {
     chargement.value = false;
   }
@@ -245,7 +266,8 @@ function reprendre(noteLue: NoteDeFrais) {
   etape.value = 2;
 }
 
-// Le composant de l'étape quittée emporte le focus : on le pose sur le premier champ utile.
+// Le composant de l'étape quittée emporte le focus : on le pose sur le premier champ utile, celui
+// de la première ligne vide (la nature d'une formation, le montant d'un achat).
 async function afficherEtape(nouvelleEtape: 1 | 2) {
   etape.value = nouvelleEtape;
   await nextTick();
@@ -254,8 +276,7 @@ async function afficherEtape(nouvelleEtape: 1 | 2) {
     formulaire.value?.querySelector<HTMLElement>("#f-commission")?.focus();
     return;
   }
-  const montants = Array.from(formulaire.value?.querySelectorAll<HTMLInputElement>("input[type=number]") ?? []);
-  (montants.find((montant) => montant.value === "") ?? montants[0])?.focus();
+  secondeEtape.value?.focaliserLaLigne(Math.max(0, lignes.value.findIndex((ligne) => !renseignee(ligne))));
 }
 
 async function continuer() {
@@ -328,7 +349,12 @@ async function enregistrer() {
       await ecrire(corpsDeLaNote());
       enregistre.value = empreinte;
     });
-    toastr?.info("Enregistrée. Vous la retrouverez dans « mes notes de frais ».");
+    const maintenant = new Date();
+    const heure = `${maintenant.getHours()}\u00a0h\u00a0${String(maintenant.getMinutes()).padStart(2, "0")}`;
+    // Une saisie faite pendant l'enregistrement n'est pas enregistrée : pas de confirmation.
+    if (!nonEnregistre.value) {
+      confirmation.value = `Enregistrée à ${heure}. Vous la retrouverez dans «\u00a0Mes notes de frais\u00a0».`;
+    }
   } catch (erreur) {
     if (!ongletPerime(erreur)) {
       refusEnregistrement.value = messagesDErreur(erreur);

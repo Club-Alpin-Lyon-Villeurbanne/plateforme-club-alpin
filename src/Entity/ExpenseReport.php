@@ -142,7 +142,7 @@ class ExpenseReport
     private ?Commission $commission = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Assert\Length(max: 255)]
+    #[Assert\Length(max: 255, maxMessage: 'L\'objet doit faire au plus 255 caractères.')]
     #[Groups(['report:read', 'report:write'])]
     private ?string $objet = null;
 

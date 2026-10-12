@@ -4,6 +4,7 @@
       <div>
         <p class="tw-font-semibold tw-text-gray-900">{{ demande.objet }}</p>
         <p :class="discret">{{ contexte }}</p>
+        <p v-if="brouillon" :class="['tw-mt-1', discret]">Brouillon enregistré : vous le retrouverez dans «&nbsp;Mes notes de frais&nbsp;».</p>
         <template v-if="demande.type === 'formation'">
           <a v-if="lienFormation" :href="lienFormation" target="_blank" rel="noopener" class="tw-text-xs tw-text-sky-700 hover:tw-underline">Voir la formation</a>
           <p v-else-if="demande.lienFormation.trim()" class="tw-break-all tw-text-xs tw-text-gray-500">{{ demande.lienFormation.trim() }}</p>
@@ -80,10 +81,10 @@
           class="tw-text-sm tw-font-medium tw-text-sky-700 hover:tw-text-sky-900"
           @click="afficherMot"
         >
-          + Un mot pour le responsable
+          + Un mot pour {{ destinataireDuMot }}
         </button>
         <div v-else>
-          <label for="f-mot" :class="libelle">Un mot pour le responsable <span class="tw-font-normal tw-text-gray-500">(facultatif)</span></label>
+          <label for="f-mot" :class="libelle">Un mot pour {{ destinataireDuMot }} <span class="tw-font-normal tw-text-gray-500">(facultatif)</span></label>
           <textarea
             id="f-mot"
             ref="champMot"
@@ -112,10 +113,11 @@
     </div>
     <!-- aria-disabled plutôt que disabled : un bouton désactivé perdrait le focus pendant l'appel. -->
     <div class="tw-flex tw-items-center tw-justify-end tw-gap-5 tw-border-t tw-border-gray-100 tw-bg-gray-50 tw-px-8 tw-py-4">
+      <p role="status" class="tw-mr-auto tw-text-sm tw-text-gray-700">{{ confirmation }}</p>
       <button
         type="button"
         :aria-disabled="enCours"
-        class="tw-text-sm tw-font-medium tw-text-gray-600 hover:tw-text-gray-900 aria-disabled:tw-cursor-wait aria-disabled:tw-opacity-60"
+        class="tw-whitespace-nowrap tw-text-sm tw-font-medium tw-text-gray-600 hover:tw-text-gray-900 aria-disabled:tw-cursor-wait aria-disabled:tw-opacity-60"
         @click="enCours || emit('enregistrer')"
       >
         Enregistrer pour plus tard
@@ -164,6 +166,11 @@ const props = defineProps<{
   envoiEnCours: boolean;
   /** La note a changé ailleurs : message de l'API, et le formulaire propose de recharger. */
   conflit: string | null;
+  /** « Enregistrée à … », jusqu'à la prochaine modification. */
+  confirmation: string | null;
+  brouillon: boolean;
+  /** « le responsable », ou « la trésorerie » quand la note va directement à elle. */
+  destinataireDuMot: string;
 }>();
 const lignes = defineModel<Ligne[]>("lignes", { required: true });
 const mot = defineModel<string>("mot", { required: true });
@@ -209,6 +216,15 @@ async function ajouter() {
   await nextTick();
   conteneurLignes.value?.lastElementChild?.querySelector<HTMLElement>(PREMIER_CHAMP)?.focus();
 }
+
+// Au centre de l'écran : en haut, l'en-tête fixe du site masquerait le champ.
+function focaliserLaLigne(index: number) {
+  const premierChamp = conteneurLignes.value?.children[index]?.querySelector<HTMLElement>(PREMIER_CHAMP);
+  premierChamp?.focus({ preventScroll: true });
+  premierChamp?.scrollIntoView({ block: "center" });
+}
+
+defineExpose({ focaliserLaLigne });
 
 // Le bouton retiré emporte le focus : on le pose sur la ligne qui prend sa place.
 async function retirer(index: number) {

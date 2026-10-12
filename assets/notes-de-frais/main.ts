@@ -16,7 +16,5 @@ if (racine) {
   const donnees = JSON.parse(racine.dataset.donnees ?? "{}");
   const page = PAGES[racine.dataset.page ?? ""] ?? NouvelleDemande;
 
-  createApp(page, { donnees })
-    .provide("toastr", (window as any).toastr)
-    .mount(racine);
+  createApp(page, { donnees }).mount(racine);
 }

@@ -30,7 +30,7 @@ export function limiteEnvoi(dateDepense: string, delaiJours: number): Date {
 }
 
 export function messageDelaiDepasse(delaiJours: number): string {
-  return `Le délai de ${delaiJours} jours est dépassé : cette note ne peut plus être envoyée.`;
+  return `Le délai de ${delaiJours} jours est dépassé : cette note ne peut plus être envoyée. Si la dépense doit quand même être remboursée, parlez-en au responsable de la commission.`;
 }
 
 /** « , le 13/09/2026 » après le type d'une note hors sortie ; rien tant que la date manque. */
@@ -154,7 +154,7 @@ export function phraseDeLaDecision(decision: Decision): string {
 export function motifDuRefus(decision: Decision): string {
   const auteur = auteurDeLaDecision(decision);
 
-  return `${auteur.charAt(0).toUpperCase()}${auteur.slice(1)} : « ${decision.message ?? ""} »`;
+  return `${auteur.charAt(0).toUpperCase()}${auteur.slice(1)} : «\u00a0${decision.message ?? ""}\u00a0»`;
 }
 
 export interface DecisionSurLaPage {
