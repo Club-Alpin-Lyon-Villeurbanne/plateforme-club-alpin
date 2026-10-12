@@ -12,12 +12,12 @@ const URL_NOUVELLE = "/notes-de-frais/nouvelle";
 type Note = NoteDeFrais | NoteDeSortie;
 type Filtre = NoteDeFrais["type"] | null;
 
-// Singulier et pluriel : « 1 formation », « 4 formations », annoncés après un filtre.
-const FILTRES: { valeur: Filtre; libelle: string; une: string; plusieurs: string }[] = [
-  { valeur: null, libelle: "Toutes", une: "note", plusieurs: "notes" },
-  { valeur: "sortie", libelle: "Sorties", une: "sortie", plusieurs: "sorties" },
-  { valeur: "formation", libelle: "Formations", une: "formation", plusieurs: "formations" },
-  { valeur: "autre", libelle: "Achats", une: "achat", plusieurs: "achats" },
+// Annoncés après un filtre : « aucune formation », « 1 formation », « 4 formations ».
+const FILTRES: { valeur: Filtre; libelle: string; aucune: string; une: string; plusieurs: string }[] = [
+  { valeur: null, libelle: "Toutes", aucune: "aucune note", une: "note", plusieurs: "notes" },
+  { valeur: "sortie", libelle: "Sorties", aucune: "aucune sortie", une: "sortie", plusieurs: "sorties" },
+  { valeur: "formation", libelle: "Formations", aucune: "aucune formation", une: "formation", plusieurs: "formations" },
+  { valeur: "autre", libelle: "Achats", aucune: "aucun achat", une: "achat", plusieurs: "achats" },
 ];
 
 const LIBELLES: Record<string, string> = {
@@ -53,6 +53,10 @@ const annonce = computed(() => {
   const choix = FILTRES.find((un) => un.valeur === filtre.value);
   if (total.value === null || !choix) {
     return "";
+  }
+
+  if (total.value === 0) {
+    return choix.aucune;
   }
 
   return `${total.value} ${total.value > 1 ? choix.plusieurs : choix.une}`;

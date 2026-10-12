@@ -121,7 +121,7 @@ const nature = computed<string | null>({
 const calcul = computed(() => {
   const distance = typeof ligne.value.distance === "number" ? ligne.value.distance : 0;
 
-  return `${calculDeLaVoiture(distance, props.tauxKilometrique)} = ${euros(montantDeLaLigne(ligne.value, props.tauxKilometrique))}`;
+  return `${calculDeLaVoiture(distance, props.tauxKilometrique)} =\u00a0${euros(montantDeLaLigne(ligne.value, props.tauxKilometrique))}`;
 });
 
 const natureManquante = computed(() => props.marquerLesManques && !ligne.value.nature);
