@@ -93,7 +93,7 @@ function erreurDeLecture(erreur: unknown): string {
     return "Cette note de frais n'existe pas.";
   }
 
-  return "Impossible de charger cette note de frais.";
+  return "Impossible de charger cette note.";
 }
 
 function nomDuFichier(url: string): string {
@@ -135,7 +135,7 @@ async function decider(corps: Record<string, unknown>, texte: string, classe: st
     if (refusDeLApi(erreur).some((un) => un.champ === "status")) {
       note.value = await lireNote(note.value.id).catch(() => note.value);
       refusOuvert.value = false;
-      refus.value = ["Cette demande a déjà été traitée."];
+      refus.value = ["Cette note a déjà été traitée."];
     } else {
       refus.value = messagesDErreur(erreur);
     }
@@ -277,7 +277,7 @@ function refuser() {
               class="tw-rounded-md tw-bg-red-600 tw-px-5 tw-py-2 tw-text-sm tw-font-semibold tw-text-white disabled:tw-opacity-40 aria-disabled:tw-cursor-wait aria-disabled:tw-opacity-60"
               @click="enCours || refuser()"
             >
-              Refuser la demande
+              Refuser la note
             </button>
           </div>
         </div>

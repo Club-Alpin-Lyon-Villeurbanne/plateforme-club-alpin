@@ -4,7 +4,7 @@
     class="expense-report-form tw-mx-[30px] tw-mb-8 tw-bg-white tw-p-10 tw-text-center tw-font-sans tw-shadow-sm tw-ring-1 tw-ring-gray-200"
   >
     <div class="tw-mx-auto tw-flex tw-h-12 tw-w-12 tw-items-center tw-justify-center tw-rounded-full tw-bg-green-100 tw-text-xl tw-text-green-700" aria-hidden="true">✓</div>
-    <h2 ref="titreEnvoyee" tabindex="-1" class="tw-mt-4 tw-text-xl tw-font-semibold tw-text-gray-900 focus:tw-outline-none">Demande envoyée</h2>
+    <h2 ref="titreEnvoyee" tabindex="-1" class="tw-mt-4 tw-text-xl tw-font-semibold tw-text-gray-900 focus:tw-outline-none">Note envoyée</h2>
     <p class="tw-mt-2 tw-text-sm tw-text-gray-600">{{ phrasePrevenus(note?.valideurs ?? []) }} Vous recevrez un mail dès qu'il y a une réponse.</p>
     <a :href="URL_MES_NOTES" class="tw-mt-6 tw-inline-block tw-text-sm tw-font-medium tw-text-sky-700 hover:tw-underline">Voir mes notes de frais</a>
   </div>
@@ -21,7 +21,7 @@
     @submit.prevent
   >
     <p v-if="messageDeRefus" class="tw-whitespace-pre-line tw-border-b tw-border-red-100 tw-bg-red-50 tw-px-8 tw-py-3 tw-text-sm tw-text-red-800">{{ messageDeRefus }}</p>
-    <p v-if="chargement" class="tw-p-8 tw-text-sm tw-text-gray-600">Chargement de la demande…</p>
+    <p v-if="chargement" class="tw-p-8 tw-text-sm tw-text-gray-600">Chargement de la note…</p>
     <p v-else-if="erreurDeChargement" role="alert" class="tw-p-8 tw-text-sm tw-text-red-600">{{ erreurDeChargement }}</p>
 
     <PremiereEtape
@@ -197,7 +197,7 @@ onMounted(async () => {
   try {
     reprendre(await lireNote(props.donnees.noteId));
   } catch (erreur) {
-    erreurDeChargement.value = sessionExpiree(erreur) ? messagesDErreur(erreur)[0] : "Impossible de charger cette demande.";
+    erreurDeChargement.value = sessionExpiree(erreur) ? messagesDErreur(erreur)[0] : "Impossible de charger cette note.";
   } finally {
     chargement.value = false;
   }
@@ -209,7 +209,7 @@ function reprendre(noteLue: NoteDeFrais) {
     return;
   }
   if (noteLue.status !== "draft" && noteLue.status !== "rejected") {
-    erreurDeChargement.value = "Cette demande a été envoyée : elle ne peut plus être modifiée.";
+    erreurDeChargement.value = "Cette note a été envoyée : elle ne peut plus être modifiée.";
     return;
   }
 
@@ -332,7 +332,7 @@ async function envoyer() {
   try {
     // Sinon la note partirait avec l'ancien justificatif, et le nouveau serait refusé sur une note envoyée.
     if (!(await attendreLesEnregistrementsEnCours())) {
-      refusEnvoi.value = [{ champ: null, message: "Un justificatif n'a pas pu être envoyé : la demande n'est pas partie." }];
+      refusEnvoi.value = [{ champ: null, message: "Un justificatif n'a pas pu être envoyé : la note n'est pas partie." }];
       await montrerLesRefus();
       return;
     }

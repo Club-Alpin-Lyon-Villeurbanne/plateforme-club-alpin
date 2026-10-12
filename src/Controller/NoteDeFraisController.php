@@ -95,7 +95,7 @@ class NoteDeFraisController extends AbstractController
         ]);
     }
 
-    // Cible du lien « Voir la demande » des mails. L'API dit qui peut lire la note.
+    // Cible du lien « Voir la note » des mails. L'API dit qui peut lire la note.
     #[Route(path: '/notes-de-frais/{id}', name: 'notes_de_frais_detail', requirements: ['id' => '\d+'], methods: ['GET'])]
     public function detail(int $id, Environment $twig, string $baseUrl): Response
     {

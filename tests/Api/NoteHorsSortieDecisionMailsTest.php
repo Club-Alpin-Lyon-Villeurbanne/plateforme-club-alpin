@@ -83,7 +83,7 @@ class NoteHorsSortieDecisionMailsTest extends ExpenseReportApiTestCase
 
         $mail = $this->mailsA($this->owner->getEmail())[0];
         $lien = 'http://localhost/notes-de-frais/nouvelle?id=' . $note->getId();
-        $this->assertStringContainsString('Corriger ma demande', $mail->getHtmlBody());
+        $this->assertStringContainsString('Corriger ma note', $mail->getHtmlBody());
         $this->assertStringContainsString('href="' . $lien . '"', $mail->getHtmlBody());
         $this->assertStringContainsString($lien, $mail->getTextBody());
     }
@@ -141,7 +141,7 @@ class NoteHorsSortieDecisionMailsTest extends ExpenseReportApiTestCase
         $this->assertResponseStatus(200, $this->patch($this->manager, $report, ['status' => 'approved']));
 
         $this->assertSeulsDestinataires([$this->owner]);
-        $this->assertStringContainsString('a été acceptée', $this->mailsA($this->owner->getEmail())[0]->getTextBody());
+        $this->assertStringContainsString('a été validée par la trésorerie', $this->mailsA($this->owner->getEmail())[0]->getTextBody());
     }
 
     /**

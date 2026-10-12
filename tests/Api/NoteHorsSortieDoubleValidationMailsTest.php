@@ -47,7 +47,7 @@ class NoteHorsSortieDoubleValidationMailsTest extends ExpenseReportApiTestCase
         foreach ($this->corps($mail) as $corps) {
             $this->assertStringContainsString('Message laissé par la trésorerie', $corps);
             $this->assertStringContainsString(self::MESSAGE, $corps);
-            $this->assertStringContainsString('Corriger ma demande', $corps);
+            $this->assertStringContainsString('Corriger ma note', $corps);
             $this->assertStringNotContainsString('Lou MARTIN', $corps);
         }
     }

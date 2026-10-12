@@ -10,7 +10,7 @@ use App\Utils\Enums\ExpenseReportStatusEnum;
  */
 class NoteDeFraisRefusDeTransitionTest extends ExpenseReportApiTestCase
 {
-    private const ATTEND_LE_RESPONSABLE = 'Cette demande attend encore la décision du responsable de la commission.';
+    private const ATTEND_LE_RESPONSABLE = 'Cette note attend encore la décision du responsable de la commission.';
     private const PROPRE_NOTE = 'Vous ne pouvez pas décider sur votre propre note de frais.';
     private const NON_PERMIS = 'Ce changement de statut n\'est pas permis.';
 

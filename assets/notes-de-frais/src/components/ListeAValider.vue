@@ -20,11 +20,11 @@ const aUnePageSuivante = computed(() => !chargement.value && page.value < pages.
 
 const resume = computed(() => {
   if (props.traitees) {
-    return total.value === 1 ? "1 demande déjà traitée." : `${total.value} demandes déjà traitées.`;
+    return total.value === 1 ? "1 note déjà traitée." : `${total.value} notes déjà traitées.`;
   }
   const commissions = enumeration(Array.from(new Set(notes.value.map((note) => note.commission?.title ?? "").filter(Boolean))));
 
-  return `${total.value} ${total.value === 1 ? "demande" : "demandes"} en attente pour ${commissions}.`;
+  return `${total.value} ${total.value === 1 ? "note" : "notes"} en attente pour ${commissions}.`;
 });
 
 async function charger() {
@@ -44,7 +44,7 @@ async function charger() {
     chargement.value = false;
     chargementSuivant.value = false;
   }
-  // Le bouton « plus anciennes » peut disparaître : le focus passe à la première demande ajoutée.
+  // Le bouton « plus anciennes » peut disparaître : le focus passe à la première note ajoutée.
   if (dejaCharge) {
     await nextTick();
     liste.value?.children[premiereNouvelle]?.querySelector("a")?.focus();
@@ -66,7 +66,7 @@ function decision(note: NoteDeFrais): string | null {
 
 <template>
   <section class="tw-mb-8">
-    <p v-if="chargement" class="tw-bg-white tw-p-8 tw-text-sm tw-text-gray-600 tw-shadow-sm tw-ring-1 tw-ring-gray-200">Chargement des demandes…</p>
+    <p v-if="chargement" class="tw-bg-white tw-p-8 tw-text-sm tw-text-gray-600 tw-shadow-sm tw-ring-1 tw-ring-gray-200">Chargement des notes…</p>
     <p
       v-else-if="erreur && notes.length === 0"
       role="alert"
@@ -78,7 +78,7 @@ function decision(note: NoteDeFrais): string | null {
       v-else-if="notes.length === 0"
       class="tw-bg-white tw-p-8 tw-text-sm tw-text-gray-600 tw-shadow-sm tw-ring-1 tw-ring-gray-200"
     >
-      {{ traitees ? "Aucune demande déjà traitée." : "Aucune demande en attente." }}
+      {{ traitees ? "Aucune note déjà traitée." : "Aucune note en attente." }}
     </p>
 
     <template v-else>
@@ -109,7 +109,7 @@ function decision(note: NoteDeFrais): string | null {
         class="tw-text-sm tw-font-medium tw-text-sky-700 hover:tw-underline disabled:tw-opacity-50"
         @click="charger"
       >
-        Afficher les demandes plus anciennes
+        Afficher les notes plus anciennes
       </button>
     </div>
   </section>

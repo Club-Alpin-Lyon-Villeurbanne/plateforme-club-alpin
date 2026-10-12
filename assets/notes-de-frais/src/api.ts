@@ -30,7 +30,7 @@ function nouveauJeton(): Promise<string | null> {
   return jetonEnCours;
 }
 
-// Le jeton expire au bout d'une heure, une demande peut rester ouverte plus longtemps.
+// Le jeton expire au bout d'une heure, le formulaire peut rester ouvert plus longtemps.
 api.interceptors.response.use(undefined, async (erreur) => {
   const requete = erreur.config as (InternalAxiosRequestConfig & { rejouee?: boolean }) | undefined;
   if (!sessionExpiree(erreur) || !requete || requete.rejouee) {
@@ -62,7 +62,7 @@ export async function listerMesNotes(page: number, type: NoteDeFrais["type"] | n
   return { notes: reponse.data.data, pages: reponse.data.meta.pages };
 }
 
-/** Demandes que l'utilisateur peut traiter comme responsable : en attente, ou déjà traitées. */
+/** Notes que l'utilisateur peut traiter comme responsable : en attente, ou déjà traitées. */
 export async function listerNotesAValider(page: number, traitees: boolean): Promise<PageDeNotes & { total: number }> {
   const reponse = await api.get<{ data: NoteDeFrais[]; meta: { pages: number; total: number } }>("/notes-de-frais/a-valider", {
     params: { page, ...(traitees ? { status: ["preapproved", "approved", "rejected", "accounted"] } : {}) },

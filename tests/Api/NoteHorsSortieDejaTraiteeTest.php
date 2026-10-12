@@ -7,11 +7,11 @@ use App\Utils\Enums\ExpenseReportStatusEnum;
 
 /**
  * Plusieurs personnes peuvent décider d'une même note hors sortie : celle qui décide quand la note
- * a quitté son étape apprend que la demande a déjà été traitée, et rien n'est enregistré.
+ * a quitté son étape apprend que la note a déjà été traitée, et rien n'est enregistré.
  */
 class NoteHorsSortieDejaTraiteeTest extends ExpenseReportApiTestCase
 {
-    private const DEJA_TRAITEE = 'Cette demande a déjà été traitée.';
+    private const DEJA_TRAITEE = 'Cette note a déjà été traitée.';
 
     /**
      * @dataProvider decisionsTardivesProvider

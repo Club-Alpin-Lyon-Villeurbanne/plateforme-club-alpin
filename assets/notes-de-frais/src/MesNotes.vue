@@ -200,7 +200,7 @@ function action(note: Note): { libelle: string; lien: string } | null {
       <a
         :href="URL_NOUVELLE"
         class="tw-shrink-0 tw-rounded-md tw-bg-sky-600 tw-px-4 tw-py-2 tw-text-sm tw-font-semibold tw-text-white tw-no-underline hover:tw-bg-sky-700"
-        >Nouvelle demande</a
+        >Nouvelle note de frais</a
       >
     </div>
 

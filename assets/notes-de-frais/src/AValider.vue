@@ -16,8 +16,8 @@ const URL_LISTE = "/notes-de-frais/a-valider";
     <ListeAValider :traitees="donnees.traitees" />
 
     <p class="tw-text-sm">
-      <a v-if="donnees.traitees" :href="URL_LISTE" class="tw-text-sky-700 hover:tw-underline">Demandes en attente</a>
-      <a v-else :href="`${URL_LISTE}?traitees`" class="tw-text-sky-700 hover:tw-underline">Demandes déjà traitées</a>
+      <a v-if="donnees.traitees" :href="URL_LISTE" class="tw-text-sky-700 hover:tw-underline">Notes en attente</a>
+      <a v-else :href="`${URL_LISTE}?traitees`" class="tw-text-sky-700 hover:tw-underline">Notes déjà traitées</a>
     </p>
   </div>
 </template>

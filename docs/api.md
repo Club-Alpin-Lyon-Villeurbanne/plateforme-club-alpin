@@ -276,8 +276,8 @@ Content-Type: application/merge-patch+json
 ```
 
 **Refus :**
-- `422` sur `status`, « Cette demande a déjà été traitée. » : une décision sur une note qui a quitté l'étape de celui qui décide (deux onglets, deux personnes en même temps). compta-club reconnaît ce texte exact (`app/lib/apiError.ts`) : le changer demande de changer compta-club.
-- `422` sur `status`, les autres changements de statut refusés : « Cette demande attend encore la décision du responsable de la commission. » (la trésorerie sur une note hors sortie qui attend un responsable), « Vous ne pouvez pas décider sur votre propre note de frais. », sinon « Ce changement de statut n'est pas permis. ».
+- `422` sur `status`, « Cette note a déjà été traitée. » : une décision sur une note qui a quitté l'étape de celui qui décide (deux onglets, deux personnes en même temps). compta-club reconnaît ce texte exact (`app/lib/apiError.ts`) : le changer demande de changer compta-club.
+- `422` sur `status`, les autres changements de statut refusés : « Cette note attend encore la décision du responsable de la commission. » (la trésorerie sur une note hors sortie qui attend un responsable), « Vous ne pouvez pas décider sur votre propre note de frais. », sinon « Ce changement de statut n'est pas permis. ».
 - `422` sur `commentaireStatut` : un message au demandeur est obligatoire pour refuser une note hors sortie.
 - `409`, « Cette note a été modifiée en même temps par une autre action. Rechargez la page. » : une autre requête a modifié la note depuis que celle-ci l'a lue (verrou optimiste). Rien n'est enregistré : relire la note avant de réessayer.
 

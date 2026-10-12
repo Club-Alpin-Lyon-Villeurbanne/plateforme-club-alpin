@@ -57,7 +57,7 @@ class NoteHorsSortieMailsTest extends ExpenseReportApiTestCase
         $this->assertResponseStatus(200, $this->envoyer($this->owner, $note));
 
         $mail = $this->mailsA($this->responsable->getEmail())[0];
-        $this->assertStringContainsString('Voir la demande', $mail->getHtmlBody());
+        $this->assertStringContainsString('Voir la note', $mail->getHtmlBody());
         $this->assertStringContainsString('href="http://localhost/notes-de-frais/' . $note->getId() . '"', $mail->getHtmlBody());
         $this->assertStringContainsString('http://localhost/notes-de-frais/' . $note->getId(), $mail->getTextBody());
     }
@@ -105,7 +105,7 @@ class NoteHorsSortieMailsTest extends ExpenseReportApiTestCase
         $this->assertResponseStatus(200, $this->patch($this->owner, $report, ['status' => 'submitted']));
 
         $this->assertSeulsDestinataires([$this->owner]);
-        $this->assertStringContainsString('est envoyée à la comptabilité', $this->mailsA($this->owner->getEmail())[0]->getTextBody());
+        $this->assertStringContainsString('est envoyée à la trésorerie', $this->mailsA($this->owner->getEmail())[0]->getTextBody());
     }
 
     /**

@@ -32,7 +32,7 @@
         </ul>
     {% endif %}
     <p>
-        <a href="{{ lien }}" style="display: inline-block; padding: 8px 16px; border-radius: 6px; background-color: #0369a1; color: #ffffff; font-weight: bold; text-decoration: none;">Voir la demande</a>
+        <a href="{{ lien }}" style="display: inline-block; padding: 8px 16px; border-radius: 6px; background-color: #0369a1; color: #ffffff; font-weight: bold; text-decoration: none;">Voir la note</a>
     </p>
     {% if autresValideurs %}
         <p style="font-size: 12px; color: #6b7280;">{{ autresValideurs|join(', ', ' et ') }} {% if autresValideurs|length > 1 %}l'ont reçu aussi : la réponse de l'un de vous suffit.{% else %}l'a reçu aussi : la réponse de l'un de vous deux suffit.{% endif %}</p>
@@ -73,7 +73,7 @@ Mot du demandeur :
 {% endfor %}
 {% endif %}
 
-Voir la demande : {{ lien }}
+Voir la note : {{ lien }}
 {% if autresValideurs %}
 
 {{ autresValideurs|join(', ', ' et ') }} {% if autresValideurs|length > 1 %}l'ont reçu aussi : la réponse de l'un de vous suffit.{% else %}l'a reçu aussi : la réponse de l'un de vous deux suffit.{% endif %}

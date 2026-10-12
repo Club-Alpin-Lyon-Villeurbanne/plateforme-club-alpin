@@ -1,7 +1,7 @@
 <template>
   <div class="tw-space-y-5 tw-p-8">
-    <!-- Le type ne change plus une fois la demande créée ; la formation n'est proposée qu'aux encadrants. -->
-    <div v-if="typeModifiable && formationPossible" class="tw-flex tw-gap-6 tw-text-sm" role="radiogroup" aria-label="Type de demande">
+    <!-- Le type ne change plus une fois la note créée ; la formation n'est proposée qu'aux encadrants. -->
+    <div v-if="typeModifiable && formationPossible" class="tw-flex tw-gap-6 tw-text-sm" role="radiogroup" aria-label="Type de note">
       <label v-for="(libelles, type) in TYPES" :key="type" class="tw-flex tw-items-center tw-gap-2">
         <input v-model="demande.type" type="radio" name="type" :value="type" /> {{ libelles.choix }}
       </label>
@@ -71,12 +71,12 @@ import { TYPES } from "../typesDeNote";
 import type { CommissionProposee, Demande } from "../types";
 
 const props = defineProps<{
-  /** Vrai tant que la demande n'est pas créée. */
+  /** Vrai tant que la note n'est pas créée. */
   typeModifiable: boolean;
   /** Au moins une commission accepte une formation de l'utilisateur. */
   formationPossible: boolean;
   commissions: CommissionProposee[];
-  /** Commission enregistrée d'une demande reprise : toujours proposée. */
+  /** Commission enregistrée d'une note reprise : toujours proposée. */
   commissionEnregistree: number | null;
   /** Null quand le délai ne s'applique pas : pas de délai pour le type, ou note renvoyée à corriger. */
   delaiEnvoiJours: number | null;

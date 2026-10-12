@@ -30,7 +30,7 @@ export function limiteEnvoi(dateDepense: string, delaiJours: number): Date {
 }
 
 export function messageDelaiDepasse(delaiJours: number): string {
-  return `Le délai de ${delaiJours} jours est dépassé : cette demande ne peut plus être envoyée.`;
+  return `Le délai de ${delaiJours} jours est dépassé : cette note ne peut plus être envoyée.`;
 }
 
 /** « , le 13/09/2026 » après le type d'une note hors sortie ; rien tant que la date manque. */

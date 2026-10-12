@@ -149,7 +149,7 @@ export interface DonneesMesNotes {
 }
 
 export interface DonneesAValider {
-  /** Demandes déjà traitées plutôt que demandes en attente. */
+  /** Notes déjà traitées plutôt que notes en attente. */
   traitees: boolean;
 }
 

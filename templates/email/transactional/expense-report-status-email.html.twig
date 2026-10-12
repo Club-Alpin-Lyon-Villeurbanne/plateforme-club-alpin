@@ -8,7 +8,7 @@
     {%- elseif status == 'preapproved' %} a été validée{% if auteur %} par {{ auteur|raw }}{% endif %} et transmise à la trésorerie
     {%- elseif status == 'approved' %} a été validée par la trésorerie
     {%- elseif status == 'accounted' %} a été comptabilisée
-    {%- else %} a été acceptée{% endif %}.
+    {%- else %} a été validée par la trésorerie{% endif %}.
 {%- endmacro %}
 
 {% block subject -%}
@@ -17,10 +17,10 @@
     {{ notes.phrase_hors_sortie(report.objet|e, status, auteur|default(null)|e, valideurs|default([])|join(', ', ' et ')|e) }}
     {%- else -%}
     Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} 
-    {%- if status == 'submitted' %} est envoyée à la comptabilité
+    {%- if status == 'submitted' %} est envoyée à la trésorerie
     {%- elseif status == 'rejected' %} a été refusée
     {%- elseif status == 'accounted' %}  a été comptabilisée
-    {%- else %} a été acceptée{% endif %}.
+    {%- else %} a été validée par la trésorerie{% endif %}.
     {%- endif %}
 {%- endblock %}
 
@@ -36,7 +36,7 @@
         <p style="margin-left: 0; padding: 4px 12px; border-left: 3px solid #d1d5db; color: #374151;">«&nbsp;{{ report.statusComment|nl2br }}&nbsp;»</p>
         {% endif %}
     <p>
-        <a href="{{ lienCorrection }}" style="display: inline-block; padding: 8px 16px; border-radius: 6px; background-color: #0369a1; color: #ffffff; font-weight: bold; text-decoration: none;">Corriger ma demande</a>
+        <a href="{{ lienCorrection }}" style="display: inline-block; padding: 8px 16px; border-radius: 6px; background-color: #0369a1; color: #ffffff; font-weight: bold; text-decoration: none;">Corriger ma note</a>
     </p>
     {% endif %}
     <h2>Détails</h2>
@@ -71,10 +71,10 @@
     <p>
         Votre note de frais {% if report.event and event_url is defined %}pour <a href="{{ event_url }}">"{{ report.event.titre }}"</a>{% elseif report.event %}pour "{{ report.event.titre }}"{% endif %}
         a été traitée et
-            {%- if status == 'submitted' %} est envoyée à la comptabilité
+            {%- if status == 'submitted' %} est envoyée à la trésorerie
             {%- elseif status == 'rejected' %} a été refusée
             {%- elseif status == 'accounted' %} a été intégrée dans l'outil de comptabilité et n'est donc plus modifiable
-            {%- else %} a été acceptée{% endif %}.
+            {%- else %} a été validée par la trésorerie{% endif %}.
     </p>
     
     {% if status == 'rejected' and report.statusComment %}
@@ -222,7 +222,7 @@ Message laissé par {{ auteur|default('la trésorerie') }} :
 « {{ report.statusComment }} »
 
 {% endif %}
-Corriger ma demande : {{ lienCorrection }}
+Corriger ma note : {{ lienCorrection }}
 
 {% endif %}
 - Demandeur : {{ report.user.firstname }} {{ report.user.lastname }}
@@ -249,10 +249,10 @@ Don au club (un reçu fiscal vous sera envoyé en fin d'année).
 {% endif %}
 {% endautoescape %}{% else %}
 Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} 
-    {%- if status == 'submitted' %} est envoyée à la comptabilité
+    {%- if status == 'submitted' %} est envoyée à la trésorerie
     {%- elseif status == 'rejected' %} a été refusée
     {%- elseif status == 'accounted' %} a été intégrée dans l'outil de comptabilité et n'est donc plus modifiable
-    {%- else %} a été acceptée{% endif %}.
+    {%- else %} a été validée par la trésorerie{% endif %}.
 
     {% if report.event and event_url is defined %}({{ event_url }}){% endif %}
 

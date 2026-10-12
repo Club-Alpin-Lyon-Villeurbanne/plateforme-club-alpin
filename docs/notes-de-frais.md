@@ -71,8 +71,8 @@ Règles à connaître :
 - Tout adhérent connecté peut demander le remboursement d'un achat. Une formation est réservée aux adhérents qui ont un rôle d'encadrement sur la commission (responsable, encadrant, coencadrant, stagiaire ou bénévole d'encadrement).
 - Les valideurs d'une note sont les responsables de sa commission, sauf le demandeur et ceux qui n'ont pas d'adresse mail. Ils sont recalculés à chaque lecture : si l'on retire son rôle à un responsable qui ne répond pas, ses notes restent aux autres responsables de la commission, ou passent à la trésorerie s'il n'en reste aucun.
 - Un refus porte toujours un message. Le demandeur corrige sa note et l'envoie à nouveau : elle repasse par le responsable s'il y en a un, même quand c'est la trésorerie qui l'a refusée.
-- Le demandeur ne modifie sa note qu'en brouillon ou à corriger. Celui qui décide d'une note qui a quitté son étape lit « Cette demande a déjà été traitée. ».
-- Le demandeur reçoit un mail à chaque étape : envoi, validation par le responsable, validation par la trésorerie, refus (avec le message et le lien « Corriger ma demande »), comptabilisation. Chaque valideur reçoit « Note de frais à valider ». Aucun mail ne part vers la trésorerie.
+- Le demandeur ne modifie sa note qu'en brouillon ou à corriger. Celui qui décide d'une note qui a quitté son étape lit « Cette note a déjà été traitée. ».
+- Le demandeur reçoit un mail à chaque étape : envoi, validation par le responsable, validation par la trésorerie, refus (avec le message et le lien « Corriger ma note »), comptabilisation. Chaque valideur reçoit « Note de frais à valider ». Aucun mail ne part vers la trésorerie.
 
 ### La trésorerie travaille dans compta-club
 

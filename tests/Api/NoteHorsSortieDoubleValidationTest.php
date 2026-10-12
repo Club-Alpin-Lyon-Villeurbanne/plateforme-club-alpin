@@ -15,7 +15,7 @@ class NoteHorsSortieDoubleValidationTest extends ExpenseReportApiTestCase
 {
     private const MESSAGE = 'Merci de joindre la facture du magasin.';
     private const MESSAGE_OBLIGATOIRE = 'Un message au demandeur est obligatoire pour refuser la note.';
-    private const DEJA_TRAITEE = 'Cette demande a déjà été traitée.';
+    private const DEJA_TRAITEE = 'Cette note a déjà été traitée.';
 
     private const OK = 'acceptée';
     private const SANS_EFFET = 'sans effet';

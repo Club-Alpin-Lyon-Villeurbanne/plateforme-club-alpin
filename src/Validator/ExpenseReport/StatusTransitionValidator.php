@@ -60,7 +60,7 @@ class StatusTransitionValidator
         // Plusieurs personnes décident d'une même note : celle qui arrive quand la note a quitté son
         // étape doit l'apprendre, même si elle demande la décision déjà prise.
         if ($this->dejaTraitee($expenseReport, $oldStatus, $newStatus, $allowedTargets)) {
-            $context->buildViolation('Cette demande a déjà été traitée.')
+            $context->buildViolation('Cette note a déjà été traitée.')
                 ->atPath('status')
                 ->addViolation();
 
@@ -121,7 +121,7 @@ class StatusTransitionValidator
             && $this->actor->isManagerOf($note)
             && !$this->actor->isResponsableOf($note)
             && [] !== $this->valideurs->pour($note)) {
-            return 'Cette demande attend encore la décision du responsable de la commission.';
+            return 'Cette note attend encore la décision du responsable de la commission.';
         }
 
         return 'Ce changement de statut n\'est pas permis.';
