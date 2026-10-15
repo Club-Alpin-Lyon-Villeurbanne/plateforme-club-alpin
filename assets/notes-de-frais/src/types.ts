@@ -12,8 +12,6 @@ export interface CommissionProposee {
   titre: string;
   /** Calculés pour l'utilisateur connecté, lui-même exclu ; vide : la trésorerie validera. */
   valideurs: Valideur[];
-  /** L'utilisateur y a un rôle d'encadrement : l'API accepterait qu'il y demande une formation. */
-  formationPossible: boolean;
   /** L'utilisateur est responsable de cette commission : sans autre valideur, il en est le seul. */
   demandeurResponsable: boolean;
 }
@@ -31,8 +29,17 @@ export interface DonneesInitiales {
   /** Par type de note ; un type absent n'a pas de délai. */
   delaisEnvoiJours: Record<string, number>;
   formation: BaremeFormation;
+  sortie: ConditionsNoteDeSortie;
   /** Brouillon à reprendre. */
   noteId: number | null;
+}
+
+/** Une note de sortie se fait depuis la sortie : ce que la page en dit à qui choisit « Sortie ». */
+export interface ConditionsNoteDeSortie {
+  delaiJours: number;
+  sortiesPassees: string;
+  /** Formulaire de signalement du site, si le bouton manque sur la sortie. */
+  signalement: string;
 }
 
 /** Première étape. */
@@ -148,6 +155,8 @@ export interface NoteDeSortie {
 
 export interface DonneesMesNotes {
   delaisEnvoiJours: Record<string, number>;
+  /** Faux : pas de bouton « Nouvelle note de frais », la page de demande l'expliquerait. */
+  peutDeposer: boolean;
 }
 
 export interface DonneesAValider {

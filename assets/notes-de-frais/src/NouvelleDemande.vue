@@ -11,7 +11,7 @@
 
   <div v-if="!envoyee" class="main-type">
     <h1>{{ titre }}</h1>
-    <p v-if="!erreurDeChargement">{{ formationPossible ? "Pour une formation ou un achat fait pour le club." : "Pour un achat fait pour le club." }}</p>
+    <p v-if="!erreurDeChargement">Pour une formation ou un achat fait pour le club.</p>
   </div>
 
   <form
@@ -32,9 +32,8 @@
       v-else-if="etape === 1"
       v-model="demande"
       :type-modifiable="note === null"
-      :formation-possible="formationPossible"
       :commissions="donnees.commissions"
-      :commission-enregistree="note?.commission?.id ?? null"
+      :sortie="donnees.sortie"
       :delai-envoi-jours="delaiEnvoiJours"
       :erreurs="erreursEtape1"
       :en-cours="enCours"
@@ -66,7 +65,8 @@
       :conflit="conflitDeVersion"
       :confirmation="confirmation"
       :brouillon="note?.status === 'draft'"
-      :destinataire-du-mot="versLaTresorerie ? 'la trésorerie' : 'le responsable'"
+      :destinataire-du-mot="versLaTresorerie ? 'la trésorerie' : 'les responsables de la commission'"
+      :libelle-envoi="versLaTresorerie ? 'Envoyer à la trésorerie' : 'Envoyer à la commission'"
       @modifier="afficherEtape(1)"
       @enregistrer="enregistrer"
       @envoyer="envoyer"
@@ -167,13 +167,8 @@ const messageDeRefus = computed(() => {
   return `Refusée par ${auteurDeLaDecision(decision)} : «\u00a0${decision.message ?? ""}\u00a0»`;
 });
 
-const titre = computed(() => (note.value?.status === "rejected" ? "Corriger la note" : "Demande de remboursement"));
-watch(titre, (nouveau) => (document.title = TITRE_DE_L_ONGLET.replace("Demande de remboursement", nouveau)));
-
-// Une formation reprise reste une formation, même si le demandeur n'encadre plus nulle part.
-const formationPossible = computed(
-  () => demande.value.type === "formation" || props.donnees.commissions.some((commission) => commission.formationPossible),
-);
+const titre = computed(() => (note.value?.status === "rejected" ? "Corriger la note" : "Nouvelle note de frais"));
+watch(titre, (nouveau) => (document.title = TITRE_DE_L_ONGLET.replace("Nouvelle note de frais", nouveau)));
 
 const commissionChoisie = computed(() => props.donnees.commissions.find((commission) => commission.id === demande.value.commissionId));
 

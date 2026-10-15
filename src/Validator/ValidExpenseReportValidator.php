@@ -60,8 +60,6 @@ class ValidExpenseReportValidator extends ConstraintValidator
 
         if (null === $value->getId()) {
             $this->appliquerLesControles($value, MomentDeControle::CREATION);
-        } elseif ($value->getCommission() !== $this->originalState->value($value, 'commission')) {
-            $this->appliquerLesControles($value, MomentDeControle::CHANGEMENT_DE_COMMISSION);
         }
 
         if (ExpenseReportStatusEnum::SUBMITTED !== $value->getStatus()) {

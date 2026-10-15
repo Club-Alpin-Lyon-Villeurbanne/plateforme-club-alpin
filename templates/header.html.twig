@@ -294,7 +294,7 @@
                             </div>
                         {% endif %}
 
-                            {% if display_notes_de_frais %}
+                            {% if display_notes_de_frais and peut_deposer_une_note_de_frais(app.user) %}
                                 <div class="nav-user">
                                     <p class="menutitle">Notes de frais</p>
                                     <ul>
@@ -302,7 +302,7 @@
                                             <a href="{{ path('notes_de_frais_mes_notes') }}">mes notes de frais</a>
                                         </li>
                                         <li>
-                                            <a href="{{ path('notes_de_frais_nouvelle') }}">demander un remboursement</a>
+                                            <a href="{{ path('notes_de_frais_nouvelle') }}">nouvelle note de frais</a>
                                         </li>
                                         {% set notes_de_frais_a_valider = notes_de_frais_a_valider() %}
                                         {% if notes_de_frais_a_valider is not null %}

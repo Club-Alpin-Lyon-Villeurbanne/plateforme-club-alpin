@@ -30,7 +30,7 @@ export function limiteEnvoi(dateDepense: string, delaiJours: number): Date {
 }
 
 export function messageDelaiDepasse(delaiJours: number): string {
-  return `Le délai de ${delaiJours} jours est dépassé : cette note ne peut plus être envoyée. Si la dépense doit quand même être remboursée, parlez-en au responsable de la commission.`;
+  return `Le délai de ${delaiJours} jours est dépassé : cette note ne peut plus être envoyée. Si la dépense doit quand même être remboursée, parlez-en aux responsables de la commission.`;
 }
 
 /** « , le 13/09/2026 » après le type d'une note hors sortie ; rien tant que la date manque. */
@@ -94,12 +94,12 @@ export function phraseValideurs(commission: { valideurs: Personne[]; demandeurRe
     return `Sera transmise aux responsables de la commission : ${noms}.`;
   }
   if (commission.valideurs.length === 1) {
-    return `Sera transmise au responsable de la commission : ${noms}.`;
+    return `Sera transmise à ${noms}, responsable de la commission.`;
   }
 
   // Sans affirmer qu'il n'y a pas de responsable : il peut en avoir un sans adresse mail, ou qui doit renouveler.
   return commission.demandeurResponsable
-    ? "Sera transmise directement à la trésorerie : un responsable ne valide pas sa propre note."
+    ? "Sera transmise directement à la trésorerie : on ne valide pas sa propre note."
     : "Sera transmise directement à la trésorerie.";
 }
 
@@ -124,7 +124,7 @@ export function phrasePrevenus(valideurs: Personne[]): string {
   }
   const noms = enumeration(valideurs.map(nomComplet));
 
-  return valideurs.length > 1 ? `${noms} ont été prévenus.` : `${noms} a été prévenu·e.`;
+  return valideurs.length > 1 ? `${noms} ont été prévenu·es.` : `${noms} a été prévenu·e.`;
 }
 
 // Phrases de l'avancement d'une note hors sortie, pour toutes les pages : le niveau de chaque

@@ -11,6 +11,7 @@ use App\Repository\ContentInlineRepository;
 use App\Repository\EventParticipationRepository;
 use App\Repository\EvtRepository;
 use App\Repository\PartenaireRepository;
+use App\Service\NoteDeFrais\ControlesNoteHorsSortie;
 use App\Service\NoteDeFrais\NotesAValider;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\ContainerInterface;
@@ -38,6 +39,7 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
             CommissionRepository::class,
             Notifications::class,
             NotesAValider::class,
+            ControlesNoteHorsSortie::class,
         ];
     }
 
@@ -57,6 +59,7 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
             new TwigFunction('notifications_counter_sorties', [$this, 'getNotificationsValidationSortie']),
             new TwigFunction('notifications_counter_sorties_president', [$this, 'getNotificationsValidationSortiePresident']),
             new TwigFunction('notes_de_frais_a_valider', [$this, 'getNotesDeFraisAValider']),
+            new TwigFunction('peut_deposer_une_note_de_frais', [$this, 'peutDeposerUneNoteDeFrais']),
             new TwigFunction('empietements', [$this, 'getEmpietements']),
         ];
     }
@@ -145,6 +148,11 @@ class DatabaseContentExtension extends AbstractExtension implements ServiceSubsc
     public function getNotesDeFraisAValider(): ?int
     {
         return $this->locator->get(NotesAValider::class)->nombreEnAttente();
+    }
+
+    public function peutDeposerUneNoteDeFrais(?User $utilisateur): bool
+    {
+        return $utilisateur instanceof User && $this->locator->get(ControlesNoteHorsSortie::class)->peutDeposer($utilisateur);
     }
 
     /**

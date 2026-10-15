@@ -2,7 +2,6 @@
 
 namespace App\Service\NoteDeFrais;
 
-use App\Entity\Commission;
 use App\Entity\ExpenseAttachment;
 use App\Entity\ExpenseReport;
 use App\Entity\User;
@@ -21,7 +20,8 @@ use Symfony\Component\DependencyInjection\Attribute\Autowire;
  */
 final class ControlesNoteHorsSortie
 {
-    // Rôles qui permettent de demander le remboursement d'une formation sur leur commission.
+    // Rôles qui ouvrent les notes hors sortie, dans n'importe quelle commission : une note ne
+    // dépend pas d'un rôle dans la commission qui la reçoit.
     private const array ROLES_D_ENCADREMENT = [
         UserAttr::RESPONSABLE_COMMISSION,
         UserAttr::ENCADRANT,
@@ -29,6 +29,8 @@ final class ControlesNoteHorsSortie
         UserAttr::STAGIAIRE,
         UserAttr::BENEVOLE,
     ];
+
+    public const string RESERVEES_A_L_ENCADREMENT = 'Les notes de frais sont réservées à l\'encadrement et aux responsables de commission.';
 
     public function __construct(
         #[Autowire(param: 'expense_report')]
@@ -73,10 +75,10 @@ final class ControlesNoteHorsSortie
                 'controle' => $this->delaiDEnvoiDepasse(...),
             ],
             [
-                'champ' => 'commission',
-                'moments' => [MomentDeControle::CREATION, MomentDeControle::CHANGEMENT_DE_COMMISSION],
+                'champ' => 'type',
+                'moments' => [MomentDeControle::CREATION],
                 'niveau' => NiveauDeControle::BLOQUANT,
-                'controle' => $this->formationSansRoleDEncadrement(...),
+                'controle' => $this->sansRoleDEncadrement(...),
             ],
             [
                 'champ' => 'details',
@@ -181,25 +183,19 @@ final class ControlesNoteHorsSortie
     }
 
     /**
-     * Règle du contrôle de création d'une formation, partagée avec la page de demande qui ne
-     * propose la formation que sur ces commissions.
+     * Règle du contrôle de création, partagée avec le menu et la page de demande. Contrôlée à la
+     * création seulement : un demandeur qui perd son rôle termine ses notes commencées.
      */
-    public function peutDemanderUneFormation(User $demandeur, Commission $commission): bool
+    public function peutDeposer(User $demandeur): bool
     {
-        return $demandeur->hasAttribute(self::ROLES_D_ENCADREMENT, $commission->getCode());
+        return $demandeur->hasAttribute(self::ROLES_D_ENCADREMENT);
     }
 
-    private function formationSansRoleDEncadrement(ExpenseReport $note): ?string
+    private function sansRoleDEncadrement(ExpenseReport $note): ?string
     {
-        $commission = $note->getCommission();
         $demandeur = $note->getUser();
-        if (ExpenseReportTypeEnum::FORMATION !== $note->getType() || null === $commission || null === $demandeur) {
-            return null;
-        }
 
-        return $this->peutDemanderUneFormation($demandeur, $commission)
-            ? null
-            : 'Seuls les encadrants de la commission peuvent demander le remboursement d\'une formation.';
+        return null === $demandeur || $this->peutDeposer($demandeur) ? null : self::RESERVEES_A_L_ENCADREMENT;
     }
 
     private function sansDepense(ExpenseReport $note): ?string
@@ -294,7 +290,7 @@ final class ControlesNoteHorsSortie
 
     private function choixDonOuRemboursementManquant(ExpenseReport $note): ?string
     {
-        return null === $note->isRefundRequired() ? 'Il manque le choix entre remboursement et don.' : null;
+        return null === $note->isRefundRequired() ? 'Il manque le choix entre don et remboursement.' : null;
     }
 
     private function auDelaDuSeuil(ExpenseReport $note): ?string

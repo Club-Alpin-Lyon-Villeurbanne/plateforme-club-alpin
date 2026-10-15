@@ -68,7 +68,7 @@ stateDiagram-v2
 
 Règles à connaître :
 
-- Tout adhérent connecté peut demander le remboursement d'un achat. Une formation est réservée aux adhérents qui ont un rôle d'encadrement sur la commission (responsable, encadrant, coencadrant, stagiaire ou bénévole d'encadrement).
+- Les notes hors sortie, achat comme formation, sont réservées aux adhérents qui ont un rôle d'encadrement (encadrant, co-encadrant, initiateur stagiaire, bénévole d'encadrement) ou de responsable de commission, dans n'importe quelle commission : la note peut aller à une autre commission que celle du rôle. Le rôle est contrôlé à la création seulement : un demandeur qui le perd termine ses notes commencées.
 - Les valideurs d'une note sont les responsables de sa commission, sauf le demandeur et ceux qui n'ont pas d'adresse mail. Ils sont recalculés à chaque lecture : si l'on retire son rôle à un responsable qui ne répond pas, ses notes restent aux autres responsables de la commission, ou passent à la trésorerie s'il n'en reste aucun.
 - Un refus porte toujours un message. Le demandeur corrige sa note et l'envoie à nouveau : elle repasse par le responsable s'il y en a un, même quand c'est la trésorerie qui l'a refusée.
 - Le demandeur ne modifie sa note qu'en brouillon ou à corriger. Celui qui décide d'une note qui a quitté son étape lit « Cette note a déjà été traitée. ».
@@ -88,19 +88,19 @@ Ses décisions sont signées « la trésorerie » sur le site, dans les mails et
 
 ### Écrans
 
-Le menu adhérent gagne une rubrique « Notes de frais ». L'entrée « notes de frais à valider », avec son compteur, n'apparaît qu'aux responsables de commission.
+Le menu adhérent gagne une rubrique « Notes de frais », pour ces rôles seulement. L'entrée « notes de frais à valider », avec son compteur, n'apparaît qu'aux responsables de commission. Un autre adhérent qui ouvre « Nouvelle note de frais » lit à qui les notes sont réservées ; « Mes notes de frais » lui reste ouverte, sans le bouton de nouvelle note, car les mails y renvoient.
 
 ![Menu adhérent d'un responsable de commission, avec la rubrique Notes de frais](images/notes-de-frais/hors-sortie-menu.png)
 
-Première étape du formulaire : type, commission, objet et date. Sous la commission, le demandeur voit à qui sa note sera transmise : le responsable de la commission, ou la trésorerie.
+Première étape du formulaire : type, commission, objet et date. Le type « Sortie » n'ouvre pas de formulaire : il explique qu'une note de sortie se fait depuis la sortie, à quelles conditions, avec un lien vers « mes sorties passées » et le formulaire de signalement du site. Sous la commission, le demandeur voit à qui sa note sera transmise : les responsables de la commission, nommés, ou la trésorerie.
 
 ![Première étape d'une note de formation](images/notes-de-frais/hors-sortie-premiere-etape.png)
 
-Seconde étape : une ligne par dépense avec son justificatif, le total, le choix entre remboursement et don (obligatoire pour envoyer), et un mot facultatif pour le responsable (« pour la trésorerie » quand la note va directement à elle).
+Seconde étape : une ligne par dépense avec son justificatif, le total, le choix entre don et remboursement (le don en premier, rien de coché, obligatoire pour envoyer), et un mot facultatif pour les responsables de la commission (« pour la trésorerie » quand la note va directement à elle). Le bouton dit à qui part la note : « Envoyer à la commission » ou « Envoyer à la trésorerie ».
 
 ![Seconde étape d'une note de formation](images/notes-de-frais/hors-sortie-seconde-etape.png)
 
-« Mes notes de frais » : toutes les notes du demandeur, de sortie comme hors sortie, filtrables par type, et le bouton « Nouvelle note de frais ». Pour chacune : où elle en est (« Brouillon », « Transmise au responsable de commission », « Transmise à la trésorerie », « Validée », « Comptabilisée », « À corriger » avec le message du refus), et les liens « Reprendre » ou « Corriger ». Le titre d'une note hors sortie ouvre sa page ; sous son montant, « dont X € remboursables » quand un plafond du club s'applique, ou « Don au club ». Une note de sortie renvoie vers la page de sa sortie.
+« Mes notes de frais » : toutes les notes du demandeur, de sortie comme hors sortie, filtrables par type, et le bouton « Nouvelle note de frais ». Pour chacune : où elle en est (« Brouillon », « Transmise à la commission », « Transmise à la trésorerie », « Validée », « Comptabilisée », « À corriger » avec le message du refus), et les liens « Reprendre » ou « Corriger ». Le titre d'une note hors sortie ouvre sa page ; sous son montant, « dont X € remboursables » quand un plafond du club s'applique, ou « Don au club ». Une note de sortie renvoie vers la page de sa sortie.
 
 ![Page Mes notes de frais](images/notes-de-frais/hors-sortie-mes-notes.png)
 

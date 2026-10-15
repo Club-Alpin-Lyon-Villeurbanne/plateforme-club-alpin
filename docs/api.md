@@ -259,6 +259,8 @@ Content-Type: application/json
 }
 ```
 
+Une note hors sortie (`type` `formation` ou `autre`) demande un rôle d'encadrement ou de responsable de commission, dans n'importe quelle commission. Sinon : `422` sur `type`, « Les notes de frais sont réservées à l'encadrement et aux responsables de commission. ».
+
 #### Cloner une note de frais
 ```http
 POST /api/notes-de-frais/{id}/clone

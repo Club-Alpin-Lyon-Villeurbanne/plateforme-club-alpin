@@ -103,7 +103,7 @@ class NoteHorsSortieEnvoiTest extends ExpenseReportApiTestCase
         $note = $this->creerAchat($this->owner, ExpenseReportStatusEnum::DRAFT, self::LIGNES);
         $this->joindreLesJustificatifs($note, 'ligne-1', 'ligne-2');
 
-        $this->assertRefusAvec($this->patch($this->owner, $note, ['status' => 'submitted']), 'refundRequired', 'Il manque le choix entre remboursement et don.');
+        $this->assertRefusAvec($this->patch($this->owner, $note, ['status' => 'submitted']), 'refundRequired', 'Il manque le choix entre don et remboursement.');
     }
 
     public function testEnvoiRefuseAvecUneDateFuture(): void
@@ -150,7 +150,7 @@ class NoteHorsSortieEnvoiTest extends ExpenseReportApiTestCase
         $this->assertResponseStatus(422, $response);
         $this->assertEqualsCanonicalizing([
             ['propertyPath' => 'details', 'message' => 'Il manque au moins une dépense.'],
-            ['propertyPath' => 'refundRequired', 'message' => 'Il manque le choix entre remboursement et don.'],
+            ['propertyPath' => 'refundRequired', 'message' => 'Il manque le choix entre don et remboursement.'],
         ], array_map(
             static fn (array $violation) => ['propertyPath' => $violation['propertyPath'], 'message' => $violation['message']],
             $response['body']['violations'],

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Evt;
 use App\Entity\User;
 use App\Repository\CommissionRepository;
 use App\Repository\ExpenseReportRepository;
@@ -23,6 +24,9 @@ use Twig\Environment;
  */
 class NoteDeFraisController extends AbstractController
 {
+    // Le formulaire de signalement des autres pages du site.
+    private const string FORMULAIRE_DE_SIGNALEMENT = 'https://forms.clickup.com/42653954/f/18np82-775/1BKP6TIKU0RIYXCRWE';
+
     public function __construct(
         #[Autowire(env: 'bool:DISPLAY_NOTES_DE_FRAIS')]
         private readonly bool $notesDeFraisActives,
@@ -32,14 +36,20 @@ class NoteDeFraisController extends AbstractController
     }
 
     #[Route(path: '/notes-de-frais', name: 'notes_de_frais_mes_notes', methods: ['GET'])]
-    public function mesNotes(Environment $twig, string $baseUrl): Response
+    public function mesNotes(ControlesNoteHorsSortie $controles, Environment $twig, string $baseUrl): Response
     {
         $this->pageDisponible();
 
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal('apiBaseUrl', $baseUrl);
 
+        // Ouverte à tous : les mails y renvoient, même après la perte d'un rôle.
+        $utilisateur = $this->getUser();
+
         return $this->render('notes-de-frais/mes-notes.html.twig', [
-            'donnees' => ['delaisEnvoiJours' => $this->configNotesDeFrais['horsSortie']['delaiEnvoiJours']],
+            'donnees' => [
+                'delaisEnvoiJours' => $this->configNotesDeFrais['horsSortie']['delaiEnvoiJours'],
+                'peutDeposer' => $utilisateur instanceof User && $controles->peutDeposer($utilisateur),
+            ],
         ]);
     }
 
@@ -48,8 +58,14 @@ class NoteDeFraisController extends AbstractController
     {
         $this->pageDisponible();
 
-        $visibles = iterator_to_array($commissionRepository->findVisible(), false);
         $utilisateur = $this->getUser();
+        $noteId = $request->query->getInt('id') ?: null;
+        // Une note commencée reste à finir, même après la perte du rôle.
+        if (null === $noteId && !($utilisateur instanceof User && $controles->peutDeposer($utilisateur))) {
+            return $this->render('notes-de-frais/reservee.html.twig', ['message' => ControlesNoteHorsSortie::RESERVEES_A_L_ENCADREMENT]);
+        }
+
+        $visibles = iterator_to_array($commissionRepository->findVisible(), false);
         // Pour la phrase « Validée par … » : l'utilisateur connecté ne valide pas sa propre note.
         $valideursParCommission = $utilisateur instanceof User ? $valideurs->pourLesCommissions($visibles, $utilisateur) : [];
         $commissionsDontIlEstResponsable = $utilisateur instanceof User ? $valideurs->commissionsValideesPar($utilisateur) : [];
@@ -60,8 +76,6 @@ class NoteDeFraisController extends AbstractController
                 'id' => $commission->getId(),
                 'titre' => $commission->getTitle(),
                 'valideurs' => ValideursNoteHorsSortie::exposer($valideursParCommission[$commission->getId()] ?? []),
-                // La page ne propose une formation que là où l'API l'accepterait.
-                'formationPossible' => $utilisateur instanceof User && $controles->peutDemanderUneFormation($utilisateur, $commission),
                 // Sans autre valideur, la page lui dit pourquoi sa note va directement à la trésorerie.
                 'demandeurResponsable' => \in_array($commission->getId(), $commissionsDontIlEstResponsable, true),
             ];
@@ -78,8 +92,14 @@ class NoteDeFraisController extends AbstractController
                     'tauxKilometrique' => $calculator->tauxKilometriqueEnVigueur(),
                     'natures' => ExpenseReportTypeEnum::FORMATION->natures(),
                 ],
+                // « Sortie » au premier choix : la note se fait depuis la sortie, sous ces conditions.
+                'sortie' => [
+                    'delaiJours' => Evt::EXPENSE_REPORT_DEADLINE_DAYS,
+                    'sortiesPassees' => $this->generateUrl('profil_sorties_prev'),
+                    'signalement' => self::FORMULAIRE_DE_SIGNALEMENT,
+                ],
                 // Reprise d'un brouillon : l'application le charge par l'API.
-                'noteId' => $request->query->getInt('id') ?: null,
+                'noteId' => $noteId,
             ],
         ]);
     }

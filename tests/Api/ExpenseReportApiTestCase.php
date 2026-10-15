@@ -83,6 +83,8 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
         $this->rendreResponsable($this->coResponsable, $this->commissionDeTest);
         $this->rendreResponsable($this->responsableAutreCommission, $this->autreCommission);
         $this->donnerUnRole($this->encadrant, UserAttr::ENCADRANT, $this->commissionDeTest);
+        // Le demandeur des tests dépose ses notes sur la commission de test : un rôle ailleurs suffit.
+        $this->donnerUnRole($this->owner, UserAttr::BENEVOLE, $this->autreCommission);
     }
 
     protected function tearDown(): void

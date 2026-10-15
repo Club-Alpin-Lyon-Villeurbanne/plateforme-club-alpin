@@ -149,7 +149,7 @@ function libelleStatut(note: Note): string {
     return "Transmise à la trésorerie";
   }
   if (!estDeSortie(note) && note.status === "submitted") {
-    return "Transmise au responsable de commission";
+    return "Transmise à la commission";
   }
 
   return LIBELLES[note.status] ?? note.status;
@@ -233,6 +233,7 @@ function action(note: Note): { libelle: string; lien: string } | null {
         </button>
       </div>
       <a
+        v-if="donnees.peutDeposer"
         :href="URL_NOUVELLE"
         class="tw-shrink-0 tw-rounded-md tw-bg-sky-700 tw-px-4 tw-py-2 tw-text-sm tw-font-semibold tw-text-white tw-no-underline hover:tw-bg-sky-800"
         >Nouvelle note de frais</a

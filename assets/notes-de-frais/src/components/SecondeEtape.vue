@@ -66,10 +66,10 @@
       </div>
 
       <fieldset class="tw-mt-6">
-        <legend :class="['tw-text-sm tw-font-medium', refusSurLeChoix ? 'tw-text-red-600' : 'tw-text-gray-900']">Remboursement ou don ?</legend>
+        <legend :class="['tw-text-sm tw-font-medium', refusSurLeChoix ? 'tw-text-red-600' : 'tw-text-gray-900']">Don ou remboursement ?</legend>
         <div class="tw-mt-2 tw-flex tw-gap-6 tw-text-sm">
-          <label class="tw-flex tw-items-center tw-gap-2"><input v-model="choix" type="radio" name="choix" :value="true" :aria-invalid="refusSurLeChoix" /> Être remboursé</label>
           <label class="tw-flex tw-items-center tw-gap-2"><input v-model="choix" type="radio" name="choix" :value="false" :aria-invalid="refusSurLeChoix" /> En faire don au club</label>
+          <label class="tw-flex tw-items-center tw-gap-2"><input v-model="choix" type="radio" name="choix" :value="true" :aria-invalid="refusSurLeChoix" /> Être remboursé</label>
         </div>
         <p :class="['tw-mt-2 tw-italic', discret]" aria-live="polite">{{ declaration }}</p>
       </fieldset>
@@ -112,8 +112,9 @@
       </p>
     </div>
     <!-- aria-disabled plutôt que disabled : un bouton désactivé perdrait le focus pendant l'appel. -->
-    <div class="tw-flex tw-items-center tw-justify-end tw-gap-5 tw-border-t tw-border-gray-100 tw-bg-gray-50 tw-px-8 tw-py-4">
-      <p role="status" class="tw-mr-auto tw-text-sm tw-text-gray-700">{{ confirmation }}</p>
+    <div class="tw-flex tw-flex-wrap tw-items-center tw-justify-end tw-gap-5 tw-border-t tw-border-gray-100 tw-bg-gray-50 tw-px-8 tw-py-4">
+      <!-- Une confirmation prend sa ligne : à côté des boutons, elle tiendrait sur une colonne étroite. -->
+      <p role="status" :class="['tw-mr-auto tw-text-sm tw-text-gray-700', confirmation ? 'tw-basis-full' : '']">{{ confirmation }}</p>
       <button
         type="button"
         :aria-disabled="enCours"
@@ -125,10 +126,10 @@
       <button
         type="button"
         :aria-disabled="enCours"
-        class="tw-rounded-md tw-bg-sky-700 tw-px-5 tw-py-2 tw-text-sm tw-font-semibold tw-text-white hover:tw-bg-sky-800 aria-disabled:tw-cursor-wait aria-disabled:tw-opacity-60"
+        class="tw-whitespace-nowrap tw-rounded-md tw-bg-sky-700 tw-px-5 tw-py-2 tw-text-sm tw-font-semibold tw-text-white hover:tw-bg-sky-800 aria-disabled:tw-cursor-wait aria-disabled:tw-opacity-60"
         @click="enCours || emit('envoyer')"
       >
-        {{ envoiEnCours ? "Envoi…" : "Envoyer" }}
+        {{ envoiEnCours ? "Envoi…" : libelleEnvoi }}
       </button>
     </div>
   </div>
@@ -169,8 +170,10 @@ const props = defineProps<{
   /** « Enregistrée à … », jusqu'à la prochaine modification. */
   confirmation: string | null;
   brouillon: boolean;
-  /** « le responsable », ou « la trésorerie » quand la note va directement à elle. */
+  /** « les responsables de la commission », ou « la trésorerie » quand la note va directement à elle. */
   destinataireDuMot: string;
+  /** Dit à qui part la note : « Envoyer à la trésorerie »… */
+  libelleEnvoi: string;
 }>();
 const lignes = defineModel<Ligne[]>("lignes", { required: true });
 const mot = defineModel<string>("mot", { required: true });
