@@ -1,10 +1,5 @@
 framework:
   trusted_proxies: "%env(TRUSTED_PROXIES)%"
-  trusted_headers:
-    [
-      "x-forwarded-for",
-      "x-forwarded-host",
-      "x-forwarded-proto",
-      "x-forwarded-port",
-      "x-forwarded-prefix",
-    ]
+  # Clever Cloud aiguille sur le vrai Host et laisse passer les X-Forwarded-Host, -Port et -Prefix
+  # envoyés par le visiteur : s'y fier ferait pointer les liens absolus (mails compris) ailleurs.
+  trusted_headers: ["x-forwarded-for", "x-forwarded-proto"]
