@@ -1,5 +1,7 @@
 framework:
   trusted_proxies: "%env(TRUSTED_PROXIES)%"
-  # Clever Cloud aiguille sur le vrai Host et laisse passer les X-Forwarded-Host, -Port et -Prefix
-  # envoyés par le visiteur : s'y fier ferait pointer les liens absolus (mails compris) ailleurs.
+  # Clever Cloud aiguille sur le vrai Host et transmet tels quels les X-Forwarded-* envoyés par le
+  # visiteur. On ne garde que -For (Symfony lit la valeur ajoutée par le proxy) et -Proto (un « http »
+  # forcé ne mène qu'à la redirection vers https) : -Host, -Port et -Prefix feraient pointer les liens
+  # absolus, mails compris, ailleurs.
   trusted_headers: ["x-forwarded-for", "x-forwarded-proto"]
