@@ -177,7 +177,7 @@ Il n'y a pas d'adresse de trésorerie à configurer.
    ```
 5. [ ] Vérifier que `DISPLAY_NOTES_DE_FRAIS` vaut faux à Chambéry et à Clermont.
 6. [ ] Vérifier en prod les responsables de chaque commission et leur adresse mail. Une commission sans responsable joignable envoie tout à la trésorerie.
-7. [ ] Décider si la formation est proposée dès maintenant : la politique de remboursement qui fixe son barème est-elle votée ?
+7. [ ] Reporter dans `expense_report.horsSortie` (`config/services.yaml`) les valeurs de la politique de remboursement votée : délai, seuil, taux, plafonds.
 8. [ ] Déployer compta-club, avant la plateforme, avec en une seule fois la liste, la page d'une note et le PDF des notes hors sortie : la plateforme lui enverra ces notes et le statut `preapproved`.
 9. [ ] Déployer la plateforme le même jour que compta-club, et le même jour dans tous les clubs : entre les deux, les filtres « Validée par le responsable », « Formations » et « Achats » de compta-club restent vides. Vérifier ensuite que `doctrine:migrations:status` n'annonce aucune migration en attente.
 
