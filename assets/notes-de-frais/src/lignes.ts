@@ -24,7 +24,13 @@ export function lireLignes(details: string | null): Ligne[] {
   return Array.isArray(lignes) ? lignes.map((ligne) => ({ ...ligne, description: ligne.description ?? "" })) : [];
 }
 
-// Un champ nombre vidé donne une chaîne vide.
+/** « 12,50 », « 12.5 », « 1 234,56 € » ; null si le texte n'est pas un nombre. */
+export function lireNombre(texte: string): number | null {
+  const chiffres = texte.replace(/[\s€]/g, "").replace(",", ".");
+
+  return /^-?(\d+\.?\d*|\.\d+)$/.test(chiffres) ? Number(chiffres) : null;
+}
+
 function nombre(valeur: unknown): number | null {
   return typeof valeur === "number" && !Number.isNaN(valeur) ? valeur : null;
 }

@@ -68,11 +68,12 @@ stateDiagram-v2
 
 Règles à connaître :
 
-- Les notes hors sortie, achat comme formation, sont réservées aux adhérents qui ont un rôle d'encadrement (encadrant, co-encadrant, initiateur stagiaire, bénévole d'encadrement) ou de responsable de commission, dans n'importe quelle commission : la note peut aller à une autre commission que celle du rôle. Le rôle est contrôlé à la création seulement : un demandeur qui le perd termine ses notes commencées.
-- Les valideurs d'une note sont les responsables de sa commission, sauf le demandeur et ceux qui sont supprimés, doivent renouveler leur adhésion ou n'ont pas d'adresse mail. Ils sont recalculés à chaque lecture : si l'on retire son rôle à un responsable qui ne répond pas, ses notes restent aux autres responsables de la commission, ou passent à la trésorerie s'il n'en reste aucun.
+- Les notes hors sortie, achat comme formation, sont réservées aux adhérents qui ont un rôle d'encadrement (encadrant, co-encadrant, initiateur stagiaire, bénévole d'encadrement) ou de responsable de commission, dans n'importe quelle commission : la note peut aller à une autre commission que celle du rôle. Le rôle est contrôlé à la création seulement : un demandeur qui le perd termine ses notes commencées. La rubrique du menu disparaît avec son rôle : il retrouve ses notes à l'adresse `/notes-de-frais` (« Mes notes de frais ») ou par les liens des mails.
+- Les valideurs d'une note sont les responsables de sa commission, sauf le demandeur et ceux dont le compte est supprimé ou verrouillé, qui doivent renouveler leur adhésion ou qui n'ont pas d'adresse mail. Ils sont recalculés à chaque lecture : si l'on retire son rôle à un responsable qui ne répond pas, ses notes restent aux autres responsables de la commission, ou passent à la trésorerie s'il n'en reste aucun.
+- À l'inverse, une note partie à la trésorerie faute de responsable passe, sans mail, au responsable qui redevient actif (il renouvelle son adhésion) ou qu'on nomme entre-temps. Il la voit à sa prochaine visite, par le compteur du menu ; la trésorerie ne la voit plus.
 - Un refus porte toujours un message. Le demandeur corrige sa note et l'envoie à nouveau : elle repasse par le responsable s'il y en a un, même quand c'est la trésorerie qui l'a refusée.
 - Le demandeur ne modifie sa note qu'en brouillon ou à corriger. Celui qui décide d'une note qui a quitté son étape lit « Cette note a déjà été traitée. ».
-- Le demandeur reçoit un mail à chaque étape, avec le lien « Voir ma note » : envoi, validation par le responsable, validation par la trésorerie, refus (avec le message et le lien « Corriger ma note »), comptabilisation. Chaque valideur reçoit « Note de frais à valider ». Aucun mail ne part vers la trésorerie.
+- Le demandeur reçoit un mail à chaque étape, avec le lien « Voir ma note » : envoi, validation par le responsable, validation par la trésorerie, refus (avec le message et le lien « Corriger ma note »), comptabilisation. Chaque valideur reçoit « Note de frais à valider », à l'envoi seulement. Aucun mail ne part vers la trésorerie.
 
 ### La trésorerie travaille dans compta-club
 
@@ -88,7 +89,7 @@ Ses décisions sont signées « la trésorerie » sur le site, dans les mails et
 
 ### Écrans
 
-Le menu adhérent gagne une rubrique « Notes de frais », pour ces rôles seulement. L'entrée « notes de frais à valider », avec son compteur, n'apparaît qu'aux responsables de commission. Un autre adhérent qui ouvre « Nouvelle note de frais » lit à qui les notes sont réservées ; « Mes notes de frais » lui reste ouverte, sans le bouton de nouvelle note, car les mails y renvoient.
+Le menu adhérent gagne une rubrique « Notes de frais », pour ces rôles seulement. L'entrée « notes de frais à valider », avec son compteur, n'apparaît qu'aux responsables de commission. Un autre adhérent qui ouvre « Nouvelle note de frais » lit à qui les notes sont réservées ; « Mes notes de frais » lui reste ouverte, sans le bouton de nouvelle note : un demandeur qui a perdu son rôle y retrouve ses notes. Les mails mènent à la page de la note ou au formulaire de correction ; le fil d'Ariane de la page d'une note mène à « Mes notes de frais ».
 
 ![Menu adhérent d'un responsable de commission, avec la rubrique Notes de frais](images/notes-de-frais/hors-sortie-menu.png)
 
@@ -96,11 +97,11 @@ Première étape du formulaire : type, commission, objet et date. Le type « Sor
 
 ![Première étape d'une note de formation](images/notes-de-frais/hors-sortie-premiere-etape.png)
 
-Seconde étape : une ligne par dépense avec son justificatif, le total, le choix entre don et remboursement (le don en premier, rien de coché, obligatoire pour envoyer), et un mot facultatif pour les responsables de la commission (« pour la trésorerie » quand la note va directement à elle). Le bouton dit à qui part la note : « Envoyer à la commission » ou « Envoyer à la trésorerie ».
+Seconde étape : une ligne par dépense avec son justificatif, le total, le choix entre don et remboursement (le don en premier, rien de coché, obligatoire pour envoyer), et un mot facultatif pour les responsables de la commission (« pour le responsable » s'il n'y en a qu'un, « pour la trésorerie » quand la note va directement à elle). Le bouton dit à qui part la note : « Envoyer à la commission » ou « Envoyer à la trésorerie ».
 
 ![Seconde étape d'une note de formation](images/notes-de-frais/hors-sortie-seconde-etape.png)
 
-« Mes notes de frais » : toutes les notes du demandeur, de sortie comme hors sortie, filtrables par type, et le bouton « Nouvelle note de frais ». Pour chacune : où elle en est (« Brouillon », « Transmise à la commission », « Transmise à la trésorerie », « Validée », « Comptabilisée », « À corriger » avec le message du refus), et les liens « Reprendre » ou « Corriger ». Le titre d'une note hors sortie ouvre sa page ; sous son montant, « dont X € remboursables » quand un plafond du club s'applique, ou « Don au club ». Une note de sortie renvoie vers la page de sa sortie.
+« Mes notes de frais » : toutes les notes du demandeur, de sortie comme hors sortie, filtrables par type, et le bouton « Nouvelle note de frais ». Pour chacune : où elle en est (« Brouillon », « Transmise à la commission », « Transmise à la trésorerie », « Validée », « Comptabilisée », « À corriger » avec le message du refus), et les liens « Reprendre » ou « Corriger ». Sous le montant, « dont X € remboursables » quand un plafond du club s'applique, et « Don au club » pour une note hors sortie. Le titre d'une note hors sortie ouvre sa page ; une note de sortie renvoie vers la page de sa sortie.
 
 ![Page Mes notes de frais](images/notes-de-frais/hors-sortie-mes-notes.png)
 
@@ -116,7 +117,7 @@ Page d'une note vue par le responsable : dépenses, justificatifs et mot du dema
 
 - `DISPLAY_NOTES_DE_FRAIS` : à faux, le site n'affiche aucune note de frais, de sortie ou hors sortie, et les pages hors sortie répondent 404.
 - `AUTHORIZED_IDS_FOR_EXPENSE_MANAGEMENT` : identifiants utilisateur des gestionnaires des notes de frais, séparés par des virgules. C'est la trésorerie, qui agit depuis compta-club.
-- Rôle `responsable-commission`, donné sur une commission dans l'administration : ses titulaires valident les notes de cette commission, sauf s'ils sont supprimés, doivent renouveler leur adhésion ou n'ont pas d'adresse mail.
+- Rôle `responsable-commission`, donné sur une commission dans l'administration : ses titulaires valident les notes de cette commission, sauf si leur compte est supprimé ou verrouillé, s'ils doivent renouveler leur adhésion ou s'ils n'ont pas d'adresse mail.
 - `expense_report.horsSortie` dans `config/services.yaml` : délai d'envoi par type (`delaiEnvoiJours`), seuil d'avertissement (`seuilAvertissement`), taux kilométrique des formations (`formation.tauxKilometrique`) et plafonds par type (`<type>.plafonds`). Les valeurs suivent la politique de remboursement du club. Ce barème est distinct des taux des notes de sortie.
 
 Il n'y a pas d'adresse de trésorerie à configurer.
@@ -154,19 +155,26 @@ Il n'y a pas d'adresse de trésorerie à configurer.
 
 ### Avant la mise en production
 
-`DISPLAY_NOTES_DE_FRAIS` vaut déjà vrai à Lyon : la mise en production ouvre l'outil à Lyon. compta-club part en premier : il marche avec l'API d'aujourd'hui, qui ne lui envoie aucune note hors sortie. Dans l'ordre :
+`DISPLAY_NOTES_DE_FRAIS` vaut déjà vrai à Lyon : la mise en production ouvre l'outil à Lyon. La recette (staging) se met à jour à chaque fusion dans `main`, et la mise en production est un fast-forward de `main` : dès que #1794 est dans `main`, toute mise en production l'emporte. D'où cet ordre :
 
-1. [ ] Vérifier la nouvelle version de compta-club contre staging, qui tourne encore sur `main`, sans les notes hors sortie (préversion Vercel ou poste local, `NEXT_PUBLIC_API_URL` sur l'API de staging) : connexion, liste « À valider », filtres, page et PDF d'une note de sortie.
-2. [ ] Faire la recette de la plateforme sur staging avec de vrais rôles, mails et compta-club compris : la préversion Vercel de compta-club ou un poste local, `NEXT_PUBLIC_API_URL` sur l'API de staging. Les droits des données de démo ne reflètent pas la prod.
+- mettre d'abord en production #1796 ;
+- reporter les valeurs votées sur la branche ;
+- vérifier, puis déployer compta-club : il marche avec l'API d'aujourd'hui, qui ne lui envoie aucune note hors sortie ;
+- fusionner #1794, faire la recette et mettre en production le même jour.
+
+Entre la fusion de #1794 et sa mise en production, aucune autre mise en production depuis `main`. Dans l'ordre :
+
+1. [ ] Mettre en production #1796.
+2. [ ] Reporter dans `expense_report.horsSortie` (`config/services.yaml`) les valeurs de la politique de remboursement votée : délai, seuil, taux, plafonds. Puis relancer `tests/Api` : les tests lisent les montants dans la configuration, mais certaines de leurs données supposent la forme du barème (natures plafonnées et leur portée, délai des achats, formations sans délai). Adapter ces données si un test échoue.
 3. [ ] Sur une copie de la prod, lire toutes les notes existantes par la nouvelle API : `GET /admin/notes-de-frais?pagination=false&inclure_brouillons=true` en gestionnaire, puis la liste du demandeur (« Mes notes de frais », `GET /notes-de-frais?inclure_brouillons=true`). Aucune ne doit faire échouer la lecture : une seule note illisible bloquerait compta-club.
-4. [ ] Sur la même copie, repérer les notes de sortie dont un montant ou une distance est écrit en texte : un texte qui n'est pas un nombre (« 45,50 », « abc ») compte désormais pour 0, et le total de la note baisse d'autant. La requête, en lecture seule, liste aussi les nombres écrits entre guillemets (« 12 »), qui gardent leur valeur, et les `details` qui ne sont pas du JSON lisible. Corriger les notes listées avec la trésorerie avant la mise en production. La lancer d'abord sur staging pour vérifier qu'elle passe.
+4. [ ] Sur la même copie, repérer les notes de sortie dont un montant ou une distance est écrit en texte : un texte qui n'est pas un nombre (« 45,50 », « abc ») compte désormais pour 0, et le total de la note baisse d'autant. La requête, en lecture seule, liste aussi les nombres écrits entre guillemets (« 12 »), qui gardent leur valeur, et les `details` qui ne sont pas du JSON lisible. Elle ne lit pas la colonne `type`, qui n'existe pas encore : avant la mise en production, toutes les notes sont des notes de sortie. Corriger les notes listées avec la trésorerie avant la mise en production. La lancer d'abord sur staging pour vérifier qu'elle passe.
 
    ```sql
    SELECT id, status, user_id, LEFT(texte, 200) AS details
    FROM (
        SELECT id, status, user_id, JSON_UNQUOTE(details) AS texte
        FROM expense_report
-       WHERE type = 'sortie' AND details IS NOT NULL
+       WHERE details IS NOT NULL
    ) AS notes
    WHERE CASE
        WHEN NOT JSON_VALID(texte) THEN 1
@@ -175,33 +183,39 @@ Il n'y a pas d'adresse de trésorerie à configurer.
            '$.transport.passengerCount', '$.transport.ticketPrice', '$.accommodations[*].price', '$.others[*].price') IS NOT NULL
    END;
    ```
-5. [ ] Vérifier que `DISPLAY_NOTES_DE_FRAIS` vaut faux à Chambéry et à Clermont.
+5. [ ] Poser `DISPLAY_NOTES_DE_FRAIS` à `false` dans la console Clever Cloud de Chambéry et de Clermont. Le dépôt la met à vrai (`.env`) : absente de la console, elle vaut vrai.
 6. [ ] Vérifier en prod les responsables de chaque commission et leur adresse mail. Une commission sans responsable joignable envoie tout à la trésorerie.
-7. [ ] Reporter dans `expense_report.horsSortie` (`config/services.yaml`) les valeurs de la politique de remboursement votée : délai, seuil, taux, plafonds. Puis relancer `tests/Api` : les tests lisent les montants dans la configuration, mais certaines de leurs données supposent la forme du barème (natures plafonnées et leur portée, délai des achats, formations sans délai). Adapter ces données si un test échoue.
-8. [ ] Déployer compta-club, avant la plateforme, avec en une seule fois la liste, la page d'une note et le PDF des notes hors sortie : la plateforme lui enverra ces notes et le statut `preapproved`.
-9. [ ] Déployer la plateforme le même jour que compta-club, et le même jour dans tous les clubs. Entre les deux, le filtre « Validée par le responsable » de compta-club reste vide, et les filtres « Formations » et « Achats » affichent le nombre des notes de sortie au-dessus d'un tableau vide. Ensuite :
-   - vérifier que `doctrine:migrations:status` n'annonce aucune migration en attente ;
-   - recharger compta-club : un onglet ouvert avant son déploiement plante à la première note hors sortie ;
-   - ne plus revenir à une version de compta-club d'avant les notes hors sortie, qui planterait de même : corriger en avant.
-
-Retour arrière : mieux vaut corriger en avant. Le code d'avant ne connaît pas le statut `preapproved` (une note à ce statut ferait échouer les listes) et enverrait à compta-club les notes qui attendent un responsable.
-
-Les `down()` sont dans le code de cette version. Défaire d'abord les migrations, avec ce code encore déployé, et seulement ensuite redéployer l'ancien code : une fois l'ancien code en place, Doctrine ne connaît plus ces migrations et la commande ne fait rien. `Version20261006120000` est la dernière migration d'avant les notes hors sortie :
-
-```sh
-bin/console doctrine:migrations:migrate 'DoctrineMigrations\Version20261006120000'
-```
-
-La commande joue les `down()` de la plus récente à la plus ancienne, et MySQL ne revient pas sur une colonne déjà supprimée :
-
-1. `Version20261012120000` supprime la colonne `version` de la note ;
-2. `Version20261012090000` supprime la colonne `niveau` de l'historique : on ne sait plus qui, du responsable ou de la trésorerie, a pris chaque décision ;
-3. `Version20261011180000` s'arrête s'il reste une note `preapproved` ; sinon elle retire `preapproved` des statuts possibles ;
-4. `Version20261011150000` supprime le message de chaque décision dans l'historique ;
-5. `Version20261011120000` s'arrête s'il reste une note hors sortie ; sinon elle supprime les colonnes des notes hors sortie et rend de nouveau la sortie et le choix entre don et remboursement obligatoires.
-
-Un arrêt laisse la base à mi-chemin : à l'étape 3, déjà sans `version` ni `niveau` ; à l'étape 5, sans le message des décisions non plus. Avant un retour arrière : sauvegarder la base, puis faire décider ou supprimer les notes `preapproved` et les notes hors sortie.
+7. [ ] Vérifier la nouvelle version de compta-club contre staging, qui tourne encore sur `main`, sans les notes hors sortie (préversion Vercel ou poste local, `NEXT_PUBLIC_API_URL` sur l'API de staging) : connexion, liste « À valider », filtres, page et PDF d'une note de sortie.
+8. [ ] Déployer compta-club, avec en une seule fois la liste, la page d'une note et le PDF des notes hors sortie : la plateforme lui enverra ces notes et le statut `preapproved`. Jusqu'à la mise en production de la plateforme, le filtre « Validée par le responsable » reste vide, et les filtres « Formations » et « Achats » affichent le nombre des notes de sortie au-dessus d'un tableau vide.
+9. [ ] Fusionner #1794 dans `main`, puis faire la recette de la plateforme sur staging avec de vrais rôles, mails et compta-club compris : la préversion Vercel de compta-club ou un poste local, `NEXT_PUBLIC_API_URL` sur l'API de staging. Les droits des données de démo ne reflètent pas la prod.
+10. [ ] Mettre la plateforme en production le jour de la fusion, et le même jour dans tous les clubs. Ensuite :
+    - vérifier que `doctrine:migrations:status` n'annonce aucune migration en attente ;
+    - recharger compta-club : un onglet ouvert avant son déploiement plante à la première note hors sortie ;
+    - ne plus revenir à une version de compta-club d'avant les notes hors sortie, qui planterait de même : corriger en avant.
 
 Ne pas créer de groupe de travail pour l'instant : prévus en commissions masquées, ils ne sont pas encore proposés dans le formulaire.
 
 Autre club : la phrase déclarée nomme le Club Alpin de Lyon et le barème est commun à tous les clubs ; à adapter avant d'activer `DISPLAY_NOTES_DE_FRAIS`.
+
+### Retour arrière
+
+Mieux vaut corriger en avant. Le code d'avant ne connaît pas le statut `preapproved` (une note à ce statut ferait échouer les listes) et enverrait à compta-club les notes qui attendent un responsable. S'il faut revenir en arrière, dans chaque club, sans coupure du site :
+
+1. Sauvegarder la base.
+2. Supprimer les notes hors sortie : leur historique, puis leurs justificatifs, qui les référencent, puis les notes. Une note `preapproved` est toujours une note hors sortie : il n'en reste plus. Les fichiers des justificatifs restent sur le disque.
+
+   ```sql
+   DELETE h FROM expense_report_status_history h JOIN expense_report n ON n.id = h.expense_report_id WHERE n.type <> 'sortie';
+   DELETE a FROM expense_attachment a JOIN expense_report n ON n.id = a.expense_report_id WHERE n.type <> 'sortie';
+   DELETE FROM expense_report WHERE type <> 'sortie';
+   ```
+3. Redéployer l'ancien code, par une branche `hotfix-prod-*` au commit d'avant #1794 (voir [Hotfix urgent](deploiement.md#hotfix-urgent)). Il tourne sur le schéma migré : les colonnes ajoutées sont facultatives ou ont une valeur par défaut (`type` à `sortie`, `version` à 1), et la colonne `status` accepte un statut de plus, qu'il n'écrit jamais. Au déploiement, `doctrine:migrations:migrate` signale seulement cinq migrations qu'il ne connaît pas. Une fois l'ancien code en ligne, relancer les trois requêtes, pour une note créée pendant le déploiement.
+4. Défaire ensuite les migrations, si on le souhaite. Rien ne presse : l'ancien code ignore ces colonnes, et une nouvelle mise en production des notes hors sortie les retrouvera. Les `down()` sont dans le code de cette version, pas dans l'ancien code en ligne : les jouer depuis un poste qui a ce code, branché sur la base. `Version20261006120000` est la dernière migration d'avant les notes hors sortie :
+
+   ```sh
+   bin/console doctrine:migrations:migrate 'DoctrineMigrations\Version20261006120000'
+   ```
+
+   La commande joue les `down()` de la plus récente à la plus ancienne. Elle supprime la colonne `version` de la note, le niveau et le message de chaque décision dans l'historique, retire `preapproved` des statuts possibles, puis supprime les colonnes des notes hors sortie et rend de nouveau obligatoires la sortie et le choix entre don et remboursement. Le premier `down()` (`Version20261012120000`) s'arrête avant tout changement s'il reste une note hors sortie.
+
+Commande de secours : si la commande s'arrête quand même à mi-chemin (MySQL ne revient pas sur une colonne déjà supprimée), relancer `bin/console doctrine:migrations:migrate`, sans argument et avec le même code. Elle rejoue les `up()` défaits et remet les colonnes.

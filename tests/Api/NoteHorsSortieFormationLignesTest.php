@@ -37,12 +37,12 @@ class NoteHorsSortieFormationLignesTest extends ExpenseReportApiTestCase
 
     public static function lignesRefuseesProvider(): iterable
     {
-        yield 'nature inconnue' => ['{"lignes":[{"id":"ligne-1","nature":"essence","montant":40}]}', 'Ligne 1 : cette nature de dépense n\'est pas permise pour ce type de note.'];
-        yield 'distance hors voiture' => ['{"lignes":[{"id":"ligne-1","nature":"train","montant":40,"distance":120}]}', 'Ligne 1 : seule la voiture se déclare en kilomètres.'];
-        yield 'montant sur la voiture' => ['{"lignes":[{"id":"ligne-1","nature":"voiture","montant":88}]}', 'Ligne 1 : la voiture se déclare en kilomètres, sans montant.'];
-        yield 'distance négative' => ['{"lignes":[{"id":"ligne-1","nature":"voiture","distance":-5}]}', 'Ligne 1 : la distance doit être un nombre positif.'];
-        yield 'distance en texte' => ['{"lignes":[{"id":"ligne-1","nature":"voiture","distance":"220"}]}', 'Ligne 1 : la distance doit être un nombre positif.'];
-        yield 'distance à plus de deux décimales' => ['{"lignes":[{"id":"ligne-1","nature":"voiture","distance":12.345}]}', 'Ligne 1 : la distance ne peut pas avoir plus de deux décimales.'];
+        yield 'nature inconnue' => ['{"lignes":[{"id":"ligne-1","nature":"essence","montant":40}]}', 'Dépense 1 : cette nature de dépense n\'est pas permise pour ce type de note.'];
+        yield 'distance hors voiture' => ['{"lignes":[{"id":"ligne-1","nature":"train","montant":40,"distance":120}]}', 'Dépense 1 : seule la voiture se déclare en kilomètres.'];
+        yield 'montant sur la voiture' => ['{"lignes":[{"id":"ligne-1","nature":"voiture","montant":88}]}', 'Dépense 1 : la voiture se déclare en kilomètres, sans montant.'];
+        yield 'distance négative' => ['{"lignes":[{"id":"ligne-1","nature":"voiture","distance":-5}]}', 'Dépense 1 : la distance doit être un nombre positif.'];
+        yield 'distance en texte' => ['{"lignes":[{"id":"ligne-1","nature":"voiture","distance":"220"}]}', 'Dépense 1 : la distance doit être un nombre positif.'];
+        yield 'distance à plus de deux décimales' => ['{"lignes":[{"id":"ligne-1","nature":"voiture","distance":12.345}]}', 'Dépense 1 : la distance ne peut pas avoir plus de deux décimales.'];
     }
 
     /**
@@ -127,7 +127,7 @@ class NoteHorsSortieFormationLignesTest extends ExpenseReportApiTestCase
         $this->assertRefusAvec(
             $this->patch($this->owner, $note, ['details' => '{"lignes":[{"id":"ligne-1","montant":12,"nature":"stage"}]}']),
             'details',
-            'Ligne 1 : cette nature de dépense n\'est pas permise pour ce type de note.',
+            'Dépense 1 : cette nature de dépense n\'est pas permise pour ce type de note.',
         );
     }
 

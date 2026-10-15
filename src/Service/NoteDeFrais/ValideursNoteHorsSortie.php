@@ -12,9 +12,9 @@ use Symfony\Contracts\Service\ResetInterface;
 
 /**
  * Les personnes qui valident une note hors sortie avant la trésorerie : les responsables de sa
- * commission (rôle `responsable-commission`, adhérents ni supprimés ni à renouveler, avec une
- * adresse mail), demandeur excepté. Les droits, les destinataires des mails et les pages en
- * dépendent : la règle n'est écrite qu'ici, et recalculée à chaque lecture.
+ * commission (rôle `responsable-commission`, adhérents ni supprimés, ni verrouillés, ni à
+ * renouveler, avec une adresse mail), demandeur excepté. Les droits, les destinataires des mails
+ * et les pages en dépendent : la règle n'est écrite qu'ici, et recalculée à chaque lecture.
  */
 class ValideursNoteHorsSortie implements ResetInterface
 {
@@ -165,8 +165,9 @@ class ValideursNoteHorsSortie implements ResetInterface
 
     /**
      * Le rôle `responsable-commission` sur une commission (role, commission), porté par un adhérent
-     * ni supprimé ni à renouveler, qui a une adresse mail (responsable) : sans adresse, il ne
-     * saurait pas qu'une note l'attend. Le suffixe distingue les alias dans une sous-requête.
+     * ni supprimé, ni verrouillé, ni à renouveler, qui a une adresse mail (responsable) : un compte
+     * verrouillé ne se connecte plus, et sans adresse il ne saurait pas qu'une note l'attend. Le
+     * suffixe distingue les alias dans une sous-requête.
      */
     private function responsablesActifs(string $suffixe = ''): QueryBuilder
     {
@@ -181,6 +182,7 @@ class ValideursNoteHorsSortie implements ResetInterface
             ->andWhere(sprintf('%s.code = :responsable_commission%s', $type, $suffixe))
             ->andWhere(sprintf('%s.doitRenouveler = false', $responsable))
             ->andWhere(sprintf('%s.isDeleted = false', $responsable))
+            ->andWhere(sprintf('%s.isLocked = false', $responsable))
             ->andWhere(sprintf('%1$s.email IS NOT NULL AND %1$s.email != \'\'', $responsable))
             ->setParameter('responsable_commission' . $suffixe, UserAttr::RESPONSABLE_COMMISSION);
     }

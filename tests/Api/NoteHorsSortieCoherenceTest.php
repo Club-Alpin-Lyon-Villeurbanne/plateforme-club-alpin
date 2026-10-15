@@ -38,6 +38,32 @@ class NoteHorsSortieCoherenceTest extends ExpenseReportApiTestCase
         $this->assertResponseStatus(200, $this->patch($this->owner, $note, ['objet' => 'Cordes pour la SAE']));
     }
 
+    /**
+     * Le formulaire renvoie toute la note, sans la commission quand elle n'a pas changé : l'IRI
+     * d'une commission masquée ne se résout plus.
+     */
+    public function testLeFormulaireEnregistreEtEnvoieUneNoteDontLaCommissionAEteMasquee(): void
+    {
+        $note = $this->creerAchat($this->owner, ExpenseReportStatusEnum::DRAFT, self::LIGNES_ACHAT, $this->commissionDeTest);
+        $this->joindreLesJustificatifs($note, 'ligne-1', 'ligne-2');
+        $this->em()->find(Commission::class, $this->commissionDeTest->getId())->setVis(false);
+        $this->em()->flush();
+        $corps = [
+            'objet' => 'Dégaines pour la SAE',
+            'dateDepense' => (new \DateTimeImmutable('-3 days'))->format('Y-m-d'),
+            'motPourResponsable' => null,
+            'details' => self::LIGNES_ACHAT,
+            'refundRequired' => true,
+            'version' => $this->reload($note)->getVersion(),
+        ];
+
+        $enregistree = $this->patch($this->owner, $note, $corps);
+        $this->assertResponseStatus(200, $enregistree);
+        $envoyee = $this->patch($this->owner, $note, ['status' => 'submitted', 'version' => $enregistree['body']['version']] + $corps);
+        $this->assertResponseStatus(200, $envoyee);
+        $this->assertSame($this->commissionDeTest->getId(), $envoyee['body']['commission']['id']);
+    }
+
     public function testUnAchatNeRecoitPasDeLienVersUneFormation(): void
     {
         $note = $this->creerAchat($this->owner);
@@ -89,9 +115,9 @@ class NoteHorsSortieCoherenceTest extends ExpenseReportApiTestCase
 
     public static function nombresDemesuresProvider(): iterable
     {
-        yield 'montant non fini' => ['autre', '{"lignes":[{"id":"ligne-1","montant":1e400,"description":"Dégaines"}]}', 'Ligne 1 : le montant ne peut pas dépasser 100 000.'];
-        yield 'montant au-delà de 100 000' => ['autre', '{"lignes":[{"id":"ligne-1","montant":100000.01,"description":"Dégaines"}]}', 'Ligne 1 : le montant ne peut pas dépasser 100 000.'];
-        yield 'distance non finie' => ['formation', '{"lignes":[{"id":"ligne-1","nature":"stage","montant":280},{"id":"ligne-2","nature":"voiture","distance":1e400}]}', 'Ligne 2 : la distance ne peut pas dépasser 100 000.'];
+        yield 'montant non fini' => ['autre', '{"lignes":[{"id":"ligne-1","montant":1e400,"description":"Dégaines"}]}', 'Dépense 1 : le montant ne peut pas dépasser 100 000.'];
+        yield 'montant au-delà de 100 000' => ['autre', '{"lignes":[{"id":"ligne-1","montant":100000.01,"description":"Dégaines"}]}', 'Dépense 1 : le montant ne peut pas dépasser 100 000.'];
+        yield 'distance non finie' => ['formation', '{"lignes":[{"id":"ligne-1","nature":"stage","montant":280},{"id":"ligne-2","nature":"voiture","distance":1e400}]}', 'Dépense 2 : la distance ne peut pas dépasser 100 000.'];
     }
 
     public function testUnMontantDe100000EstAccepte(): void
@@ -108,7 +134,7 @@ class NoteHorsSortieCoherenceTest extends ExpenseReportApiTestCase
         $this->assertRefusAvec(
             $this->patch($this->owner, $note, ['details' => '{"lignes":[{"id":"ligne-1","montant":20},{"id":"ligne-2","montant":30},{"id":"ligne-1","montant":40}]}']),
             'details',
-            'Ligne 3 : identifiant en double.',
+            'Dépense 3 : identifiant en double.',
         );
     }
 

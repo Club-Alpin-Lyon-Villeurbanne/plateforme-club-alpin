@@ -151,6 +151,7 @@ export interface NoteDeSortie {
   commentaireStatut: string | null;
   /** Calculés par le serveur avec les taux en vigueur. */
   totalDeclare: number;
+  totalRemboursable: number;
 }
 
 export interface DonneesMesNotes {

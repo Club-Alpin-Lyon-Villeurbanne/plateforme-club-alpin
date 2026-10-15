@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from "vue";
-import { listerMesNotes, messagesDErreur } from "./api";
+import { listerMesNotes, refusDeLecture } from "./api";
 import { aujourdhui, chezLaTresorerie, dateFr, dateFrDe, enumeration, euros, jourMoisDe, leJourDeLaDepense, limiteEnvoi, messageDelaiDepasse, motifDuRefus, nomComplet, phraseDeLaDecision } from "./format";
 import { libellesDuType } from "./typesDeNote";
 import type { Decision, DonneesMesNotes, NoteDeFrais, NoteDeSortie } from "./types";
@@ -77,7 +77,7 @@ async function charger() {
   try {
     suivante = await listerMesNotes(page.value + 1, filtre.value);
   } catch (e) {
-    refus = messagesDErreur(e)[0];
+    refus = refusDeLecture(e);
   }
   if (requete !== derniereRequete) {
     return;
@@ -194,11 +194,9 @@ function valideeLe(note: Note): string | null {
 }
 
 // Ce que le demandeur touchera ; l'API ne donne son choix entre don et remboursement qu'à lui.
+// Une note de sortie naît sans remboursement demandé : « Don au club » y serait faux avant tout choix.
 function sousLeMontant(note: Note): string | null {
-  if (estDeSortie(note)) {
-    return null;
-  }
-  if (note.refundRequired === false) {
+  if (!estDeSortie(note) && note.refundRequired === false) {
     return "Don au club";
   }
 

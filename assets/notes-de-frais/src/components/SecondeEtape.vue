@@ -69,7 +69,7 @@
         <legend :class="['tw-text-sm tw-font-medium', refusSurLeChoix ? 'tw-text-red-600' : 'tw-text-gray-900']">Don ou remboursement ?</legend>
         <div class="tw-mt-2 tw-flex tw-gap-6 tw-text-sm">
           <label class="tw-flex tw-items-center tw-gap-2"><input v-model="choix" type="radio" name="choix" :value="false" :aria-invalid="refusSurLeChoix" /> En faire don au club</label>
-          <label class="tw-flex tw-items-center tw-gap-2"><input v-model="choix" type="radio" name="choix" :value="true" :aria-invalid="refusSurLeChoix" /> Être remboursé</label>
+          <label class="tw-flex tw-items-center tw-gap-2"><input v-model="choix" type="radio" name="choix" :value="true" :aria-invalid="refusSurLeChoix" /> Être remboursé·e</label>
         </div>
         <p :class="['tw-mt-2 tw-italic', discret]" aria-live="polite">{{ declaration }}</p>
       </fieldset>
@@ -170,7 +170,7 @@ const props = defineProps<{
   /** « Enregistrée à … », jusqu'à la prochaine modification. */
   confirmation: string | null;
   brouillon: boolean;
-  /** « les responsables de la commission », ou « la trésorerie » quand la note va directement à elle. */
+  /** « le responsable de la commission », « les responsables de la commission », ou « la trésorerie » quand la note va directement à elle. */
   destinataireDuMot: string;
   /** Dit à qui part la note : « Envoyer à la trésorerie »… */
   libelleEnvoi: string;

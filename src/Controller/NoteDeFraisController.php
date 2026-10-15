@@ -42,7 +42,8 @@ class NoteDeFraisController extends AbstractController
 
         $twig->getExtension(JavascriptGlobalsExtension::class)->registerGlobal('apiBaseUrl', $baseUrl);
 
-        // Ouverte à tous : les mails y renvoient, même après la perte d'un rôle.
+        // Ouverte à tous : un demandeur qui a perdu son rôle y retrouve ses notes. Il y arrive par le
+        // fil d'Ariane de la page d'une note, où mènent les mails, ou en tapant l'adresse.
         $utilisateur = $this->getUser();
 
         return $this->render('notes-de-frais/mes-notes.html.twig', [

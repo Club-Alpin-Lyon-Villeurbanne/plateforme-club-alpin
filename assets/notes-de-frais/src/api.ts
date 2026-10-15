@@ -3,6 +3,8 @@ import type { NoteDeFrais, NoteDeSortie, PieceJointe, Refus } from "./types";
 
 const MESSAGE_SESSION_EXPIREE =
   "Votre session a expiré. Reconnectez-vous dans un autre onglet, puis réessayez : votre saisie reste sur cette page.";
+// Rien n'est saisi sur une page qui lit : la recharger mène à la connexion.
+const SESSION_EXPIREE_EN_LECTURE = "Votre session a expiré : rechargez la page pour vous reconnecter.";
 
 /** Refus de l'API (FieldPermissionValidator) quand la note est partie depuis un autre onglet. */
 export const NOTE_DEJA_ENVOYEE = "Cette note a déjà été envoyée : elle ne peut plus être modifiée.";
@@ -109,10 +111,15 @@ export function statutDuRefus(erreur: unknown): number | undefined {
   return isAxiosError(erreur) ? erreur.response?.status : undefined;
 }
 
+/** Une liste qui ne se charge pas. */
+export function refusDeLecture(erreur: unknown): string {
+  return sessionExpiree(erreur) ? SESSION_EXPIREE_EN_LECTURE : messagesDErreur(erreur)[0];
+}
+
 /** Une note qui ne se lit pas : pas le droit, inconnue, ou autre erreur. */
 export function erreurDeLecture(erreur: unknown): string {
   if (sessionExpiree(erreur)) {
-    return messagesDErreur(erreur)[0];
+    return SESSION_EXPIREE_EN_LECTURE;
   }
   const statut = statutDuRefus(erreur);
   if (statut === 403) {

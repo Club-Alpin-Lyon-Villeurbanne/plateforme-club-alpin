@@ -85,6 +85,16 @@ class NoteHorsSortieComptaClubTest extends ExpenseReportApiTestCase
         $this->assertEqualsCanonicalizing([$responsableSansAdresse->getId(), $seulResponsable->getId()], $this->ids(['user.lastname' => $this->nom]));
     }
 
+    // Il ne se connecte plus : la note attendrait une décision qu'il ne peut pas prendre.
+    public function testUnResponsableAuCompteVerrouilleLaisseLaNoteALaTresorerie(): void
+    {
+        $this->em()->find(User::class, $this->responsableAutreCommission->getId())->setIsLocked(true);
+        $this->em()->flush();
+        $note = $this->achatAuStatut(ExpenseReportStatusEnum::SUBMITTED, $this->autreCommission);
+
+        $this->assertSame([$note->getId()], $this->ids(['user.lastname' => $this->nom]));
+    }
+
     public function testLeFiltreDeStatutPrendPlusieursValeurs(): void
     {
         $noteDeSortie = $this->noteDeSortie(ExpenseReportStatusEnum::SUBMITTED);

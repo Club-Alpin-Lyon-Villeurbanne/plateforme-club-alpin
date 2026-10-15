@@ -301,7 +301,7 @@ Content-Type: application/json
 - `type` : `formation` ou `autre` (achat).
 - `commissionId` : la commission qui reçoit la note, obligatoire. Une commission masquée est refusée.
 - `objet` : obligatoire, 255 caractères au plus.
-- `dateDepense` : date de la formation ou de l'achat (`AAAA-MM-JJ`), obligatoire. Elle ne peut pas être dans le futur, ni, pour un type qui a un délai d'envoi (`expense_report.horsSortie.delaiEnvoiJours`), plus ancienne que ce délai.
+- `dateDepense` : date de la formation ou de l'achat (`AAAA-MM-JJ`), obligatoire. Elle ne peut pas être dans le futur, ni avant l'an 2000 (une année tapée sur deux chiffres), ni, pour un type qui a un délai d'envoi (`expense_report.horsSortie.delaiEnvoiJours`), plus ancienne que ce délai.
 - `lienFormation` : facultatif, une adresse web, pour une formation seulement.
 
 Elle est créée en brouillon, sans choix entre don et remboursement (`refundRequired` à `null`). Ses dépenses, ce choix et l'envoi passent ensuite par `PATCH`. Refus : `422` sur le champ en cause (`commission` pour `commissionId`).

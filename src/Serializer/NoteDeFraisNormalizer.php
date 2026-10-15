@@ -68,7 +68,8 @@ final class NoteDeFraisNormalizer implements NormalizerInterface, NormalizerAwar
     }
 
     /**
-     * Une requête par note envoyée : la liste d'un demandeur reste de quelques dizaines de lignes.
+     * Avec derniereDecision(), validationResponsable() et l'avertissement de délai d'un achat :
+     * jusqu'à quatre lectures de l'historique par note envoyée. Les listes sont paginées par 30.
      */
     private function dateEnvoi(ExpenseReport $note): ?\DateTimeImmutable
     {

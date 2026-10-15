@@ -7,8 +7,11 @@ export function euros(montant: number): string {
 /** AAAA-MM-JJ lu comme un jour local, sans décalage de fuseau. */
 export function jour(date: string): Date {
   const [annee, mois, quantieme] = date.split("-").map(Number);
+  // new Date(26, …) donnerait 1926.
+  const lu = new Date(2000, 0, 1);
+  lu.setFullYear(annee, mois - 1, quantieme);
 
-  return new Date(annee, mois - 1, quantieme);
+  return lu;
 }
 
 export function aujourdhui(): Date {
@@ -97,10 +100,17 @@ export function phraseValideurs(commission: { valideurs: Personne[]; demandeurRe
     return `Sera transmise à ${noms}, responsable de la commission.`;
   }
 
-  // Sans affirmer qu'il n'y a pas de responsable : il peut en avoir un sans adresse mail, ou qui doit renouveler.
+  // Sans affirmer qu'il n'y a pas de responsable : il peut en avoir un sans adresse mail, au compte verrouillé ou qui doit renouveler.
   return commission.demandeurResponsable
     ? "Sera transmise directement à la trésorerie : on ne valide pas sa propre note."
     : "Sera transmise directement à la trésorerie.";
+}
+
+/** « www.ffcam.fr/… » tapé sans protocole devient « https://www.ffcam.fr/… ». */
+export function avecProtocole(lien: string): string {
+  const adresse = lien.trim();
+
+  return adresse === "" || /^[a-z][a-z0-9+.-]*:\/\//i.test(adresse) ? adresse : `https://${adresse}`;
 }
 
 /** Lien saisi par le demandeur, seulement s'il est en http ou https ; sinon il s'affiche en texte. */

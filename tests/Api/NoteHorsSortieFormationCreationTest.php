@@ -46,6 +46,16 @@ class NoteHorsSortieFormationCreationTest extends ExpenseReportApiTestCase
         $this->assertRefusAvec($response, 'dateDepense', 'La date ne peut pas être dans le futur.');
     }
 
+    // « 12/10/26 » tapé au clavier donne l'an 26 ; une formation n'a pas de délai pour l'arrêter.
+    public function testUneFormationDateeAvantLAn2000EstRefuseeALaCreationEtALEnvoi(): void
+    {
+        $this->assertRefusAvec($this->create($this->encadrant, $this->formation(['dateDepense' => '0026-10-12'])), 'dateDepense', 'Vérifiez l\'année de la date.');
+        $this->assertResponseStatus(201, $this->create($this->encadrant, $this->formation(['dateDepense' => '2000-01-01'])));
+
+        $note = $this->creerFormation($this->encadrant, '{"lignes":[{"id":"ligne-1","nature":"voiture","distance":120}]}', new \DateTimeImmutable('0026-10-12'));
+        $this->assertRefusAvec($this->envoyer($this->encadrant, $note), 'dateDepense', 'Vérifiez l\'année de la date.');
+    }
+
     public function testMesNotesDeFraisListeLesFormations(): void
     {
         $formation = $this->creerFormation($this->encadrant);

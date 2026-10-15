@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from "vue";
-import { listerNotesAValider, messagesDErreur } from "../api";
+import { listerNotesAValider, refusDeLecture } from "../api";
 import { enumeration, euros, leJourDeLaDepense, nomComplet, phraseDeLaDecision } from "../format";
 import { libellesDuType } from "../typesDeNote";
 import type { NoteDeFrais } from "../types";
@@ -40,7 +40,7 @@ async function charger() {
     page.value += 1;
     pages.value = suivante.pages;
   } catch (e) {
-    erreur.value = messagesDErreur(e)[0];
+    erreur.value = refusDeLecture(e);
   } finally {
     chargement.value = false;
     chargementSuivant.value = false;

@@ -21,6 +21,12 @@ final class Version20261012120000 extends AbstractMigration
 
     public function down(Schema $schema): void
     {
+        // Premier down() joué au retour arrière : s'arrêter ici, avant tout changement, plutôt qu'à
+        // Version20261011120000 avec une base à mi-chemin.
+        $this->abortIf(
+            (int) $this->connection->fetchOne("SELECT COUNT(*) FROM expense_report WHERE type <> 'sortie'") > 0,
+            'Des notes de frais hors sortie (formation, achat) existent : les supprimer avant de revenir en arrière.',
+        );
         $this->addSql('ALTER TABLE expense_report DROP version');
     }
 }

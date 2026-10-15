@@ -12,15 +12,12 @@
       <option v-for="(libelleNature, valeur) in natures" :key="valeur" :value="valeur">{{ libelleNature }}</option>
     </select>
     <div class="tw-relative">
-      <input
-        v-model.number="saisie"
-        type="number"
-        step="0.01"
-        min="0"
+      <ChampNombre
+        v-model="saisie"
         :class="[saisieManquante ? champEnErreur : champ, 'tw-pr-9 tw-text-right tw-tabular-nums']"
         :aria-label="voiture ? `Kilomètres de la dépense ${numero}` : `Montant de la dépense ${numero}`"
         :aria-invalid="saisieManquante"
-        @change="arrondirLaSaisie"
+        @change="emit('montantModifie')"
       />
       <span class="tw-pointer-events-none tw-absolute tw-inset-y-0 tw-right-3 tw-flex tw-items-center tw-text-sm tw-text-gray-500">{{ voiture ? "km" : "€" }}</span>
     </div>
@@ -63,6 +60,7 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
+import ChampNombre from "./ChampNombre.vue";
 import JustificatifDeLigne from "./JustificatifDeLigne.vue";
 import { champ, champEnErreur, discret } from "../classes";
 import { euros } from "../format";
@@ -128,12 +126,4 @@ const natureManquante = computed(() => props.marquerLesManques && !ligne.value.n
 const descriptionManquante = computed(() => props.marquerLesManques && aPreciser.value && !ligne.value.description.trim());
 const saisieManquante = computed(() => props.marquerLesManques && !(typeof saisie.value === "number" && saisie.value > 0));
 const justificatifManquant = computed(() => props.marquerLesManques && !voiture.value && !props.justificatif && !props.envoiEnCours);
-
-// Le serveur refuse plus de deux décimales.
-function arrondirLaSaisie() {
-  if (typeof saisie.value === "number" && !Number.isNaN(saisie.value)) {
-    saisie.value = Math.round(saisie.value * 100) / 100;
-  }
-  emit("montantModifie");
-}
 </script>

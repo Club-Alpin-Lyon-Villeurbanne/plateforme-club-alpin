@@ -161,7 +161,11 @@ class NoteHorsSortieResponsableLectureTest extends ExpenseReportApiTestCase
     {
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
         $responsable = $this->em()->find(User::class, $this->responsable->getId());
-        'supprime' === $inactivite ? $responsable->setIsDeleted(true) : $responsable->setDoitRenouveler(true);
+        match ($inactivite) {
+            'supprime' => $responsable->setIsDeleted(true),
+            'verrouille' => $responsable->setIsLocked(true),
+            'doitRenouveler' => $responsable->setDoitRenouveler(true),
+        };
         $this->em()->flush();
 
         $this->assertSame([['Sam', 'PETIT']], $this->valideurs($this->adherent, $note));
@@ -171,8 +175,9 @@ class NoteHorsSortieResponsableLectureTest extends ExpenseReportApiTestCase
     public static function inactifProvider(): iterable
     {
         yield 'doit renouveler' => ['doitRenouveler', 403];
-        // Un compte supprimé ne se connecte même plus.
+        // Un compte supprimé ou verrouillé ne se connecte même plus.
         yield 'supprimé' => ['supprime', 401];
+        yield 'verrouillé' => ['verrouille', 401];
     }
 
     public function testLeResponsableLitUnBrouillonDeSaCommissionQuiNEstPasAValider(): void

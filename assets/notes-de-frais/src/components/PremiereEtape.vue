@@ -57,7 +57,14 @@
 
       <div v-if="demande.type === 'formation'">
         <label for="f-lien" :class="libelle">Lien vers la formation <span class="tw-font-normal tw-text-gray-500">(facultatif)</span></label>
-        <input id="f-lien" v-model="demande.lienFormation" type="url" :class="['tw-mt-1', champ]" placeholder="https://" />
+        <input
+          id="f-lien"
+          v-model="demande.lienFormation"
+          type="url"
+          :class="['tw-mt-1', champ]"
+          placeholder="https://"
+          @change="demande.lienFormation = avecProtocole(demande.lienFormation)"
+        />
       </div>
 
       <div>
@@ -95,7 +102,7 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { champ, champEnErreur, discret, libelle } from "../classes";
-import { aujourdhui, dateFr, enumeration, jour, limiteEnvoi, messageDelaiDepasse, phraseValideurs } from "../format";
+import { aujourdhui, avecProtocole, dateFr, enumeration, jour, limiteEnvoi, messageDelaiDepasse, phraseValideurs } from "../format";
 import { TYPES, type TypeHorsSortie } from "../typesDeNote";
 import type { CommissionProposee, ConditionsNoteDeSortie, Demande } from "../types";
 
@@ -135,14 +142,19 @@ const objetManquant = computed(() => tentative.value && !demande.value.objet.tri
 
 const date = computed(() => (demande.value.dateDepense ? jour(demande.value.dateDepense) : null));
 const dansLeFutur = computed(() => date.value !== null && date.value > aujourdhui());
+// « 121026 » tapé au clavier donne l'an 26.
+const anneeImprobable = computed(() => date.value !== null && date.value.getFullYear() < 2000);
 const limite = computed(() =>
   demande.value.dateDepense && props.delaiEnvoiJours !== null ? limiteEnvoi(demande.value.dateDepense, props.delaiEnvoiJours) : null,
 );
 const horsDelai = computed(() => limite.value !== null && aujourdhui() > limite.value);
-const dateRefusee = computed(() => dansLeFutur.value || horsDelai.value);
+const dateRefusee = computed(() => anneeImprobable.value || dansLeFutur.value || horsDelai.value);
 const dateManquante = computed(() => tentative.value && date.value === null);
 
 const aideDate = computed(() => {
+  if (anneeImprobable.value) {
+    return "Vérifiez l'année.";
+  }
   if (dansLeFutur.value) {
     return "Cette date est dans le futur.";
   }

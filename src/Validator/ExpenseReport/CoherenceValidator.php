@@ -88,33 +88,33 @@ class CoherenceValidator
             $numero = $index + 1;
 
             if (!\is_array($ligne) || !\is_string($ligne['id'] ?? null) || '' === $ligne['id']) {
-                $this->refuser($context, 'details', "Ligne {$numero} : l'identifiant de la ligne manque.");
+                $this->refuser($context, 'details', "Dépense {$numero} : l'identifiant de la ligne manque.");
 
                 continue;
             }
             // Le justificatif d'une ligne se retrouve par son identifiant.
             if (isset($identifiants[$ligne['id']])) {
-                $this->refuser($context, 'details', "Ligne {$numero} : identifiant en double.");
+                $this->refuser($context, 'details', "Dépense {$numero} : identifiant en double.");
             }
             $identifiants[$ligne['id']] = true;
 
             $this->validerNombre($context, $numero, $ligne['montant'] ?? null, 'le montant');
             $this->validerNombre($context, $numero, $ligne['distance'] ?? null, 'la distance');
             if (isset($ligne['description']) && !\is_string($ligne['description'])) {
-                $this->refuser($context, 'details', "Ligne {$numero} : la description doit être un texte.");
+                $this->refuser($context, 'details', "Dépense {$numero} : la description doit être un texte.");
             }
 
             // Une formation porte une nature par ligne, un achat aucune.
             if (isset($ligne['nature']) && !\in_array($ligne['nature'], $naturesPermises, true)) {
-                $this->refuser($context, 'details', "Ligne {$numero} : cette nature de dépense n'est pas permise pour ce type de note.");
+                $this->refuser($context, 'details', "Dépense {$numero} : cette nature de dépense n'est pas permise pour ce type de note.");
             }
 
             if ('distance' === ExpenseReportTypeEnum::champDeLaSaisie($ligne)) {
                 if (isset($ligne['montant'])) {
-                    $this->refuser($context, 'details', "Ligne {$numero} : la voiture se déclare en kilomètres, sans montant.");
+                    $this->refuser($context, 'details', "Dépense {$numero} : la voiture se déclare en kilomètres, sans montant.");
                 }
             } elseif (isset($ligne['distance'])) {
-                $this->refuser($context, 'details', "Ligne {$numero} : seule la voiture se déclare en kilomètres.");
+                $this->refuser($context, 'details', "Dépense {$numero} : seule la voiture se déclare en kilomètres.");
             }
         }
     }
@@ -130,11 +130,11 @@ class CoherenceValidator
         }
 
         if (!(\is_int($valeur) || \is_float($valeur)) || $valeur < 0) {
-            $this->refuser($context, 'details', "Ligne {$numero} : {$quoi} doit être un nombre positif.");
+            $this->refuser($context, 'details', "Dépense {$numero} : {$quoi} doit être un nombre positif.");
         } elseif (!is_finite((float) $valeur) || $valeur > self::NOMBRE_MAXIMAL) {
-            $this->refuser($context, 'details', sprintf('Ligne %d : %s ne peut pas dépasser %s.', $numero, $quoi, number_format(self::NOMBRE_MAXIMAL, 0, ',', ' ')));
+            $this->refuser($context, 'details', sprintf('Dépense %d : %s ne peut pas dépasser %s.', $numero, $quoi, number_format(self::NOMBRE_MAXIMAL, 0, ',', ' ')));
         } elseif (\is_float($valeur) && abs($valeur * 100 - round($valeur * 100)) > 1e-6) {
-            $this->refuser($context, 'details', "Ligne {$numero} : {$quoi} ne peut pas avoir plus de deux décimales.");
+            $this->refuser($context, 'details', "Dépense {$numero} : {$quoi} ne peut pas avoir plus de deux décimales.");
         }
     }
 

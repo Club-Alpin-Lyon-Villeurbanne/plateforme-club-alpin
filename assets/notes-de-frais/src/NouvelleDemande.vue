@@ -32,7 +32,7 @@
       v-else-if="etape === 1"
       v-model="demande"
       :type-modifiable="note === null"
-      :commissions="donnees.commissions"
+      :commissions="commissions"
       :sortie="donnees.sortie"
       :delai-envoi-jours="delaiEnvoiJours"
       :erreurs="erreursEtape1"
@@ -65,7 +65,7 @@
       :conflit="conflitDeVersion"
       :confirmation="confirmation"
       :brouillon="note?.status === 'draft'"
-      :destinataire-du-mot="versLaTresorerie ? 'la trésorerie' : 'les responsables de la commission'"
+      :destinataire-du-mot="destinataireDuMot"
       :libelle-envoi="versLaTresorerie ? 'Envoyer à la trésorerie' : 'Envoyer à la commission'"
       @modifier="afficherEtape(1)"
       @enregistrer="enregistrer"
@@ -82,11 +82,11 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue"
 import PremiereEtape from "./components/PremiereEtape.vue";
 import SecondeEtape from "./components/SecondeEtape.vue";
 import { conflit, creerNote, enregistrerNote, envoyerJustificatif, erreurDeLecture, lireNote, messagesDErreur, NOTE_DEJA_ENVOYEE, refusDeLApi, sessionExpiree, statutDuRefus } from "./api";
-import { auteurDeLaDecision, aujourdhui, limiteEnvoi, messageDelaiDepasse, partRemboursable, phrasePrevenus, phraseValideurs } from "./format";
+import { auteurDeLaDecision, aujourdhui, avecProtocole, enumeration, limiteEnvoi, messageDelaiDepasse, partRemboursable, phrasePrevenus, phraseValideurs } from "./format";
 import { refusDuFichier } from "./justificatifs";
 import { ecrireLignes, lireLignes, nouvelleLigne, total } from "./lignes";
 import type { TypeHorsSortie } from "./typesDeNote";
-import type { Demande, DonneesInitiales, Justificatif, Ligne, NoteDeFrais, Refus } from "./types";
+import type { CommissionProposee, Demande, DonneesInitiales, Justificatif, Ligne, NoteDeFrais, Refus } from "./types";
 
 const URL_MES_NOTES = "/notes-de-frais";
 // Texte de l'API (ControlesNoteHorsSortie) : il ne vaut plus dès qu'une dépense est saisie.
@@ -170,13 +170,31 @@ const messageDeRefus = computed(() => {
 const titre = computed(() => (note.value?.status === "rejected" ? "Corriger la note" : "Nouvelle note de frais"));
 watch(titre, (nouveau) => (document.title = TITRE_DE_L_ONGLET.replace("Nouvelle note de frais", nouveau)));
 
-const commissionChoisie = computed(() => props.donnees.commissions.find((commission) => commission.id === demande.value.commissionId));
+// La commission de la note, masquée depuis, reste proposée : la page ne liste que les visibles.
+const commissions = computed<CommissionProposee[]>(() => {
+  const deLaNote = note.value?.commission;
+  if (!deLaNote || props.donnees.commissions.some((commission) => commission.id === deLaNote.id)) {
+    return props.donnees.commissions;
+  }
+
+  return [...props.donnees.commissions, { id: deLaNote.id, titre: deLaNote.title, valideurs: note.value?.valideurs ?? [], demandeurResponsable: false }];
+});
+
+const commissionChoisie = computed(() => commissions.value.find((commission) => commission.id === demande.value.commissionId));
 
 const commissionTitre = computed(() => commissionChoisie.value?.titre ?? note.value?.commission?.title ?? "");
 
 const phraseDesValideurs = computed(() => (commissionChoisie.value ? phraseValideurs(commissionChoisie.value) : ""));
 
-const versLaTresorerie = computed(() => (commissionChoisie.value?.valideurs ?? note.value?.valideurs ?? []).length === 0);
+const valideursPrevus = computed(() => commissionChoisie.value?.valideurs ?? note.value?.valideurs ?? []);
+const versLaTresorerie = computed(() => valideursPrevus.value.length === 0);
+const destinataireDuMot = computed(() => {
+  if (versLaTresorerie.value) {
+    return "la trésorerie";
+  }
+
+  return valideursPrevus.value.length === 1 ? "le responsable de la commission" : "les responsables de la commission";
+});
 
 // —— Ce qui est enregistré, pour prévenir avant de quitter la page ——
 
@@ -184,6 +202,7 @@ function renseignee(ligne: Ligne): boolean {
   return (
     typeof ligne.montant === "number" ||
     typeof ligne.distance === "number" ||
+    typeof ligne.nature === "string" ||
     ligne.description.trim() !== "" ||
     justificatifs.value[ligne.id] !== undefined
   );
@@ -308,12 +327,15 @@ async function continuer() {
 
 // Un achat n'a pas de lien : l'API le refuserait.
 function lienDeLaFormation(): { lienFormation?: string | null } {
-  return demande.value.type === "formation" ? { lienFormation: demande.value.lienFormation.trim() || null } : {};
+  return demande.value.type === "formation" ? { lienFormation: avecProtocole(demande.value.lienFormation) || null } : {};
 }
 
 function corpsDeLaNote(): Record<string, unknown> {
+  // L'API ne résout plus l'adresse d'une commission masquée depuis : on ne la renvoie que changée.
+  const commissionChangee = demande.value.commissionId !== note.value?.commission?.id;
+
   return {
-    commission: `/api/commissions/${demande.value.commissionId}`,
+    ...(commissionChangee ? { commission: `/api/commissions/${demande.value.commissionId}` } : {}),
     objet: demande.value.objet.trim(),
     dateDepense: demande.value.dateDepense,
     ...lienDeLaFormation(),
@@ -335,10 +357,7 @@ async function enregistrer() {
 
   enCours.value = true;
   refusEnregistrement.value = [];
-  if (await attendreLesJustificatifs()) {
-    // Le résultat de l'enregistrement s'affiche en pied de page, pas en double sous les lignes.
-    erreursJustificatifs.value = {};
-  }
+  await attendreLesJustificatifs();
   try {
     const ecrite = await dansLOrdre(async () => {
       const empreinte = empreintes();
@@ -385,12 +404,13 @@ async function envoyer() {
   refusEnregistrement.value = [];
   try {
     // Sinon la note partirait avec l'ancien justificatif, et le nouveau serait refusé sur une note envoyée.
-    if (!(await attendreLesJustificatifs())) {
-      refusEnvoi.value = [{ champ: null, message: "Un justificatif n'a pas pu être envoyé : la note n'est pas partie." }];
+    const justificatifsEnvoyes = await attendreLesJustificatifs();
+    const enEchec = justificatifsEnEchec();
+    if (!justificatifsEnvoyes || enEchec.length) {
+      refusEnvoi.value = [{ champ: null, message: messageJustificatifsEnEchec(enEchec) }];
       await montrerLesRefus();
       return;
     }
-    erreursJustificatifs.value = {};
     // Une ligne restée vide n'est pas une dépense ; la retirer garde la numérotation des messages de l'API.
     lignes.value = lignes.value.filter(renseignee);
     // Une écriture passée avant dans la file a pu trouver la note déjà envoyée ou modifiée ailleurs.
@@ -498,6 +518,22 @@ async function recharger() {
 
 // —— Justificatifs et enregistrement automatique des lignes ——
 
+// Un échec reste signalé jusqu'à un justificatif envoyé sur sa ligne, ou au retrait de la ligne :
+// oublié, il laisserait partir l'ancien justificatif d'une ligne.
+function justificatifsEnEchec(): number[] {
+  return lignes.value.flatMap((ligne, index) => (erreursJustificatifs.value[ligne.id] ? [index + 1] : []));
+}
+
+function messageJustificatifsEnEchec(numeros: number[]): string {
+  if (numeros.length > 1) {
+    return `Les justificatifs des dépenses ${enumeration(numeros.map(String))} n'ont pas pu être envoyés : joignez-en d'autres ou retirez ces dépenses. La note n'est pas partie.`;
+  }
+
+  return numeros.length === 1
+    ? `Le justificatif de la dépense ${numeros[0]} n'a pas pu être envoyé : joignez-en un autre ou retirez la dépense. La note n'est pas partie.`
+    : "Un justificatif n'a pas pu être envoyé : la note n'est pas partie.";
+}
+
 // Envois de justificatifs en cours, chacun résolu à vrai s'il a réussi.
 const envoisDeJustificatifs = new Set<Promise<boolean>>();
 
@@ -572,7 +608,6 @@ function enregistrerLignes(): Promise<void> {
       await ecrire({ details: ecrireLignes(lignes.value) });
       enregistre.value = { ...enregistre.value, lignes: empreinte };
       erreursEnregistrementAuto.value = [];
-      erreursJustificatifs.value = {};
     } catch (erreur) {
       erreursEnregistrementAuto.value = ongletPerime(erreur) ? [] : messagesDErreur(erreur);
     }

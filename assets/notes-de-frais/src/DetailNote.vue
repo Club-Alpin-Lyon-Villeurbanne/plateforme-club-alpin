@@ -43,7 +43,8 @@ const contexte = computed(() => {
   }
   const type = libellesDuType(note.value.type).libelle;
   const date = note.value.dateDepense ? ` du ${dateFr(jour(note.value.dateDepense))}` : "";
-  const envoi = note.value.dateEnvoi ? `, envoyée le ${dateFrDe(note.value.dateEnvoi)}` : "";
+  // « Achat … envoyée » ne s'accorderait pas : c'est la note qui est envoyée.
+  const envoi = note.value.dateEnvoi ? ` · note envoyée le ${dateFrDe(note.value.dateEnvoi)}` : "";
 
   return `${type}${date} pour ${note.value.commission?.title ?? ""}${envoi}`;
 });
@@ -74,14 +75,20 @@ const choix = computed(() => (note.value && props.donnees.estDemandeur ? choixDu
 const don = computed(() => props.donnees.estDemandeur && note.value?.refundRequired === false);
 const plafonds = computed(() => (note.value ? partRemboursable(note.value, don.value) : null));
 
-// Les plafonds s'appliquent sans être un défaut : la phrase dit ce que le club retient.
+// Les plafonds s'appliquent sans être un défaut : la phrase dit ce que le club retient. Une formation
+// déclarée en kilomètres seulement n'a aucun justificatif.
 const verification = computed(() => {
-  if (!note.value || note.value.totalRemboursable >= note.value.totalDeclare) {
-    return "✓ Justificatifs joints.";
+  if (!note.value) {
+    return null;
   }
+  const joints = lignes.value.some((ligne) => ligne.justificatif) ? "✓ Justificatifs joints." : null;
   const retenu = euros(note.value.totalRemboursable);
+  const plafonds =
+    note.value.totalRemboursable < note.value.totalDeclare
+      ? `Plafonds du club appliqués : ${don.value ? `${retenu} dans les plafonds du club` : `${retenu} remboursables`}.`
+      : null;
 
-  return `✓ Justificatifs joints. Plafonds du club appliqués : ${don.value ? `${retenu} dans les plafonds du club` : `${retenu} remboursables`}.`;
+  return [joints, plafonds].filter(Boolean).join(" ") || null;
 });
 
 const messageRempli = computed(() => message.value.trim() !== "");
@@ -244,7 +251,7 @@ function refuser() {
     <div class="tw-px-8">
       <p v-if="choix" class="tw-mb-4 tw-text-sm tw-text-gray-700">{{ choix }}</p>
       <p v-if="note.motPourResponsable" class="tw-mb-4 tw-whitespace-pre-line tw-border-l-2 tw-border-gray-300 tw-pl-3 tw-text-sm tw-text-gray-700">«&nbsp;{{ note.motPourResponsable }}&nbsp;»</p>
-      <p v-if="note.status === 'submitted'" class="tw-text-sm tw-text-green-700">{{ verification }}</p>
+      <p v-if="note.status === 'submitted' && verification" class="tw-text-sm tw-text-green-700">{{ verification }}</p>
       <p v-for="avertissement in note.avertissements" :key="avertissement" class="tw-mt-1 tw-text-sm tw-text-amber-700">{{ avertissement }}</p>
 
       <table class="tw-mt-5 tw-w-full tw-text-sm">

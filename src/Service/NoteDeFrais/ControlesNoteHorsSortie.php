@@ -70,6 +70,12 @@ final class ControlesNoteHorsSortie
             ],
             [
                 'champ' => 'dateDepense',
+                'moments' => [MomentDeControle::CREATION, MomentDeControle::CHAQUE_SOUMISSION],
+                'niveau' => NiveauDeControle::BLOQUANT,
+                'controle' => $this->anneeImprobable(...),
+            ],
+            [
+                'champ' => 'dateDepense',
                 'moments' => [MomentDeControle::CREATION, MomentDeControle::PREMIERE_SOUMISSION],
                 'niveau' => NiveauDeControle::BLOQUANT,
                 'controle' => $this->delaiDEnvoiDepasse(...),
@@ -144,6 +150,14 @@ final class ControlesNoteHorsSortie
         return null !== $date && $date > new \DateTimeImmutable('today')
             ? 'La date ne peut pas être dans le futur.'
             : null;
+    }
+
+    // Une année tapée sur deux chiffres (« 12/10/26 ») devient l'an 26.
+    private function anneeImprobable(ExpenseReport $note): ?string
+    {
+        $date = $note->getDateDepense();
+
+        return null !== $date && (int) $date->format('Y') < 2000 ? 'Vérifiez l\'année de la date.' : null;
     }
 
     private function delaiDEnvoiDepasse(ExpenseReport $note): ?string
