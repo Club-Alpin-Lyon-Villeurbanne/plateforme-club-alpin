@@ -23,7 +23,7 @@ Rôle avec tous les droits : gestion des permissions, des rôles de président o
 Rôle permettant de modifier les pages et les blocs de contenu du site, sans les droits d'administration complets. Identifiants de test en local : voir le [guide d'installation](installation.md#accès).
 
 ### Valideurs
-Personnes qui valident une note de frais hors sortie sur le site, avant la trésorerie, qui la valide ensuite dans compta-club : les responsables de la commission de la note (rôle `responsable-commission`), sauf le demandeur et ceux qui n'ont pas d'adresse mail. S'il n'en reste aucun, la note va directement à la trésorerie.
+Personnes qui valident une note de frais hors sortie sur le site, avant la trésorerie, qui la valide ensuite dans compta-club : les responsables de la commission de la note (rôle `responsable-commission`), sauf le demandeur et ceux qui sont supprimés, doivent renouveler leur adhésion ou n'ont pas d'adresse mail. S'il n'en reste aucun, la note va directement à la trésorerie.
 
 ## Fonctionnalités
 

@@ -25,7 +25,8 @@ class NoteHorsSortieDejaTraiteeTest extends ExpenseReportApiTestCase
         $this->assertResponseStatus(200, $this->patch($this->{$premierActeur}, $note, ['status' => $premiere, 'commentaireStatut' => 'Montant à revoir.']));
         $historique = $this->historique($note->getId());
 
-        // Comme la page et compta-club : une validation n'envoie que le statut, un refus y joint le message.
+        // Une validation porte le statut, un refus y joint le message. Sans `version` : la page et
+        // compta-club l'envoient aussi, NoteDeFraisVersionTest couvre ce cas.
         $corps = 'rejected' === $tardive ? ['status' => 'rejected', 'commentaireStatut' => 'Il manque un justificatif.'] : ['status' => $tardive];
         $response = $this->patch($this->{$acteur}, $note, $corps);
 

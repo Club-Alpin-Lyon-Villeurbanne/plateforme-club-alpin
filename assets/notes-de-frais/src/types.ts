@@ -138,8 +138,8 @@ export interface NoteDeFrais {
   validationResponsable: { auteur: Personne; date: string } | null;
   /** L'utilisateur connecté peut valider ou renvoyer la note maintenant. */
   peutDecider: boolean;
-  /** Lue par le demandeur seulement : son formulaire la renvoie avec chaque modification. */
-  version?: number;
+  /** Renvoyée avec chaque modification ou décision : l'API refuse une page périmée (409). */
+  version: number;
 }
 
 /** Note d'une sortie, telle que « Mes notes de frais » la lit : elle se remplit sur la page de sa sortie. */

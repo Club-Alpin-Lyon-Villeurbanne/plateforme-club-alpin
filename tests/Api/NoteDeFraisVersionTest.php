@@ -13,6 +13,7 @@ class NoteDeFraisVersionTest extends ExpenseReportApiTestCase
 {
     private const DEJA_ENVOYEE = 'Cette note a déjà été envoyée : elle ne peut plus être modifiée.';
     private const AUTRE_ONGLET = 'Cette note a été modifiée dans un autre onglet ou sur un autre appareil.';
+    private const DEJA_TRAITEE = 'Cette note a déjà été traitée.';
     private const LIGNES_AILLEURS = '{"lignes":[{"id":"ligne-1","montant":64.9,"description":"Dégaines (x6)"},{"id":"ligne-3","montant":12,"description":"Ajoutée sur le téléphone"}]}';
 
     public function testChaqueLecteurLitLaVersion(): void
@@ -35,6 +36,42 @@ class NoteDeFraisVersionTest extends ExpenseReportApiTestCase
 
         $this->assertResponseStatus(409, $reponse);
         $this->assertSame(ExpenseReportStatusEnum::SUBMITTED, $this->reload($note)->getStatus());
+        $this->assertCount(0, $this->getMailerMessages());
+    }
+
+    /**
+     * La trésorerie décide depuis compta-club, qui renvoie la version de la page affichée.
+     */
+    public function testUneDecisionDeLaTresorerieSurUnePagePerimeeEstRefusee(): void
+    {
+        $note = $this->noteEnvoyee($this->adherent);
+        $versionDeLaPageOuverte = $this->show($this->manager, $note)['body']['version'];
+        $this->assertResponseStatus(200, $this->renvoyer($this->otherManager, $note));
+        $this->assertResponseStatus(200, $this->envoyer($this->adherent, $this->reload($note)));
+        $versionRenvoyee = $this->reload($note)->getVersion();
+
+        $reponse = $this->patch($this->manager, $note, ['status' => 'approved', 'version' => $versionDeLaPageOuverte]);
+
+        $this->assertResponseStatus(409, $reponse);
+        $enBase = $this->reload($note);
+        $this->assertSame(ExpenseReportStatusEnum::SUBMITTED, $enBase->getStatus());
+        $this->assertSame($versionRenvoyee, $enBase->getVersion());
+        $this->assertCount(0, $this->getMailerMessages());
+    }
+
+    /**
+     * compta-club affiche « Note déjà traitée » sur ce refus : il passe avant celui de la version.
+     */
+    public function testUneDecisionPerimeeSurUneNoteDejaTraiteeApprendQuElleEstTraitee(): void
+    {
+        $note = $this->noteEnvoyee($this->adherent);
+        $versionDeLaPageOuverte = $this->show($this->manager, $note)['body']['version'];
+        $this->assertResponseStatus(200, $this->patch($this->otherManager, $note, ['status' => 'approved']));
+
+        $reponse = $this->patch($this->manager, $note, ['status' => 'rejected', 'commentaireStatut' => 'Il manque un justificatif.', 'version' => $versionDeLaPageOuverte]);
+
+        $this->assertRefusAvec($reponse, 'status', self::DEJA_TRAITEE);
+        $this->assertSame(ExpenseReportStatusEnum::APPROVED, $this->reload($note)->getStatus());
         $this->assertCount(0, $this->getMailerMessages());
     }
 

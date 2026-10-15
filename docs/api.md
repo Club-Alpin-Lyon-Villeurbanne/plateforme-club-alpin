@@ -179,10 +179,24 @@ GET /api/utilisateurs/{id}
 GET /api/notes-de-frais
 ```
 
-Retourne uniquement les notes de frais de l'utilisateur connecté.
+Retourne uniquement les notes de frais de l'utilisateur connecté, de sortie comme hors sortie. C'est la liste « Mes notes de frais » du site.
 
 **Paramètres de requête :**
+- `type` : `sortie`, `formation` ou `autre` (achat)
+- `inclure_brouillons` : `true` pour inclure les brouillons, absents sinon
 - `event` : Filtrer par ID de sortie
+- `pagination` : `false` pour désactiver la pagination
+
+#### Notes à valider (responsable de commission)
+```http
+GET /api/notes-de-frais/a-valider
+```
+
+La liste « Notes de frais à valider » du site : les notes hors sortie des commissions dont l'utilisateur connecté est valideur, sauf les siennes. Sans filtre `status`, seulement celles qui attendent sa décision (`submitted`). Un brouillon n'y figure jamais. La liste est vide pour qui ne valide aucune commission, gestionnaire compris.
+
+**Paramètres de requête :**
+- `status` : une valeur, ou plusieurs (`status[]=preapproved&status[]=approved`) ; le site demande `preapproved`, `approved`, `rejected` et `accounted` pour les notes déjà traitées
+- `refundRequired` : donne toujours une liste vide, pour que le choix entre don et remboursement reste inconnu du responsable
 - `pagination` : `false` pour désactiver la pagination
 
 #### Liste des notes de frais (admin/comptabilité)
@@ -248,16 +262,41 @@ Une note hors sortie y porte les [champs d'une note hors sortie](#champs-dune-no
 ```
 
 #### Créer une note de frais
+Une note de sortie se crée par sa sortie :
+
 ```http
 POST /api/notes-de-frais
 Content-Type: application/json
 
 {
-  "event": 11,
-  "details": "{...}",
-  "refundRequired": true
+  "eventId": 11
 }
 ```
+
+Elle est créée en brouillon, avec `refundRequired` à `false`. Ses dépenses (`details`) et le choix entre don et remboursement s'enregistrent ensuite par `PATCH`. Refus : `404` si la sortie n'existe pas, `409` si l'utilisateur a déjà une note pour cette sortie.
+
+Une note hors sortie se crée par son type, sans `eventId` :
+
+```http
+POST /api/notes-de-frais
+Content-Type: application/json
+
+{
+  "type": "formation",
+  "commissionId": 4,
+  "objet": "Formation initiateur SAE",
+  "dateDepense": "2026-10-02",
+  "lienFormation": "https://example.org/formation-initiateur"
+}
+```
+
+- `type` : `formation` ou `autre` (achat).
+- `commissionId` : la commission qui reçoit la note, obligatoire. Une commission masquée est refusée.
+- `objet` : obligatoire, 255 caractères au plus.
+- `dateDepense` : date de la formation ou de l'achat (`AAAA-MM-JJ`), obligatoire. Elle ne peut pas être dans le futur, ni, pour un type qui a un délai d'envoi (`expense_report.horsSortie.delaiEnvoiJours`), plus ancienne que ce délai.
+- `lienFormation` : facultatif, une adresse web, pour une formation seulement.
+
+Elle est créée en brouillon, sans choix entre don et remboursement (`refundRequired` à `null`). Ses dépenses, ce choix et l'envoi passent ensuite par `PATCH`. Refus : `422` sur le champ en cause (`commission` pour `commissionId`).
 
 Une note hors sortie (`type` `formation` ou `autre`) demande un rôle d'encadrement ou de responsable de commission, dans n'importe quelle commission. Sinon : `422` sur `type`, « Les notes de frais sont réservées à l'encadrement et aux responsables de commission. ».
 
@@ -500,7 +539,7 @@ curl -H "Authorization: Bearer <token>" \
 curl -X POST \
      -H "Authorization: Bearer <token>" \
      -H "Content-Type: application/json" \
-     -d '{"event": 11, "refundRequired": true}' \
+     -d '{"eventId": 11}' \
      https://clubalpinlyon.fr/api/notes-de-frais
 ```
 

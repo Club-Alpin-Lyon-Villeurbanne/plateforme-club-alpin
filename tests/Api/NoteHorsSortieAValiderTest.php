@@ -30,8 +30,6 @@ class NoteHorsSortieAValiderTest extends ExpenseReportApiTestCase
     {
         yield 'sans filtre' => [[]];
         yield 'demandes déjà traitées' => [['status' => ['preapproved', 'approved', 'rejected', 'accounted']]];
-        yield 'ancienne file de la trésorerie' => [['attente' => 'moi']];
-        yield 'ancienne file des responsables' => [['attente' => 'responsables']];
     }
 
     public function testUnGestionnaireResponsableVoitCeQueVoitLeResponsable(): void
@@ -44,15 +42,6 @@ class NoteHorsSortieAValiderTest extends ExpenseReportApiTestCase
         $this->assertSame([$deSaCommission->getId()], $this->ids($this->aValider($this->manager)));
         $this->assertSame($this->ids($this->aValider($this->responsable)), $this->ids($this->aValider($this->manager)));
         $this->assertTrue($this->show($this->manager, $deSaCommission)['body']['peutDecider']);
-    }
-
-    public function testLeParametreAttenteNeChangePasLaListeDuResponsable(): void
-    {
-        $note = $this->creerAchat($this->adherent, ExpenseReportStatusEnum::SUBMITTED, null, $this->commissionDeTest);
-
-        foreach (['moi', 'responsables'] as $attente) {
-            $this->assertSame([$note->getId()], $this->ids($this->aValider($this->responsable, ['attente' => $attente])));
-        }
     }
 
     public function testLeGestionnaireNePeutPlusDeciderDepuisLeSite(): void

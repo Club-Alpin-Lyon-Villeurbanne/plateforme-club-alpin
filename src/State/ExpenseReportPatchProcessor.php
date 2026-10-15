@@ -22,8 +22,8 @@ use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
  * statut d'une note hors sortie est ensuite annoncé par mail.
  *
  * `version`, facultatif : la version de la note lue par le client. Le formulaire du site l'envoie
- * pour qu'un onglet resté ouvert n'écrase pas ce qui a été enregistré ailleurs ; compta-club ne
- * l'envoie pas.
+ * pour qu'un onglet resté ouvert n'écrase pas ce qui a été enregistré ailleurs ; compta-club
+ * l'envoie avec chaque décision sur une note hors sortie.
  */
 class ExpenseReportPatchProcessor implements ProcessorInterface
 {

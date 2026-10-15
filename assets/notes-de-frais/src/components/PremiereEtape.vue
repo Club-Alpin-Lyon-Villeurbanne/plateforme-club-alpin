@@ -150,7 +150,7 @@ const aideDate = computed(() => {
     return messageDelaiDepasse(props.delaiEnvoiJours);
   }
 
-  return limite.value ? `À envoyer avant le ${dateFr(limite.value)}.` : "";
+  return limite.value ? `À envoyer au plus tard le ${dateFr(limite.value)}.` : "";
 });
 
 const champDate = ref<HTMLInputElement | null>(null);

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from "vue";
-import { conflit, enregistrerNote, erreurDeLecture, lireNote, messagesDErreur, refusDeLApi } from "./api";
+import { conflit, enregistrerNote, erreurDeLecture, lireNote, messagesDErreur, refusDeLApi, statutDuRefus } from "./api";
 import { choixDuDemandeur, dateFr, dateFrDe, decisionSurLaPage, enAttenteDe, euros, jour, lienWeb, nomComplet, partRemboursable } from "./format";
 import { EXTENSIONS_D_IMAGE } from "./justificatifs";
 import { libellesDuType } from "./typesDeNote";
@@ -10,8 +10,12 @@ const props = defineProps<{ donnees: DonneesDetail }>();
 
 const URL_LISTE = "/notes-de-frais/a-valider";
 const URL_MES_NOTES = "/notes-de-frais";
+const URL_NOUVELLE = "/notes-de-frais/nouvelle";
 const MOTIFS = ["Il manque un justificatif", "Mauvaise commission", "Montant à revoir", "Pas d'accord préalable"];
 const DEJA_TRAITEE = "Cette note a déjà été traitée.";
+const PLUS_VALIDEUR = "Vous ne pouvez plus décider sur cette note.";
+// Mêmes libellés que dans « Mes notes de frais ».
+const REPRISES: Record<string, string> = { draft: "Reprendre", rejected: "Corriger" };
 const TITRE_DE_L_ONGLET = document.title;
 
 const note = ref<NoteDeFrais | null>(null);
@@ -82,6 +86,8 @@ const verification = computed(() => {
 
 const messageRempli = computed(() => message.value.trim() !== "");
 const dejaTraitee = computed(() => refus.value.includes(DEJA_TRAITEE));
+const plusValideur = computed(() => refus.value.includes(PLUS_VALIDEUR));
+const reprise = computed(() => (note.value && props.donnees.estDemandeur ? (REPRISES[note.value.status] ?? null) : null));
 
 // Une note en attente sans les boutons : on dit pourquoi, et qui décidera.
 const attente = computed(() => (!note.value || note.value.peutDecider ? null : enAttenteDe(note.value)));
@@ -165,6 +171,11 @@ async function decider(corps: Record<string, unknown>, texte: string, classe: st
       // Le bouton cliqué a disparu avec les boutons de décision.
       await nextTick();
       retourALaListe.value?.focus();
+    } else if (statutDuRefus(erreur) === 403) {
+      // Plus valideur depuis l'ouverture de la page (rôle retiré, adhésion à renouveler) : la note ne
+      // se relit plus non plus.
+      refusOuvert.value = false;
+      refus.value = [PLUS_VALIDEUR];
     } else if (conflit(erreur)) {
       // Modifiée depuis l'ouverture de la page (renvoyée corrigée, autre décision) : la page relit la note,
       // le refus en cours reste ouvert s'il a encore lieu d'être.
@@ -285,7 +296,7 @@ function refuser() {
         <p class="tw-mt-2 tw-text-right tw-text-sm"><a :href="URL_LISTE" class="tw-font-medium tw-text-sky-700 hover:tw-underline">Retour aux notes à valider</a></p>
       </template>
 
-      <template v-else-if="note.peutDecider">
+      <template v-else-if="note.peutDecider && !plusValideur">
         <div v-if="!refusOuvert" class="tw-flex tw-justify-end tw-gap-3">
           <button
             ref="boutonRefuser"
@@ -344,6 +355,10 @@ function refuser() {
       </template>
 
       <p v-else-if="attente" class="tw-text-sm tw-text-gray-600">{{ attente }}</p>
+
+      <p v-if="reprise" class="tw-text-right tw-text-sm">
+        <a :href="`${URL_NOUVELLE}?id=${note.id}`" class="tw-font-medium tw-text-sky-700 hover:tw-underline">{{ reprise }}</a>
+      </p>
 
       <div aria-live="polite" class="tw-text-right tw-text-sm tw-text-red-600">
         <p v-for="un in refus" :key="un" class="tw-mt-2">{{ un }}</p>

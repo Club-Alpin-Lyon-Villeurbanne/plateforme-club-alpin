@@ -19,9 +19,10 @@ use Symfony\Component\Mime\Email;
  * Socle des tests API des notes de frais : acteurs, appels authentifiés par JWT, assertions.
  *
  * Acteurs : owner = adhérent propriétaire, manager / otherManager = gestionnaires, stranger = tiers.
- * Sur la commission de test : responsable (Alex Durand), coResponsable (Sam Petit), encadrant, et
- * adherent, un adhérent sans rôle qui y dépose ses notes ; responsableAutreCommission (Camille
- * Roux) sur l'autre commission.
+ * Sur la commission de test : responsable (Alex Durand), coResponsable (Sam Petit) et encadrant ;
+ * responsableAutreCommission (Camille Roux) sur l'autre commission. adherent n'a aucun rôle : l'API
+ * lui refuse la création d'une note hors sortie, ses notes sont créées par l'entité (creerAchat,
+ * creerFormation).
  */
 abstract class ExpenseReportApiTestCase extends WebTestCase
 {
@@ -93,7 +94,8 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
         foreach (array_unique($this->commissionsAvecRoles) as $code) {
             $base->executeStatement('DELETE FROM caf_user_attr WHERE params_user_attr = ?', ['commission:' . $code]);
         }
-        // Les deux commissions de chaque test, avec leurs notes : la base de test ne grossit pas.
+        // Les deux commissions de chaque test, avec leurs notes. Les notes de sortie et celles d'une
+        // commission de la base (commissionVisible()) restent dans la base de test.
         foreach (array_filter([$this->commissionDeTest ?? null, $this->autreCommission ?? null]) as $commission) {
             $notes = 'SELECT id FROM expense_report WHERE commission_id = ?';
             $base->executeStatement(sprintf('DELETE FROM expense_report_status_history WHERE expense_report_id IN (SELECT id FROM (%s) AS notes)', $notes), [$commission->getId()]);

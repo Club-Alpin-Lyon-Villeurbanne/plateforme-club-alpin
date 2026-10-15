@@ -18,7 +18,8 @@ use Symfony\Bundle\SecurityBundle\Security;
  * Gère le filtrage et l'optimisation des notes de frais :
  * - Par défaut : filtré par l'utilisateur connecté (sécurité par défaut)
  * - /admin/notes-de-frais : pas de filtrage par utilisateur (réservé aux admins/gestionnaires via security) ;
- *   les notes de sortie, et les notes hors sortie qui attendent la trésorerie ou qu'elle a traitées (compta-club)
+ *   les notes de sortie, et les notes hors sortie qui attendent la trésorerie ou qu'elle a traitées, et celles
+ *   qu'un responsable a refusées (compta-club)
  * - /notes-de-frais/a-valider : les notes hors sortie que l'utilisateur valide comme responsable (NotesAValider)
  * - Exclut les brouillons par défaut (sauf si inclure_brouillons=true)
  * - Eager loading des relations pour éviter le problème N+1
