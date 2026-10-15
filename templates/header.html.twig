@@ -307,7 +307,7 @@
                                         {% set notes_de_frais_a_valider = notes_de_frais_a_valider() %}
                                         {% if notes_de_frais_a_valider is not null %}
                                             <li>
-                                                <a href="{{ path('notes_de_frais_a_valider') }}" title="Valider ou renvoyer les notes de frais en attente">
+                                                <a href="{{ path('notes_de_frais_a_valider') }}" title="Valider ou refuser les notes de frais en attente">
                                                     {% if notes_de_frais_a_valider > 0 %}<span class="notification">{{ notes_de_frais_a_valider }}</span>{% endif %}
                                                     notes de frais à valider
                                                 </a>

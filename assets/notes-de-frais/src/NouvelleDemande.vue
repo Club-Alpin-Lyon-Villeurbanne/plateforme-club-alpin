@@ -346,6 +346,8 @@ async function enregistrer() {
         return false;
       }
       enregistre.value = empreinte;
+      // Les lignes sont enregistrées avec le reste : l'échec de leur enregistrement automatique ne vaut plus.
+      erreursEnregistrementAuto.value = [];
       return true;
     });
     if (!ecrite) {
@@ -462,6 +464,10 @@ function ongletPerime(erreur: unknown): boolean {
 // Plus rien ne peut s'enregistrer : la page le dit, sans retenir le départ. Le formulaire se réduit
 // à ce message : comme après un envoi, la page remonte pour qu'il ne reste pas au-dessus de l'écran.
 async function noteDejaEnvoyee() {
+  // Envoyée d'ici : la confirmation, qui lit la note, reste affichée.
+  if (envoyee.value) {
+    return;
+  }
   note.value = null;
   erreurDeChargement.value = "Cette note a été envoyée : elle ne peut plus être modifiée.";
   await nextTick();
@@ -516,7 +522,8 @@ function joindre(ligneId: string, fichier: File): Promise<boolean> {
 }
 
 async function envoyerLeJustificatif(ligneId: string, fichier: File): Promise<boolean> {
-  if (note.value === null) {
+  // Pendant l'envoi de la note, il arriverait sur une note envoyée et serait refusé.
+  if (note.value === null || envoiEnCours.value) {
     return false;
   }
 

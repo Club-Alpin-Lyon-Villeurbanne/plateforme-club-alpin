@@ -150,7 +150,7 @@ Il n'y a pas d'adresse de trésorerie à configurer.
   - `Version20261012090000` : colonne `niveau` de l'historique des statuts ;
   - `Version20261012120000` : colonne `version` de la note (verrou optimiste), à 1 pour les notes existantes.
 - Code : application Vue dans `assets/notes-de-frais/`, pages dans `NoteDeFraisController`, opérations d'API sur l'entité `ExpenseReport`, services dans `src/Service/NoteDeFrais/`.
-- Tests : `tests/Api/NoteHorsSortie*Test.php` et `tests/Api/NoteDeFrais*Test.php`, sur le socle `ExpenseReportApiTestCase`. En local, ces fichiers peuvent dépasser la mémoire par défaut de PHP : `php -d memory_limit=1G bin/phpunit <fichier>`. Les pages n'ont pas de test automatisé.
+- Tests : `tests/Api/NoteHorsSortie*Test.php` et `tests/Api/NoteDeFrais*Test.php`, sur le socle `ExpenseReportApiTestCase`. En local, ces fichiers peuvent dépasser la mémoire par défaut de PHP : `php -d memory_limit=1G bin/phpunit <fichier>`. Les données que les pages Twig passent à Vue sont testées ; l'application Vue n'a pas de test automatisé.
 
 ### Avant la mise en production
 
@@ -177,11 +177,22 @@ Il n'y a pas d'adresse de trésorerie à configurer.
    ```
 5. [ ] Vérifier que `DISPLAY_NOTES_DE_FRAIS` vaut faux à Chambéry et à Clermont.
 6. [ ] Vérifier en prod les responsables de chaque commission et leur adresse mail. Une commission sans responsable joignable envoie tout à la trésorerie.
-7. [ ] Reporter dans `expense_report.horsSortie` (`config/services.yaml`) les valeurs de la politique de remboursement votée : délai, seuil, taux, plafonds.
+7. [ ] Reporter dans `expense_report.horsSortie` (`config/services.yaml`) les valeurs de la politique de remboursement votée : délai, seuil, taux, plafonds. Puis relancer `tests/Api` : les tests lisent les montants dans la configuration, mais certaines de leurs données supposent la forme du barème (natures plafonnées et leur portée, délai des achats, formations sans délai). Adapter ces données si un test échoue.
 8. [ ] Déployer compta-club, avant la plateforme, avec en une seule fois la liste, la page d'une note et le PDF des notes hors sortie : la plateforme lui enverra ces notes et le statut `preapproved`.
-9. [ ] Déployer la plateforme le même jour que compta-club, et le même jour dans tous les clubs : entre les deux, les filtres « Validée par le responsable », « Formations » et « Achats » de compta-club restent vides. Vérifier ensuite que `doctrine:migrations:status` n'annonce aucune migration en attente.
+9. [ ] Déployer la plateforme le même jour que compta-club, et le même jour dans tous les clubs. Entre les deux, le filtre « Validée par le responsable » de compta-club reste vide, et les filtres « Formations » et « Achats » affichent le nombre des notes de sortie au-dessus d'un tableau vide. Ensuite :
+   - vérifier que `doctrine:migrations:status` n'annonce aucune migration en attente ;
+   - recharger compta-club : un onglet ouvert avant son déploiement plante à la première note hors sortie ;
+   - ne plus revenir à une version de compta-club d'avant les notes hors sortie, qui planterait de même : corriger en avant.
 
-Retour arrière : mieux vaut corriger en avant. Le code d'avant ne connaît pas le statut `preapproved` (une note à ce statut ferait échouer les listes) et enverrait à compta-club les notes qui attendent un responsable. Revenir à la version d'avant (`doctrine:migrations:migrate` vers la dernière migration de `main`) joue les `down()` de la plus récente à la plus ancienne, et MySQL ne revient pas sur une colonne déjà supprimée :
+Retour arrière : mieux vaut corriger en avant. Le code d'avant ne connaît pas le statut `preapproved` (une note à ce statut ferait échouer les listes) et enverrait à compta-club les notes qui attendent un responsable.
+
+Les `down()` sont dans le code de cette version. Défaire d'abord les migrations, avec ce code encore déployé, et seulement ensuite redéployer l'ancien code : une fois l'ancien code en place, Doctrine ne connaît plus ces migrations et la commande ne fait rien. `Version20261006120000` est la dernière migration d'avant les notes hors sortie :
+
+```sh
+bin/console doctrine:migrations:migrate 'DoctrineMigrations\Version20261006120000'
+```
+
+La commande joue les `down()` de la plus récente à la plus ancienne, et MySQL ne revient pas sur une colonne déjà supprimée :
 
 1. `Version20261012120000` supprime la colonne `version` de la note ;
 2. `Version20261012090000` supprime la colonne `niveau` de l'historique : on ne sait plus qui, du responsable ou de la trésorerie, a pris chaque décision ;
@@ -189,7 +200,7 @@ Retour arrière : mieux vaut corriger en avant. Le code d'avant ne connaît pas 
 4. `Version20261011150000` supprime le message de chaque décision dans l'historique ;
 5. `Version20261011120000` s'arrête s'il reste une note hors sortie ; sinon elle supprime les colonnes des notes hors sortie et rend de nouveau la sortie et le choix entre don et remboursement obligatoires.
 
-Un arrêt à l'étape 3 ou 5 laisse la base à mi-chemin, déjà sans `version` ni `niveau`. Avant un retour arrière : sauvegarder la base, puis faire décider ou supprimer les notes `preapproved` et les notes hors sortie.
+Un arrêt laisse la base à mi-chemin : à l'étape 3, déjà sans `version` ni `niveau` ; à l'étape 5, sans le message des décisions non plus. Avant un retour arrière : sauvegarder la base, puis faire décider ou supprimer les notes `preapproved` et les notes hors sortie.
 
 Ne pas créer de groupe de travail pour l'instant : prévus en commissions masquées, ils ne sont pas encore proposés dans le formulaire.
 

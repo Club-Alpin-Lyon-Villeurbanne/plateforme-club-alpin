@@ -114,6 +114,15 @@ class NoteHorsSortieEnvoiTest extends ExpenseReportApiTestCase
         $this->assertRefusAvec($this->envoyer($this->owner, $note), 'dateDepense', 'La date ne peut pas être dans le futur.');
     }
 
+    public function testUneNoteACorrigerDateeDansLeFuturEstRefuseeAuRenvoi(): void
+    {
+        $note = $this->creerAchat($this->owner, ExpenseReportStatusEnum::REJECTED, self::LIGNES, null, new \DateTimeImmutable('+2 days'));
+        $this->joindreLesJustificatifs($note, 'ligne-1', 'ligne-2');
+
+        $this->assertRefusAvec($this->envoyer($this->owner, $note), 'dateDepense', 'La date ne peut pas être dans le futur.');
+        $this->assertSame(ExpenseReportStatusEnum::REJECTED, $this->reload($note)->getStatus());
+    }
+
     public function testUnAchatHorsDelaiEstRefuseAuPremierEnvoi(): void
     {
         $delai = $this->configHorsSortie()['delaiEnvoiJours']['autre'];
@@ -187,6 +196,15 @@ class NoteHorsSortieEnvoiTest extends ExpenseReportApiTestCase
         $this->assertResponseStatus(200, $this->envoyer($this->owner, $note));
 
         $this->assertRefused($this->patch($this->owner, $note, ['commission' => '/api/commissions/' . $this->commissionVisible(1)->getId()]), 'commission');
+    }
+
+    public function testLeProprietaireNeChangePlusLeLienDUneFormationEnvoyee(): void
+    {
+        $note = $this->creerFormation($this->encadrant, '{"lignes":[{"id":"ligne-1","nature":"voiture","distance":220}]}', null, 'https://example.org/formation-initiateur');
+        $this->assertResponseStatus(200, $this->envoyer($this->encadrant, $note));
+
+        $this->assertRefused($this->patch($this->encadrant, $note, ['lienFormation' => 'https://example.org/autre-formation']), 'lienFormation');
+        $this->assertSame('https://example.org/formation-initiateur', $this->reload($note)->getLienFormation());
     }
 
     public function testLeProprietaireNeRemplacePlusUnJustificatifDUneNoteEnvoyee(): void

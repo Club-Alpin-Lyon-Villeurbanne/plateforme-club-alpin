@@ -4,10 +4,12 @@ namespace App\Tests\Api;
 
 use App\Entity\User;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use Symfony\Component\DomCrawler\Crawler;
 
 /**
  * Liste « notes de frais à valider » d'un responsable : les notes hors sortie envoyées de ses
- * commissions, déjà traitées avec le filtre de statut.
+ * commissions, déjà traitées avec le filtre de statut. Son entrée du menu et les pastilles qui
+ * comptent les notes en attente.
  */
 class NoteHorsSortieResponsableAValiderTest extends ExpenseReportApiTestCase
 {
@@ -170,6 +172,41 @@ class NoteHorsSortieResponsableAValiderTest extends ExpenseReportApiTestCase
     {
         yield 'remboursement' => ['true'];
         yield 'don' => ['false'];
+    }
+
+    public function testSeulUnValideurALEntreeDuMenu(): void
+    {
+        foreach ([[$this->encadrant, 0], [$this->responsable, 1]] as [$utilisateur, $entrees]) {
+            $this->assertCount($entrees, $this->pageDuSite($utilisateur)->filter('a[href="/notes-de-frais/a-valider"]'));
+        }
+    }
+
+    public function testLesPastillesComptentLesNotesAValider(): void
+    {
+        $avant = $this->pastilleDeLEnTete($this->pageDuSite($this->responsable));
+        $this->creerAchat($this->adherent, ExpenseReportStatusEnum::SUBMITTED, null, $this->commissionDeTest);
+
+        $page = $this->pageDuSite($this->responsable);
+
+        $this->assertSame($avant + 1, $this->pastilleDeLEnTete($page));
+        $this->assertSame('1', $page->filter('a[href="/notes-de-frais/a-valider"] .notification')->text());
+    }
+
+    private function pageDuSite(User $utilisateur): Crawler
+    {
+        $this->signin($this->em()->find(User::class, $utilisateur->getId()));
+        $page = $this->client->request('GET', '/notes-de-frais');
+        $this->assertResponseIsSuccessful();
+
+        return $page;
+    }
+
+    // L'en-tête additionne les notes à valider et les autres notifications du site.
+    private function pastilleDeLEnTete(Crawler $page): int
+    {
+        $pastille = $page->filter('.notification-user span');
+
+        return $pastille->count() ? (int) $pastille->text() : 0;
     }
 
     private function aValider(User $as, array $filtres = []): array

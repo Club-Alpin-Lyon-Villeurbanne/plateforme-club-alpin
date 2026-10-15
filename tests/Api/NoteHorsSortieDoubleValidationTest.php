@@ -287,6 +287,17 @@ class NoteHorsSortieDoubleValidationTest extends ExpenseReportApiTestCase
         $this->assertSame('Prévu au budget de la commission.', $this->show($this->adherent, $note)['body']['derniereDecision']['message']);
     }
 
+    public function testLaValidationDeLaTresorerieNeReprendPasLeMotDuResponsable(): void
+    {
+        $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
+        $this->assertResponseStatus(200, $this->patch($this->responsable, $note, ['status' => 'preapproved', 'commentaireStatut' => 'Prévu au budget de la commission.']));
+
+        $this->assertResponseStatus(200, $this->patch($this->manager, $note, ['status' => 'approved']));
+
+        $validation = $this->derniereDecision($note);
+        $this->assertSame(['approved', null], [$validation['statut'], $validation['message']]);
+    }
+
     public function testPersonneNePeutDeciderSurLeSiteDUneNotePreValidee(): void
     {
         $this->rendreResponsable($this->manager, $this->commissionDeTest);

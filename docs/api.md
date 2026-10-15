@@ -222,7 +222,7 @@ Une valeur inconnue de `status` ou de `type` donne une liste vide.
 
 Une note hors sortie y porte les [champs d'une note hors sortie](#champs-dune-note-hors-sortie), comme à sa lecture par `GET /api/notes-de-frais/{id}`, que compta-club utilise pour la page d'une note.
 
-**Réponse exemple :**
+**Réponse exemple**, avec une note de sortie (ses champs hors sortie sont nuls) :
 ```json
 {
   "data": [
@@ -240,6 +240,12 @@ Une note hors sortie y porte les [champs d'une note hors sortie](#champs-dune-no
         "titre": "Randonnée au Mont Blanc",
         "dateDebut": "2025-09-15 08:00:00"
       },
+      "type": "sortie",
+      "commission": null,
+      "objet": null,
+      "dateDepense": null,
+      "lienFormation": null,
+      "motPourResponsable": null,
       "dateCreation": "2025-09-20",
       "commentaireStatut": null,
       "details": "{...}",
@@ -249,7 +255,9 @@ Une note hors sortie y porte les [champs d'une note hors sortie](#champs-dune-no
           "expenseId": "transport",
           "fileUrl": "http://..."
         }
-      ]
+      ],
+      "totalDeclare": 86.4,
+      "totalRemboursable": 86.4
     }
   ],
   "meta": {
@@ -503,6 +511,7 @@ GET /api/sorties?order[startDate]=desc
 | 401 | Non authentifié |
 | 403 | Accès refusé |
 | 404 | Ressource non trouvée |
+| 409 | Conflit : la note de frais a changé depuis sa lecture, ou existe déjà pour cette sortie |
 | 422 | Données invalides |
 | 500 | Erreur serveur |
 

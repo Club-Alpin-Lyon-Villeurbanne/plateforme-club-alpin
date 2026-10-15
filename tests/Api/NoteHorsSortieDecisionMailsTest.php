@@ -6,8 +6,9 @@ use App\Utils\Enums\ExpenseReportStatusEnum;
 use Symfony\Component\Mime\Email;
 
 /**
- * Mails de la décision sur une note sans valideur : seul le demandeur est prévenu, et la décision
- * est signée de la trésorerie, jamais du nom de la personne. Rien ne part à la trésorerie.
+ * Mails des décisions sur une note, avec ou sans valideur : seul le demandeur est prévenu, et une
+ * décision de la trésorerie est signée d'elle, jamais du nom de la personne. Rien ne part à la
+ * trésorerie.
  */
 class NoteHorsSortieDecisionMailsTest extends ExpenseReportApiTestCase
 {

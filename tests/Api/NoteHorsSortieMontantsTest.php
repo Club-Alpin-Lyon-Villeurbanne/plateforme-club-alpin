@@ -64,7 +64,7 @@ class NoteHorsSortieMontantsTest extends ExpenseReportApiTestCase
         $this->assertSame([$this->messageDuSeuil()], $liste['body']['data'][0]['avertissements']);
     }
 
-    public function testUnAchatEnvoyePlusDeTrenteJoursApresLaDepenseLeSignale(): void
+    public function testUnAchatEnvoyeApresLeDelaiLeSignale(): void
     {
         $delai = $this->configHorsSortie()['delaiEnvoiJours']['autre'];
         $message = sprintf('Achat daté de plus de %d jours avant son envoi.', $delai);

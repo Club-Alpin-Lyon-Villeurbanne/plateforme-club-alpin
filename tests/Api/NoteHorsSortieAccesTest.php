@@ -37,11 +37,11 @@ class NoteHorsSortieAccesTest extends ExpenseReportApiTestCase
      */
     public function testSansRoleAucuneNoteNEstCreee(string $type): void
     {
-        $avant = $this->nombreDeNotesHorsSortie();
+        $avant = $this->nombreDeNotesHorsSortieDeLAdherent();
         $corps = 'formation' === $type ? $this->formation() : $this->achat();
 
         $this->assertRefusAvec($this->create($this->adherent, $corps), 'type', ControlesNoteHorsSortie::RESERVEES_A_L_ENCADREMENT);
-        $this->assertSame($avant, $this->nombreDeNotesHorsSortie());
+        $this->assertSame($avant, $this->nombreDeNotesHorsSortieDeLAdherent());
     }
 
     public static function typeProvider(): iterable
@@ -81,8 +81,8 @@ class NoteHorsSortieAccesTest extends ExpenseReportApiTestCase
         }
     }
 
-    private function nombreDeNotesHorsSortie(): int
+    private function nombreDeNotesHorsSortieDeLAdherent(): int
     {
-        return (int) $this->em()->getConnection()->fetchOne("SELECT COUNT(*) FROM expense_report WHERE type <> 'sortie'");
+        return (int) $this->em()->getConnection()->fetchOne("SELECT COUNT(*) FROM expense_report WHERE type <> 'sortie' AND user_id = ?", [$this->adherent->getId()]);
     }
 }

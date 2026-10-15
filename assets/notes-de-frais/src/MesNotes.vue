@@ -47,7 +47,8 @@ const pages = ref(1);
 const total = ref<number | null>(null);
 const liste = ref<HTMLUListElement | null>(null);
 
-const aUnePageSuivante = computed(() => !chargement.value && page.value < pages.value);
+// Sans première page, « plus anciennes » la redemanderait.
+const aUnePageSuivante = computed(() => !chargement.value && page.value > 0 && page.value < pages.value);
 
 const annonce = computed(() => {
   const choix = FILTRES.find((un) => un.valeur === filtre.value);
@@ -62,28 +63,35 @@ const annonce = computed(() => {
   return `${total.value} ${total.value > 1 ? choix.plusieurs : choix.une}`;
 });
 
+// Un filtre choisi pendant un chargement en lance un autre : seule la dernière requête met la page à jour.
+let derniereRequete = 0;
+
 async function charger() {
+  const requete = ++derniereRequete;
   const dejaCharge = page.value > 0;
   const premiereNouvelle = notes.value.length;
-  const demande = filtre.value;
   (dejaCharge ? chargementSuivant : chargement).value = true;
   erreur.value = null;
+  let suivante: Awaited<ReturnType<typeof listerMesNotes>> | null = null;
+  let refus: string | null = null;
   try {
-    const suivante = await listerMesNotes(page.value + 1, demande);
-    // Un autre filtre a été choisi pendant le chargement.
-    if (demande !== filtre.value) {
-      return;
-    }
-    notes.value = [...notes.value, ...suivante.notes];
-    page.value += 1;
-    pages.value = suivante.pages;
-    total.value = suivante.total;
+    suivante = await listerMesNotes(page.value + 1, filtre.value);
   } catch (e) {
-    erreur.value = messagesDErreur(e)[0];
-  } finally {
-    chargement.value = false;
-    chargementSuivant.value = false;
+    refus = messagesDErreur(e)[0];
   }
+  if (requete !== derniereRequete) {
+    return;
+  }
+  chargement.value = false;
+  chargementSuivant.value = false;
+  if (suivante === null) {
+    erreur.value = refus;
+    return;
+  }
+  notes.value = [...notes.value, ...suivante.notes];
+  page.value += 1;
+  pages.value = suivante.pages;
+  total.value = suivante.total;
   // Le bouton « plus anciennes » peut disparaître : le focus passe à la première note ajoutée.
   if (dejaCharge) {
     await nextTick();

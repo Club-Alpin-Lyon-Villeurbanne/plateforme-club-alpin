@@ -6,8 +6,9 @@ use App\Entity\ExpenseReport;
 use App\Utils\Enums\ExpenseReportTypeEnum;
 
 /**
- * Service pour calculer et formater une note de frais
- * à partir d'un tableau associatif (décodé depuis le JSON).
+ * Montants d'une note de frais. Une note de sortie est calculée à partir de ses `details` (tableau
+ * décodé du JSON) avec les taux en vigueur ; une note hors sortie, d'après le barème `horsSortie`,
+ * puis figée à son envoi.
  */
 class ExpenseReportCalculator
 {
@@ -19,13 +20,16 @@ class ExpenseReportCalculator
     private array $horsSortie;
 
     /**
-     * @param array $config Exemple :
+     * @param array $config `expense_report` de `config/services.yaml`. Exemple :
      *                      [
      *                      'nuiteeMaxRemboursable'   => 60,
      *                      'tauxKilometriqueVoiture' => 0.2,
      *                      'tauxKilometriqueMinibus' => 0.3,
      *                      'divisionPeage'           => 3,
+     *                      'horsSortie'              => [...],
      *                      ]
+     *                      `horsSortie` est obligatoire dès qu'une note hors sortie est calculée :
+     *                      une valeur absente du barème lève une LogicException.
      */
     public function __construct(array $config)
     {

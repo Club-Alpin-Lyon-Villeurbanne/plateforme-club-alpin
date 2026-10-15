@@ -149,7 +149,7 @@ const props = defineProps<{
   demande: Demande;
   formation: BaremeFormation;
   commissionTitre: string;
-  /** « Validée par … » de la première étape. */
+  /** « Sera transmise à … » de la première étape. */
   phraseValideurs: string;
   justificatifs: Record<string, Justificatif>;
   envoisEnCours: string[];

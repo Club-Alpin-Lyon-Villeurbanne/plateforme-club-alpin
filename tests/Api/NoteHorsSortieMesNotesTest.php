@@ -50,6 +50,22 @@ class NoteHorsSortieMesNotesTest extends ExpenseReportApiTestCase
         $this->assertSame([], $envoyee['valideurs']);
     }
 
+    public function testUneNoteRenvoyeeDonneLaDateDeSonDernierEnvoi(): void
+    {
+        $note = $this->noteEnvoyee($this->owner);
+        $this->assertResponseStatus(200, $this->renvoyer($this->manager, $note));
+        // Comme si le premier envoi datait de dix jours.
+        $this->em()->getConnection()->executeStatement(
+            "UPDATE expense_report_status_history SET changed_at = ? WHERE expense_report_id = ? AND new_status = 'submitted'",
+            [(new \DateTimeImmutable('-10 days'))->format('Y-m-d H:i:s'), $note->getId()],
+        );
+        $avant = new \DateTimeImmutable('-1 minute');
+
+        $this->assertResponseStatus(200, $this->envoyer($this->owner, $note));
+
+        $this->assertGreaterThanOrEqual($avant, new \DateTimeImmutable($this->show($this->owner, $note)['body']['dateEnvoi']));
+    }
+
     public function testUnBrouillonNAPasDeDateDEnvoi(): void
     {
         $brouillon = $this->creerAchat($this->owner);

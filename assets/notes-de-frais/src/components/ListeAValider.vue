@@ -16,7 +16,8 @@ const page = ref(0);
 const pages = ref(1);
 const liste = ref<HTMLUListElement | null>(null);
 
-const aUnePageSuivante = computed(() => !chargement.value && page.value < pages.value);
+// Sans première page, « plus anciennes » la redemanderait.
+const aUnePageSuivante = computed(() => !chargement.value && page.value > 0 && page.value < pages.value);
 
 const resume = computed(() => {
   if (props.traitees) {

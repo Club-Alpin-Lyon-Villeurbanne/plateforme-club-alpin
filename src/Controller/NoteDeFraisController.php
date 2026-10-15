@@ -66,7 +66,7 @@ class NoteDeFraisController extends AbstractController
         }
 
         $visibles = iterator_to_array($commissionRepository->findVisible(), false);
-        // Pour la phrase « Validée par … » : l'utilisateur connecté ne valide pas sa propre note.
+        // Pour la phrase « Sera transmise à … » : l'utilisateur connecté ne valide pas sa propre note.
         $valideursParCommission = $utilisateur instanceof User ? $valideurs->pourLesCommissions($visibles, $utilisateur) : [];
         $commissionsDontIlEstResponsable = $utilisateur instanceof User ? $valideurs->commissionsValideesPar($utilisateur) : [];
 

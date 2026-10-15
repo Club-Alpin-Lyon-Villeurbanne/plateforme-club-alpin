@@ -38,7 +38,7 @@ class ExpenseReportStatusHistory
 
     private ?\DateTimeImmutable $changedAt = null;
 
-    // Message de la validation ou du renvoi ; le commentaire de statut de la note est effacé à son nouvel envoi.
+    // Message de la validation ou du renvoi ; le commentaire de statut d'une note hors sortie est effacé à son nouvel envoi.
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $message = null;
 

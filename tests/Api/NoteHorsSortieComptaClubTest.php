@@ -10,7 +10,8 @@ use App\Utils\Enums\ExpenseReportStatusEnum;
 
 /**
  * La liste de compta-club, `/admin/notes-de-frais` : les notes de sortie, inchangées, et les notes
- * hors sortie qui attendent la trésorerie ou qu'elle a traitées, avec ce qu'il faut pour les traiter.
+ * hors sortie qui attendent la trésorerie ou qu'elle a traitées, et celles qu'un responsable a
+ * refusées, avec ce qu'il faut pour les traiter.
  */
 class NoteHorsSortieComptaClubTest extends ExpenseReportApiTestCase
 {

@@ -138,7 +138,8 @@ export function refusDeLApi(erreur: unknown): Refus[] {
       message: violation.message,
     }));
   }
-  if (donnees?.detail) {
+  // Une erreur serveur (5xx) n'a pour détail que « Internal Server Error », en anglais.
+  if (donnees?.detail && (statutDuRefus(erreur) ?? 500) < 500) {
     return [{ champ: null, message: donnees.detail }];
   }
 
