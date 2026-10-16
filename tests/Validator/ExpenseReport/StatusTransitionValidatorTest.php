@@ -2,8 +2,11 @@
 
 namespace App\Tests\Validator\ExpenseReport;
 
+use App\Service\NoteDeFrais\ValideursNoteHorsSortie;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use App\Validator\ExpenseReport\ExpenseReportOriginalState;
 use App\Validator\ExpenseReport\StatusTransitionValidator;
+use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\TestCase;
 
 class StatusTransitionValidatorTest extends TestCase
@@ -29,7 +32,7 @@ class StatusTransitionValidatorTest extends TestCase
         $report->setStatus($new);
         $context = $this->context($report);
 
-        (new StatusTransitionValidator($this->actor($actor)))->validate($report, $old, $context);
+        $this->validator($actor)->validate($report, $old, $context);
 
         $this->assertSame($allowed ? [] : ['status'], $this->violationPaths($context));
     }
@@ -59,7 +62,7 @@ class StatusTransitionValidatorTest extends TestCase
         $report->setStatus($status);
         $context = $this->context($report);
 
-        (new StatusTransitionValidator($this->actor($actor)))->validate($report, $status, $context);
+        $this->validator($actor)->validate($report, $status, $context);
 
         $this->assertSame([], $this->violationPaths($context));
     }
@@ -71,5 +74,15 @@ class StatusTransitionValidatorTest extends TestCase
                 yield sprintf('%s, %s inchangé', $actor, $status->value) => [$actor, $status];
             }
         }
+    }
+
+    /**
+     * Une note de sortie n'a pas de valideurs ni de message obligatoire : la base n'est jamais lue.
+     */
+    private function validator(string $actor): StatusTransitionValidator
+    {
+        $entityManager = $this->createMock(EntityManagerInterface::class);
+
+        return new StatusTransitionValidator($this->actor($actor), new ValideursNoteHorsSortie($entityManager), new ExpenseReportOriginalState($entityManager));
     }
 }

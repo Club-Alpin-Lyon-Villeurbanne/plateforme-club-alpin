@@ -55,6 +55,7 @@ class ExpenseAttachmentUploadTest extends ExpenseReportApiTestCase
         $response = $this->uploadAttachment($this->owner, $report, self::EXPENSE_ID);
 
         $this->assertResponseStatus(422, $response);
+        $this->assertSame('Cette note a déjà été envoyée : elle ne peut plus être modifiée.', $response['body']['detail'] ?? null, json_encode($response['body'], \JSON_UNESCAPED_UNICODE));
         $this->assertSame($existingPath, $this->attachmentPath($report), 'Le justificatif enregistré ne doit pas changer.');
         $this->assertFileExists($existingPath, 'Le fichier d\'origine ne doit pas être supprimé.');
         $this->assertSame($filesBefore, $this->uploadedFiles($this->owner), 'Aucun fichier ne doit être écrit.');
