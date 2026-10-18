@@ -15,7 +15,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class CommissionControllerTest extends WebTestCase
 {
     private EntityManagerInterface $em;
-    private int $droitId;
+    private ?int $droitId = null;
 
     protected function setUp(): void
     {
@@ -24,18 +24,21 @@ class CommissionControllerTest extends WebTestCase
 
         // la base de test n'attribue le droit commission_list à aucun type d'adhérent
         $connection = $this->em->getConnection();
-        $connection->executeStatement(
+        $inserted = $connection->executeStatement(
             'INSERT INTO caf_usertype_attr (type_usertype_attr, right_usertype_attr, details_usertype_attr)
              SELECT ut.id_usertype, ur.id_userright, \'\' FROM caf_usertype ut, caf_userright ur
              WHERE ut.code_usertype = ? AND ur.code_userright = ?',
             [UserAttr::RESPONSABLE_COMMISSION, 'commission_list']
         );
+        $this->assertSame(1, $inserted);
         $this->droitId = (int) $connection->lastInsertId();
     }
 
     protected function tearDown(): void
     {
-        $this->em->getConnection()->executeStatement('DELETE FROM caf_usertype_attr WHERE id_usertype_attr = ?', [$this->droitId]);
+        if (null !== $this->droitId) {
+            $this->em->getConnection()->executeStatement('DELETE FROM caf_usertype_attr WHERE id_usertype_attr = ?', [$this->droitId]);
+        }
         parent::tearDown();
     }
 

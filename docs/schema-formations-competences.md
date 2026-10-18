@@ -88,7 +88,7 @@ Pour un brevet, la date affichée est celle de la dernière formation continue, 
 
 ```sql
 -- Les brevets d'un adhérent, avec leurs commissions
-SELECT r.code_brevet, r.intitule, v.date_obtention, v.date_recyclage,
+SELECT r.code_brevet, r.intitule, v.date_obtention, v.date_recyclage, v.date_formation_continue,
        GROUP_CONCAT(c.code_commission) AS commissions
 FROM formation_validation_brevet v
 JOIN caf_user u ON u.id_user = v.user_id
