@@ -65,6 +65,7 @@ class CommissionControllerTest extends WebTestCase
         $this->em->flush();
 
         $this->signin($responsable);
+        $this->em->clear();
         $this->client->request('GET', '/commissions/' . $commission->getId() . '/brevets');
 
         $this->assertResponseIsSuccessful();
@@ -80,6 +81,29 @@ class CommissionControllerTest extends WebTestCase
         $this->assertStringNotContainsString($formationHorsCommission->getCodeFormation(), $content);
     }
 
+    public function testLePsc1RattacheALaCommissionNeDoublePasSaColonneFixe(): void
+    {
+        $commission = $this->createCommission();
+        $responsable = $this->signup();
+        $this->addAttribute($responsable, UserAttr::RESPONSABLE_COMMISSION, 'commission:' . $commission->getCode());
+
+        $psc1 = $this->em->getRepository(FormationReferentielFormation::class)->findOneBy(['codeFormation' => 'STG-PSC1'])
+            ?? (new FormationReferentielFormation())->setCodeFormation('STG-PSC1')->setIntitule('PSC1');
+        $this->em->persist($psc1);
+        $commission->addFormation($psc1);
+        $this->validerFormation($responsable, $psc1, '2023-06-10');
+        $this->em->flush();
+
+        $this->signin($responsable);
+        $this->em->clear();
+        $this->client->request('GET', '/commissions/' . $commission->getId() . '/brevets');
+
+        $this->assertResponseIsSuccessful();
+        $content = $this->client->getResponse()->getContent();
+        $this->assertSame(1, substr_count($content, 'STG-PSC1'));
+        $this->assertSame(1, substr_count($content, '10/06/2023'));
+    }
+
     public function testLeLienVersLesBrevetsNApparaitQuePourUneCommissionAvecDesRattachements(): void
     {
         $avecBrevets = $this->createCommission();
@@ -91,6 +115,7 @@ class CommissionControllerTest extends WebTestCase
         $this->em->flush();
 
         $this->signin($responsable);
+        $this->em->clear();
         $crawler = $this->client->request('GET', '/commissions');
 
         $this->assertResponseIsSuccessful();

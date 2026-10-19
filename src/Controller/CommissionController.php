@@ -30,6 +30,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class CommissionController extends AbstractController
 {
+    // UFCA et PSC1 ont leurs colonnes fixes sur la page des brevets
+    private const FORMATIONS_GENERALES = ['STG-UFFG10', 'STG-PSC1'];
+
     #[Route('/encadrement-par-commission', name: 'participants_by_commission')]
     public function participantsByCommission(
         Request $request,
@@ -227,14 +230,15 @@ class CommissionController extends AbstractController
 
         // brevets et formations rattachés à la commission par l'import FFCAM, limités à ceux qu'un membre du staff détient
         $staff = array_column($users, 'user');
+        $formations = $commission->getFormations()->filter(static fn ($formation) => !in_array($formation->getCodeFormation(), self::FORMATIONS_GENERALES, true));
         $datesBrevets = $brevetValidationRepository->getDatesByCodeAndUser($staff, $commission->getBrevets()->toArray());
-        $datesFormations = $formationValidationRepository->getDatesByCodeAndUser($staff, $commission->getFormations()->toArray());
+        $datesFormations = $formationValidationRepository->getDatesByCodeAndUser($staff, $formations->toArray());
 
         return [
             'commission' => $commission,
             'brevets' => $commission->getBrevets()->filter(static fn ($brevet) => isset($datesBrevets[$brevet->getCodeBrevet()])),
             'niveaux' => $commission->getNiveaux(),
-            'formations' => $commission->getFormations()->filter(static fn ($formation) => isset($datesFormations[$formation->getCodeFormation()])),
+            'formations' => $formations->filter(static fn ($formation) => isset($datesFormations[$formation->getCodeFormation()])),
             'dates_brevets' => $datesBrevets,
             'dates_formations' => $datesFormations,
             'users' => $users,
