@@ -11,8 +11,9 @@ use App\Helper\MonthHelper;
 use App\Mailer\Mailer;
 use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
+use App\Repository\FormationValidationBrevetRepository;
+use App\Repository\FormationValidationFormationRepository;
 use App\Repository\UserAttrRepository;
-use App\Service\FfcamSkillsService;
 use App\UserRights;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
@@ -29,6 +30,9 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 class CommissionController extends AbstractController
 {
+    // UFCA et PSC1 ont leurs colonnes fixes sur la page des brevets
+    private const FORMATIONS_GENERALES = ['STG-UFFG10', 'STG-PSC1'];
+
     #[Route('/encadrement-par-commission', name: 'participants_by_commission')]
     public function participantsByCommission(
         Request $request,
@@ -117,7 +121,6 @@ class CommissionController extends AbstractController
     public function index(
         UserRights $userRights,
         CommissionRepository $commissionRepository,
-        FfcamSkillsService $skillsService,
     ): array {
         if (!$userRights->allowed('commission_list')) {
             throw new AccessDeniedHttpException('Not allowed');
@@ -127,7 +130,6 @@ class CommissionController extends AbstractController
 
         return [
             'commissions' => $commissionRepository->findBy(['code' => $myCommissionsCodes, 'vis' => true], ['title' => 'ASC']),
-            'skilled_commissions' => $skillsService->getSkilledCommissions(),
         ];
     }
 
@@ -205,15 +207,13 @@ class CommissionController extends AbstractController
         EntityManagerInterface $manager,
         UserAttrRepository $userAttrRepository,
         UserRights $userRights,
-        FfcamSkillsService $skillsService,
+        FormationValidationBrevetRepository $brevetValidationRepository,
+        FormationValidationFormationRepository $formationValidationRepository,
     ): array {
         if (!$userRights->allowed('commission_list')) {
             throw new AccessDeniedHttpException('Not allowed');
         }
         $users = [];
-        $brevets = $skillsService->getBrevets($commission);
-        $niveaux = $commission->getNiveaux();
-        $formations = $skillsService->getFormations($commission);
 
         $roles = $manager->getRepository(Usertype::class)->findBy(['code' => UserAttr::SKILLS_LISTING], ['hierarchie' => 'DESC']);
         foreach ($roles as $role) {
@@ -228,11 +228,19 @@ class CommissionController extends AbstractController
             }
         }
 
+        // brevets et formations rattachés à la commission par l'import FFCAM, limités à ceux qu'un membre du staff détient
+        $staff = array_column($users, 'user');
+        $formations = $commission->getFormations()->filter(static fn ($formation) => !in_array($formation->getCodeFormation(), self::FORMATIONS_GENERALES, true));
+        $datesBrevets = $brevetValidationRepository->getDatesByCodeAndUser($staff, $commission->getBrevets()->toArray());
+        $datesFormations = $formationValidationRepository->getDatesByCodeAndUser($staff, $formations->toArray());
+
         return [
             'commission' => $commission,
-            'brevets' => $brevets,
-            'niveaux' => $niveaux,
-            'formations' => $formations,
+            'brevets' => $commission->getBrevets()->filter(static fn ($brevet) => isset($datesBrevets[$brevet->getCodeBrevet()])),
+            'niveaux' => $commission->getNiveaux(),
+            'formations' => $formations->filter(static fn ($formation) => isset($datesFormations[$formation->getCodeFormation()])),
+            'dates_brevets' => $datesBrevets,
+            'dates_formations' => $datesFormations,
             'users' => $users,
         ];
     }

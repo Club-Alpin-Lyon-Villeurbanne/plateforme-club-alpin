@@ -74,7 +74,7 @@ class Commission
     private array $mandatoryFields = self::CONFIGURABLE_FIELDS;
 
     /** @var Collection<int, FormationReferentielBrevet> */
-    #[ORM\ManyToMany(targetEntity: FormationReferentielBrevet::class)]
+    #[ORM\ManyToMany(targetEntity: FormationReferentielBrevet::class, fetch: 'EXTRA_LAZY')]
     #[ORM\JoinTable(name: 'formation_commission_brevet')]
     #[ORM\JoinColumn(name: 'commission_id', referencedColumnName: 'id_commission', onDelete: 'CASCADE')]
     #[ORM\InverseJoinColumn(name: 'brevet_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
@@ -82,7 +82,7 @@ class Commission
     private Collection $brevets;
 
     /** @var Collection<int, FormationReferentielFormation> */
-    #[ORM\ManyToMany(targetEntity: FormationReferentielFormation::class)]
+    #[ORM\ManyToMany(targetEntity: FormationReferentielFormation::class, fetch: 'EXTRA_LAZY')]
     #[ORM\JoinTable(name: 'formation_commission_formation')]
     #[ORM\JoinColumn(name: 'commission_id', referencedColumnName: 'id_commission', onDelete: 'CASCADE')]
     #[ORM\InverseJoinColumn(name: 'formation_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
@@ -98,7 +98,7 @@ class Commission
     private Collection $groupesCompetences;
 
     /** @var Collection<int, FormationReferentielNiveauPratique> */
-    #[ORM\ManyToMany(targetEntity: FormationReferentielNiveauPratique::class)]
+    #[ORM\ManyToMany(targetEntity: FormationReferentielNiveauPratique::class, fetch: 'EXTRA_LAZY')]
     #[ORM\JoinTable(name: 'formation_commission_niveau_pratique')]
     #[ORM\JoinColumn(name: 'commission_id', referencedColumnName: 'id_commission', onDelete: 'CASCADE')]
     #[ORM\InverseJoinColumn(name: 'niveau_id', referencedColumnName: 'id', onDelete: 'CASCADE')]
