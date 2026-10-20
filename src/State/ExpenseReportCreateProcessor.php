@@ -12,6 +12,7 @@ use App\Repository\ExpenseReportRepository;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -38,12 +39,14 @@ class ExpenseReportCreateProcessor implements ProcessorInterface
             throw new \LogicException('User must be logged in to create an expense report');
         }
 
-        //
-        // TODO: Check if the user is part of the encadrants group
-        //
         $event = $this->evtRepository->find($data->eventId);
         if (!$event) {
             throw new NotFoundHttpException('Event not found');
+        }
+
+        $participation = $event->getParticipation($user);
+        if (!$participation || !$event->getEncadrants()->contains($participation)) {
+            throw new AccessDeniedHttpException('Only encadrants of the event can create an expense report.');
         }
 
         $existingReport = $this->expenseReportRepository->findOneBy([
