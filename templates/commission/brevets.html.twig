@@ -21,7 +21,7 @@
                     <th>Responsabilité</th>
                     {% for brevet in brevets %}
                         <th class="brevet">
-                            {{ intitule_brevet(brevet) }}
+                            {{ brevet.intitule }}
                         </th>
                     {% endfor %}
                     {% for niveau in niveaux %}
@@ -31,7 +31,7 @@
                     {% endfor %}
                     {% for formation in formations %}
                         <th class="formation">
-                            {{ intitule_formation(formation) }}
+                            {{ formation.intitule }}
                         </th>
                     {% endfor %}
                     <th class="formation-generale">UFCA</th>
@@ -42,7 +42,7 @@
                     <td></td>
                     {% for brevet in brevets %}
                         <td>
-                            {{ brevet }}
+                            {{ brevet.codeBrevet }}
                         </td>
                     {% endfor %}
                     {% for niveau in niveaux %}
@@ -51,7 +51,7 @@
                     {% endfor %}
                     {% for formation in formations %}
                         <td>
-                            {{ formation }}
+                            {{ formation.codeFormation }}
                         </td>
                     {% endfor %}
                     <td>STG-UFFG10</td>
@@ -69,7 +69,7 @@
                     <td>{{ user.role }}</td>
                     {% for brevet in brevets %}
                         <td>
-                            {{ date_brevet_user(user.user, brevet) }}
+                            {{ dates_brevets[brevet.codeBrevet][user.user.id] ?? '' }}
                         </td>
                     {% endfor %}
                     {% for niveau in niveaux %}
@@ -79,7 +79,7 @@
                     {% endfor %}
                     {% for formation in formations %}
                         <td>
-                            {{ date_formation_user(user.user, formation) }}
+                            {{ dates_formations[formation.codeFormation][user.user.id] ?? '' }}
                         </td>
                     {% endfor %}
                     <td>{{ date_formation_user(user.user, 'STG-UFFG10') }}</td>

@@ -47,6 +47,7 @@ Application web permettant de gérer un Club Alpin Francais! Ce projet est utili
 ### Fonctionnalités
 - [Notes de frais](docs/notes-de-frais.md)
 - [Synchronisation des adhérents](docs/synchronisation.md)
+- [Formations, brevets et compétences FFCAM](docs/schema-formations-competences.md)
 
 ### Infrastructure
 - [Déploiement et CI/CD](docs/deploiement.md)
