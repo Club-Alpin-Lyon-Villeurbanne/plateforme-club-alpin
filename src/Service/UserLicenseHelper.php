@@ -4,9 +4,12 @@ namespace App\Service;
 
 use App\Entity\Evt;
 use App\Entity\User;
+use Symfony\Component\Clock\ClockAwareTrait;
 
 class UserLicenseHelper
 {
+    use ClockAwareTrait;
+
     public const string LICENSE_TOLERANCY_PERIOD_END = '09-30 23:59:59'; // 30 septembre
     protected const string LICENSE_PERIOD_END = '08-31 23:59:59'; // 31 aout
     protected const int LICENSE_TOLERANCY_PERIOD_END_MONTH = 9; // septembre
@@ -48,7 +51,7 @@ class UserLicenseHelper
 
     public function getLicenseExpirationTimestamp(): int
     {
-        $today = new \DateTime();
+        $today = $this->now();
         $year = ($today->format('m') <= self::LICENSE_TOLERANCY_PERIOD_END_MONTH) ? (int) $today->format('Y') - 1 : $today->format('Y');
 
         return (int) strtotime("$year-" . self::LICENSE_PERIOD_END);
@@ -56,7 +59,7 @@ class UserLicenseHelper
 
     public function getLicenseExpirationDate(int $nbSeasonsToKeep = 2): ?\DateTime
     {
-        $today = new \DateTime();
+        $today = $this->now();
         $year = ($today->format('m') >= self::LICENSE_TOLERANCY_PERIOD_END_MONTH) ? (int) $today->format('Y') - 2 : $today->format('Y') - 3;
 
         return new \DateTime("$year-" . self::LICENSE_PERIOD_END);

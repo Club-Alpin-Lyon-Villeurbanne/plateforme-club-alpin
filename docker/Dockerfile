@@ -1,15 +1,14 @@
-ARG PHP_VERSION=8.3.13           # https://hub.docker.com/_/php/tags?page=1&name=8.3
+ARG PHP_VERSION=8.5.12           # https://hub.docker.com/_/php/tags?page=1&name=8.5
 ARG COMPOSER_VERSION=2.8.2       # https://hub.docker.com/_/composer/tags
 ARG NODE_VERSION=23              # https://hub.docker.com/_/node/tags
 
 ARG PHIVE_VERSION=0.15.3         # https://github.com/phar-io/phive/releases
-ARG PHPEXTINST_VERSION=2.5.2     # https://github.com/mlocati/docker-php-extension-installer/releases
+ARG PHPEXTINST_VERSION=2.12.3    # https://github.com/mlocati/docker-php-extension-installer/releases
 
-ARG IGBINARY_VERSION=3.2.16      # https://pecl.php.net/package/igbinary
-ARG APCU_VERSION=5.1.24          # https://pecl.php.net/package/apcu
+ARG IGBINARY_VERSION=3.2.17RC1   # https://pecl.php.net/package/igbinary
+ARG APCU_VERSION=5.1.28          # https://pecl.php.net/package/apcu
 ARG IMAGICK_VERSION=3.7.0        # https://pecl.php.net/package/imagick
-ARG XDEBUG_VERSION=3.3.2         # https://pecl.php.net/package/xdebug
-ARG UOPZ_VERSION=7.1.1           # https://pecl.php.net/package/uopz
+ARG XDEBUG_VERSION=3.5.3         # https://pecl.php.net/package/xdebug
 
 ARG UID
 ARG GID
@@ -51,7 +50,6 @@ RUN apt-get update &&  apt-get install -y --no-install-recommends \
     libonig-dev \
     libxslt-dev \
     libmagickwand-dev \
-    libpcre3-dev \
     libpng-dev \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
@@ -85,17 +83,16 @@ RUN install-php-extensions \
         imagick/imagick@master \
         igbinary-${IGBINARY_VERSION} \
         apcu-${APCU_VERSION} \
-        pdo_mysql-stable \
+        pdo_mysql \
         zip-stable \
-        opcache-stable \
-        mbstring-stable \
-        mysqli-stable \
-        pcntl-stable \
-        sockets-stable \
-        intl-stable \
+        opcache \
+        mbstring \
+        mysqli \
+        pcntl \
+        sockets \
+        intl \
         gd \
-        xdebug-${XDEBUG_VERSION} \
-        uopz-${UOPZ_VERSION}
+        xdebug-${XDEBUG_VERSION}
 
 COPY --from=build_node /usr/local/lib/node_modules /usr/local/lib/node_modules
 COPY --from=build_node /usr/local/bin/node /usr/local/bin/node
@@ -106,6 +103,9 @@ RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && locale-gen
 RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 ENV APACHE_DOC_ROOT=/var/www/html/public
 RUN a2enmod rewrite
+
+# php-cs-fixer 3.87 ne reconnaît la syntaxe que jusqu'à PHP 8.4
+ENV PHP_CS_FIXER_IGNORE_ENV=1
 
 COPY ./utils/docker-999-php.ini $PHP_INI_DIR/conf.d/999-php.ini
 

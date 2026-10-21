@@ -16,22 +16,18 @@ use Monolog\Handler\TestHandler;
 use Monolog\Level;
 use Monolog\Logger;
 use Monolog\LogRecord;
-use SlopeIt\ClockMock\ClockMock;
+use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 class FfcamSynchronizerTest extends WebTestCase
 {
+    use ClockSensitiveTrait;
+
     private $faker;
 
     protected function setUp(): void
     {
         parent::setUp();
         $this->faker = Factory::create('fr_FR');
-    }
-
-    protected function tearDown(): void
-    {
-        ClockMock::reset();
-        parent::tearDown();
     }
 
     public function testSynchronizeCreatesNewUsers(): void
@@ -137,7 +133,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ],
         ]);
 
-        ClockMock::freeze(new \DateTime('2024-09-15'));
+        self::mockTime(new \DateTimeImmutable('2024-09-15'));
 
         $existingUser = $this->signup();
         $existingUser
@@ -157,8 +153,6 @@ class FfcamSynchronizerTest extends WebTestCase
 
         $this->assertTrue($existingUser->getAlerteRenouveler());
         $this->assertFalse($existingUser->getDoitRenouveler());
-
-        ClockMock::reset();
     }
 
     public function testSynchronizeSetsExpiredAndRenewalFlag(): void
@@ -176,7 +170,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ],
         ]);
 
-        ClockMock::freeze(new \DateTime('2024-10-15'));
+        self::mockTime(new \DateTimeImmutable('2024-10-15'));
 
         $existingUser = $this->signup();
         $existingUser
@@ -196,8 +190,6 @@ class FfcamSynchronizerTest extends WebTestCase
 
         $this->assertFalse($existingUser->getAlerteRenouveler());
         $this->assertTrue($existingUser->getDoitRenouveler());
-
-        ClockMock::reset();
     }
 
     public function testSynchronizeBlocksExpiredAccounts(): void
@@ -215,7 +207,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ],
         ]);
 
-        ClockMock::freeze(new \DateTime('2024-10-01'));
+        self::mockTime(new \DateTimeImmutable('2024-10-01'));
 
         $expiredUser = $this->signup();
         $expiredUser
@@ -250,7 +242,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ],
         ]);
 
-        ClockMock::freeze(new \DateTime('2024-11-16'));
+        self::mockTime(new \DateTimeImmutable('2024-11-16'));
 
         $expiredUser = $this->signup();
         $expiredUser
@@ -270,8 +262,6 @@ class FfcamSynchronizerTest extends WebTestCase
 
         $this->assertFalse($expiredUser->getDoitRenouveler());
         $this->assertFalse($expiredUser->getAlerteRenouveler());
-
-        ClockMock::reset();
     }
 
     public function testSynchronizeDetectsAndMergesDuplicateUsers(): void
@@ -753,7 +743,7 @@ class FfcamSynchronizerTest extends WebTestCase
      */
     public function testSynchronizeAbortsWithoutBlockingAnyoneWhenColumnsAreMissing(string $cas): void
     {
-        ClockMock::freeze(new \DateTime('2024-10-01'));
+        self::mockTime(new \DateTimeImmutable('2024-10-01'));
 
         $adherent = $this->signup();
         $adherent

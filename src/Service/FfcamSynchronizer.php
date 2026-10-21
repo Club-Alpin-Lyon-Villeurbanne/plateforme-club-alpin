@@ -8,10 +8,11 @@ use App\Utils\MemberMerger;
 use App\Utils\NicknameGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Clock\ClockAwareTrait;
 
 class FfcamSynchronizer
 {
-    private bool $hasTolerancyPeriodPassed;
+    use ClockAwareTrait;
 
     public function __construct(
         private readonly LoggerInterface $logger,
@@ -22,10 +23,6 @@ class FfcamSynchronizer
         private readonly UserLicenseHelper $userLicenseHelper,
         private readonly ?FfcamSyncReportMailer $syncReportMailer = null,
     ) {
-        $today = new \DateTime();
-        $endDate = new \DateTime($today->format('Y') . '-' . UserLicenseHelper::LICENSE_TOLERANCY_PERIOD_END);
-
-        $this->hasTolerancyPeriodPassed = $today > $endDate;
     }
 
     public function synchronize(?string $ffcamFilePath = null): void
@@ -140,7 +137,7 @@ class FfcamSynchronizer
         /** @var User $parsedUser */
         foreach ($members as $parsedUser) {
             // date de validité déjà dépassée ? si oui, on n'importe pas
-            if (null !== $parsedUser->getDiscoveryEndDatetime() && $parsedUser->getDiscoveryEndDatetime() < new \DateTime()) {
+            if (null !== $parsedUser->getDiscoveryEndDatetime() && $parsedUser->getDiscoveryEndDatetime() < $this->now()) {
                 continue;
             }
 
@@ -320,6 +317,13 @@ class FfcamSynchronizer
         return true;
     }
 
+    private function hasTolerancyPeriodPassed(): bool
+    {
+        $today = $this->now();
+
+        return $today > new \DateTimeImmutable($today->format('Y') . '-' . UserLicenseHelper::LICENSE_TOLERANCY_PERIOD_END);
+    }
+
     private function updateExistingUser(User $existingUser, User $parsedUser): void
     {
         $existingUser
@@ -334,8 +338,8 @@ class FfcamSynchronizer
             ->setAdresse($parsedUser->getAdresse())
             ->setCp($parsedUser->getCp())
             ->setVille($parsedUser->getVille())
-            ->setDoitRenouveler($parsedUser->getDoitRenouveler() && $this->hasTolerancyPeriodPassed)
-            ->setAlerteRenouveler($parsedUser->getAlerteRenouveler() && !$this->hasTolerancyPeriodPassed)
+            ->setDoitRenouveler($parsedUser->getDoitRenouveler() && $this->hasTolerancyPeriodPassed())
+            ->setAlerteRenouveler($parsedUser->getAlerteRenouveler() && !$this->hasTolerancyPeriodPassed())
             ->setUpdatedAt(new \DateTime())
             ->setManuel(false)
             ->setNomade($parsedUser->getNomade())

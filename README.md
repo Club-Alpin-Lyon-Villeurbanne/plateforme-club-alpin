@@ -21,7 +21,7 @@ Application web permettant de gérer un Club Alpin Francais! Ce projet est utili
 
 ### 🛠️ Stack technique
 
-- **Backend** : PHP 8.2, Symfony 6.4
+- **Backend** : PHP 8.5, Symfony 6.4
 - **Frontend** : Twig, Vue.js (pour les notes de frais), TailwindCSS (pour les notes de frais)
 - **Base de données** : MySQL 8.0
 - **Infrastructure** : Docker, Clever Cloud
