@@ -23,15 +23,13 @@ runs:
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: ${{ runner.os }}-composer-
     
-    # Quality tools are cached without suffix because Phive decides the version to install
-    # Updating them would need to invalidate the cache manually on Github Actions
+    # The cache follows phive.xml, so changing a tool version reinstalls the tools
     - name: Cache quality tools
       id: cache-quality-tools
       uses: actions/cache@v4
       with:
         path: ./bin/tools
-        key: ${{ runner.os }}-quality-tools
-        restore-keys: ${{ runner.os }}-quality-tools-
+        key: ${{ runner.os }}-quality-tools-${{ hashFiles('phive.xml') }}
 
     - name: Cache Vendor
       id: cache-vendor
