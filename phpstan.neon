@@ -28,5 +28,5 @@ parameters:
     - legacy/app/ajax/pages_reorder.php
     - legacy/app/ajax/get_content_html.php
     - legacy/admin/ftp.php
-    - var/cache
+    - var/cache (?)
 
