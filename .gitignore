@@ -7,6 +7,8 @@ backup/*
 public/robots.txt
 public/dev.txt
 /.npm/
+/.phive/
+/.ssh/
 /ffcam/
 /bin/tools
 

@@ -31,6 +31,23 @@ class SortieControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
     }
 
+    public function testFicheSortieEnPdfPourLEncadrant(): void
+    {
+        // le logo de la fiche passe par LegacyContainer, qui lit le kernel global
+        global $kernel;
+        $kernel = $this->client->getKernel();
+
+        $user = $this->signup();
+        $this->signin($user);
+        $event = $this->createEvent($user);
+
+        $this->client->request('GET', sprintf('/sortie/%d/printPDF', $event->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertResponseHeaderSame('Content-Type', 'application/pdf');
+        $this->assertStringStartsWith('%PDF-', $this->client->getResponse()->getContent());
+    }
+
     public function testParticipantPayeSousSonEmailApparaitPayeMaisPasUnNomadeSansEmail(): void
     {
         $user = $this->signup();

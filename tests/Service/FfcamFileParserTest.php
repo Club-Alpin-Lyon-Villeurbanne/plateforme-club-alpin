@@ -76,7 +76,6 @@ LINE;
     {
         $parser = new FfcamFileParser();
         $method = new \ReflectionMethod($parser, 'validateLine');
-        $method->setAccessible(true);
 
         $invalidLine = array_fill(0, 33, ''); // empty columns
         $invalidLine[0] = 'abc'; // not numeric
@@ -94,7 +93,6 @@ LINE;
     {
         $parser = new FfcamFileParser();
         $method = new \ReflectionMethod($parser, 'validateLine');
-        $method->setAccessible(true);
 
         $tooShortLine = array_fill(0, 10, '');
 

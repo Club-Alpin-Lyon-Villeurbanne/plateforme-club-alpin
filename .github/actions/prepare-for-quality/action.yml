@@ -6,7 +6,7 @@ runs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: '8.3'
+        php-version: '8.5'
         extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite
         coverage: none
         tools: cs2pr, phive
@@ -23,15 +23,13 @@ runs:
         key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
         restore-keys: ${{ runner.os }}-composer-
     
-    # Quality tools are cached without suffix because Phive decides the version to install
-    # Updating them would need to invalidate the cache manually on Github Actions
+    # The cache follows phive.xml, so changing a tool version reinstalls the tools
     - name: Cache quality tools
       id: cache-quality-tools
       uses: actions/cache@v4
       with:
         path: ./bin/tools
-        key: ${{ runner.os }}-quality-tools
-        restore-keys: ${{ runner.os }}-quality-tools-
+        key: ${{ runner.os }}-quality-tools-${{ hashFiles('phive.xml') }}
 
     - name: Cache Vendor
       id: cache-vendor
@@ -43,7 +41,7 @@ runs:
     - name: Install dependencies
       shell: bash
       if: ${{ steps.cache-vendor.outputs.cache-hit != 'true' }}
-      run: composer install --prefer-dist --no-progress --no-interaction --ignore-platform-req=ext-uopz
+      run: composer install --prefer-dist --no-progress --no-interaction
 
     - name: Install PHP tools
       shell: bash
