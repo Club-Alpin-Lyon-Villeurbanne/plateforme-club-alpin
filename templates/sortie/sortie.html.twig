@@ -384,7 +384,7 @@
                                     En cas de question, contactez la comptabilité.<br />&nbsp;
                                 </div>
                             </div>
-                        {% elseif event.statusLegal %}
+                        {% elseif event.legalStatusValide %}
                             {% include 'vuejs/expense-report-form.twig' %}
                         {% else %}
                             <div class="alerte info-container" style="margin-bottom:2rem !important">
