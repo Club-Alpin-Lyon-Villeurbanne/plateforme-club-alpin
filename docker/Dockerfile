@@ -1,13 +1,12 @@
 ARG PHP_VERSION=8.5.12           # https://hub.docker.com/_/php/tags?page=1&name=8.5
-ARG COMPOSER_VERSION=2.8.2       # https://hub.docker.com/_/composer/tags
+ARG COMPOSER_VERSION=2           # https://hub.docker.com/_/composer/tags
 ARG NODE_VERSION=23              # https://hub.docker.com/_/node/tags
 
-ARG PHIVE_VERSION=0.15.3         # https://github.com/phar-io/phive/releases
+ARG PHIVE_VERSION=0.16.0         # https://github.com/phar-io/phive/releases
 ARG PHPEXTINST_VERSION=2.12.3    # https://github.com/mlocati/docker-php-extension-installer/releases
 
-ARG IGBINARY_VERSION=3.2.17RC1   # https://pecl.php.net/package/igbinary
 ARG APCU_VERSION=5.1.28          # https://pecl.php.net/package/apcu
-ARG IMAGICK_VERSION=3.7.0        # https://pecl.php.net/package/imagick
+ARG IMAGICK_VERSION=3.8.1        # https://pecl.php.net/package/imagick
 ARG XDEBUG_VERSION=3.5.3         # https://pecl.php.net/package/xdebug
 
 ARG UID
@@ -50,7 +49,6 @@ RUN apt-get update &&  apt-get install -y --no-install-recommends \
     libonig-dev \
     libxslt-dev \
     libmagickwand-dev \
-    libpng-dev \
     libfreetype6-dev \
     libjpeg62-turbo-dev \
     curl \
@@ -74,14 +72,12 @@ COPY --from=build_phive /usr/local/bin/phive /usr/local/bin/phive
 COPY --from=build_installer /usr/local/bin/install-php-extensions /usr/local/bin/install-php-extensions
 
 ARG APCU_VERSION \
-    IGBINARY_VERSION \
     IMAGICK_VERSION \
     XDEBUG_VERSION
 
 # Install some extension and activate them
 RUN install-php-extensions \
-        imagick/imagick@master \
-        igbinary-${IGBINARY_VERSION} \
+        imagick-${IMAGICK_VERSION} \
         apcu-${APCU_VERSION} \
         pdo_mysql \
         zip-stable \

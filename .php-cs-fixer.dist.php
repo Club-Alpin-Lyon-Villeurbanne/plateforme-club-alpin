@@ -11,7 +11,6 @@ $finder = PhpCsFixer\Finder::create()
     ->notName('*.yaml');
 
 return (new PhpCsFixer\Config())
-    ->setUnsupportedPhpVersionAllowed(true) // php-cs-fixer 3.87 ne reconnaît la syntaxe que jusqu'à PHP 8.4
     ->setRiskyAllowed(true)
     ->setParallelConfig(PhpCsFixer\Runner\Parallel\ParallelConfigFactory::detect())
     ->setRules([
