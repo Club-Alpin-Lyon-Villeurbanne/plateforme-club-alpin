@@ -49,6 +49,13 @@ class UserLicenseHelper
         return $isLicenseValid;
     }
 
+    public function hasTolerancyPeriodPassed(): bool
+    {
+        $today = $this->now();
+
+        return $today > new \DateTimeImmutable($today->format('Y') . '-' . self::LICENSE_TOLERANCY_PERIOD_END);
+    }
+
     public function getLicenseExpirationTimestamp(): int
     {
         $today = $this->now();

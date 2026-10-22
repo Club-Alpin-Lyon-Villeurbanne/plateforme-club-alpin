@@ -3,7 +3,7 @@
 [![CI/CD](https://img.shields.io/badge/Automatisation-github_actions-orange)](https://github.com/Club-Alpin-Lyon-Villeurbanne/plateforme-club-alpin/actions)
 [![Clever Cloud](https://img.shields.io/badge/Hébergement-Clever_cloud-yellow)](https://console.clever-cloud.com/)
 [![GitGuardian Security](https://img.shields.io/badge/GitGuardian-Monitored-green?logo=gitguardian)](https://dashboard.gitguardian.com/workspace/474277/incidents/secrets)
-![PHP Version](https://img.shields.io/badge/PHP-8.2-blue?logo=php)
+![PHP Version](https://img.shields.io/badge/PHP-8.5-blue?logo=php)
 ![Symfony](https://img.shields.io/badge/Symfony-6.4-6d6dff?logo=symfony)
 ![Database](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)

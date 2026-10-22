@@ -133,6 +133,7 @@ class FfcamSynchronizer
     private function processMembers(\Generator $members): array
     {
         $stats = ['inserted' => 0, 'updated' => 0, 'merged' => 0, 'errors' => 0, 'warnings' => 0, 'error_details' => [], 'merged_details' => [], 'warning_details' => []];
+        $tolerancyPeriodPassed = $this->userLicenseHelper->hasTolerancyPeriodPassed();
 
         /** @var User $parsedUser */
         foreach ($members as $parsedUser) {
@@ -238,7 +239,7 @@ class FfcamSynchronizer
                             $stats['warning_details'][] = $warningMessage;
                         }
 
-                        $this->updateExistingUser($existingUser, $parsedUser);
+                        $this->updateExistingUser($existingUser, $parsedUser, $tolerancyPeriodPassed);
                         $this->entityManager->persist($existingUser);
                         ++$stats['updated'];
                     } else {
@@ -317,14 +318,7 @@ class FfcamSynchronizer
         return true;
     }
 
-    private function hasTolerancyPeriodPassed(): bool
-    {
-        $today = $this->now();
-
-        return $today > new \DateTimeImmutable($today->format('Y') . '-' . UserLicenseHelper::LICENSE_TOLERANCY_PERIOD_END);
-    }
-
-    private function updateExistingUser(User $existingUser, User $parsedUser): void
+    private function updateExistingUser(User $existingUser, User $parsedUser, bool $tolerancyPeriodPassed): void
     {
         $existingUser
             ->setFirstname($parsedUser->getFirstname())
@@ -338,8 +332,8 @@ class FfcamSynchronizer
             ->setAdresse($parsedUser->getAdresse())
             ->setCp($parsedUser->getCp())
             ->setVille($parsedUser->getVille())
-            ->setDoitRenouveler($parsedUser->getDoitRenouveler() && $this->hasTolerancyPeriodPassed())
-            ->setAlerteRenouveler($parsedUser->getAlerteRenouveler() && !$this->hasTolerancyPeriodPassed())
+            ->setDoitRenouveler($parsedUser->getDoitRenouveler() && $tolerancyPeriodPassed)
+            ->setAlerteRenouveler($parsedUser->getAlerteRenouveler() && !$tolerancyPeriodPassed)
             ->setUpdatedAt(new \DateTime())
             ->setManuel(false)
             ->setNomade($parsedUser->getNomade())

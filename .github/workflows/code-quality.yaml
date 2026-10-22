@@ -30,9 +30,6 @@ jobs:
 
       - name: Run PHP-CS-Fixer on changed files
         if: steps.changed-php-files.outputs.has_changes == 'true'
-        env:
-          # php-cs-fixer 3.87 ne reconnaît la syntaxe que jusqu'à PHP 8.4
-          PHP_CS_FIXER_IGNORE_ENV: 1
         run: |
           echo "Running PHP-CS-Fixer with parallel processing..."
           ./bin/tools/php-cs-fixer fix --dry-run --diff --format=checkstyle --config=.php-cs-fixer.dist.php ${{ steps.changed-php-files.outputs.files }} | cs2pr

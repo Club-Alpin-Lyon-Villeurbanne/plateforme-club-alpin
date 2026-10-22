@@ -104,9 +104,6 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 ENV APACHE_DOC_ROOT=/var/www/html/public
 RUN a2enmod rewrite
 
-# php-cs-fixer 3.87 ne reconnaît la syntaxe que jusqu'à PHP 8.4
-ENV PHP_CS_FIXER_IGNORE_ENV=1
-
 COPY ./utils/docker-999-php.ini $PHP_INI_DIR/conf.d/999-php.ini
 
 WORKDIR /var/www/
