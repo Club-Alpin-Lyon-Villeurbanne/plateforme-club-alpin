@@ -22,7 +22,6 @@ class ExcelExportTest extends TestCase
     {
         $reflection = new \ReflectionClass($object::class);
         $method = $reflection->getMethod($methodName);
-        $method->setAccessible(true);
 
         return $method->invokeArgs($object, $parameters);
     }

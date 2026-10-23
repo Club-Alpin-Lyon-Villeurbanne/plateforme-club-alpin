@@ -8,10 +8,11 @@ use App\Utils\MemberMerger;
 use App\Utils\NicknameGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Clock\ClockAwareTrait;
 
 class FfcamSynchronizer
 {
-    private bool $hasTolerancyPeriodPassed;
+    use ClockAwareTrait;
 
     public function __construct(
         private readonly LoggerInterface $logger,
@@ -22,10 +23,6 @@ class FfcamSynchronizer
         private readonly UserLicenseHelper $userLicenseHelper,
         private readonly ?FfcamSyncReportMailer $syncReportMailer = null,
     ) {
-        $today = new \DateTime();
-        $endDate = new \DateTime($today->format('Y') . '-' . UserLicenseHelper::LICENSE_TOLERANCY_PERIOD_END);
-
-        $this->hasTolerancyPeriodPassed = $today > $endDate;
     }
 
     public function synchronize(?string $ffcamFilePath = null): void
@@ -136,11 +133,12 @@ class FfcamSynchronizer
     private function processMembers(\Generator $members): array
     {
         $stats = ['inserted' => 0, 'updated' => 0, 'merged' => 0, 'errors' => 0, 'warnings' => 0, 'error_details' => [], 'merged_details' => [], 'warning_details' => []];
+        $tolerancyPeriodPassed = $this->userLicenseHelper->hasTolerancyPeriodPassed();
 
         /** @var User $parsedUser */
         foreach ($members as $parsedUser) {
             // date de validité déjà dépassée ? si oui, on n'importe pas
-            if (null !== $parsedUser->getDiscoveryEndDatetime() && $parsedUser->getDiscoveryEndDatetime() < new \DateTime()) {
+            if (null !== $parsedUser->getDiscoveryEndDatetime() && $parsedUser->getDiscoveryEndDatetime() < $this->now()) {
                 continue;
             }
 
@@ -241,7 +239,7 @@ class FfcamSynchronizer
                             $stats['warning_details'][] = $warningMessage;
                         }
 
-                        $this->updateExistingUser($existingUser, $parsedUser);
+                        $this->updateExistingUser($existingUser, $parsedUser, $tolerancyPeriodPassed);
                         $this->entityManager->persist($existingUser);
                         ++$stats['updated'];
                     } else {
@@ -320,7 +318,7 @@ class FfcamSynchronizer
         return true;
     }
 
-    private function updateExistingUser(User $existingUser, User $parsedUser): void
+    private function updateExistingUser(User $existingUser, User $parsedUser, bool $tolerancyPeriodPassed): void
     {
         $existingUser
             ->setFirstname($parsedUser->getFirstname())
@@ -334,8 +332,8 @@ class FfcamSynchronizer
             ->setAdresse($parsedUser->getAdresse())
             ->setCp($parsedUser->getCp())
             ->setVille($parsedUser->getVille())
-            ->setDoitRenouveler($parsedUser->getDoitRenouveler() && $this->hasTolerancyPeriodPassed)
-            ->setAlerteRenouveler($parsedUser->getAlerteRenouveler() && !$this->hasTolerancyPeriodPassed)
+            ->setDoitRenouveler($parsedUser->getDoitRenouveler() && $tolerancyPeriodPassed)
+            ->setAlerteRenouveler($parsedUser->getAlerteRenouveler() && !$tolerancyPeriodPassed)
             ->setUpdatedAt(new \DateTime())
             ->setManuel(false)
             ->setNomade($parsedUser->getNomade())

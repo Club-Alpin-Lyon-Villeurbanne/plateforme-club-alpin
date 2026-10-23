@@ -6,7 +6,7 @@
     "minimum-stability": "stable",
     "prefer-stable": true,
     "require": {
-        "php": "8.3.*",
+        "php": "8.5.*",
         "ext-ctype": "*",
         "ext-iconv": "*",
         "ext-intl": "*",
@@ -37,6 +37,7 @@
         "sentry/sentry-symfony": "^4.2",
         "symfony/apache-pack": "^1.0",
         "symfony/asset": "6.4.*",
+        "symfony/clock": "6.4.*",
         "symfony/console": "6.4.*",
         "symfony/dependency-injection": "6.4.*",
         "symfony/doctrine-messenger": "6.4.*",
@@ -74,7 +75,6 @@
         "doctrine/data-fixtures": "^1.6",
         "nelmio/alice": "^3.12",
         "sebastian/comparator": "^4.0",
-        "slope-it/clock-mock": "^0.4.0",
         "symfony/browser-kit": "6.4.*",
         "symfony/css-selector": "6.4.*",
         "symfony/debug-bundle": "6.4.*",
@@ -91,9 +91,6 @@
         },
         "sort-packages": true,
         "platform-check": false,
-        "platform": {
-            "php": "8.3"
-        },
         "allow-plugins": {
             "composer/package-versions-deprecated": true,
             "symfony/flex": true,
@@ -129,7 +126,9 @@
         "symfony/polyfill-php54": "*",
         "symfony/polyfill-php80": "*",
         "symfony/polyfill-php81": "*",
-        "symfony/polyfill-php82": "*"
+        "symfony/polyfill-php82": "*",
+        "symfony/polyfill-php83": "*",
+        "symfony/polyfill-php84": "*"
     },
     "scripts": {
         "auto-scripts": {

@@ -3,9 +3,12 @@
 namespace App\Service;
 
 use App\Entity\User;
+use Symfony\Component\Clock\ClockAwareTrait;
 
 class FfcamFileParser
 {
+    use ClockAwareTrait;
+
     // La FFCAM livre des valeurs parfois plus longues que nos colonnes (ville sur 33 caractères,
     // adresse concaténée depuis 4 champs...). Sans troncature, le flush échoue, ferme
     // l'EntityManager et la synchro s'interrompt pour tous les adhérents suivants du fichier.
@@ -197,7 +200,7 @@ class FfcamFileParser
         $endDate = $endDate->setTime(23, 59, 59);                            // couvert par l'assurance jusqu'à minuit
 
         $doitRenouveler = false;
-        if ($endDate < new \DateTimeImmutable()) {
+        if ($endDate < $this->now()) {
             $doitRenouveler = true;
         }
 
