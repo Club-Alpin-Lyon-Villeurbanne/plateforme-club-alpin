@@ -12,6 +12,8 @@ twig:
         afficher_competences: "%env(bool:AFFICHER_COMPETENCES)%"
         whatsapp_commu_link: "%env(WHATSAPP_COMMU_LINK)%"
         caf_id: "%env(CAF_ID)%"
+        club_cafnum_prefix: "%env(CLUB_CAFNUM_PREFIX)%"
+        ffcam_adhesion_hchk: "%env(CLUB_FFCAM_ADHESION_HCHK)%"
         default_alert_article_prefix: "%env(ALERT_ARTICLE_PREFIX)%"
         default_alert_sortie_prefix: "%env(ALERT_SORTIE_PREFIX)%"
         site_version: "%env(string:COMMIT_ID)%"

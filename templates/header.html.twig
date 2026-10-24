@@ -103,6 +103,12 @@
                     {% if not app.user %}
                         {# creer un compte (vers page profil) #}
                         <div style="width:640px; float:left; border-right:1px solid #c6e39f; min-height:120px; padding:0px 5px 0 0">
+                            {# adhésion en ligne : formulaire FFCAM du club si CLUB_FFCAM_ADHESION_HCHK est renseignée, sinon recherche des clubs FFCAM #}
+                            {% if ffcam_adhesion_hchk %}
+                                <p><a href="https://extranet-clubalpin.com/app/webeff/we_crv2_step01.php?IDCLUB={{ club_cafnum_prefix|url_encode }}&amp;Hchk={{ ffcam_adhesion_hchk|url_encode }}" target="_blank" rel="noopener" class="nice2">Adhérer en ligne</a></p>
+                            {% else %}
+                                <p><a href="https://www.ffcam.fr/recherche_clubs.html" target="_blank" rel="noopener" class="nice2">Adhérer en ligne</a></p>
+                            {% endif %}
                             {{ easy_include('mainmenu-creer-mon-compte', 'menucontent')}}
                         </div>
 
