@@ -123,6 +123,19 @@ class CommissionControllerTest extends WebTestCase
         $this->assertCount(0, $crawler->filter('a[href="/commissions/' . $sansRattachement->getId() . '/brevets"]'));
     }
 
+    public function testUnResponsableNeVoitPasLesBrevetsDUneAutreCommission(): void
+    {
+        $sienne = $this->createCommission();
+        $autre = $this->createCommission();
+        $responsable = $this->signup();
+        $this->addAttribute($responsable, UserAttr::RESPONSABLE_COMMISSION, 'commission:' . $sienne->getCode());
+
+        $this->signin($responsable);
+        $this->client->request('GET', '/commissions/' . $autre->getId() . '/brevets');
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
     private function createBrevet(?Commission $commission): FormationReferentielBrevet
     {
         $brevet = (new FormationReferentielBrevet())

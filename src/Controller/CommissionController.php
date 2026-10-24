@@ -210,7 +210,7 @@ class CommissionController extends AbstractController
         FormationValidationBrevetRepository $brevetValidationRepository,
         FormationValidationFormationRepository $formationValidationRepository,
     ): array {
-        if (!$userRights->allowed('commission_list')) {
+        if (!$userRights->allowedOnCommission('commission_list', $commission)) {
             throw new AccessDeniedHttpException('Not allowed');
         }
         $users = [];
