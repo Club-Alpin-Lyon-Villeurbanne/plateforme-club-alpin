@@ -299,17 +299,17 @@
                                     <p class="menutitle">Notes de frais</p>
                                     <ul>
                                         <li>
-                                            <a href="{{ path('notes_de_frais_mes_notes') }}">mes notes de frais</a>
+                                            <a href="{{ path('notes_de_frais_nouvelle') }}">nouvelle note de frais</a>
                                         </li>
                                         <li>
-                                            <a href="{{ path('notes_de_frais_nouvelle') }}">nouvelle note de frais</a>
+                                            <a href="{{ path('notes_de_frais_mes_notes') }}">mes notes de frais</a>
                                         </li>
                                         {% set notes_de_frais_a_valider = notes_de_frais_a_valider() %}
                                         {% if notes_de_frais_a_valider is not null %}
                                             <li>
-                                                <a href="{{ path('notes_de_frais_a_valider') }}" title="Valider ou refuser les notes de frais en attente">
+                                                <a href="{{ path('notes_de_frais_a_valider') }}" title="Valider ou refuser les notes de frais en attente, retrouver celles déjà traitées">
                                                     {% if notes_de_frais_a_valider > 0 %}<span class="notification">{{ notes_de_frais_a_valider }}</span>{% endif %}
-                                                    notes de frais à valider
+                                                    gestion des notes de frais
                                                 </a>
                                             </li>
                                         {% endif %}

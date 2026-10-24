@@ -14,8 +14,8 @@
         <a :href="sortie.sortiesPassees" class="tw-font-medium tw-text-sky-700 hover:tw-underline">mes sorties passées</a>.
       </p>
       <p>
-        Elle est ouverte aux rôles encadrant, co-encadrant et initiateur stagiaire de la sortie, si la sortie a été validée par la présidence, pendant
-        {{ sortie.delaiJours }} jours après sa fin.
+        Elle est ouverte aux rôles encadrant, co-encadrant et initiateur stagiaire de la sortie,
+        {{ sortie.valideeParLaPresidence ? "si la sortie a été validée par la présidence" : "si la sortie a été publiée" }}, pendant {{ sortie.delaiJours }} jours après sa fin.
       </p>
       <p>
         Vous ne voyez pas le bouton ?

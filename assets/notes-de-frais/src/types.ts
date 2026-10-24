@@ -37,6 +37,8 @@ export interface DonneesInitiales {
 /** Une note de sortie se fait depuis la sortie : ce que la page en dit à qui choisit « Sortie ». */
 export interface ConditionsNoteDeSortie {
   delaiJours: number;
+  /** Faux quand aucun rôle n'a ce droit : la publication vaut alors validation. */
+  valideeParLaPresidence: boolean;
   sortiesPassees: string;
   /** Formulaire de signalement du site, si le bouton manque sur la sortie. */
   signalement: string;

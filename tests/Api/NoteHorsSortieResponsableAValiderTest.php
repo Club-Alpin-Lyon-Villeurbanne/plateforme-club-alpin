@@ -7,7 +7,7 @@ use App\Utils\Enums\ExpenseReportStatusEnum;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
- * Liste « notes de frais à valider » d'un responsable : les notes hors sortie envoyées de ses
+ * Liste « gestion des notes de frais » d'un responsable : les notes hors sortie envoyées de ses
  * commissions, déjà traitées avec le filtre de statut. Son entrée du menu et les pastilles qui
  * comptent les notes en attente.
  */
@@ -179,6 +179,14 @@ class NoteHorsSortieResponsableAValiderTest extends ExpenseReportApiTestCase
         foreach ([[$this->encadrant, 0], [$this->responsable, 1]] as [$utilisateur, $entrees]) {
             $this->assertCount($entrees, $this->pageDuSite($utilisateur)->filter('a[href="/notes-de-frais/a-valider"]'));
         }
+    }
+
+    // Comme la rubrique des articles : rédiger, retrouver les siennes, puis gérer celles des autres.
+    public function testLeMenuSuitLOrdreDeCeluiDesArticles(): void
+    {
+        $liens = $this->pageDuSite($this->responsable)->filter('a[href="/notes-de-frais/nouvelle"], a[href="/notes-de-frais"], a[href="/notes-de-frais/a-valider"]');
+
+        $this->assertSame(['nouvelle note de frais', 'mes notes de frais', 'gestion des notes de frais'], $liens->each(static fn (Crawler $lien) => $lien->text()));
     }
 
     public function testLesPastillesComptentLesNotesAValider(): void

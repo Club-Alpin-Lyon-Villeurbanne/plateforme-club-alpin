@@ -216,7 +216,7 @@ function refuser() {
 <template>
   <div class="main-type">
     <p class="mini">
-      <a v-if="donnees.estValideur && !donnees.estDemandeur" :href="URL_LISTE">Notes de frais à valider</a>
+      <a v-if="donnees.estValideur && !donnees.estDemandeur" :href="URL_LISTE">Gestion des notes de frais</a>
       <a v-else :href="URL_MES_NOTES">Mes notes de frais</a>
     </p>
     <h1>{{ note?.objet ?? "Note de frais" }}</h1>

@@ -12,6 +12,17 @@ use App\Service\NoteDeFrais\ControlesNoteHorsSortie;
  */
 class NoteHorsSortiePageDeDemandeTest extends ExpenseReportApiTestCase
 {
+    /** @var list<array<string, mixed>> lignes de la matrice des droits retirées par un test, remises à la fin */
+    private array $droitsRetires = [];
+
+    protected function tearDown(): void
+    {
+        foreach ($this->droitsRetires as $ligne) {
+            $this->em()->getConnection()->insert('caf_usertype_attr', $ligne);
+        }
+        parent::tearDown();
+    }
+
     public function testSansRoleLaPageExpliqueAQuiLesNotesSontReservees(): void
     {
         $this->signin($this->adherent);
@@ -39,6 +50,18 @@ class NoteHorsSortiePageDeDemandeTest extends ExpenseReportApiTestCase
         $this->assertSame(Evt::EXPENSE_REPORT_DEADLINE_DAYS, $sortie['delaiJours']);
         $this->assertSame('/profil/sorties/prev', $sortie['sortiesPassees']);
         $this->assertStringStartsWith('https://forms.clickup.com/', $sortie['signalement']);
+    }
+
+    public function testAvecUnDroitDeValidationLaSortieDoitEtreValideeParLaPresidence(): void
+    {
+        $this->assertTrue($this->donnees($this->encadrant)['sortie']['valideeParLaPresidence']);
+    }
+
+    public function testSansDroitDeValidationUneSortiePublieeSuffit(): void
+    {
+        $this->retirerDeLaMatrice('evt_legal_accept');
+
+        $this->assertFalse($this->donnees($this->encadrant)['sortie']['valideeParLaPresidence']);
     }
 
     public function testLaPageSaitQuandLeDemandeurEstLeSeulResponsable(): void
@@ -69,6 +92,15 @@ class NoteHorsSortiePageDeDemandeTest extends ExpenseReportApiTestCase
     private function commissionsProposees(User $demandeur): array
     {
         return array_column($this->donnees($demandeur)['commissions'], null, 'id');
+    }
+
+    private function retirerDeLaMatrice(string $droit): void
+    {
+        $base = $this->em()->getConnection();
+        $lignes = 'FROM caf_usertype_attr WHERE right_usertype_attr = (SELECT id_userright FROM caf_userright WHERE code_userright = ?)';
+        $this->droitsRetires = $base->fetchAllAssociative('SELECT * ' . $lignes, [$droit]);
+        $this->assertNotEmpty($this->droitsRetires);
+        $base->executeStatement('DELETE ' . $lignes, [$droit]);
     }
 
     private function donnees(User $demandeur): array

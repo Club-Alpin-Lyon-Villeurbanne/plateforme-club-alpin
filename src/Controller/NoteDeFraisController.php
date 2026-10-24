@@ -6,6 +6,7 @@ use App\Entity\Evt;
 use App\Entity\User;
 use App\Repository\CommissionRepository;
 use App\Repository\ExpenseReportRepository;
+use App\Repository\UserRightRepository;
 use App\Service\ExpenseReportCalculator;
 use App\Service\NoteDeFrais\ControlesNoteHorsSortie;
 use App\Service\NoteDeFrais\ValideursNoteHorsSortie;
@@ -55,7 +56,7 @@ class NoteDeFraisController extends AbstractController
     }
 
     #[Route(path: '/notes-de-frais/nouvelle', name: 'notes_de_frais_nouvelle', methods: ['GET'])]
-    public function nouvelle(Request $request, CommissionRepository $commissionRepository, ValideursNoteHorsSortie $valideurs, ControlesNoteHorsSortie $controles, ExpenseReportCalculator $calculator, Environment $twig, string $baseUrl): Response
+    public function nouvelle(Request $request, CommissionRepository $commissionRepository, ValideursNoteHorsSortie $valideurs, ControlesNoteHorsSortie $controles, ExpenseReportCalculator $calculator, UserRightRepository $droits, Environment $twig, string $baseUrl): Response
     {
         $this->pageDisponible();
 
@@ -96,6 +97,8 @@ class NoteDeFraisController extends AbstractController
                 // « Sortie » au premier choix : la note se fait depuis la sortie, sous ces conditions.
                 'sortie' => [
                     'delaiJours' => Evt::EXPENSE_REPORT_DEADLINE_DAYS,
+                    // Sans ce droit dans la matrice, la publication vaut validation (SortieController::sortieValidate).
+                    'valideeParLaPresidence' => $droits->hasAnyRoleWithRight('evt_legal_accept'),
                     'sortiesPassees' => $this->generateUrl('profil_sorties_prev'),
                     'signalement' => self::FORMULAIRE_DE_SIGNALEMENT,
                 ],

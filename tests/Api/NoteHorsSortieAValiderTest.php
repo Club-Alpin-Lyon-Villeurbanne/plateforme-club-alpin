@@ -6,7 +6,7 @@ use App\Entity\User;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 
 /**
- * « Notes de frais à valider » ne donne rien de plus à un gestionnaire : la trésorerie travaille
+ * « Gestion des notes de frais » ne donne rien de plus à un gestionnaire : la trésorerie travaille
  * dans compta-club. Il n'y voit que les notes des commissions dont il est responsable.
  */
 class NoteHorsSortieAValiderTest extends ExpenseReportApiTestCase

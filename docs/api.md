@@ -183,7 +183,7 @@ Retourne uniquement les notes de frais de l'utilisateur connecté, de sortie com
 
 **Paramètres de requête :**
 - `type` : `sortie`, `formation` ou `autre` (achat)
-- `inclure_brouillons` : `true` pour inclure les brouillons, absents sinon
+- `inclure_brouillons` : `true` pour inclure les brouillons, absents sinon ; même avec `true`, pas ceux d'une sortie dont le délai de dépôt est passé
 - `event` : Filtrer par ID de sortie
 - `pagination` : `false` pour désactiver la pagination
 
@@ -192,7 +192,7 @@ Retourne uniquement les notes de frais de l'utilisateur connecté, de sortie com
 GET /api/notes-de-frais/a-valider
 ```
 
-La liste « Notes de frais à valider » du site : les notes hors sortie des commissions dont l'utilisateur connecté est valideur, sauf les siennes. Sans filtre `status`, seulement celles qui attendent sa décision (`submitted`). Un brouillon n'y figure jamais. La liste est vide pour qui ne valide aucune commission, gestionnaire compris.
+La liste « Gestion des notes de frais » du site : les notes hors sortie des commissions dont l'utilisateur connecté est valideur, sauf les siennes. Sans filtre `status`, seulement celles qui attendent sa décision (`submitted`). Un brouillon n'y figure jamais. La liste est vide pour qui ne valide aucune commission, gestionnaire compris.
 
 **Paramètres de requête :**
 - `status` : une valeur, ou plusieurs (`status[]=preapproved&status[]=approved`) ; le site demande `preapproved`, `approved`, `rejected` et `accounted` pour les notes déjà traitées

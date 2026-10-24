@@ -13,7 +13,7 @@ use Symfony\Contracts\Service\ResetInterface;
 
 /**
  * Les notes hors sortie qu'un responsable peut traiter : celles des commissions dont il valide les
- * notes. La liste « notes de frais à valider » et le compteur du menu partagent cette seule
+ * notes. La liste « gestion des notes de frais » et le compteur du menu partagent cette seule
  * requête. Un gestionnaire n'y a rien de plus : la trésorerie travaille dans compta-club.
  */
 class NotesAValider implements ResetInterface

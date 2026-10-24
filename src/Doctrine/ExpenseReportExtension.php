@@ -6,6 +6,7 @@ use ApiPlatform\Doctrine\Orm\Extension\QueryCollectionExtensionInterface;
 use ApiPlatform\Doctrine\Orm\Extension\QueryItemExtensionInterface;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
 use ApiPlatform\Metadata\Operation;
+use App\Entity\Evt;
 use App\Entity\ExpenseReport;
 use App\Service\NoteDeFrais\NotesAValider;
 use App\Service\NoteDeFrais\ValideursNoteHorsSortie;
@@ -21,7 +22,7 @@ use Symfony\Bundle\SecurityBundle\Security;
  *   les notes de sortie, et les notes hors sortie qui attendent la trésorerie ou qu'elle a traitées, et celles
  *   qu'un responsable a refusées (compta-club)
  * - /notes-de-frais/a-valider : les notes hors sortie que l'utilisateur valide comme responsable (NotesAValider)
- * - Exclut les brouillons par défaut (sauf si inclure_brouillons=true)
+ * - Exclut les brouillons par défaut (sauf si inclure_brouillons=true) ; dans les siennes, jamais ceux d'une sortie hors délai
  * - Eager loading des relations pour éviter le problème N+1
  * - Tri par défaut : created_at DESC
  */
@@ -75,6 +76,7 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
         $filters = $context['filters'] ?? [];
 
         // 1. Filtrage par utilisateur, sauf sur la liste « à valider » et celle de compta-club
+        $sesNotes = false;
         if ('/notes-de-frais/a-valider' === $operation?->getUriTemplate()) {
             $this->notesAValider->restreindre($queryBuilder, $rootAlias, $filters);
         } elseif ('/admin/notes-de-frais' === $operation?->getUriTemplate()) {
@@ -82,6 +84,7 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
         } elseif ($user) {
             $queryBuilder->andWhere(sprintf('%s.user = :current_user', $rootAlias))
                 ->setParameter('current_user', $user);
+            $sesNotes = true;
         }
 
         // 2. Exclure les brouillons par défaut (sauf si inclure_brouillons=true)
@@ -90,11 +93,30 @@ final class ExpenseReportExtension implements QueryCollectionExtensionInterface,
         if (!$includeDrafts) {
             $queryBuilder->andWhere(sprintf('%s.status != :draft_status', $rootAlias))
                 ->setParameter('draft_status', ExpenseReportStatusEnum::DRAFT->value);
+        } elseif ($sesNotes) {
+            $this->sansBrouillonDeSortieHorsDelai($queryBuilder, $rootAlias);
         }
 
         // 3. Tri par défaut : plus récentes en premier
         // Les index créés dans la migration optimiseront ce tri
         $queryBuilder->orderBy(sprintf('%s.createdAt', $rootAlias), 'DESC');
+    }
+
+    /**
+     * La page d'une sortie crée le brouillon de l'encadrant dès qu'il l'ouvre : passé le délai
+     * (Evt::isExpenseReportOpen), il ne peut plus partir et n'a rien à faire dans « Mes notes de frais ».
+     */
+    private function sansBrouillonDeSortieHorsDelai(QueryBuilder $queryBuilder, string $rootAlias): void
+    {
+        $queryBuilder
+            ->andWhere($queryBuilder->expr()->orX(
+                sprintf('%s.status != :brouillon', $rootAlias),
+                sprintf('%s.type != :sortie', $rootAlias),
+                'event.endDate >= :fin_au_plus_tot',
+            ))
+            ->setParameter('brouillon', ExpenseReportStatusEnum::DRAFT->value)
+            ->setParameter('sortie', ExpenseReportTypeEnum::SORTIE->value)
+            ->setParameter('fin_au_plus_tot', new \DateTimeImmutable(sprintf('-%d days', Evt::EXPENSE_REPORT_DEADLINE_DAYS)));
     }
 
     /**

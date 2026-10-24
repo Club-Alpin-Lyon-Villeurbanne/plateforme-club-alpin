@@ -2,12 +2,14 @@
 
 namespace App\Tests\Api;
 
+use App\Entity\Evt;
+use App\Entity\ExpenseReport;
 use App\Entity\User;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 
 /**
- * Données de la page « Mes notes de frais » : toutes les notes du demandeur, brouillons compris,
- * filtrables par type ; date d'envoi et valideurs d'une note hors sortie.
+ * Données de la page « Mes notes de frais » : toutes les notes du demandeur, brouillons compris
+ * sauf ceux d'une sortie hors délai, filtrables par type ; date d'envoi et valideurs d'une note hors sortie.
  */
 class NoteHorsSortieMesNotesTest extends ExpenseReportApiTestCase
 {
@@ -24,6 +26,18 @@ class NoteHorsSortieMesNotesTest extends ExpenseReportApiTestCase
 
         $this->assertResponseStatus(200, $response);
         $this->assertEqualsCanonicalizing([$sortie->getId(), $brouillon->getId(), $envoyee->getId()], array_column($response['body']['data'], 'id'));
+    }
+
+    public function testUnBrouillonDeSortieHorsDelaiNePlusParait(): void
+    {
+        $this->noteDeSortieFinieIlYa(Evt::EXPENSE_REPORT_DEADLINE_DAYS + 1, ExpenseReportStatusEnum::DRAFT);
+        $envoyeeHorsDelai = $this->noteDeSortieFinieIlYa(Evt::EXPENSE_REPORT_DEADLINE_DAYS + 1, ExpenseReportStatusEnum::SUBMITTED);
+        $dansLeDelai = $this->noteDeSortieFinieIlYa(Evt::EXPENSE_REPORT_DEADLINE_DAYS - 1, ExpenseReportStatusEnum::DRAFT);
+
+        $response = $this->listerMesNotes($this->owner);
+
+        $this->assertEqualsCanonicalizing([$envoyeeHorsDelai->getId(), $dansLeDelai->getId()], array_column($response['body']['data'], 'id'));
+        $this->assertEquals(2, $response['body']['meta']['total']);
     }
 
     public function testLaListeSeFiltreParType(): void
@@ -85,6 +99,17 @@ class NoteHorsSortieMesNotesTest extends ExpenseReportApiTestCase
 
         $this->assertArrayNotHasKey('dateEnvoi', $lue['body']);
         $this->assertArrayNotHasKey('valideurs', $lue['body']);
+    }
+
+    private function noteDeSortieFinieIlYa(int $jours, ExpenseReportStatusEnum $status): ExpenseReport
+    {
+        $note = $this->createReport($this->em()->find(User::class, $this->owner->getId()), $status);
+        $this->em()->getConnection()->executeStatement(
+            'UPDATE caf_evt SET end_date = ? WHERE id_evt = (SELECT event_id FROM expense_report WHERE id = ?)',
+            [(new \DateTimeImmutable(sprintf('-%d days', $jours)))->format('Y-m-d H:i:s'), $note->getId()],
+        );
+
+        return $note;
     }
 
     private function listerMesNotes(User $utilisateur, array $filtres = []): array
