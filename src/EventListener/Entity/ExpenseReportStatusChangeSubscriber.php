@@ -28,7 +28,8 @@ class ExpenseReportStatusChangeSubscriber
         $uow = $em->getUnitOfWork();
 
         foreach ($uow->getScheduledEntityUpdates() as $entity) {
-            if (!$entity instanceof ExpenseReport) {
+            // Une note hors sortie est annoncée par NotificationsNoteHorsSortie, avec ses autres mails.
+            if (!$entity instanceof ExpenseReport || $entity->getType()->estHorsSortie()) {
                 continue;
             }
 
