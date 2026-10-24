@@ -760,6 +760,84 @@ class SortieControllerTest extends WebTestCase
         return $event;
     }
 
+    /**
+     * Test that the expense report form is displayed when the event has been
+     * legally validated by the president and the 120-day deadline is still open.
+     */
+    public function testExpenseReportFormVisibleWhenLegalStatusValidated()
+    {
+        $user = $this->signup();
+        $this->signin($user);
+        $this->addAttribute($user, UserAttr::ENCADRANT, 'commission:*');
+
+        $event = $this->createFinishedEvent($user);
+
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+
+        // The Vue expense report form should be included
+        $this->assertSelectorExists('#expense-report-form');
+        $this->assertStringNotContainsString('pas été validée par le président', $crawler->text());
+    }
+
+    /**
+     * Test that the expense report form is NOT displayed when the legal
+     * validation of the event has been refused by the president.
+     */
+    public function testExpenseReportFormNotVisibleWhenLegalStatusRefused()
+    {
+        $user = $this->signup();
+        $this->signin($user);
+        $this->addAttribute($user, UserAttr::ENCADRANT, 'commission:*');
+
+        $event = $this->createFinishedEvent($user);
+        $event->setStatusLegal(Evt::STATUS_LEGAL_REFUSE);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+
+        // The Vue expense report form should NOT be included (the event is not legally validated)
+        $this->assertSelectorNotExists('#expense-report-form');
+        $this->assertStringContainsString('pas été validée par le président', $crawler->text());
+    }
+
+    /**
+     * Helper method to create an event that ended recently, so that the
+     * 120-day deadline for expense reports is still open.
+     */
+    protected function createFinishedEvent($user): Evt
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $commission = $this->createCommission();
+
+        // Create an event that ended 9 days ago (within the 120-day deadline)
+        $event = new Evt(
+            $user,
+            $commission,
+            'Sortie terminée',
+            'sortie-terminee-' . bin2hex(random_bytes(4)),
+            new \DateTimeImmutable('-10 days'),
+            new \DateTimeImmutable('-9 days'),
+            'Hotel de ville',
+            12,
+            2,
+            'Une sortie terminée',
+            12,
+            12,
+            new \DateTimeImmutable('-20 days')
+        );
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($user);
+        $event->setStatusLegal(Evt::STATUS_LEGAL_VALIDE);
+        $event->setStatusLegalWho($user);
+        $event->addParticipation($user, EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE);
+        $em->persist($event);
+        $em->flush();
+
+        return $event;
+    }
+
     public function testMethodologieBilanCarboneIsPubliclyAccessible(): void
     {
         $this->client->request('GET', '/sorties/methodologie-bilan-carbone');
