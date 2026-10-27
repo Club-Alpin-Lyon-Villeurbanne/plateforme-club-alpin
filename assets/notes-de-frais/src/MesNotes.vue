@@ -200,7 +200,7 @@ function sousLeMontant(note: Note): string | null {
     return "Don au club";
   }
 
-  return note.totalRemboursable < note.totalDeclare ? `dont ${euros(note.totalRemboursable)} remboursables` : null;
+  return note.totalRemboursable < note.totalDeclare ? `dont ${euros(note.totalRemboursable)} dans les plafonds` : null;
 }
 
 const ACTIONS: Record<string, string> = { draft: "Reprendre", rejected: "Corriger" };

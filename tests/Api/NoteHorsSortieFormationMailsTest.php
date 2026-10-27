@@ -35,7 +35,7 @@ class NoteHorsSortieFormationMailsTest extends ExpenseReportApiTestCase
         $mails = $this->mailsA($this->responsable->getEmail());
         $this->assertCount(1, $mails);
         foreach ($this->corps($mails[0]) as $corps) {
-            $this->assertStringContainsString(sprintf('Montant : %s (dont %s remboursables selon les plafonds du club)', $this->euros($peage), $this->euros($this->plafondDuPeage())), $corps);
+            $this->assertStringContainsString(sprintf('Montant : %s (dont %s dans les plafonds du club)', $this->euros($peage), $this->euros($this->plafondDuPeage())), $corps);
             $this->assertStringNotContainsString('À vérifier', $corps);
         }
     }
@@ -46,7 +46,7 @@ class NoteHorsSortieFormationMailsTest extends ExpenseReportApiTestCase
 
         foreach ([$this->responsable->getEmail(), $this->encadrant->getEmail()] as $adresse) {
             foreach ($this->corps($this->mailsA($adresse)[0]) as $corps) {
-                $this->assertStringNotContainsString('remboursables selon les plafonds du club', $corps);
+                $this->assertStringNotContainsString('dans les plafonds du club', $corps);
             }
         }
     }
@@ -73,7 +73,7 @@ class NoteHorsSortieFormationMailsTest extends ExpenseReportApiTestCase
         $this->assertCount(1, $mails);
         foreach ($this->corps($mails[0]) as $corps) {
             $this->assertMatchesRegularExpression(sprintf(
-                '/Total : %s\s+dont %s remboursables selon les plafonds du club/u',
+                '/Total : %s\s+dont %s dans les plafonds du club/u',
                 preg_quote($this->euros($peage), '/'),
                 preg_quote($this->euros($this->plafondDuPeage()), '/'),
             ), $corps);
@@ -96,7 +96,8 @@ class NoteHorsSortieFormationMailsTest extends ExpenseReportApiTestCase
         }
         // Le responsable ne doit pas deviner le choix : son mail garde la même phrase.
         foreach ($this->corps($this->mailsA($this->responsable->getEmail())[0]) as $corps) {
-            $this->assertStringContainsString(sprintf('dont %s remboursables selon les plafonds du club', $this->euros($this->plafondDuPeage())), $corps);
+            $this->assertStringContainsString(sprintf('dont %s dans les plafonds du club', $this->euros($this->plafondDuPeage())), $corps);
+            $this->assertStringNotContainsString('remboursables', $corps);
         }
     }
 

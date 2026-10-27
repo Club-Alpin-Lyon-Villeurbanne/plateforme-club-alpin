@@ -63,17 +63,15 @@ export function enumeration(elements: string[], conjonction: "et" | "ou" = "et")
 }
 
 /**
- * Sous le total, quand un plafond du club s'applique ; les montants viennent du serveur. Un don
- * n'est pas remboursé : sans promettre de reçu ni de montant de reçu, on dit seulement les plafonds.
+ * Sous le total, quand un plafond du club s'applique ; les montants viennent du serveur. La même
+ * phrase pour un don et un remboursement : elle n'incite pas à demander le remboursement.
  */
-export function partRemboursable(montants: { totalDeclare: number; totalRemboursable: number }, don = false): string | null {
+export function partRemboursable(montants: { totalDeclare: number; totalRemboursable: number }): string | null {
   if (montants.totalRemboursable >= montants.totalDeclare) {
     return null;
   }
 
-  return don
-    ? `dont ${euros(montants.totalRemboursable)} dans les plafonds du club`
-    : `dont ${euros(montants.totalRemboursable)} remboursables selon les plafonds du club`;
+  return `dont ${euros(montants.totalRemboursable)} dans les plafonds du club`;
 }
 
 /** Page d'une note, pour son demandeur : ce qu'il a choisi ; rien tant qu'il n'a pas choisi. */

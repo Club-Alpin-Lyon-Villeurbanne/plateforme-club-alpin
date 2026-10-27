@@ -104,7 +104,7 @@ class NotificationsNoteHorsSortie
             'valideurs' => array_map(static fn (User $valideur) => $valideur->getFullName(), $valideurs),
             'lignes' => $this->lignes($note),
             'formattedTotal' => $this->calculator->formatEuros($montants['totalDeclare']),
-            'partRemboursable' => $this->calculator->partRemboursable($montants, false === $note->isRefundRequired()),
+            'partRemboursable' => $this->calculator->partRemboursable($montants),
         ]);
     }
 

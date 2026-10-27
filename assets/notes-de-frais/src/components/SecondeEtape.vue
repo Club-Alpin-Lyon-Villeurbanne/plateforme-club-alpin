@@ -154,7 +154,7 @@ const props = defineProps<{
   justificatifs: Record<string, Justificatif>;
   envoisEnCours: string[];
   erreursJustificatifs: Record<string, string>;
-  /** « dont X € remboursables… », d'après les montants renvoyés par l'API. */
+  /** « dont X € dans les plafonds du club », d'après les montants renvoyés par l'API. */
   partRemboursable: string | null;
   /** Renvoyés par l'API. */
   avertissements: string[];

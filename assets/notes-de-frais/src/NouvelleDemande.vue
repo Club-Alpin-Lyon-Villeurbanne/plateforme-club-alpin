@@ -54,7 +54,7 @@
       :justificatifs="justificatifs"
       :envois-en-cours="envoisEnCours"
       :erreurs-justificatifs="erreursJustificatifs"
-      :part-remboursable="note ? partRemboursable(note, choix === false) : null"
+      :part-remboursable="note ? partRemboursable(note) : null"
       :avertissements="note?.avertissements ?? []"
       :delai-depasse="delaiDepasse"
       :erreurs="erreursEtape2"

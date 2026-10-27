@@ -263,19 +263,18 @@ class ExpenseReportCalculator
     }
 
     /**
-     * « dont X € remboursables selon les plafonds du club », à lire avec le total quand un plafond
-     * s'applique. Un don n'est pas remboursé : « dont X € dans les plafonds du club », sans rien
-     * promettre du reçu.
+     * « dont X € dans les plafonds du club », à lire avec le total quand un plafond s'applique. La
+     * même phrase pour un don et un remboursement : elle n'incite pas à demander le remboursement.
      *
      * @param array{totalDeclare: float, totalRemboursable: float} $montants
      */
-    public function partRemboursable(array $montants, bool $don = false): ?string
+    public function partRemboursable(array $montants): ?string
     {
         if ($montants['totalRemboursable'] >= $montants['totalDeclare']) {
             return null;
         }
 
-        return sprintf($don ? 'dont %s dans les plafonds du club' : 'dont %s remboursables selon les plafonds du club', $this->formatEuros($montants['totalRemboursable']));
+        return sprintf('dont %s dans les plafonds du club', $this->formatEuros($montants['totalRemboursable']));
     }
 
     public function tauxKilometriqueEnVigueur(): float

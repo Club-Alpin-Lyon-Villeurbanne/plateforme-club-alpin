@@ -72,21 +72,16 @@ const decisionPrise = computed(() => (note.value ? decisionSurLaPage(note.value)
 
 // Un gestionnaire lit aussi le choix dans l'API : la page ne le montre qu'au demandeur.
 const choix = computed(() => (note.value && props.donnees.estDemandeur ? choixDuDemandeur(note.value) : null));
-const don = computed(() => props.donnees.estDemandeur && note.value?.refundRequired === false);
-const plafonds = computed(() => (note.value ? partRemboursable(note.value, don.value) : null));
+const plafonds = computed(() => (note.value ? partRemboursable(note.value) : null));
 
-// Les plafonds s'appliquent sans être un défaut : la phrase dit ce que le club retient. Une formation
-// déclarée en kilomètres seulement n'a aucun justificatif.
+// Les plafonds s'appliquent sans être un défaut : le montant retenu est déjà sous le total. Une
+// formation déclarée en kilomètres seulement n'a aucun justificatif.
 const verification = computed(() => {
   if (!note.value) {
     return null;
   }
   const joints = lignes.value.some((ligne) => ligne.justificatif) ? "✓ Justificatifs joints." : null;
-  const retenu = euros(note.value.totalRemboursable);
-  const plafonds =
-    note.value.totalRemboursable < note.value.totalDeclare
-      ? `Plafonds du club appliqués : ${don.value ? `${retenu} dans les plafonds du club` : `${retenu} remboursables`}.`
-      : null;
+  const plafonds = note.value.totalRemboursable < note.value.totalDeclare ? "Plafonds du club appliqués." : null;
 
   return [joints, plafonds].filter(Boolean).join(" ") || null;
 });
