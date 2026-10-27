@@ -115,12 +115,14 @@
                                         Refusé
                                     </span>
                                 {% elseif participation.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') %}
-                                    <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
-                                        <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-                                        </svg>
-                                        Accepté
-                                    </span>
+                                    {% if participation.role not in constant('App\\Entity\\EventParticipation::ROLES_ENCADREMENT_ETENDU') %}
+                                        <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
+                                            <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+                                            </svg>
+                                            Accepté
+                                        </span>
+                                    {% endif %}
                                 {% elseif participation.status == constant('App\\Entity\\EventParticipation::STATUS_ABSENT') %}
                                     <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-gray-600 tw-whitespace-nowrap">
                                         <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
