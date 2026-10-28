@@ -25,7 +25,6 @@ use App\Repository\UserAttrRepository;
 use App\Repository\UserNotificationRepository;
 use App\Repository\UserRepository;
 use App\Security\SecurityConstants;
-use App\Service\EmailMarketingSyncService;
 use App\UserRights;
 use App\Utils\NicknameGenerator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -726,7 +725,6 @@ class UserController extends AbstractController
         Request $request,
         UserRights $userRights,
         EntityManagerInterface $manager,
-        EmailMarketingSyncService $emailMarketingService,
         ?User $user = null,
     ): array|Response {
         /** @var User $currentUser */
@@ -802,15 +800,6 @@ class UserController extends AbstractController
 
                 $manager->persist($user);
                 $manager->flush();
-
-                if (!$isUpdate) {
-                    // Synchroniser avec MailerLite après création manuelle
-                    try {
-                        $emailMarketingService->syncUsers($user);
-                    } catch (\Exception $exception) {
-                        // Les logs seront automatiquement gérés par le service EmailMarketingSyncService
-                    }
-                }
 
                 $this->addFlash('success', $isUpdate ? 'L\'utilisateur a bien été modifié.' : 'L\'utilisateur a bien été créé.');
 

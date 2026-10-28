@@ -129,11 +129,6 @@ services:
   App\Repository\CommissionRepository:
     public: true
 
-  App\Service\EmailMarketingSyncService:
-    public: true
-    arguments:
-      $mailerLiteService: '@?App\Service\MailerLiteService'
-
   App\Mailer\Mailer:
     arguments:
       $replyTo: "%env(MAIL_EMITTER_EMAIL)%"
@@ -183,7 +178,6 @@ services:
   App\Service\MailerLiteService:
     arguments:
       $apiKey: "%env(MAILERLITE_API_KEY)%"
-      $welcomeGroupId: "%env(MAILERLITE_WELCOME_GROUP_ID)%"
       $deployEnv: "%env(DEPLOY_ENV)%"
 
   App\Command\MailerLiteAccueilSync:
