@@ -34,6 +34,28 @@ parameters:
         tauxKilometriqueVoiture: 0.2
         tauxKilometriqueMinibus: 0.3
         divisionPeage: 3
+        # En attendant la politique de remboursement du comité directeur : ni délai ni seuil, taux
+        # et plafond de la nuitée des sorties.
+        horsSortie:
+            # Délai d'envoi d'une note après la dépense, par type de note ; un type absent n'a pas de délai.
+            delaiEnvoiJours: {}
+            # Total déclaré au-delà duquel la note porte un avertissement, en euros ; ~ : aucun.
+            seuilAvertissement: ~
+            # Barème par type de note : chaque ligne au réel, sauf la voiture (kilomètres × taux).
+            # Plafonds en euros : `parNature` vaut sur chaque ligne de la nature (portee: ligne) ou
+            # sur leur total dans la note (portee: note) ; `total` sur le remboursable de la note.
+            # Une nature absente, ou ~, n'a pas de plafond.
+            formation:
+                tauxKilometrique: 0.2
+                plafonds:
+                    parNature:
+                        hebergement: { montant: 60, portee: ligne }
+                    total: ~
+            autre:
+                plafonds:
+                    # Un achat n'a pas de nature.
+                    parNature: {}
+                    total: ~
   materiel_api_base_url: "%env(LOXYA_API_URL)%"
   materiel_api_username: "%env(LOXYA_API_USERNAME)%"
   materiel_api_password: "%env(LOXYA_API_PASSWORD)%"

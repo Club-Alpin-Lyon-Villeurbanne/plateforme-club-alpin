@@ -179,10 +179,24 @@ GET /api/utilisateurs/{id}
 GET /api/notes-de-frais
 ```
 
-Retourne uniquement les notes de frais de l'utilisateur connecté.
+Retourne uniquement les notes de frais de l'utilisateur connecté, de sortie comme hors sortie. C'est la liste « Mes notes de frais » du site.
 
 **Paramètres de requête :**
+- `type` : `sortie`, `formation` ou `autre` (achat)
+- `inclure_brouillons` : `true` pour inclure les brouillons, absents sinon ; même avec `true`, pas ceux d'une sortie dont le délai de dépôt est passé
 - `event` : Filtrer par ID de sortie
+- `pagination` : `false` pour désactiver la pagination
+
+#### Notes à valider (responsable de commission)
+```http
+GET /api/notes-de-frais/a-valider
+```
+
+La liste « Gestion des notes de frais » du site : les notes hors sortie des commissions dont l'utilisateur connecté est valideur, sauf les siennes. Sans filtre `status`, seulement celles qui attendent sa décision (`submitted`). Un brouillon n'y figure jamais. La liste est vide pour qui ne valide aucune commission, gestionnaire compris.
+
+**Paramètres de requête :**
+- `status` : une valeur, ou plusieurs (`status[]=preapproved&status[]=approved`) ; le site demande `preapproved`, `approved`, `rejected` et `accounted` pour les notes déjà traitées
+- `refundRequired` : donne toujours une liste vide, pour que le choix entre don et remboursement reste inconnu du responsable
 - `pagination` : `false` pour désactiver la pagination
 
 #### Liste des notes de frais (admin/comptabilité)
@@ -190,15 +204,25 @@ Retourne uniquement les notes de frais de l'utilisateur connecté.
 GET /api/admin/notes-de-frais
 ```
 
-Retourne toutes les notes de frais de tous les utilisateurs. Réservé aux administrateurs et aux utilisateurs ayant le droit `manage_expense_reports`.
+La liste de compta-club. Retourne les notes de frais de tous les utilisateurs : toutes les notes de sortie, et les notes hors sortie qui attendent la trésorerie ou qu'elle a traitées, et celles qu'un responsable a refusées. Une note hors sortie n'y figure ni en brouillon, ni `submitted` tant qu'elle a des valideurs (elle attend alors un responsable). Réservé aux administrateurs et aux utilisateurs ayant le droit `manage_expense_reports`.
 
 **Sécurité :** `ROLE_ADMIN` ou droit `manage_expense_reports`
 
 **Paramètres de requête :**
+- `status` : une valeur, ou plusieurs (`status[]=submitted&status[]=preapproved`)
+- `type` : `sortie`, `formation` ou `autre` (achat)
+- `refundRequired` : `true` (remboursement) ou `false` (don)
+- `user.lastname` : nom du demandeur, recherche partielle
+- `event.titre` (recherche partielle) et `event.startDate[after]`, `event.startDate[before]`, `event.startDate[strictly_after]`, `event.startDate[strictly_before]` : ne portent que sur les notes de sortie ; une note hors sortie reste dans la liste quand ils sont actifs (compta-club, lui, ne demande alors que des sorties : `type=sortie`)
 - `event` : Filtrer par ID de sortie
+- `inclure_brouillons` : `true` pour inclure les brouillons des notes de sortie
 - `pagination` : `false` pour désactiver la pagination
 
-**Réponse exemple :**
+Une valeur inconnue de `status` ou de `type` donne une liste vide.
+
+Une note hors sortie y porte les [champs d'une note hors sortie](#champs-dune-note-hors-sortie), comme à sa lecture par `GET /api/notes-de-frais/{id}`, que compta-club utilise pour la page d'une note.
+
+**Réponse exemple**, avec une note de sortie (ses champs hors sortie sont nuls) :
 ```json
 {
   "data": [
@@ -216,6 +240,12 @@ Retourne toutes les notes de frais de tous les utilisateurs. Réservé aux admin
         "titre": "Randonnée au Mont Blanc",
         "dateDebut": "2025-09-15 08:00:00"
       },
+      "type": "sortie",
+      "commission": null,
+      "objet": null,
+      "dateDepense": null,
+      "lienFormation": null,
+      "motPourResponsable": null,
       "dateCreation": "2025-09-20",
       "commentaireStatut": null,
       "details": "{...}",
@@ -225,7 +255,9 @@ Retourne toutes les notes de frais de tous les utilisateurs. Réservé aux admin
           "expenseId": "transport",
           "fileUrl": "http://..."
         }
-      ]
+      ],
+      "totalDeclare": 86.4,
+      "totalRemboursable": 86.4
     }
   ],
   "meta": {
@@ -238,16 +270,43 @@ Retourne toutes les notes de frais de tous les utilisateurs. Réservé aux admin
 ```
 
 #### Créer une note de frais
+Une note de sortie se crée par sa sortie :
+
 ```http
 POST /api/notes-de-frais
 Content-Type: application/json
 
 {
-  "event": 11,
-  "details": "{...}",
-  "refundRequired": true
+  "eventId": 11
 }
 ```
+
+Elle est créée en brouillon, avec `refundRequired` à `false`. Ses dépenses (`details`) et le choix entre don et remboursement s'enregistrent ensuite par `PATCH`. Refus : `404` si la sortie n'existe pas, `409` si l'utilisateur a déjà une note pour cette sortie.
+
+Une note hors sortie se crée par son type, sans `eventId` :
+
+```http
+POST /api/notes-de-frais
+Content-Type: application/json
+
+{
+  "type": "formation",
+  "commissionId": 4,
+  "objet": "Formation initiateur SAE",
+  "dateDepense": "2026-10-02",
+  "lienFormation": "https://example.org/formation-initiateur"
+}
+```
+
+- `type` : `formation` ou `autre` (achat).
+- `commissionId` : la commission qui reçoit la note, obligatoire. Une commission masquée est refusée.
+- `objet` : obligatoire, 255 caractères au plus.
+- `dateDepense` : date de la formation ou de l'achat (`AAAA-MM-JJ`), obligatoire. Elle ne peut pas être dans le futur, ni avant l'an 2000 (une année tapée sur deux chiffres), ni, pour un type qui a un délai d'envoi (`expense_report.horsSortie.delaiEnvoiJours`), plus ancienne que ce délai.
+- `lienFormation` : facultatif, une adresse web, pour une formation seulement.
+
+Elle est créée en brouillon, sans choix entre don et remboursement (`refundRequired` à `null`). Ses dépenses, ce choix et l'envoi passent ensuite par `PATCH`. Refus : `422` sur le champ en cause (`commission` pour `commissionId`).
+
+Une note hors sortie (`type` `formation` ou `autre`) demande un rôle d'encadrement ou de responsable de commission, dans n'importe quelle commission. Sinon : `422` sur `type`, « Les notes de frais sont réservées à l'encadrement et aux responsables de commission. ».
 
 #### Cloner une note de frais
 ```http
@@ -261,9 +320,40 @@ Content-Type: application/merge-patch+json
 
 {
   "status": "submitted",
-  "details": "{...}"
+  "details": "{...}",
+  "version": 3
 }
 ```
+
+`version`, facultatif : la version de la note lue par le client (elle est renvoyée avec chaque note hors sortie). Si la note a changé depuis, la modification est refusée (409). Sans `version`, la dernière écriture passe.
+
+**Refus :**
+- `422` sur `status`, « Cette note a déjà été traitée. » : une décision sur une note qui a quitté l'étape de celui qui décide (deux onglets, deux personnes en même temps). compta-club reconnaît ce texte exact (`app/lib/apiError.ts`) : le changer demande de changer compta-club.
+- `422` sur `status`, les autres changements de statut refusés : « Cette note attend encore la décision du responsable de la commission. » (la trésorerie sur une note hors sortie qui attend un responsable), « Vous ne pouvez pas décider sur votre propre note de frais. », sinon « Ce changement de statut n'est pas permis. ».
+- `422` sur `commentaireStatut` : un message au demandeur est obligatoire pour refuser une note hors sortie.
+- `422` sur le champ modifié (`details`, `refundRequired`, `objet`…), « Cette note a déjà été envoyée : elle ne peut plus être modifiée. » : le demandeur modifie une note qui n'est plus en brouillon ni à corriger (le site reconnaît ce texte exact). Pour toute autre personne : « Seul le demandeur peut modifier cette note. ».
+- `409`, « Cette note a été modifiée dans un autre onglet ou sur un autre appareil. » : la `version` envoyée n'est plus celle de la note. Rien n'est écrit : relire la note.
+- `409`, « Cette note a été modifiée en même temps par une autre action. » : une autre requête a modifié la note entre la lecture et l'écriture de celle-ci (verrou optimiste). La note n'est pas modifiée, mais pour une note de sortie le mail du changement de statut est déjà en file et part quand même. Relire la note avant de réessayer.
+- `400` : `version` n'est pas un nombre entier.
+
+#### Type et montants de toute note
+Toute note porte `type` (`sortie`, `formation` ou `autre`), `totalDeclare` et `totalRemboursable` : figés au dernier envoi pour une note hors sortie (en brouillon ou à corriger, ils suivent ses lignes et le barème en vigueur), calculés avec les taux en vigueur pour une note de sortie. Dans ce calcul, une valeur de `details` qui n'est pas un nombre fini compte pour 0.
+
+#### Champs d'une note hors sortie
+Une note hors sortie remplit `commission`, `objet`, `dateDepense` (date de l'achat ou de la formation), `lienFormation` et `motPourResponsable`, nuls sur une note de sortie. Sur une note hors sortie, `refundRequired` (don ou remboursement) n'est lu que par le demandeur et les gestionnaires : il est absent pour un responsable de commission.
+
+Une note de type `formation` ou `autre` porte en plus, en lecture seule :
+- `lignesAffichees` : ses dépenses dans l'ordre de la saisie, avec leur libellé, leur détail et leur montant.
+- `avertissements` : les messages des contrôles.
+- `dateEnvoi` : son dernier envoi, `null` pour un brouillon.
+- `valideurs` : les responsables qui la valident avant la trésorerie ; vide, la trésorerie décide dès l'envoi.
+- `derniereDecision` : `{statut, niveau, auteur: {prenom, nom}, date, message}`, la dernière validation ou le dernier refus, `null` s'il n'y en a pas.
+  - `statut` : `preapproved` (validée par un responsable), `approved` ou `rejected`. La comptabilisation n'est pas une décision.
+  - `niveau` : `responsable` ou `tresorerie`. Il est établi au moment de la décision : un refus depuis `submitted` vient de la trésorerie si la note n'avait alors aucun valideur. `null` pour une décision plus ancienne que ce champ.
+- `validationResponsable` : `{auteur: {prenom, nom}, date}` de la validation par un responsable depuis le dernier envoi (passage en `preapproved`), conservée après la décision de la trésorerie ; `null` si aucun responsable ne l'a validée depuis. Une note renvoyée après un refus repart à `null` jusqu'à sa nouvelle validation : celle d'avant le renvoi ne compte plus.
+- `libelleComptable` : « NOM Prénom NDF JJ/MM/AAAA objet », avec le nom du demandeur et la date de la dépense, ce que la trésorerie saisit en comptabilité ; `null` pour un brouillon.
+- `peutDecider` : l'utilisateur connecté est valideur de la note et elle est `submitted`.
+- `version` : la version de la note, à renvoyer avec chaque modification ou décision (voir « Modifier une note de frais »).
 
 ### 📎 Pièces jointes (Notes de frais)
 
@@ -275,6 +365,8 @@ Content-Type: multipart/form-data
 file: [fichier]
 expenseId: "transport"
 ```
+
+Réservé au demandeur (`404` pour toute autre personne). Remplace le justificatif déjà envoyé pour le même `expenseId`. Refus : `422`, « Cette note a déjà été envoyée : elle ne peut plus être modifiée. », sur une note qui n'est plus en brouillon ni à corriger ; `400` pour un fichier absent, trop lourd (8 Mo) ou d'un autre format que JPG, PNG ou PDF, ou sans `expenseId`.
 
 #### Liste des pièces jointes
 ```http
@@ -324,6 +416,7 @@ GET /api/participation-sorties/{id}
 ### Statuts des notes de frais
 - `draft` : Brouillon
 - `submitted` : Soumise
+- `preapproved` : Validée par le responsable (note hors sortie seulement : elle attend la trésorerie)
 - `approved` : Approuvée
 - `rejected` : Rejetée
 - `accounted` : Comptabilisée
@@ -418,6 +511,7 @@ GET /api/sorties?order[startDate]=desc
 | 401 | Non authentifié |
 | 403 | Accès refusé |
 | 404 | Ressource non trouvée |
+| 409 | Conflit : la note de frais a changé depuis sa lecture, ou existe déjà pour cette sortie |
 | 422 | Données invalides |
 | 500 | Erreur serveur |
 
@@ -454,7 +548,7 @@ curl -H "Authorization: Bearer <token>" \
 curl -X POST \
      -H "Authorization: Bearer <token>" \
      -H "Content-Type: application/json" \
-     -d '{"event": 11, "refundRequired": true}' \
+     -d '{"eventId": 11}' \
      https://clubalpinlyon.fr/api/notes-de-frais
 ```
 

@@ -5,14 +5,17 @@ namespace App\EventListener\Entity;
 use App\Entity\ExpenseReport;
 use App\Entity\ExpenseReportStatusHistory;
 use App\Entity\User;
+use App\Service\NoteDeFrais\ValideursNoteHorsSortie;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use App\Utils\Enums\NiveauDeDecisionEnum;
 use Doctrine\Bundle\DoctrineBundle\Attribute\AsDoctrineListener;
 use Doctrine\ORM\Event\OnFlushEventArgs;
 use Doctrine\ORM\Events;
 use Symfony\Bundle\SecurityBundle\Security;
 
 /**
- * Historise chaque changement de statut d'une note de frais (qui, quand, de quoi vers quoi).
+ * Historise chaque changement de statut d'une note de frais (qui, quand, de quoi vers quoi, et pour
+ * une note hors sortie, à quel niveau la décision a été prise).
  *
  * Écrit en onFlush : une entité persistée en preUpdate n'est jamais insérée par Doctrine.
  * Priorité supérieure à ExpenseReportStatusChangeSubscriber : si l'auteur est inconnu, le flush
@@ -23,6 +26,7 @@ class ExpenseReportStatusHistoryListener
 {
     public function __construct(
         private readonly Security $security,
+        private readonly ValideursNoteHorsSortie $valideurs,
     ) {
     }
 
@@ -56,11 +60,48 @@ class ExpenseReportStatusHistoryListener
                 ->setOldStatus($oldStatus)
                 ->setNewStatus($newStatus)
                 ->setChangedBy($user)
-                ->setChangedAt(new \DateTimeImmutable());
+                ->setChangedAt(new \DateTimeImmutable())
+                ->setMessage($this->messageDeLaDecision($entity, $newStatus, isset($changeSet['statusComment'])))
+                ->setNiveau($this->niveauDeLaDecision($entity, $oldStatus, $newStatus));
 
             $em->persist($history);
             $uow->computeChangeSet($em->getClassMetadata(ExpenseReportStatusHistory::class), $history);
         }
+    }
+
+    /**
+     * Le message en vigueur pour un renvoi. Pour une validation, seulement celui écrit avec elle :
+     * le commentaire garde sinon le message d'un ancien renvoi (note de sortie) ou de la
+     * pré-validation (note hors sortie).
+     */
+    private function messageDeLaDecision(ExpenseReport $note, ExpenseReportStatusEnum $newStatus, bool $commentaireModifie): ?string
+    {
+        return match ($newStatus) {
+            ExpenseReportStatusEnum::REJECTED => $note->getStatusComment(),
+            ExpenseReportStatusEnum::PREAPPROVED, ExpenseReportStatusEnum::APPROVED => $commentaireModifie ? $note->getStatusComment() : null,
+            default => null,
+        };
+    }
+
+    /**
+     * Le seul endroit où se décide qui a pris une décision sur une note hors sortie. Un refus depuis
+     * l'envoi vient de la trésorerie quand la note n'a pas de valideur : établi maintenant, car les
+     * valideurs sont recalculés à chaque lecture.
+     */
+    private function niveauDeLaDecision(ExpenseReport $note, ?ExpenseReportStatusEnum $oldStatus, ExpenseReportStatusEnum $newStatus): ?NiveauDeDecisionEnum
+    {
+        if (!$note->getType()->estHorsSortie()) {
+            return null;
+        }
+
+        return match ($newStatus) {
+            ExpenseReportStatusEnum::PREAPPROVED => NiveauDeDecisionEnum::RESPONSABLE,
+            ExpenseReportStatusEnum::APPROVED => NiveauDeDecisionEnum::TRESORERIE,
+            ExpenseReportStatusEnum::REJECTED => ExpenseReportStatusEnum::PREAPPROVED === $oldStatus || [] === $this->valideurs->pour($note)
+                ? NiveauDeDecisionEnum::TRESORERIE
+                : NiveauDeDecisionEnum::RESPONSABLE,
+            default => null,
+        };
     }
 
     /**

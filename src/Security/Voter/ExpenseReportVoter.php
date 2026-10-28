@@ -2,6 +2,7 @@
 
 namespace App\Security\Voter;
 
+use App\Entity\ExpenseReport;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -9,6 +10,9 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 class ExpenseReportVoter extends Voter
 {
     public const MANAGE_EXPENSE_REPORTS = 'manage_expense_reports';
+    // Sujet : une ExpenseReport. Lecture de la note et de ses justificatifs, modification de la note.
+    // Le responsable d'une note hors sortie y a aussi accès : voir ResponsableNoteDeFraisVoter.
+    public const ACCESS_EXPENSE_REPORT = 'access_expense_report';
 
     private array $authorizedManagerIds;
 
@@ -19,7 +23,8 @@ class ExpenseReportVoter extends Voter
 
     protected function supports($attribute, $subject): bool
     {
-        return \in_array($attribute, [self::MANAGE_EXPENSE_REPORTS], true);
+        return self::MANAGE_EXPENSE_REPORTS === $attribute
+            || (self::ACCESS_EXPENSE_REPORT === $attribute && $subject instanceof ExpenseReport);
     }
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token): bool
@@ -32,6 +37,7 @@ class ExpenseReportVoter extends Voter
 
         return match ($attribute) {
             self::MANAGE_EXPENSE_REPORTS => $this->canManageExpenseReports($user),
+            self::ACCESS_EXPENSE_REPORT => $this->canAccessExpenseReport($user, $subject),
             default => throw new \LogicException('This code should not be reached!')
         };
     }
@@ -39,5 +45,13 @@ class ExpenseReportVoter extends Voter
     private function canManageExpenseReports(User $user): bool
     {
         return \in_array((string) $user->getId(), $this->authorizedManagerIds, true);
+    }
+
+    private function canAccessExpenseReport(User $user, ExpenseReport $expenseReport): bool
+    {
+        $owner = $expenseReport->getUser();
+
+        return (null !== $owner && $owner->getId() === $user->getId())
+            || $this->canManageExpenseReports($user);
     }
 }

@@ -134,6 +134,15 @@ class ExpenseReportWorkflowTest extends ExpenseReportApiTestCase
         $this->assertResponseStatus(403, $this->patch($this->stranger, $report, ['details' => self::INFLATED_DETAILS]));
     }
 
+    public function testOwnerAndManagerCanReadReportButStrangerCannot(): void
+    {
+        $report = $this->createReport($this->owner, ExpenseReportStatusEnum::SUBMITTED);
+
+        $this->assertResponseStatus(200, $this->show($this->owner, $report));
+        $this->assertResponseStatus(200, $this->show($this->manager, $report));
+        $this->assertResponseStatus(403, $this->show($this->stranger, $report));
+    }
+
     public function testEmptyPatchOnAccountedReportChangesNothing(): void
     {
         $report = $this->createReport($this->owner, ExpenseReportStatusEnum::ACCOUNTED);

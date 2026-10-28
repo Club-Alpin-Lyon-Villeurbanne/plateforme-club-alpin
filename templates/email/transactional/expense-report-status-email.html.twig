@@ -1,33 +1,94 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
+{# L'appelant échappe l'objet, l'auteur et les valideurs pour le HTML, objet du mail compris (repris en titre du corps HTML) ; la partie texte les garde tels quels. #}
+{% macro phrase_hors_sortie(objet, status, auteur, valideurs) -%}
+    Votre note de frais « {{ objet|raw }} »
+    {%- if status == 'submitted' %} est envoyée à {{ valideurs ? valideurs|raw : 'la trésorerie' }}
+    {%- elseif status == 'rejected' %} a été refusée{% if auteur %} par {{ auteur|raw }}{% endif %}
+    {%- elseif status == 'preapproved' %} a été validée{% if auteur %} par {{ auteur|raw }}{% endif %} et transmise à la trésorerie
+    {%- elseif status == 'approved' %} a été validée par la trésorerie
+    {%- elseif status == 'accounted' %} a été comptabilisée
+    {%- else %} a été validée par la trésorerie{% endif %}.
+{%- endmacro %}
+
 {% block subject -%}
+    {% import _self as notes -%}
+    {% if report.type.estHorsSortie -%}
+    {{ notes.phrase_hors_sortie(report.objet|e, status, auteur|default(null)|e, valideurs|default([])|join(', ', ' et ')|e) }}
+    {%- else -%}
     Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} 
-    {%- if status == 'submitted' %} est envoyée à la comptabilité
+    {%- if status == 'submitted' %} est envoyée à la trésorerie
     {%- elseif status == 'rejected' %} a été refusée
     {%- elseif status == 'accounted' %}  a été comptabilisée
-    {%- else %} a été acceptée{% endif %}.
+    {%- else %} a été validée par la trésorerie{% endif %}.
+    {%- endif %}
 {%- endblock %}
 
-{% block inner_html %}
+{% block inner_html %}{% import _self as notes %}{% if report.type.estHorsSortie %}
+<div>
+    <p>
+        {{ notes.phrase_hors_sortie(report.objet|e, status, auteur|default(null)|e, valideurs|default([])|join(', ', ' et ')|e) }}
+    </p>
+
+    {% if status == 'rejected' and report.statusComment %}
+        <p>Message laissé par {{ auteur|default('la trésorerie') }} :</p>
+        <p style="margin-left: 0; padding: 4px 12px; border-left: 3px solid #d1d5db; color: #374151;">«&nbsp;{{ report.statusComment|nl2br }}&nbsp;»</p>
+    {% endif %}
+    <p>
+        {% if status == 'rejected' %}
+        <a href="{{ lienCorrection }}" style="display: inline-block; padding: 8px 16px; border-radius: 6px; background-color: #0369a1; color: #ffffff; font-weight: bold; text-decoration: none;">Corriger ma note</a>
+        <a href="{{ lienNote }}" style="margin-left: 12px; color: #0369a1;">Voir ma note</a>
+        {% else %}
+        <a href="{{ lienNote }}" style="display: inline-block; padding: 8px 16px; border-radius: 6px; background-color: #0369a1; color: #ffffff; font-weight: bold; text-decoration: none;">Voir ma note</a>
+        {% endif %}
+    </p>
+    <h2>Détails</h2>
+    <ul>
+        <li>Demandeur : {{ report.user.firstname }} {{ report.user.lastname }}</li>
+        <li>Commission : {{ report.commission.title }}</li>
+        <li>{{ report.type.libelleDeLaDate }} : {{ report.dateDepense|date('d/m/Y') }}</li>
+        {% if report.lienFormation %}
+        <li>Formation : <a href="{{ report.lienFormation }}">{{ report.lienFormation }}</a></li>
+        {% endif %}
+    </ul>
+
+    <h2>Dépenses</h2>
+    <ul>
+    {% for ligne in lignes %}
+        <li>{{ ligne.montant }}{{ ligne.libelle ? ' - ' ~ ligne.libelle }}{{ ligne.detail ? ' (' ~ ligne.detail ~ ')' }}</li>
+    {% endfor %}
+    </ul>
+    <p><strong>Total :</strong> {{ formattedTotal }}{% if partRemboursable %}<br>
+        {{ partRemboursable }}{% endif %}</p>
+
+    <p>
+        {% if report.refundRequired %}
+        Remboursement demandé.
+        {% elseif report.refundRequired is not null %}
+        Don au club.
+        {% endif %}
+    </p>
+</div>
+{% else %}
 <div>
     <p>
         Votre note de frais {% if report.event and event_url is defined %}pour <a href="{{ event_url }}">"{{ report.event.titre }}"</a>{% elseif report.event %}pour "{{ report.event.titre }}"{% endif %}
         a été traitée et
-            {%- if status == 'submitted' %} est envoyée à la comptabilité
+            {%- if status == 'submitted' %} est envoyée à la trésorerie
             {%- elseif status == 'rejected' %} a été refusée
             {%- elseif status == 'accounted' %} a été intégrée dans l'outil de comptabilité et n'est donc plus modifiable
-            {%- else %} a été acceptée{% endif %}.
+            {%- else %} a été validée par la trésorerie{% endif %}.
     </p>
     
     {% if status == 'rejected' and report.statusComment %}
     <p>
-        Message laissé par la comptabilité : "{{ report.statusComment }}"
+        Message laissé par la trésorerie : "{{ report.statusComment }}"
     </p>
     {% endif %}
     <h2>Détails</h2>
     <ul>
         <li>Encadrant.e : {{ report.user.firstname }} {{ report.user.lastname }} </li>
-        {% if report.event.startDate %}<li>Date de la sortie : {{ report.event.startDate | date('d-m-Y') }}</li>{% endif %}
+        {% if report.event and report.event.startDate %}<li>Date de la sortie : {{ report.event.startDate | date('d-m-Y') }}</li>{% endif %}
         {% if report.updatedAt %}<li>Date de la soumission de la note de frais : {{ report.updatedAt | date('d-m-Y') }} </li>{% endif %}
     </ul>
 
@@ -142,29 +203,69 @@
      {% if status == 'submitted' %}
     <p>
         Si vous avez fait une erreur et souhaitez modifier votre note de frais,
-        merci d'en faire la demande auprès de la comptabilité :
+        merci d'en faire la demande auprès de la trésorerie :
         <a href="mailto:comptabilite@clubalpinlyon.fr">comptabilite@clubalpinlyon.fr</a>
         en indiquant le nom et la date de la sortie.
     </p>
     {% endif %}
 </div>
-{% endblock %}
+{% endif %}{% endblock %}
 
-{% block inner_txt %}
+{# Note hors sortie : partie texte sans échappement HTML, et sa première phrase n'est pas répétée. #}
+{% block txt %}{% if report.type.estHorsSortie %}{% autoescape false %}
+{{ block('inner_txt') }}
+{% endautoescape %}{% else %}{{ parent() }}{% endif %}{% endblock %}
+
+{% block inner_txt %}{% import _self as notes %}{% if report.type.estHorsSortie %}{% autoescape false %}
+{{ notes.phrase_hors_sortie(report.objet, status, auteur|default(null), valideurs|default([])|join(', ', ' et ')) }}
+
+{% if status == 'rejected' and report.statusComment %}
+Message laissé par {{ auteur|default('la trésorerie') }} :
+« {{ report.statusComment }} »
+
+{% endif %}
+{% if status == 'rejected' %}
+Corriger ma note : {{ lienCorrection }}
+{% endif %}
+Voir ma note : {{ lienNote }}
+
+- Demandeur : {{ report.user.firstname }} {{ report.user.lastname }}
+- Commission : {{ report.commission.title }}
+- {{ report.type.libelleDeLaDate }} : {{ report.dateDepense|date('d/m/Y') }}
+{% if report.lienFormation %}
+- Formation : {{ report.lienFormation }}
+{% endif %}
+
+DÉPENSES
+{% for ligne in lignes %}
+- {{ ligne.montant }}{{ ligne.libelle ? ' - ' ~ ligne.libelle }}{{ ligne.detail ? ' (' ~ ligne.detail ~ ')' }}
+{% endfor %}
+
+Total : {{ formattedTotal }}
+{% if partRemboursable %}
+{{ partRemboursable }}
+{% endif %}
+
+{% if report.refundRequired %}
+Remboursement demandé.
+{% elseif report.refundRequired is not null %}
+Don au club.
+{% endif %}
+{% endautoescape %}{% else %}
 Votre note de frais {% if report.event %}pour "{{ report.event.titre }}"{% endif %} 
-    {%- if status == 'submitted' %} est envoyée à la comptabilité
+    {%- if status == 'submitted' %} est envoyée à la trésorerie
     {%- elseif status == 'rejected' %} a été refusée
     {%- elseif status == 'accounted' %} a été intégrée dans l'outil de comptabilité et n'est donc plus modifiable
-    {%- else %} a été acceptée{% endif %}.
+    {%- else %} a été validée par la trésorerie{% endif %}.
 
     {% if report.event and event_url is defined %}({{ event_url }}){% endif %}
 
     {% if status == 'rejected' and report.statusComment %}
-Message laissé par la comptabilité : "{{ report.statusComment }}"
+Message laissé par la trésorerie : "{{ report.statusComment }}"
     {% endif %}
 
 - Encadrant.e : {{ report.user.firstname }} {{ report.user.lastname }}
-{% if report.event.startDate %}- Date de la sortie : {{ report.event.startDate | date('d-m-Y') }}{% endif %}
+{% if report.event and report.event.startDate %}- Date de la sortie : {{ report.event.startDate | date('d-m-Y') }}{% endif %}
 {% if report.updatedAt %}- Date de la soumission de la note de frais : {{ report.updatedAt | date('d-m-Y') }}{% endif %}
 - Type : {% if report.refundRequired %}Demande de remboursement par virement{% else %}Abandon de frais{% endif %}
 
@@ -249,6 +350,6 @@ Don au club (un reçu fiscal vous sera envoyé en fin d'année).
     {% endif %}
 
 Si vous avez fait une erreur et souhaitez modifier votre note de frais, 
-merci d'en faire la demande auprès de la comptabilité : comptabilite@clubalpinlyon.fr 
+merci d'en faire la demande auprès de la trésorerie : comptabilite@clubalpinlyon.fr 
 en indiquant le nom et la date de la sortie.
-{% endblock %}
+{% endif %}{% endblock %}

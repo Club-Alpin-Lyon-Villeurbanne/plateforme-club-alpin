@@ -41,6 +41,10 @@ class ExpenseReportCloneProcessor implements ProcessorInterface
             throw new AccessDeniedHttpException('User not authenticated');
         }
 
+        if ($originalReport->getType()->estHorsSortie()) {
+            throw new AccessDeniedHttpException('Une note hors sortie ne se clone pas.');
+        }
+
         // Réutiliser la note d'un co-encadrant : réservé aux encadrants de la même sortie.
         $event = $originalReport->getEvent();
         if (!$this->isEncadrantOf($event, $currentUser) || !$this->isEncadrantOf($event, $originalReport->getUser())) {
