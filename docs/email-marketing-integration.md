@@ -21,6 +21,12 @@ Le circuit de bienvenue historique (synchronisation à la création/confirmation
 supprimé en décembre 2025 ; il est resté en panne, sans que personne ne s'en aperçoive, jusqu'à ce
 remplacement.
 
+Seul l'appel à la création manuelle d'une fiche avait survécu, jusqu'en octobre 2026 : un encadrant
+qui créait la fiche d'un licencié d'un autre club pour l'inscrire à une sortie lui faisait envoyer
+le mail de bienvenue du club. Ces fiches (profils 3 et 4) n'entrent dans un circuit que le jour où
+la personne prend sa licence au club et passe en profil 1 (voir plus bas la frontière
+nouveau/renouvellement).
+
 MailerLite n'est déployé qu'à Lyon. Chambéry et Clermont partagent ce dépôt et son
 `clevercloud/cron.json`, mais n'ont pas de compte MailerLite : la commande le détecte (pas de
 `MAILERLITE_API_KEY`) et ne fait rien, sans faire échouer le cron.
@@ -155,8 +161,9 @@ sans signal. C'est l'état voulu du circuit `renouvellements` depuis septembre 2
 oublier (voir « Mise en production »).
 
 **La frontière nouveau/renouvellement est la date de création de la fiche.** Une carte découverte
-ou un licencié d'un autre club qui prend sa première licence annuelle au club a déjà une fiche :
-il est traité en renouvellement.
+ou un licencié d'un autre club qui prend sa première licence annuelle au club a déjà une fiche, que
+la synchro FFCAM reprend avec sa date de création : il est traité en renouvellement si la fiche
+date d'une saison précédente, en nouvel adhérent si elle a été créée pendant la saison.
 
 **L'alerte de silence se désarme dès le premier adhérent traité de la saison.** Elle répond à
 « rien n'est jamais parti cette saison », pas à « ça s'est arrêté en cours de route ». Une panne

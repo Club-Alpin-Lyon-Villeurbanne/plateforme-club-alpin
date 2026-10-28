@@ -16,7 +16,7 @@ class MailerLiteServiceTest extends TestCase
     private HttpClientInterface $httpClient;
     private LoggerInterface $logger;
     private string $apiKey = 'test-api-key-12345';
-    private string $welcomeGroupId = 'group-123';
+    private string $groupId = 'group-123';
     private MailerLiteService $service;
 
     protected function setUp(): void
@@ -27,18 +27,16 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId,
             'production'
         );
     }
 
-    public function testSyncNewMembersWithoutApiKey(): void
+    public function testPushToGroupWithoutApiKey(): void
     {
         $service = new MailerLiteService(
             $this->httpClient,
             $this->logger,
             null,
-            $this->welcomeGroupId,
             'production'
         );
 
@@ -49,23 +47,15 @@ class MailerLiteServiceTest extends TestCase
             ->method('info')
             ->with($this->stringContains('MailerLite sync disabled'));
 
-        $result = $service->syncNewMembers([$user]);
+        $result = $service->pushToGroup($this->groupId, [$user]);
 
         $this->assertEquals(1, $result['total']);
         $this->assertEquals(1, $result['skipped']);
         $this->assertEquals(0, $result['imported']);
     }
 
-    public function testSyncNewMembersWithoutGroupId(): void
+    public function testPushToGroupWithoutGroupId(): void
     {
-        $service = new MailerLiteService(
-            $this->httpClient,
-            $this->logger,
-            $this->apiKey,
-            null,
-            'production'
-        );
-
         $user = new User(1);
         $user->setEmail('test@example.com');
 
@@ -73,14 +63,14 @@ class MailerLiteServiceTest extends TestCase
             ->method('info')
             ->with($this->stringContains('MailerLite sync disabled'));
 
-        $result = $service->syncNewMembers([$user]);
+        $result = $this->service->pushToGroup('', [$user]);
 
         $this->assertEquals(1, $result['skipped']);
     }
 
-    public function testSyncNewMembersWithEmptyUserArray(): void
+    public function testPushToGroupWithEmptyUserArray(): void
     {
-        $result = $this->service->syncNewMembers([]);
+        $result = $this->service->pushToGroup($this->groupId, []);
 
         $this->assertEquals(0, $result['total']);
         $this->assertEquals(0, $result['imported']);
@@ -89,7 +79,7 @@ class MailerLiteServiceTest extends TestCase
         $this->assertEquals(0, $result['skipped']);
     }
 
-    public function testSyncNewMembersFiltersUsersWithoutEmail(): void
+    public function testPushToGroupFiltersUsersWithoutEmail(): void
     {
         $user1 = new User(1);
         $user1->setEmail('user1@example.com');
@@ -114,18 +104,17 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId,
             'production'
         );
 
-        $result = $this->service->syncNewMembers([$user1, $user2, $user3]);
+        $result = $this->service->pushToGroup($this->groupId, [$user1, $user2, $user3]);
 
         $this->assertEquals(3, $result['total']);
         $this->assertEquals(2, $result['skipped']);
         $this->assertEquals(1, $result['imported']);
     }
 
-    public function testSyncNewMembersAllUsersWithoutEmail(): void
+    public function testPushToGroupAllUsersWithoutEmail(): void
     {
         $user1 = new User(1);
         $user1->setEmail(null);
@@ -133,14 +122,14 @@ class MailerLiteServiceTest extends TestCase
         $user2 = new User(2);
         $user2->setEmail('');
 
-        $result = $this->service->syncNewMembers([$user1, $user2]);
+        $result = $this->service->pushToGroup($this->groupId, [$user1, $user2]);
 
         $this->assertEquals(2, $result['total']);
         $this->assertEquals(2, $result['skipped']);
         $this->assertEquals(0, $result['imported']);
     }
 
-    public function testSyncNewMembersSuccessfulImport(): void
+    public function testPushToGroupSuccessfulImport(): void
     {
         $user = new User(1);
         $user->setEmail('test@example.com');
@@ -161,18 +150,17 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId,
             'production'
         );
 
-        $result = $this->service->syncNewMembers([$user]);
+        $result = $this->service->pushToGroup($this->groupId, [$user]);
 
         $this->assertEquals(1, $result['total']);
         $this->assertEquals(1, $result['imported']);
         $this->assertEquals(0, $result['failed']);
     }
 
-    public function testSyncNewMembersWithMultipleUsers(): void
+    public function testPushToGroupWithMultipleUsers(): void
     {
         $users = [];
         for ($i = 0; $i < 5; ++$i) {
@@ -197,17 +185,16 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId,
             'production'
         );
 
-        $result = $this->service->syncNewMembers($users);
+        $result = $this->service->pushToGroup($this->groupId, $users);
 
         $this->assertEquals(5, $result['total']);
         $this->assertEquals(5, $result['imported']);
     }
 
-    public function testSyncNewMembersWithBatching(): void
+    public function testPushToGroupWithBatching(): void
     {
         $users = [];
         // Create 250 users to test batching (BATCH_SIZE is 100)
@@ -252,17 +239,16 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId,
             'production'
         );
 
-        $result = $this->service->syncNewMembers($users);
+        $result = $this->service->pushToGroup($this->groupId, $users);
 
         $this->assertEquals(250, $result['total']);
         $this->assertEquals(250, $result['imported']);
     }
 
-    public function testSyncNewMembersHandlesApiError(): void
+    public function testPushToGroupHandlesApiError(): void
     {
         $user = new User(1);
         $user->setEmail('test@example.com');
@@ -276,17 +262,16 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId,
             'production'
         );
 
-        $result = $this->service->syncNewMembers([$user]);
+        $result = $this->service->pushToGroup($this->groupId, [$user]);
 
         $this->assertEquals(1, $result['failed']);
         $this->assertEquals(0, $result['imported']);
     }
 
-    public function testSyncNewMembersLogsResults(): void
+    public function testPushToGroupLogsResults(): void
     {
         $user = new User(1);
         $user->setEmail('test@example.com');
@@ -307,17 +292,16 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId,
             'production'
         );
 
         $this->logger->expects($this->atLeastOnce())
             ->method('info');
 
-        $this->service->syncNewMembers([$user]);
+        $this->service->pushToGroup($this->groupId, [$user]);
     }
 
-    public function testSyncNewMembersWithMixedValidAndInvalidEmails(): void
+    public function testPushToGroupWithMixedValidAndInvalidEmails(): void
     {
         $user1 = new User(1);
         $user1->setEmail('valid1@example.com');
@@ -342,18 +326,17 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId,
             'production'
         );
 
-        $result = $this->service->syncNewMembers([$user1, $user2, $user3]);
+        $result = $this->service->pushToGroup($this->groupId, [$user1, $user2, $user3]);
 
         $this->assertEquals(3, $result['total']);
         $this->assertEquals(1, $result['skipped']);
         $this->assertEquals(2, $result['imported']);
     }
 
-    public function testSyncNewMembersWithPartialResults(): void
+    public function testPushToGroupWithPartialResults(): void
     {
         $users = [];
         for ($i = 0; $i < 3; ++$i) {
@@ -378,11 +361,10 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId,
             'production'
         );
 
-        $result = $this->service->syncNewMembers($users);
+        $result = $this->service->pushToGroup($this->groupId, $users);
 
         $this->assertEquals(3, $result['total']);
         $this->assertEquals(2, $result['imported']);
@@ -390,7 +372,7 @@ class MailerLiteServiceTest extends TestCase
         $this->assertEquals(0, $result['failed']);
     }
 
-    public function testSyncNewMembersConfigurationLogging(): void
+    public function testPushToGroupConfigurationLogging(): void
     {
         $user = new User(1);
         $user->setEmail('test@example.com');
@@ -409,11 +391,10 @@ class MailerLiteServiceTest extends TestCase
             $this->httpClient,
             $this->logger,
             $this->apiKey,
-            $this->welcomeGroupId,
             'production'
         );
 
-        $result = $this->service->syncNewMembers([$user]);
+        $result = $this->service->pushToGroup($this->groupId, [$user]);
 
         // Verify the sync was successful
         $this->assertEquals(1, $result['total']);
@@ -439,8 +420,8 @@ class MailerLiteServiceTest extends TestCase
             return new MockResponse('{}');
         });
 
-        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '123', 'staging');
-        $results = $service->syncNewMembers([$this->makeUser('test@example.com')]);
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', 'staging');
+        $results = $service->pushToGroup('123', [$this->makeUser('test@example.com')]);
 
         $this->assertSame(0, $requests, 'Aucune requête ne doit partir hors production');
         $this->assertSame(1, $results['skipped']);
@@ -455,8 +436,8 @@ class MailerLiteServiceTest extends TestCase
             return new MockResponse('{"data":{"total":1,"imported":1,"updated":0,"errored":0}}');
         });
 
-        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '123', 'production');
-        $service->syncNewMembers([$this->makeUser('test@example.com')]);
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', 'production');
+        $service->pushToGroup('123', [$this->makeUser('test@example.com')]);
 
         $this->assertSame(1, $requests);
     }
@@ -470,7 +451,7 @@ class MailerLiteServiceTest extends TestCase
             return new MockResponse('{"data":{"total":1,"imported":1,"updated":0,"errored":0}}');
         });
 
-        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', 'production');
         $service->pushToGroup('999', [$this->makeUser('a@example.com')]);
 
         $this->assertStringContainsString('/groups/999/subscribers/import', $urls[0]);
@@ -485,7 +466,7 @@ class MailerLiteServiceTest extends TestCase
             return new MockResponse('{"data":{"total":1,"imported":1,"updated":0,"errored":0}}');
         });
 
-        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', 'production');
         $results = $service->pushToGroup('999', [
             $this->makeUser('doublon.690012345678-famille@example.com'),
             $this->makeUser('vrai@example.com'),
@@ -508,7 +489,7 @@ class MailerLiteServiceTest extends TestCase
             return new MockResponse('', ['http_code' => 204]);
         });
 
-        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', 'production');
 
         $this->assertTrue($service->removeFromGroup('a@example.com', '999'));
         $this->assertCount(2, $calls);
@@ -525,7 +506,7 @@ class MailerLiteServiceTest extends TestCase
             return new MockResponse('{"message":"Not found"}', ['http_code' => 404]);
         });
 
-        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', 'production');
 
         $this->assertTrue($service->removeFromGroup('inconnu@example.com', '999'));
         $this->assertSame(1, $calls, 'Aucun DELETE ne doit suivre un abonne introuvable');
@@ -540,7 +521,7 @@ class MailerLiteServiceTest extends TestCase
             return new MockResponse('{"message":"Internal Server Error"}', ['http_code' => 500]);
         });
 
-        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', 'production');
 
         $this->assertFalse($service->removeFromGroup('a@example.com', '999'));
         $this->assertSame(1, $calls, 'Aucun DELETE ne doit suivre une erreur serveur sur la recherche');
@@ -555,7 +536,7 @@ class MailerLiteServiceTest extends TestCase
             return new MockResponse('{}');
         });
 
-        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '123', 'staging');
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', 'staging');
 
         $this->assertTrue($service->removeFromGroup('test@example.com', '999'));
         $this->assertSame(0, $requests, 'Aucune requête ne doit partir hors production');
@@ -574,7 +555,7 @@ class MailerLiteServiceTest extends TestCase
             ]), ['http_code' => 201]);
         });
 
-        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', 'production');
         $results = $service->pushToGroup('999', [
             $this->makeUser('a@example.com'),
             $this->makeUser('b@example.com'),
@@ -593,7 +574,7 @@ class MailerLiteServiceTest extends TestCase
             return new MockResponse(json_encode(['message' => 'ok']), ['http_code' => 200]);
         });
 
-        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', '111', 'production');
+        $service = new MailerLiteService($httpClient, new NullLogger(), 'cle-api', 'production');
         $results = $service->pushToGroup('999', [$this->makeUser('a@example.com')]);
 
         $this->assertSame(0, $results['imported']);
