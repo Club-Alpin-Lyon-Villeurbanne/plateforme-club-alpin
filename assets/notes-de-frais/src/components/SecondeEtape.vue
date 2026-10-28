@@ -15,7 +15,8 @@
 
     <p v-if="delaiDepasse" role="alert" class="tw-border-b tw-border-red-100 tw-bg-red-50 tw-px-8 tw-py-3 tw-text-sm tw-text-red-700">{{ delaiDepasse }}</p>
 
-    <div class="tw-px-8 tw-py-6">
+    <!-- Figée pendant l'envoi : une saisie faite pendant l'appel ne partirait pas. -->
+    <fieldset :disabled="envoiEnCours" class="tw-min-w-0 tw-px-8 tw-py-6">
       <div ref="conteneurLignes" class="tw-divide-y tw-divide-gray-100">
         <template v-for="(ligne, index) in lignes" :key="ligne.id">
           <LigneFormation
@@ -95,7 +96,7 @@
           ></textarea>
         </div>
       </div>
-    </div>
+    </fieldset>
 
     <!-- Reçoit le focus après un refus : le Tab suivant repart des boutons. -->
     <div id="f-refus" tabindex="-1" class="tw-px-8 tw-pb-3 tw-text-right tw-text-sm tw-text-red-600 focus:tw-outline-none" aria-live="polite">
