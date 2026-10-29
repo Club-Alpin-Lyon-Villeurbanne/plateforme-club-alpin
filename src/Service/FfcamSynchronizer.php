@@ -231,6 +231,7 @@ class FfcamSynchronizer
                         // update user
                         if (
                             !empty($parsedUser->getEmail())
+                            && !empty($existingUser->getEmail())
                             && $parsedUser->getEmail() !== $existingUser->getEmail()
                             && empty($existingUser->getRadiationDate())
                         ) {
@@ -352,7 +353,7 @@ class FfcamSynchronizer
         }
 
         // Un e-mail vide côté FFCAM ne doit pas effacer celui du site.
-        if (null !== $parsedUser->getEmail()) {
+        if (!empty($parsedUser->getEmail())) {
             $existingUser->setEmail($parsedUser->getEmail());
         }
 

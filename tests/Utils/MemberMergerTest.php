@@ -138,28 +138,6 @@ class MemberMergerTest extends WebTestCase
         $this->assertEquals($newDateAdhesion, $mergedUser->getJoinDate());
     }
 
-    public function testMergeExistingMembersPreservesEmailWhenNewIsNull(): void
-    {
-        $entityManager = static::getContainer()->get('doctrine')->getManager();
-        $memberMerger = static::getContainer()->get(MemberMerger::class);
-
-        $user1 = $this->signup();
-        $email = $user1->getEmail();
-
-        $user2 = $this->signup();
-        $user2->setEmail(null);
-        $entityManager->flush();
-
-        $newLicense = $user2->getCafnum();
-
-        $memberMerger->mergeExistingMembers($user1->getCafnum(), $newLicense);
-
-        $mergedUser = $entityManager->getRepository(User::class)->findOneByLicenseNumber($newLicense);
-
-        $this->assertSame($user1->getId(), $mergedUser->getId());
-        $this->assertSame($email, $mergedUser->getEmail());
-    }
-
     public function testMergeNewMemberPreservesDateAdhesionWhenNewIsNull(): void
     {
         $entityManager = static::getContainer()->get('doctrine')->getManager();

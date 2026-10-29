@@ -153,7 +153,7 @@ class MemberMerger
         ;
 
         // Un e-mail vide côté FFCAM ne doit pas effacer celui de la fiche gardée.
-        if (null !== $newCafUser->getEmail()) {
+        if (!empty($newCafUser->getEmail())) {
             $oldCafUser->setEmail($newCafUser->getEmail());
         }
 

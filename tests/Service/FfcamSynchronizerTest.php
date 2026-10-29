@@ -122,10 +122,14 @@ class FfcamSynchronizerTest extends WebTestCase
     {
         $identifiant = rand(100000000000, 999999999999);
         $email = 'test-' . bin2hex(random_bytes(10)) . '@clubalpinlyon.fr';
+        $lastname = $this->faker->lastName();
+        $firstname = $this->faker->firstName();
 
         $existingUser = $this->signup();
         $existingUser
             ->setCafnum($identifiant)
+            ->setFirstname($firstname)
+            ->setLastname($lastname)
             ->setEmail($email);
 
         $em = self::getContainer()->get(EntityManagerInterface::class);
@@ -135,8 +139,8 @@ class FfcamSynchronizerTest extends WebTestCase
         $filePath = FfcamTestHelper::generateFile([
             [
                 'cafnum' => $identifiant,
-                'lastname' => $existingUser->getLastname(),
-                'firstname' => $existingUser->getFirstname(),
+                'lastname' => $lastname,
+                'firstname' => $firstname,
                 'email' => '',
             ],
         ]);
@@ -147,9 +151,73 @@ class FfcamSynchronizerTest extends WebTestCase
 
         $existingUser = self::getContainer()->get(UserRepository::class)->find($existingUser->getId());
 
+        $this->assertSame(1, $rapports[0]['updated']);
         $this->assertSame($email, $existingUser->getEmail());
         $this->assertFalse($journal->hasWarningThatContains('replaces database email'));
         $this->assertTrue($journal->hasWarningThatContains('FFCAM email is empty'));
+    }
+
+    public function testSynchronizeMergesNewLicenceWithoutFfcamEmailAndKeepsSiteEmail(): void
+    {
+        $ancienNumero = rand(100000000000, 999999999999);
+        $nouveauNumero = rand(100000000000, 999999999999);
+        $email = 'test-' . bin2hex(random_bytes(10)) . '@clubalpinlyon.fr';
+        $lastname = $this->faker->lastName();
+        $firstname = $this->faker->firstName();
+
+        $existingUser = $this->signup();
+        $existingUser
+            ->setCafnum($ancienNumero)
+            ->setFirstname($firstname)
+            ->setLastname($lastname)
+            ->setBirthdate(new \DateTimeImmutable('1985-03-14'))
+            ->setEmail($email);
+
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        $em->persist($existingUser);
+        $em->flush();
+
+        $filePath = FfcamTestHelper::generateFile([
+            [
+                'cafnum' => $nouveauNumero,
+                'lastname' => $lastname,
+                'firstname' => $firstname,
+                'birthday' => '1985-03-14',
+                'email' => '',
+            ],
+        ]);
+
+        self::getContainer()->get(FfcamSynchronizer::class)->synchronize($filePath);
+
+        $existingUser = self::getContainer()->get(UserRepository::class)->find($existingUser->getId());
+
+        $this->assertEquals($nouveauNumero, $existingUser->getCafnum());
+        $this->assertSame($email, $existingUser->getEmail());
+    }
+
+    public function testSynchronizeDoesNotTreatUnderscoreAsWildcardInEmails(): void
+    {
+        $jeton = bin2hex(random_bytes(8));
+
+        $autreAdherent = $this->signup();
+        $autreAdherent->setEmail('a.' . $jeton . '@clubalpinlyon.fr');
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        $em->flush();
+
+        $identifiant = rand(100000000000, 999999999999);
+        $filePath = FfcamTestHelper::generateFile([
+            [
+                'cafnum' => $identifiant,
+                'lastname' => $this->faker->lastName(),
+                'firstname' => $this->faker->firstName(),
+                'email' => 'a_' . $jeton . '@clubalpinlyon.fr',
+            ],
+        ]);
+
+        self::getContainer()->get(FfcamSynchronizer::class)->synchronize($filePath);
+
+        $user = self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber($identifiant);
+        $this->assertSame('a_' . $jeton . '@clubalpinlyon.fr', $user->getEmail());
     }
 
     public function testSynchronizeSetsLicenceExpiredFlagOnly(): void
