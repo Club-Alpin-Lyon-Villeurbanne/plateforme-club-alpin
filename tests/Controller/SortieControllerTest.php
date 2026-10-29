@@ -532,8 +532,58 @@ class SortieControllerTest extends WebTestCase
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $participant->getNickname(), $participant->getEmail()));
         $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Acceptée] Votre demande d\'inscription à ' . $event->getTitre() . ' du ' . $event->getStartDate()->format('d/m/Y'));
+        
         $this->assertEmailTextBodyContains($emails[0], 'accepté(e)');
+        $this->assertEmailTextBodyContains($emails[0], 'Heure de rendez-vous : ' . $event->getStartDate()->format('H:i'));
+        $this->assertEmailTextBodyContains($emails[0], 'Lieu de rendez-vous : Hotel de ville');
+
         $this->assertEmailHtmlBodyContains($emails[0], 'accepté(e)');
+        $this->assertEmailHtmlBodyContains($emails[0], '<b>Heure de rendez-vous :</b> ' . $event->getStartDate()->format('H:i'));
+        $this->assertEmailHtmlBodyContains($emails[0], '<b>Lieu de rendez-vous :</b> Hotel de ville');
+    }
+
+    public function testSortieJoinAutoAcceptEnvoieMailDeConfirmationAvecRendezVous()
+    {
+        $userOwner = $this->signup();
+        $event = $this->createEvent($userOwner);
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($userOwner);
+        $event->setAutoAccept(true);
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+
+        $participant = $this->signup();
+        $this->signin($participant);
+
+        $this->client->request('POST', sprintf('/sortie/%d/rejoindre', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'join_event'),
+            'confirm' => 'on',
+            'message' => 'Bonjour, je participe !',
+        ]);
+        $this->assertResponseStatusCodeSame(302);
+
+        // 2 mails : un aux encadrants, un au participant accepté
+        $emails = $this->getMailerMessages();
+        $this->assertCount(2, $emails);
+
+        $emailParticipant = null;
+        foreach ($emails as $email) {
+            if (str_contains($email->getSubject(), '[Acceptée]')) {
+                $emailParticipant = $email;
+            }
+        }
+        $this->assertNotNull($emailParticipant, 'Le participant doit recevoir un mail de confirmation.');
+
+        $recipients = array_map(fn ($address) => $address->getAddress(), $emailParticipant->getTo());
+        $recipients = array_merge($recipients, array_map(fn ($address) => $address->getAddress(), $emailParticipant->getBcc()));
+        $this->assertContains($participant->getEmail(), $recipients);
+        
+        $this->assertEmailTextBodyContains($emails[0], 'accepté(e)');
+        $this->assertEmailTextBodyContains($emails[0], 'Heure de rendez-vous : ' . $event->getStartDate()->format('H:i'));
+        $this->assertEmailTextBodyContains($emails[0], 'Lieu de rendez-vous : Hotel de ville');
+
+        $this->assertEmailHtmlBodyContains($emails[0], 'accepté(e)');
+        $this->assertEmailHtmlBodyContains($emails[0], '<b>Heure de rendez-vous :</b> ' . $event->getStartDate()->format('H:i'));
+        $this->assertEmailHtmlBodyContains($emails[0], '<b>Lieu de rendez-vous :</b> Hotel de ville');
     }
 
     public function testSortieUpdateInscriptionsRefuse()

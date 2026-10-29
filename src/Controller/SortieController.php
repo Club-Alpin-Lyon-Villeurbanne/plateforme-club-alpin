@@ -653,6 +653,8 @@ class SortieController extends AbstractController
                 'event_name' => $event->getTitre(),
                 'commission' => $event->getCommission()->getTitle(),
                 'event_date' => $event->getStartDate()->format('d/m/Y'),
+                'event_rdv' => $event->getRdv(),
+                'event_rdv_time' => $event->getStartDate()?->format('H:i'),
             ];
             if ($event->hasPaymentForm() && $event->hasPaymentSendMail()) {
                 $context['hello_asso_url'] = $event->getPaymentUrl();
@@ -1261,6 +1263,8 @@ class SortieController extends AbstractController
                         'event_url' => $evtUrl,
                         'event_date' => $evtDate,
                         'commission' => $commissionTitle,
+                        'event_rdv' => $event->getRdv(),
+                        'event_rdv_time' => $event->getStartDate()?->format('H:i'),
                     ];
                     if ($event->hasPaymentForm() && $event->hasPaymentSendMail()) {
                         $params['hello_asso_url'] = $event->getPaymentUrl();
