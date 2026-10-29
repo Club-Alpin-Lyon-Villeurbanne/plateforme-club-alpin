@@ -118,6 +118,40 @@ class FfcamSynchronizerTest extends WebTestCase
         $this->assertEquals('hashedpassword', $existingUser->getPassword());
     }
 
+    public function testSynchronizeKeepsSiteEmailWhenFfcamEmailIsEmpty(): void
+    {
+        $identifiant = rand(100000000000, 999999999999);
+        $email = 'test-' . bin2hex(random_bytes(10)) . '@clubalpinlyon.fr';
+
+        $existingUser = $this->signup();
+        $existingUser
+            ->setCafnum($identifiant)
+            ->setEmail($email);
+
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        $em->persist($existingUser);
+        $em->flush();
+
+        $filePath = FfcamTestHelper::generateFile([
+            [
+                'cafnum' => $identifiant,
+                'lastname' => $existingUser->getLastname(),
+                'firstname' => $existingUser->getFirstname(),
+                'email' => '',
+            ],
+        ]);
+
+        $journal = new TestHandler();
+        $rapports = [];
+        $this->synchroniseurObserve($journal, $rapports)->synchronize($filePath);
+
+        $existingUser = self::getContainer()->get(UserRepository::class)->find($existingUser->getId());
+
+        $this->assertSame($email, $existingUser->getEmail());
+        $this->assertFalse($journal->hasWarningThatContains('replaces database email'));
+        $this->assertTrue($journal->hasWarningThatContains('FFCAM email is empty'));
+    }
+
     public function testSynchronizeSetsLicenceExpiredFlagOnly(): void
     {
         $identifiant1 = rand(100000000000, 999999999999);

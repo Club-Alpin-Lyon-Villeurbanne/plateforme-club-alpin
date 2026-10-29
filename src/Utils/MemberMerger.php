@@ -146,12 +146,16 @@ class MemberMerger
             ->setAlerteRenouveler($newCafUser->getAlerteRenouveler())
             ->setRadiationDate($newCafUser->getRadiationDate())
             ->setRadiationReason($newCafUser->getRadiationReason())
-            ->setEmail($newCafUser->getEmail())
             ->setValidityDuration($newCafUser->getValidityDuration())
             ->setDiscoveryEndDatetime($newCafUser->getDiscoveryEndDatetime())
             ->setNomade($newCafUser->getNomade())
             ->setProfileType($newCafUser->getProfileType())
         ;
+
+        // Un e-mail vide côté FFCAM ne doit pas effacer celui de la fiche gardée.
+        if (null !== $newCafUser->getEmail()) {
+            $oldCafUser->setEmail($newCafUser->getEmail());
+        }
 
         // Mettre à jour la date d'adhésion uniquement si elle est valide
         // Cela évite d'écraser une date existante avec NULL lors du renouvellement
