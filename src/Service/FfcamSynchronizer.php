@@ -230,7 +230,9 @@ class FfcamSynchronizer
                     if ($existingUser instanceof User) {
                         // update user
                         if (
-                            $parsedUser->getEmail() !== $existingUser->getEmail()
+                            !empty($parsedUser->getEmail())
+                            && !empty($existingUser->getEmail())
+                            && $parsedUser->getEmail() !== $existingUser->getEmail()
                             && empty($existingUser->getRadiationDate())
                         ) {
                             $warningMessage = sprintf('%s: FFCAM email (%s) replaces database email (%s) (which was different)', $existingUser->getCafnum(), $parsedUser->getEmail(), $existingUser->getEmail());
@@ -328,7 +330,6 @@ class FfcamSynchronizer
             ->setCafnumParent($parsedUser->getCafnumParent())
             ->setTel($parsedUser->getTel())
             ->setTel2($parsedUser->getTel2())
-            ->setEmail($parsedUser->getEmail())
             ->setAdresse($parsedUser->getAdresse())
             ->setCp($parsedUser->getCp())
             ->setVille($parsedUser->getVille())
@@ -349,6 +350,11 @@ class FfcamSynchronizer
             $existingUser
                 ->setDoitRenouveler(true)
             ;
+        }
+
+        // Un e-mail vide côté FFCAM ne doit pas effacer celui du site.
+        if (!empty($parsedUser->getEmail())) {
+            $existingUser->setEmail($parsedUser->getEmail());
         }
 
         // Ne pas effacer la date d'adhésion quand l'adhésion parsée est expirée (valeur nulle).

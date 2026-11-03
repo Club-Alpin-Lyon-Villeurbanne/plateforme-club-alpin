@@ -203,14 +203,11 @@ SQL;
                 'excludeCafnum' => $excludeCafnum,
             ])
         ;
+        // Sans e-mail FFCAM, la fiche du site garde le sien : on ne peut pas les comparer.
         if (null !== $email) {
             $qb
                 ->andWhere('u.email = :email')
                 ->setParameter('email', $email)
-            ;
-        } else {
-            $qb
-                ->andWhere('u.email IS NULL')
             ;
         }
 
@@ -223,7 +220,7 @@ SQL;
     public function findDuplicateEmailUser(string $email, ?string $excludeCafnum = null)
     {
         return $this->createQueryBuilder('u')
-            ->where('u.email like :email')
+            ->where('u.email = :email')
             ->andWhere('u.cafnum != :excludeCafnum')
             ->orderBy('u.createdAt', 'DESC')
             ->setMaxResults(1)
