@@ -7,6 +7,7 @@ use App\Entity\EventUnrecognizedPayer;
 use App\Entity\Evt;
 use App\Entity\ExpenseReport;
 use App\Entity\TransportModeEnum;
+use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Helper\CarbonCostHelper;
 use App\Messenger\Message\SortiePubliee;
@@ -933,6 +934,84 @@ class SortieControllerTest extends WebTestCase
         $em->refresh($event);
 
         $this->assertSame(1825.0, $event->getCoutCarbonePerPerson(), 'perPerson inchangé par un retrait');
+    }
+
+    public function testDesinscriptionPrevientLOrganisateurNonEncadrantEtLEncadrement(): void
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+
+        $organisateur = $this->signup();
+        $event = $this->createEvent($organisateur);
+        // l'organisateur n'encadre pas : il est seulement bénévole d'encadrement
+        $event->getParticipation($organisateur)->setRole(EventParticipation::ROLE_BENEVOLE);
+        $encadrant = $this->signup();
+        $event->addParticipation($encadrant, EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE);
+        $participant = $this->signup();
+        $event->addParticipation($participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $em->flush();
+
+        $this->seDesinscrire($event, $participant);
+
+        $destinataires = array_map(
+            fn ($email) => $email->getTo()[0]->getAddress(),
+            $this->getMailerMessages(),
+        );
+        sort($destinataires);
+        $attendus = [$organisateur->getEmail(), $encadrant->getEmail()];
+        sort($attendus);
+        $this->assertSame($attendus, $destinataires);
+
+        $email = $this->getMailerMessages()[0];
+        $this->assertEmailHeaderSame($email, 'Subject', sprintf(
+            '[%s][Désinscription] %s %s pour %s du %s',
+            $event->getCommission()->getTitle(),
+            $participant->getFirstname(),
+            $participant->getLastname(),
+            $event->getTitre(),
+            $event->getStartDate()->format('d/m/Y'),
+        ));
+    }
+
+    public function testDesinscriptionPrevientUneSeuleFoisLOrganisateurEncadrant(): void
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+
+        // createEvent inscrit l'organisateur comme encadrant de la sortie
+        $organisateur = $this->signup();
+        $event = $this->createEvent($organisateur);
+        $participant = $this->signup();
+        $event->addParticipation($participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_NON_CONFIRME);
+        $em->flush();
+
+        $this->seDesinscrire($event, $participant);
+
+        $emails = $this->getMailerMessages();
+        $this->assertCount(1, $emails);
+        $this->assertSame($organisateur->getEmail(), $emails[0]->getTo()[0]->getAddress());
+    }
+
+    public function testDesinscriptionDUneParticipationRefuseeNePrevientPersonne(): void
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+
+        $organisateur = $this->signup();
+        $event = $this->createEvent($organisateur);
+        $participant = $this->signup();
+        $event->addParticipation($participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_REFUSE);
+        $em->flush();
+
+        $this->seDesinscrire($event, $participant);
+
+        $this->assertCount(0, $this->getMailerMessages());
+    }
+
+    private function seDesinscrire(Evt $event, User $participant): void
+    {
+        $this->signin($participant);
+        $this->client->request('POST', sprintf('/sortie/remove-participant/%d', $event->getParticipation($participant)->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'remove_participant'),
+        ]);
+        $this->assertResponseStatusCodeSame(302);
     }
 
     /**
