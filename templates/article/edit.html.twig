@@ -297,12 +297,22 @@
                     return;
                 }
 
+                // retirer tout de suite l'ancienne liste : ses sorties ne sont pas celles de la commission choisie
+                champSortieLiee.innerHTML = '<p class="mini"><br>Chargement des sorties…</p>';
+                appliquerTypeArticle();
+
                 fetch('/sorties-par-commission?commission=' + encodeURIComponent(commissionSelect.value), {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
-                .then(response => response.text())
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status);
+                    }
+
+                    return response.text();
+                })
                 .then(html => {
                     // ignorer la réponse d'une commission entre-temps remplacée par une autre
                     if (numeroRequete !== derniereRequeteSorties) {
@@ -310,9 +320,13 @@
                     }
                     champSortieLiee.innerHTML = html;
                     appliquerTypeArticle();
+                })
+                .catch(() => {
+                    if (numeroRequete !== derniereRequeteSorties) {
+                        return;
+                    }
+                    champSortieLiee.innerHTML = '<p class="erreur">Impossible de charger les sorties de cette commission. Rechargez la page pour réessayer.</p>';
                 });
-
-                appliquerTypeArticle();
             });
 
             appliquerTypeArticle();
