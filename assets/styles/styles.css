@@ -416,6 +416,10 @@ form .niveau.editable:hover .input{background-image:none;}
 .small{font-size: 0.7rem; color:gray;}
 #main-pagelibre-76 table td {padding: 5px;}
 #main-pagelibre-76 table td img {max-width: 250px;}
+/* Tableaux CKEditor des pages libres : ne jamais dépasser la colonne de contenu */
+figure.table {max-width: 100%; overflow-x: auto;}
+figure.table a {overflow-wrap: anywhere;}
+figure.table img {max-width: 100%; height: auto;}
 .pt15 { padding-top: 15px;}
 
 @media print {

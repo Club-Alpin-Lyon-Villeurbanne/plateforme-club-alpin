@@ -5,23 +5,19 @@
 {% macro user_inscription_button(event, filiations, my_status, nInscritsTotal, free_seat_left, waiting_seat_left) %}
 
     {% if event.joinMax > 0 %}
-        {% set style = '' %}
-        {% if my_status and not my_status.isCovoiturage %}
-            {% set style = 'border:1px solid red; background:rgba(255,153,153,.4);' %}
-        {% endif %}
         <div style="text-align:center;">
             <br />
-            <a class="biglink" href="javascript:void(0)" onclick="$('#inscription').slideToggle(200)" title="" style="{{ style }}">
+            <a class="biglink" href="javascript:void(0)" onclick="$('#inscription').slideToggle(200)" title="">
             <span class="bleucaf">&gt;</span>
             {% if not my_status %}
                 JE SOUHAITE {% if free_seat_left > 0 %}ME PRÉ-INSCRIRE À CETTE SORTIE{% elseif waiting_seat_left > 0 %}REJOINDRE LA LISTE D'ATTENTE{% endif %}
-            {% elseif my_status.isCovoiturage %}
-            {% else %}
-            JE METS À JOUR MES PREFERENCES {% if style %}<img src="/img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;{% endif %}
+                {% if filiations|length > 0 %}
+                    <span class="bleucaf">&nbsp; / &nbsp;</span>
+                {% endif %}
             {% endif %}
 
             {% if filiations|length > 0 %}
-                <span class="bleucaf">&nbsp; / &nbsp;</span> PRÉ-INSCRIRE DES ADHÉRENTS AFFILIÉS
+                PRÉ-INSCRIRE DES ADHÉRENTS AFFILIÉS
             {% endif %}
             </a>
         </div>
@@ -414,6 +410,37 @@
                     <br />
                 {% endif %}
             {% endif %}
+        {% endif %}
+
+        {# inscriptions de mes affiliés : chacune s'annule séparément de la mienne,
+           avec les mêmes rôles que pour soi (un encadrant ou un stagiaire validé ne s'annule pas ici) #}
+        {% if not event.finished and allowed('evt_unjoin') %}
+            {% for filiation in filiations|default([]) %}
+                {% set filiation_status = event.participation(filiation) %}
+                {% if filiation_status and (filiation_status.status == constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')
+                    or (filiation_status.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') and filiation_status.role not in [constant('App\\Entity\\EventParticipation::ROLE_ENCADRANT'), constant('App\\Entity\\EventParticipation::ROLE_STAGIAIRE')])) %}
+                    {% set filiation_container_id = 'inscription-annuler-affilie-' ~ filiation.id %}
+                    <div class="{{ filiation_status.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') ? 'info' : 'alerte' }} info-container affilie-inscrit">
+                        <img src="/img/{{ filiation_status.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') ? 'inscrit-check' : 'inscrit-standby' }}.png" alt="" title=""/>
+                        <div class="text-container">
+                            {% if filiation_status.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') %}
+                                Votre affilié(e) <b>{{ filiation.fullName }}</b> est inscrit(e) à cette sortie.
+                            {% else %}
+                                La demande d'inscription de votre affilié(e) <b>{{ filiation.fullName }}</b> est en attente de validation.
+                            {% endif %}
+                            <div class="button-container">
+                                <input type="button" class="nice" value="Désinscrire {{ filiation.fullName }}" onclick="$('#{{ filiation_container_id }}').slideToggle(200)" style="margin-top:6px;" />
+                            </div>
+                        </div>
+                    </div>
+                    {% include 'components/cancel-participation.html.twig' with {
+                        'my_status_id': filiation_status.id,
+                        'my_status': filiation_status.status,
+                        'container_id': filiation_container_id,
+                        'participant_name': filiation.fullName,
+                    } %}
+                {% endif %}
+            {% endfor %}
         {% endif %}
 
         {% if is_granted('SORTIE_INSCRIPTIONS_MODIFICATION', event) %}
@@ -1271,31 +1298,41 @@
                                                 {{ easy_include('inscrire-filiation-select') }}
 
                                                 <input type="hidden" name="filiations" value="on" />
+                                                {# les personnes déjà inscrites sont grisées et ne sont pas envoyées : ce formulaire n'inscrit que les nouvelles,
+                                                   la désinscription se fait avec les boutons « Annuler ma participation » / « Désinscrire … » #}
                                                 <br />
-                                                <label for="filiation_id_user_{{ app.user.id }}" style="width:100%;clear:both;overflow:hidden;">
+                                                <label for="filiation_id_user_{{ app.user.id }}" {% if my_status %}class="off"{% endif %} style="width:100%;clear:both;overflow:hidden;">
                                                     <input
                                                         type="checkbox"
                                                         checked="checked"
                                                         class="custom"
-                                                        name="id_user_filiation[]"
+                                                        {% if my_status %}disabled="disabled"{% else %}name="id_user_filiation[]"{% endif %}
                                                         value="{{ app.user.id }}"
                                                         id="filiation_id_user_{{ app.user.id }}" />
                                                     Moi-même (<a href="{{ path('user_profile', {'id': app.user.id, 'id_event': event.id}) }}" class="fancyframe userlink">{{ app.user.nickname }}</a>)
+                                                    {% if my_status %}<i>{{ my_status.status == constant('App\\Entity\\EventParticipation::STATUS_REFUSE') ? 'demande refusée' : 'déjà inscrit(e)' }}</i>{% endif %}
                                                 </label>
                                                 <br />
                                                 {% for filiation in filiations %}
+                                                    {% set filiation_status = event.participation(filiation) %}
                                                     <br />
-                                                    <label for="filiation_id_user_{{ filiation.id }}" style="width:100%;clear:both;overflow:hidden;">
+                                                    <label for="filiation_id_user_{{ filiation.id }}" {% if filiation_status %}class="off"{% endif %} style="width:100%;clear:both;overflow:hidden;">
                                                         <input
                                                             type="checkbox"
-                                                            onclick="$('#paiement_enfant_{{ filiation.id }}').slideToggle(200)"
                                                             class="custom"
-                                                            name="id_user_filiation[]"
+                                                            {% if filiation_status %}checked="checked" disabled="disabled"{% else %}name="id_user_filiation[]"{% endif %}
                                                             value="{{ filiation.id }}"
                                                             id="filiation_id_user_{{ filiation.id }}" />
                                                         {{ filiation.lastname }}, {{ filiation.firstname }} ({{ filiation.id }}, {{ filiation.nickname }})
+                                                        {% if filiation_status %}<i>{{ filiation_status.status == constant('App\\Entity\\EventParticipation::STATUS_REFUSE') ? 'demande refusée' : 'déjà inscrit(e)' }}</i>{% endif %}
                                                     </label>
                                                 {% endfor %}
+                                                {% if my_status or filiations|filter(f => event.participation(f))|length > 0 %}
+                                                    <p id="aide-desinscription" style="clear:both;padding-top:10px;">
+                                                        Les personnes déjà inscrites ne peuvent pas être décochées ici.
+                                                        Pour désinscrire l'une d'elles, utilisez le bouton «&nbsp;Annuler ma participation&nbsp;» ou «&nbsp;Désinscrire&nbsp;…&nbsp;» en haut de la page.
+                                                    </p>
+                                                {% endif %}
                                                 <hr class="clear" />
                                             {% endif %}
                                         </div>
@@ -1314,7 +1351,7 @@
                                                 {% if not my_status %}
                                                     ENVOYER MA DEMANDE D'INSCRIPTION
                                                 {% else %}
-                                                    METTRE A JOUR MES PREFERENCES
+                                                    INSCRIRE LES PERSONNES SÉLECTIONNÉES
                                                 {% endif %}
                                             </a>
                                         </p>
