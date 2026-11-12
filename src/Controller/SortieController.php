@@ -935,6 +935,9 @@ class SortieController extends AbstractController
 
         /** @var User */
         $user = $this->getUser();
+        $participant = $participation->getUser();
+        // le référent désinscrit l'un de ses affiliés (cf. ParticipantAnnulationVoter)
+        $cancelledByReferent = $participant !== $user;
 
         if ($participation->isStatusValide() || $participation->isStatusEnAttente()) {
             // notifier les encadrants
@@ -942,7 +945,7 @@ class SortieController extends AbstractController
             $reason = $request->request->get('cancel_reason') ?? '';
             foreach ($encadrants as $encadrant) {
                 $mailer->send($encadrant->getUser(), 'transactional/sortie-desinscription', [
-                    'username' => $participation->getUser()->getFirstname() . ' ' . $participation->getUser()->getLastname(),
+                    'username' => $participant->getFullName(),
                     'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                     'event_name' => $event->getTitre(),
                     'commission' => $event->getCommission()->getTitle(),
@@ -950,11 +953,16 @@ class SortieController extends AbstractController
                     'reason_explanation' => $reason,
                     'user' => $user,
                     'profile_url' => $this->generateUrl('user_full', ['id' => $user->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'cancelled_by' => $cancelledByReferent ? $user->getFullName() : null,
                 ], [], null, $user->getEmail());
             }
         }
 
-        $this->addFlash('info', 'La participation est annulée');
+        if ($cancelledByReferent) {
+            $this->addFlash('info', sprintf('L\'inscription de %s est annulée', $participant->getFullName()));
+        } else {
+            $this->addFlash('info', 'La participation est annulée');
+        }
 
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
@@ -1081,31 +1089,29 @@ class SortieController extends AbstractController
         $errTab = [];
         $hasFiliations = false;
         $affiliatedJoiningUsers = [];
-        $affiliatedLeavingUsers = [];
         $is_covoiturage = null;
         $paymentUrl = null;
 
-        // affiliés qu'on inscrit
+        // personnes cochées à inscrire (moi et/ou mes affiliés)
+        // ce formulaire ne désinscrit personne : une case non cochée laisse l'inscription
+        // existante en place, la désinscription passe par sortie_remove_participant
         $idUsersFiliations = !empty($data['id_user_filiation']) ? array_map('intval', $data['id_user_filiation']) : [];
         if (isset($data['filiations']) && 'on' == $data['filiations']) {
             $hasFiliations = true;
             foreach ($idUsersFiliations as $id_user_tmp) {
-                $affiliatedJoiningUsers[] = $userRepository->find($id_user_tmp);
+                $affiliatedJoiningUser = \in_array($id_user_tmp, $affiliatedUserIds, true) ? $userRepository->find($id_user_tmp) : null;
+                // déjà inscrit => on ne fait rien
+                if ($affiliatedJoiningUser && !$event->getParticipation($affiliatedJoiningUser)) {
+                    $affiliatedJoiningUsers[] = $affiliatedJoiningUser;
+                }
             }
         }
 
-        // affiliés qu'on désinscrit
-        foreach ($affiliatedUserIds as $affiliatedUserId) {
-            if (!\in_array($affiliatedUserId, $idUsersFiliations, true)) {
-                $affiliatedLeavingUsers[] = $userRepository->find($affiliatedUserId);
-            }
-        }
-
-        $joinMessage = $data['message'];
+        $joinMessage = $data['message'] ?? '';
 
         // CGUs
         if (!isset($data['confirm']) || 'on' != $data['confirm']) {
-            $errTab[] = "Merci de cocher la case &laquo; J'ai lu les conditions...&raquo;";
+            $errTab[] = "Merci de cocher la case « J'ai lu les conditions... »";
         }
 
         // sortie publiée ?
@@ -1155,7 +1161,7 @@ class SortieController extends AbstractController
                 $auto_accept = false;
                 $nbNewJoins = 1;
                 if ($hasFiliations) {
-                    $nbNewJoins = \count($idUsersFiliations);
+                    $nbNewJoins = \count($affiliatedJoiningUsers);
                 }
 
                 // vérification nombre de places restantes
@@ -1191,23 +1197,22 @@ class SortieController extends AbstractController
                 // filiations
                 else {
                     foreach ($affiliatedJoiningUsers as $affiliatedJoiningUser) {
-                        // si déjà inscrit => on ne fait rien
-                        $joined = $event->getParticipation($affiliatedJoiningUser);
-                        if (!$joined) {
-                            if (!$affiliatedJoiningUser->getDoitRenouveler()) {
-                                $event->addParticipation($affiliatedJoiningUser, $role_evt_join, $status_evt_join);
-                                $inscrits[] = $affiliatedJoiningUser;
-                            } else {
-                                $this->addFlash('error', sprintf('La licence de %s a expiré. L\'adhésion doit être renouvelée avant l\'inscription.', $affiliatedJoiningUser->getFullName()));
-                            }
+                        if (!$affiliatedJoiningUser->getDoitRenouveler()) {
+                            $event->addParticipation($affiliatedJoiningUser, $role_evt_join, $status_evt_join);
+                            $inscrits[] = $affiliatedJoiningUser;
+                        } else {
+                            $this->addFlash('error', sprintf('La licence de %s a expiré. L\'adhésion doit être renouvelée avant l\'inscription.', $affiliatedJoiningUser->getFullName()));
                         }
                     }
-                    foreach ($affiliatedLeavingUsers as $affiliatedLeavingUser) {
-                        $participation = $event->getParticipation($affiliatedLeavingUser);
-                        if ($participation) {
-                            $event->removeParticipation($participation);
-                        }
+                }
+
+                // personne de nouveau : rien à enregistrer ni à notifier
+                if (empty($inscrits)) {
+                    if ($hasFiliations && empty($affiliatedJoiningUsers)) {
+                        $this->addFlash('info', 'Les personnes sélectionnées sont déjà inscrites à cette sortie.');
                     }
+
+                    return $this->redirectToRoute('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]);
                 }
 
                 $em->flush();
@@ -1303,6 +1308,10 @@ class SortieController extends AbstractController
                     ]);
                 }
             }
+        }
+
+        foreach ($errTab as $error) {
+            $this->addFlash('error', $error);
         }
 
         return $this->redirectToRoute('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]);
