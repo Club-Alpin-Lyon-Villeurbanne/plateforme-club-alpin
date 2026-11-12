@@ -291,12 +291,12 @@
 
                 <script>
                 const config = {
-                    name: "{{ event.titre }}",
+                    name: "{{ event.titre|e('js') }}",
                     startDate: "{{ event.startDate | intldate('yyyy-MM-dd') }}",
                     startTime: "{{ event.startDate | date('H:i') }}",
                     endDate: "{{ event.endDate | intldate('yyyy-MM-dd') }}",
                     endTime: "{{ event.endDate | date('H:i') }}",
-                    location: "{{ event.rdv }}",
+                    location: "{{ event.rdv|e('js') }}",
                     options: ['Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'],
                     timeZone: "Europe/Paris",
                     language: "fr"

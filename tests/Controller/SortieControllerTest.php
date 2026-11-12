@@ -31,6 +31,42 @@ class SortieControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
     }
 
+    public function testAjouterAMonAgendaConserveLesCaracteresSpeciaux(): void
+    {
+        $user = $this->signup();
+        $this->signin($user);
+
+        $titre = 'Saint-Jean d\'Arvey & "Pétchi" </script>';
+        $rdv = 'Parking de l\'église & "La Cure"';
+
+        $event = $this->createEvent($user);
+        $event->setTitre($titre);
+        $event->setRdv($rdv);
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($user);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+
+        $script = $this->client->getCrawler()->filterXPath('//script[contains(., "atcb_action")]');
+        $this->assertCount(1, $script, 'Le script « Ajouter à mon agenda » doit être présent et non coupé.');
+        $code = $script->text();
+
+        $this->assertMatchesRegularExpression('/name: "((?:[^"\\\\]|\\\\.)*)",/', $code);
+        preg_match('/name: "((?:[^"\\\\]|\\\\.)*)",/', $code, $name);
+        preg_match('/location: "((?:[^"\\\\]|\\\\.)*)",/', $code, $location);
+
+        $this->assertSame($titre, $this->decodeChaineJs($name[1]));
+        $this->assertSame($rdv, $this->decodeChaineJs($location[1]));
+    }
+
+    /** Décode une chaîne JavaScript échappée par Twig (\xHH, \uHHHH, \/). */
+    private function decodeChaineJs(string $chaine): string
+    {
+        return json_decode('"' . preg_replace('/\\\\x([0-9A-Fa-f]{2})/', '\\u00$1', $chaine) . '"', true, 512, \JSON_THROW_ON_ERROR);
+    }
+
     public function testFicheSortieEnPdfPourLEncadrant(): void
     {
         // le logo de la fiche passe par LegacyContainer, qui lit le kernel global
