@@ -34,10 +34,27 @@ class ParticipantAnnulationVoter extends Voter
             throw new \InvalidArgumentException('The voter requires a participation subject');
         }
 
-        if ($subject->getUser() !== $user) {
+        $participant = $subject->getUser();
+
+        if ($participant !== $user && !$this->isAffilie($participant, $user)) {
             return false;
         }
 
         return $this->userRights->allowed('evt_unjoin');
+    }
+
+    /**
+     * Un adhérent affilié est rattaché à son référent par le numéro CAF de celui-ci
+     * (cf. UserRepository::getFiliations).
+     */
+    private function isAffilie(?User $participant, User $referent): bool
+    {
+        if (null === $participant) {
+            return false;
+        }
+
+        $cafnumReferent = $referent->getCafnum();
+
+        return '' !== $cafnumReferent && $participant->getCafnumParent() === $cafnumReferent;
     }
 }

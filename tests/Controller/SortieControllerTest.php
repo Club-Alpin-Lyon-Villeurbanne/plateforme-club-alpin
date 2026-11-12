@@ -7,6 +7,7 @@ use App\Entity\EventUnrecognizedPayer;
 use App\Entity\Evt;
 use App\Entity\ExpenseReport;
 use App\Entity\TransportModeEnum;
+use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Helper\CarbonCostHelper;
 use App\Messenger\Message\SortiePubliee;
@@ -968,6 +969,195 @@ class SortieControllerTest extends WebTestCase
         $em->refresh($event);
 
         $this->assertSame(1825.0, $event->getCoutCarbonePerPerson(), 'perPerson inchangé par la validation');
+    }
+
+    /**
+     * Renvoyer le formulaire d'inscription sans recocher un affilié déjà inscrit
+     * (ou candidat) ne doit pas le désinscrire.
+     */
+    public function testJoinNeDesinscritPasUnAffilieNonCoche(): void
+    {
+        $organizer = $this->signup();
+        $event = $this->createPublishedEvent($organizer);
+        [$referent, $affilie] = $this->createReferentEtAffilie();
+        $event->addParticipation($affilie, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_NON_CONFIRME);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $this->signin($referent);
+        $this->client->request('POST', sprintf('/sortie/%d/rejoindre', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'join_event'),
+            'confirm' => 'on',
+            'filiations' => 'on',
+            'id_user_filiation' => [(string) $referent->getId()],
+            'message' => '',
+        ]);
+
+        $this->assertResponseRedirects(sprintf('/sortie/%s-%d.html', $event->getCode(), $event->getId()));
+        $this->assertNotNull($this->findParticipation($event, $affilie), 'l\'affilié non coché reste inscrit');
+        $this->assertNotNull($this->findParticipation($event, $referent), 'le référent coché est inscrit');
+    }
+
+    public function testJoinSansNouvelInscritNeNotifiePersonne(): void
+    {
+        $organizer = $this->signup();
+        $event = $this->createPublishedEvent($organizer);
+        [$referent, $affilie] = $this->createReferentEtAffilie();
+        $event->addParticipation($referent, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $event->addParticipation($affilie, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $this->signin($referent);
+        $this->client->request('POST', sprintf('/sortie/%d/rejoindre', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'join_event'),
+            'confirm' => 'on',
+            'filiations' => 'on',
+            'id_user_filiation' => [(string) $referent->getId()],
+            'message' => '',
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertNotNull($this->findParticipation($event, $referent));
+        $this->assertNotNull($this->findParticipation($event, $affilie));
+        $this->assertCount(0, $this->getMailerMessages());
+    }
+
+    public function testReferentDesinscritSonAffilieSansSInscrire(): void
+    {
+        $organizer = $this->signup();
+        $event = $this->createPublishedEvent($organizer);
+        [$referent, $affilie] = $this->createReferentEtAffilie();
+        $participationAffilie = $event->addParticipation($affilie, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $this->signin($referent);
+        $this->client->request('POST', sprintf('/sortie/remove-participant/%d', $participationAffilie->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'remove_participant'),
+            'cancel_reason' => 'malade',
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertNull($this->findParticipation($event, $affilie), 'l\'affilié est désinscrit');
+        $this->assertNull($this->findParticipation($event, $referent), 'le référent ne se retrouve pas inscrit');
+
+        // l'encadrement est averti, comme pour une désinscription par l'adhérent lui-même
+        $emails = $this->getMailerMessages();
+        $this->assertCount(1, $emails);
+        $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $organizer->getNickname(), $organizer->getEmail()));
+        $this->assertEmailTextBodyContains($emails[0], sprintf('annulée par %s', $referent->getFullName()));
+        $this->assertEmailTextBodyContains($emails[0], 'malade');
+    }
+
+    public function testAdherentNePeutPasDesinscrireUnAdherentQuiNEstPasSonAffilie(): void
+    {
+        $organizer = $this->signup();
+        $event = $this->createPublishedEvent($organizer);
+        $participant = $this->signup();
+        $participation = $event->addParticipation($participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $this->signin($this->signup());
+        $this->client->request('POST', sprintf('/sortie/remove-participant/%d', $participation->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'remove_participant'),
+        ]);
+
+        $this->assertResponseStatusCodeSame(403);
+        $this->assertNotNull($this->findParticipation($event, $participant));
+    }
+
+    public function testPageSortieProposeLaDesinscriptionDeLAffilie(): void
+    {
+        $organizer = $this->signup();
+        $event = $this->createPublishedEvent($organizer);
+        [$referent, $affilie] = $this->createReferentEtAffilie();
+        $participationAffilie = $event->addParticipation($affilie, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $this->signin($referent);
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%d.html', $event->getCode(), $event->getId()));
+
+        $this->assertResponseIsSuccessful();
+        // un formulaire d'annulation dédié à l'affilié
+        $form = $crawler->filter(sprintf('#inscription-annuler-affilie-%d form', $affilie->getId()));
+        $this->assertCount(1, $form);
+        $this->assertSame(sprintf('/sortie/remove-participant/%d', $participationAffilie->getId()), $form->attr('action'));
+        // dans le formulaire d'inscription, l'affilié déjà inscrit n'est plus envoyé
+        $caseAffilie = $crawler->filter(sprintf('#filiation_id_user_%d', $affilie->getId()));
+        $this->assertSame('disabled', $caseAffilie->attr('disabled'));
+        $this->assertNull($caseAffilie->attr('name'));
+        // la ligne est grisée et une aide indique comment désinscrire
+        $this->assertSame('off', $crawler->filter(sprintf('label[for="filiation_id_user_%d"]', $affilie->getId()))->attr('class'));
+        $this->assertNull($crawler->filter(sprintf('label[for="filiation_id_user_%d"]', $referent->getId()))->attr('class'), 'le référent non inscrit reste cochable');
+        $this->assertSelectorTextContains('#aide-desinscription', 'ne peuvent pas être décochées');
+    }
+
+    /**
+     * Mêmes rôles que pour sa propre participation : un coencadrant ou un bénévole
+     * d'encadrement validé peut être désinscrit, pas un encadrant ni un stagiaire.
+     */
+    public function testPageSortieDesinscriptionDesAffiliesSelonLeRole(): void
+    {
+        $organizer = $this->signup();
+        $event = $this->createPublishedEvent($organizer);
+        [$referent, $coencadrant] = $this->createReferentEtAffilie();
+        $benevole = $this->signup()->setCafnumParent($referent->getCafnum());
+        $encadrant = $this->signup()->setCafnumParent($referent->getCafnum());
+        $stagiaire = $this->signup()->setCafnumParent($referent->getCafnum());
+        $event->addParticipation($coencadrant, EventParticipation::ROLE_COENCADRANT, EventParticipation::STATUS_VALIDE);
+        $event->addParticipation($benevole, EventParticipation::ROLE_BENEVOLE, EventParticipation::STATUS_VALIDE);
+        $event->addParticipation($encadrant, EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE);
+        $event->addParticipation($stagiaire, EventParticipation::ROLE_STAGIAIRE, EventParticipation::STATUS_VALIDE);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $this->signin($referent);
+        $this->client->request('GET', sprintf('/sortie/%s-%d.html', $event->getCode(), $event->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists(sprintf('#inscription-annuler-affilie-%d form', $coencadrant->getId()));
+        $this->assertSelectorExists(sprintf('#inscription-annuler-affilie-%d form', $benevole->getId()));
+        $this->assertSelectorNotExists(sprintf('#inscription-annuler-affilie-%d', $encadrant->getId()));
+        $this->assertSelectorNotExists(sprintf('#inscription-annuler-affilie-%d', $stagiaire->getId()));
+    }
+
+    public function testPageSortieSansInscritNAffichePasLAideDeDesinscription(): void
+    {
+        $organizer = $this->signup();
+        $event = $this->createPublishedEvent($organizer);
+        [$referent] = $this->createReferentEtAffilie();
+
+        $this->signin($referent);
+        $this->client->request('GET', sprintf('/sortie/%s-%d.html', $event->getCode(), $event->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists(sprintf('#filiation_id_user_%d[name]', $referent->getId()));
+        $this->assertSelectorNotExists('#aide-desinscription');
+    }
+
+    protected function createPublishedEvent($organizer): Evt
+    {
+        $event = $this->createEvent($organizer);
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($organizer);
+        $event->setJoinStartDate(new \DateTimeImmutable('-1 day'));
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        return $event;
+    }
+
+    /** @return User[] le référent puis son affilié */
+    protected function createReferentEtAffilie(): array
+    {
+        $referent = $this->signup();
+        $affilie = $this->signup()->setCafnumParent($referent->getCafnum());
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        return [$referent, $affilie];
+    }
+
+    protected function findParticipation(Evt $event, User $user): ?EventParticipation
+    {
+        return $this->getContainer()->get('doctrine')->getManager()
+            ->getRepository(EventParticipation::class)
+            ->findOneBy(['evt' => $event, 'user' => $user]);
     }
 
     /**
