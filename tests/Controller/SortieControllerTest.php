@@ -14,6 +14,7 @@ use App\Messenger\Message\SortiePubliee;
 use App\Tests\WebTestCase;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Mailer\Messenger\SendEmailMessage;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -47,19 +48,76 @@ class SortieControllerTest extends WebTestCase
         $event->setStatusWho($user);
         $this->getContainer()->get('doctrine')->getManager()->flush();
 
+        $code = $this->scriptAjouterAMonAgenda($event);
+
+        $this->assertSame($titre, $this->champJs($code, 'name'));
+        $this->assertSame($rdv, $this->champJs($code, 'location'));
+    }
+
+    public function testAjouterAMonAgendaDonneLeLienDeLaSortieEtLeLieuDeRdv(): void
+    {
+        $user = $this->signup();
+        $this->signin($user);
+
+        $event = $this->createEvent($user);
+        $event->setRdv('  Parking du Pont de Chéruy  ');
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($user);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $code = $this->scriptAjouterAMonAgenda($event);
+
+        $this->assertSame(
+            sprintf('Fiche de la sortie : [url]http://localhost/sortie/%s-%d.html[/url]', $event->getCode(), $event->getId()),
+            $this->champJs($code, 'description'),
+        );
+        $this->assertSame('Parking du Pont de Chéruy', $this->champJs($code, 'location'));
+    }
+
+    #[DataProvider('rdvNonRenseignes')]
+    public function testAjouterAMonAgendaSansRdvNeRenseignePasDeLieu(string $rdv): void
+    {
+        $user = $this->signup();
+        $this->signin($user);
+
+        $event = $this->createEvent($user);
+        $event->setRdv($rdv);
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($user);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $code = $this->scriptAjouterAMonAgenda($event);
+
+        $this->assertNull($this->champJs($code, 'location'));
+        $this->assertStringContainsString(sprintf('/sortie/%s-%d.html', $event->getCode(), $event->getId()), $this->champJs($code, 'description'));
+    }
+
+    public static function rdvNonRenseignes(): iterable
+    {
+        yield 'vide' => [''];
+        yield 'espaces' => ['   '];
+    }
+
+    /** Affiche la fiche sortie et renvoie le code du script « Ajouter à mon agenda ». */
+    private function scriptAjouterAMonAgenda(Evt $event): string
+    {
         $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
         $this->assertResponseStatusCodeSame(200);
 
         $script = $this->client->getCrawler()->filterXPath('//script[contains(., "atcb_action")]');
         $this->assertCount(1, $script, 'Le script « Ajouter à mon agenda » doit être présent et non coupé.');
-        $code = $script->text();
 
-        $this->assertMatchesRegularExpression('/name: "((?:[^"\\\\]|\\\\.)*)",/', $code);
-        preg_match('/name: "((?:[^"\\\\]|\\\\.)*)",/', $code, $name);
-        preg_match('/location: "((?:[^"\\\\]|\\\\.)*)",/', $code, $location);
+        return $script->text();
+    }
 
-        $this->assertSame($titre, $this->decodeChaineJs($name[1]));
-        $this->assertSame($rdv, $this->decodeChaineJs($location[1]));
+    /** Valeur décodée d'un champ chaîne de la configuration JavaScript, ou null s'il est absent. */
+    private function champJs(string $code, string $champ): ?string
+    {
+        if (!preg_match('/\b' . $champ . ': "((?:[^"\\\\]|\\\\.)*)",/', $code, $valeur)) {
+            return null;
+        }
+
+        return $this->decodeChaineJs($valeur[1]);
     }
 
     /** Décode une chaîne JavaScript échappée par Twig (\xHH, \uHHHH, \/). */
