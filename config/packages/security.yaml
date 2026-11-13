@@ -95,3 +95,20 @@ security:
         - { path: ^/api/(auth|token/refresh), roles: PUBLIC_ACCESS }
         - { path: ^/api/config$, roles: PUBLIC_ACCESS }
         - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+
+when@test:
+    security:
+        # Coût minimal en test : au coût par défaut, chaque hachage ou vérification bcrypt prend ~1 s.
+        password_hashers:
+            App\Entity\User:
+                algorithm: auto
+                cost: 4
+                time_cost: 3
+                memory_cost: 10
+                migrate_from:
+                    - legacy
+            login_form:
+                algorithm: auto
+                cost: 4
+                time_cost: 3
+                memory_cost: 10

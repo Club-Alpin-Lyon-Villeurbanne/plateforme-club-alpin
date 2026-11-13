@@ -15,14 +15,6 @@ class NoteHorsSortieResponsableMailsTest extends ExpenseReportApiTestCase
 {
     private const SUJET_A_VALIDER = 'Note de frais à valider : Dégaines pour la SAE';
 
-    protected function tearDown(): void
-    {
-        // L'adresse est unique en base : une adresse vide laissée ici ferait échouer le test suivant.
-        $this->em()->getConnection()->executeStatement('UPDATE caf_user SET email_user = NULL WHERE email_user = \'\'');
-
-        parent::tearDown();
-    }
-
     public function testChaqueValideurRecoitSonPropreMail(): void
     {
         $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);

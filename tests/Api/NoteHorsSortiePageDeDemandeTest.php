@@ -12,17 +12,6 @@ use App\Service\NoteDeFrais\ControlesNoteHorsSortie;
  */
 class NoteHorsSortiePageDeDemandeTest extends ExpenseReportApiTestCase
 {
-    /** @var list<array<string, mixed>> lignes de la matrice des droits retirées par un test, remises à la fin */
-    private array $droitsRetires = [];
-
-    protected function tearDown(): void
-    {
-        foreach ($this->droitsRetires as $ligne) {
-            $this->em()->getConnection()->insert('caf_usertype_attr', $ligne);
-        }
-        parent::tearDown();
-    }
-
     public function testSansRoleLaPageExpliqueAQuiLesNotesSontReservees(): void
     {
         $this->signin($this->adherent);
@@ -98,9 +87,7 @@ class NoteHorsSortiePageDeDemandeTest extends ExpenseReportApiTestCase
     {
         $base = $this->em()->getConnection();
         $lignes = 'FROM caf_usertype_attr WHERE right_usertype_attr = (SELECT id_userright FROM caf_userright WHERE code_userright = ?)';
-        $this->droitsRetires = $base->fetchAllAssociative('SELECT * ' . $lignes, [$droit]);
-        $this->assertNotEmpty($this->droitsRetires);
-        $base->executeStatement('DELETE ' . $lignes, [$droit]);
+        $this->assertGreaterThan(0, $base->executeStatement('DELETE ' . $lignes, [$droit]));
     }
 
     private function donnees(User $demandeur): array

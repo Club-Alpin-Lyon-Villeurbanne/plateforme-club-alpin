@@ -72,6 +72,7 @@
         "vich/uploader-bundle": "^2.6"
     },
     "require-dev": {
+        "dama/doctrine-test-bundle": "^8.7",
         "doctrine/data-fixtures": "^1.6",
         "nelmio/alice": "^3.12",
         "phpunit/phpunit": "^12.5",

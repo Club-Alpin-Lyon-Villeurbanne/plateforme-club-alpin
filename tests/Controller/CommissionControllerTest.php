@@ -15,7 +15,6 @@ use Doctrine\ORM\EntityManagerInterface;
 class CommissionControllerTest extends WebTestCase
 {
     private EntityManagerInterface $em;
-    private ?int $droitId = null;
 
     protected function setUp(): void
     {
@@ -31,15 +30,6 @@ class CommissionControllerTest extends WebTestCase
             [UserAttr::RESPONSABLE_COMMISSION, 'commission_list']
         );
         $this->assertSame(1, $inserted);
-        $this->droitId = (int) $connection->lastInsertId();
-    }
-
-    protected function tearDown(): void
-    {
-        if (null !== $this->droitId) {
-            $this->em->getConnection()->executeStatement('DELETE FROM caf_usertype_attr WHERE id_usertype_attr = ?', [$this->droitId]);
-        }
-        parent::tearDown();
     }
 
     public function testLaPageAfficheLesBrevetsEtFormationsRattachesQueLeStaffDetient(): void
