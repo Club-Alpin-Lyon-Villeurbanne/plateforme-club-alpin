@@ -178,6 +178,59 @@ class SortieControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
     }
 
+    public function testInformationsReserveesSignaleesALaPersonneConnectee(): void
+    {
+        $user = $this->signup();
+        $event = $this->createSortiePublieeAvecInformationsReservees($this->signup());
+        $this->signin($user);
+
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+
+        $this->assertSelectorTextContains('.description_evt', 'Une chtite sortie');
+        $this->assertAnySelectorTextContains('ul.nice-list li', 'Covoiturage : voir le tableau partagé');
+        $this->assertAnySelectorTextContains('ul.nice-list li', 'Péage partagé entre les voitures');
+
+        // Détails pratiques, tarif, détails des frais et RDV : les quatre informations masquées aux visiteurs.
+        $mentions = $crawler->filter('.mention-visible-connecte');
+        $this->assertCount(4, $mentions);
+        foreach ($mentions as $mention) {
+            $this->assertSame('(visible car vous êtes connecté·e)', $mention->textContent);
+        }
+        foreach (['DÉTAILS PRATIQUES', 'TARIF', 'DÉTAILS DES FRAIS', 'RDV'] as $libelle) {
+            $this->assertCount(1, $crawler->filter('ul.nice-list li')->reduce(
+                static fn ($li) => str_starts_with($li->filter('b')->text(''), $libelle . ' :')
+                    && 1 === $li->filter('.mention-visible-connecte')->count()
+            ), sprintf('Mention absente de « %s ».', $libelle));
+        }
+    }
+
+    public function testInformationsReserveesSansMentionPourLeVisiteur(): void
+    {
+        $event = $this->createSortiePublieeAvecInformationsReservees($this->signup());
+
+        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+
+        $this->assertSelectorNotExists('.mention-visible-connecte');
+        $this->assertSelectorTextNotContains('body', 'Covoiturage : voir le tableau partagé');
+        $this->assertAnySelectorTextContains('ul.nice-list li', 'Détails de la sortie visibles après connexion');
+        $this->assertAnySelectorTextContains('ul.nice-list li', 'lieu et heures visibles après connexion');
+    }
+
+    private function createSortiePublieeAvecInformationsReservees(User $encadrant): Evt
+    {
+        $event = $this->createEvent($encadrant);
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($encadrant);
+        $event->setDetailsCaches('Covoiturage : voir le tableau partagé');
+        $event->setTarif(12.5);
+        $event->setTarifDetail('Péage partagé entre les voitures');
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        return $event;
+    }
+
     public function testSortieValidate()
     {
         $userOwner = $this->signup();
