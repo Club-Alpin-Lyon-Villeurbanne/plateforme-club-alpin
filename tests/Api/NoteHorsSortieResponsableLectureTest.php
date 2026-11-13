@@ -5,6 +5,7 @@ namespace App\Tests\Api;
 use App\Entity\ExpenseReport;
 use App\Entity\User;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Ce que le responsable d'une note hors sortie lit : la note et ses justificatifs, sans le choix
@@ -24,9 +25,7 @@ class NoteHorsSortieResponsableLectureTest extends ExpenseReportApiTestCase
         $this->assertArrayNotHasKey('refundRequired', $response['body']);
     }
 
-    /**
-     * @dataProvider voitLeChoixProvider
-     */
+    #[DataProvider('voitLeChoixProvider')]
     public function testLeProprietaireEtLeGestionnaireVoientLeChoix(string $acteur): void
     {
         $note = $this->noteEnvoyee($this->adherent, false, commission: $this->commissionDeTest);
@@ -64,9 +63,8 @@ class NoteHorsSortieResponsableLectureTest extends ExpenseReportApiTestCase
 
     /**
      * Refuser un choix différent de celui enregistré, et accepter le même, le dévoilerait.
-     *
-     * @dataProvider choixProvider
      */
+    #[DataProvider('choixProvider')]
     public function testLeChoixEnvoyeParLeResponsableEstIgnore(bool $choix): void
     {
         $note = $this->noteEnvoyee($this->adherent, true, commission: $this->commissionDeTest);
@@ -93,9 +91,7 @@ class NoteHorsSortieResponsableLectureTest extends ExpenseReportApiTestCase
         $this->assertCount(2, $response['body']['data']);
     }
 
-    /**
-     * @dataProvider sansDroitProvider
-     */
+    #[DataProvider('sansDroitProvider')]
     public function testSansEtreValideurOnNeLitPasLesJustificatifs(string $acteur): void
     {
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
@@ -112,9 +108,7 @@ class NoteHorsSortieResponsableLectureTest extends ExpenseReportApiTestCase
         yield 'encadrant de la commission' => ['encadrant'];
     }
 
-    /**
-     * @dataProvider statutModifiableProvider
-     */
+    #[DataProvider('statutModifiableProvider')]
     public function testLEnvoiDUnJustificatifEstRefuseAuResponsable(ExpenseReportStatusEnum $statut): void
     {
         $note = $this->creerAchat($this->adherent, $statut, self::LIGNES_ACHAT, $this->commissionDeTest);
@@ -154,9 +148,7 @@ class NoteHorsSortieResponsableLectureTest extends ExpenseReportApiTestCase
         $this->assertSame([], $this->valideurs($this->adherent, $note));
     }
 
-    /**
-     * @dataProvider inactifProvider
-     */
+    #[DataProvider('inactifProvider')]
     public function testUnResponsableInactifNEstPlusValideur(string $inactivite, int $refus): void
     {
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);

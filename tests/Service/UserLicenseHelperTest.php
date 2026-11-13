@@ -5,6 +5,7 @@ namespace App\Tests\Service;
 use App\Entity\Evt;
 use App\Entity\User;
 use App\Service\UserLicenseHelper;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class UserLicenseHelperTest extends TestCase
@@ -16,9 +17,7 @@ class UserLicenseHelperTest extends TestCase
         $this->userLicenseHelper = new UserLicenseHelper();
     }
 
-    /**
-     * @dataProvider validLicenseDataProvider
-     */
+    #[DataProvider('validLicenseDataProvider')]
     public function testIsLicenseValidForEventWithValidLicense(
         int $adhesionTimestamp,
         int $eventEndTimestamp,
@@ -32,7 +31,7 @@ class UserLicenseHelperTest extends TestCase
         $this->assertEquals($expectedResult, $result);
     }
 
-    public function validLicenseDataProvider(): array
+    public static function validLicenseDataProvider(): array
     {
         return [
             'Adhésion récente, événement dans la période' => [

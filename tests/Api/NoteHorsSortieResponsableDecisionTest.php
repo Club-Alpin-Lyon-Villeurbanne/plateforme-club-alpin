@@ -5,6 +5,7 @@ namespace App\Tests\Api;
 use App\Entity\ExpenseReportStatusHistory;
 use App\Entity\User;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Les responsables de la commission d'une note hors sortie la valident, avant la trésorerie, ou la
@@ -38,9 +39,7 @@ class NoteHorsSortieResponsableDecisionTest extends ExpenseReportApiTestCase
         $this->assertSame(ExpenseReportStatusEnum::PREAPPROVED, $this->reload($note)->getStatus());
     }
 
-    /**
-     * @dataProvider sansDroitProvider
-     */
+    #[DataProvider('sansDroitProvider')]
     public function testSansEtreValideurOnNeLitNiNeTraiteLaNote(string $acteur): void
     {
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
@@ -76,9 +75,7 @@ class NoteHorsSortieResponsableDecisionTest extends ExpenseReportApiTestCase
         $this->assertResponseStatus(200, $this->patch($this->manager, $note, ['status' => 'approved']));
     }
 
-    /**
-     * @dataProvider sansMessageProvider
-     */
+    #[DataProvider('sansMessageProvider')]
     public function testLeRenvoiParUnResponsableExigeUnMessage(array $message): void
     {
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
@@ -140,9 +137,7 @@ class NoteHorsSortieResponsableDecisionTest extends ExpenseReportApiTestCase
         $this->assertSame(ExpenseReportStatusEnum::DRAFT, $this->reload($note)->getStatus());
     }
 
-    /**
-     * @dataProvider champsDuDemandeurProvider
-     */
+    #[DataProvider('champsDuDemandeurProvider')]
     public function testLeResponsableNeModifieQueLeCommentaireDeStatut(string $champ, mixed $valeur): void
     {
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);

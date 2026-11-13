@@ -7,6 +7,7 @@ use App\Entity\Evt;
 use App\Entity\ExpenseReport;
 use App\Entity\User;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * La liste de compta-club, `/admin/notes-de-frais` : les notes de sortie, inchangées, et les notes
@@ -110,9 +111,7 @@ class NoteHorsSortieComptaClubTest extends ExpenseReportApiTestCase
         $this->assertEqualsCanonicalizing([$noteDeSortie->getId(), $sansValideur->getId(), $preValidee->getId()], array_column($notes, 'id'));
     }
 
-    /**
-     * @dataProvider typesProvider
-     */
+    #[DataProvider('typesProvider')]
     public function testLeFiltreDeType(string $type): void
     {
         $notes = [
@@ -171,9 +170,7 @@ class NoteHorsSortieComptaClubTest extends ExpenseReportApiTestCase
         $this->assertNotContains($autreSortie->getId(), $ids);
     }
 
-    /**
-     * @dataProvider filtresInconnusProvider
-     */
+    #[DataProvider('filtresInconnusProvider')]
     public function testUnFiltreInconnuNeProvoquePasDErreur(string $filtres, bool $listeVide): void
     {
         $this->achatAuStatut(ExpenseReportStatusEnum::APPROVED, null);
@@ -193,9 +190,7 @@ class NoteHorsSortieComptaClubTest extends ExpenseReportApiTestCase
         yield 'choix illisible' => ['refundRequired=peut-etre', false];
     }
 
-    /**
-     * @dataProvider demandeursProvider
-     */
+    #[DataProvider('demandeursProvider')]
     public function testLaTresorerieLitLaValidationDuResponsableEtLeLibelleComptable(string $type): void
     {
         $note = 'formation' === $type ? $this->formationEnvoyee() : $this->noteEnvoyee($this->adherent, false, commission: $this->commissionDeTest);
@@ -242,9 +237,7 @@ class NoteHorsSortieComptaClubTest extends ExpenseReportApiTestCase
         ], array_keys($lue));
     }
 
-    /**
-     * @dataProvider sansDroitProvider
-     */
+    #[DataProvider('sansDroitProvider')]
     public function testSeulUnGestionnaireLitLaListe(string $acteur): void
     {
         $this->achatAuStatut(ExpenseReportStatusEnum::APPROVED, null);

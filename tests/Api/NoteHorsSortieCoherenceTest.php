@@ -4,6 +4,7 @@ namespace App\Tests\Api;
 
 use App\Entity\Commission;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Règles de cohérence d'une note hors sortie, vérifiées à chaque modification : champs selon
@@ -78,9 +79,7 @@ class NoteHorsSortieCoherenceTest extends ExpenseReportApiTestCase
         $this->assertRefused($this->patch($this->owner, $report, ['objet' => 'Dégaines pour la SAE']), 'objet');
     }
 
-    /**
-     * @dataProvider lignesMalFormeesProvider
-     */
+    #[DataProvider('lignesMalFormeesProvider')]
     public function testLesLignesMalFormeesSontRefusees(string $details): void
     {
         $note = $this->creerAchat($this->owner);
@@ -103,9 +102,7 @@ class NoteHorsSortieCoherenceTest extends ExpenseReportApiTestCase
         yield 'identifiant en double' => ['{"lignes":[{"id":"ligne-1","montant":12},{"id":"ligne-1","montant":30}]}'];
     }
 
-    /**
-     * @dataProvider nombresDemesuresProvider
-     */
+    #[DataProvider('nombresDemesuresProvider')]
     public function testUnNombreDemesureEstRefuseAvecSonMessage(string $type, string $details, string $message): void
     {
         $note = 'formation' === $type ? $this->creerFormation($this->encadrant) : $this->creerAchat($this->owner);

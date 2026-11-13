@@ -4,6 +4,7 @@ namespace App\Tests\Controller;
 
 use App\Entity\Evt;
 use App\Tests\WebTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ProfilControllerTest extends WebTestCase
 {
@@ -23,7 +24,7 @@ class ProfilControllerTest extends WebTestCase
         $this->assertResponseRedirects('http://localhost/login');
     }
 
-    /** @dataProvider provideSortiesPages */
+    #[DataProvider('provideSortiesPages')]
     public function testDisplaySortiesPages(string $page)
     {
         $user = $this->signup();
@@ -40,7 +41,7 @@ class ProfilControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
     }
 
-    /** @dataProvider provideSortiesPages */
+    #[DataProvider('provideSortiesPages')]
     public function testDisplaySortiesPagesUnauthenticated(string $page)
     {
         $this->client->request('GET', $page);
@@ -48,7 +49,7 @@ class ProfilControllerTest extends WebTestCase
         $this->assertResponseRedirects('http://localhost/login');
     }
 
-    public function provideSortiesPages()
+    public static function provideSortiesPages()
     {
         yield ['/profil/sorties/next'];
         yield ['/profil/sorties/self'];

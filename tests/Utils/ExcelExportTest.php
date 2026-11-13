@@ -2,8 +2,10 @@
 
 namespace App\Tests\Utils;
 
+use App\Entity\EventParticipation;
 use App\Entity\User;
 use App\Utils\ExcelExport;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ExcelExportTest extends TestCase
@@ -26,16 +28,14 @@ class ExcelExportTest extends TestCase
         return $method->invokeArgs($object, $parameters);
     }
 
-    /**
-     * @dataProvider dateProvider
-     */
+    #[DataProvider('dateProvider')]
     public function testGetYearsSinceDate($input, $expectedYears): void
     {
         $result = $this->invokePrivateMethod($this->excelExport, 'getYearsSinceDate', [$input]);
         $this->assertEquals($expectedYears, $result);
     }
 
-    public function dateProvider(): array
+    public static function dateProvider(): array
     {
         $currentYear = (int) date('Y');
 
@@ -83,9 +83,8 @@ class ExcelExportTest extends TestCase
         $user->method('getTel2')->willReturn('0987654321');
         $user->method('getEmail')->willReturn('john.doe@example.com');
 
-        $liste = $this->getMockBuilder(\stdClass::class)
-            ->addMethods(['getUser', 'getStatus', 'getRole'])
-            ->getMock();
+        // une inscription à une sortie (addMethods() n'existe plus depuis PHPUnit 12)
+        $liste = $this->createStub(EventParticipation::class);
 
         $liste->method('getUser')->willReturn($user);
         $liste->method('getStatus')->willReturn(1);
@@ -117,16 +116,14 @@ class ExcelExportTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider invalidDateProvider
-     */
+    #[DataProvider('invalidDateProvider')]
     public function testGetYearsSinceDateWithInvalidInput($invalidInput): void
     {
         $this->expectException(\Exception::class);
         $this->invokePrivateMethod($this->excelExport, 'getYearsSinceDate', [$invalidInput]);
     }
 
-    public function invalidDateProvider(): array
+    public static function invalidDateProvider(): array
     {
         return [
             'null value' => [null],

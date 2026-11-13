@@ -3,6 +3,7 @@
 namespace App\Tests\Api;
 
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Un changement de statut refusé dit pourquoi, en français : compta-club et le site affichent le
@@ -14,9 +15,7 @@ class NoteDeFraisRefusDeTransitionTest extends ExpenseReportApiTestCase
     private const PROPRE_NOTE = 'Vous ne pouvez pas décider sur votre propre note de frais.';
     private const NON_PERMIS = 'Ce changement de statut n\'est pas permis.';
 
-    /**
-     * @dataProvider decisionsProvider
-     */
+    #[DataProvider('decisionsProvider')]
     public function testLaTresorerieApprendQueLaNoteAttendSonResponsable(array $decision): void
     {
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);

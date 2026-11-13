@@ -63,3 +63,8 @@ public/dev.txt
 AGENTS.md
 
 .clever.json
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###
