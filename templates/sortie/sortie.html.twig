@@ -938,7 +938,8 @@
 
                         <br />
                         <label for="objet">Objet :</label><br />
-                        <input id="contact_subject" type="text" name="objet" class="type1" style="width:95%" value="Note importante pour la sortie du {{ event.startDate | date('d/m') }}" /><br />
+                        {% import 'macros/sujet-message-sortie.html.twig' as sujet %}
+                        <input id="contact_subject" type="text" name="objet" class="type1" style="width:95%" value="{{ sujet.sujet_message_sortie(event.commission.title, event.titre, event.startDate ? event.startDate | date('d/m/Y')) }}" /><br />
                         <br />
 
                         <label>Répondre à ?</label><br />
