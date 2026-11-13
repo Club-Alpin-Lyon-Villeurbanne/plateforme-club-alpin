@@ -85,6 +85,83 @@ class SortieControllerTest extends WebTestCase
         $this->assertStringStartsWith('%PDF-', $this->client->getResponse()->getContent());
     }
 
+    public function testMenuActionsRegroupeLesActionsDeLOrganisateur(): void
+    {
+        $user = $this->signup();
+        $event = $this->createEvent($user);
+        // droit de créer une sortie dans la commission : nécessaire pour dupliquer
+        $this->addAttribute($user, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
+        // sortie terminée : le compte rendu est proposé à l'organisateur
+        $event->setStartDate(new \DateTimeImmutable('-3 days'))->setEndDate(new \DateTimeImmutable('-2 days'));
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+        $this->signin($user);
+
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $menu = $crawler->filter('details#sortie-actions-menu');
+        $this->assertCount(1, $menu);
+        $this->assertSame('Actions', trim($menu->filter('summary')->text()));
+        $this->assertSame([
+            'Imprimer la fiche de sortie',
+            'Imprimer la fiche de sortie en PDF',
+            'Exporter la liste des participants en Excel',
+            'Dupliquer cette sortie avec ce groupe',
+            'Dupliquer cette sortie',
+            'Rédiger un compte rendu',
+        ], $menu->filter('.sortie-actions-item')->each(fn ($item) => trim($item->text())));
+
+        $router = $this->getContainer()->get('router');
+        $this->assertSame([
+            $router->generate('feuille_sortie', ['id' => $event->getId()]),
+            $router->generate('sortie_pdf', ['id' => $event->getId()]),
+            $router->generate('sortie_xlsx', ['id' => $event->getId()]),
+            $router->generate('article_new') . '?compterendu=true&commission_article=-1&evt_article=' . $event->getId(),
+        ], $menu->filter('a.sortie-actions-item')->each(fn ($lien) => $lien->attr('href')));
+        $this->assertSame([
+            $router->generate('sortie_duplicate', ['event' => $event->getId(), 'mode' => 'full']),
+            $router->generate('sortie_duplicate', ['event' => $event->getId(), 'mode' => 'empty']),
+        ], $menu->filter('form')->each(fn ($form) => $form->attr('action')));
+
+        // les actions ne sont plus affichées en double hors du menu
+        $this->assertCount(2, $crawler->filter('form[action*="/duplicate/"]'));
+        $this->assertCount(1, $crawler->filter(sprintf('a[href="%s"]', $router->generate('sortie_xlsx', ['id' => $event->getId()]))));
+    }
+
+    public function testMenuActionsNeProposeQueLesActionsAutorisees(): void
+    {
+        // encadrant de la sortie sans droit de création dans la commission, sortie à venir
+        $user = $this->signup();
+        $event = $this->createEvent($user);
+        $this->signin($user);
+
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSame([
+            'Imprimer la fiche de sortie',
+            'Imprimer la fiche de sortie en PDF',
+            'Exporter la liste des participants en Excel',
+        ], $crawler->filter('#sortie-actions-menu .sortie-actions-item')->each(fn ($item) => trim($item->text())));
+        $this->assertCount(0, $crawler->filter('form[action*="/duplicate/"]'));
+        $this->assertCount(1, $crawler->filter('.sortie-actions #add-to-calendar'));
+    }
+
+    public function testPasDeMenuActionsPourUnAdherentSansDroitSurLaSortie(): void
+    {
+        $organisateur = $this->signup();
+        $event = $this->createEvent($organisateur);
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE)->setStatusWho($organisateur);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+        $this->signin($this->signup());
+
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertCount(0, $crawler->filter('#sortie-actions-menu'));
+        $this->assertCount(1, $crawler->filter('.sortie-actions #add-to-calendar'));
+    }
+
     public function testParticipantPayeSousSonEmailApparaitPayeMaisPasUnNomadeSansEmail(): void
     {
         $user = $this->signup();
