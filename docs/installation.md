@@ -68,7 +68,12 @@ Chaque test tourne dans une transaction annulée à la fin (`dama/doctrine-test-
 - après avoir récupéré une nouvelle migration ou une modification des fixtures ;
 - si des tests lancés depuis une branche plus ancienne, sans cette transaction, y ont laissé des données.
 
-Seules échappent à la transaction les écritures faites par la connexion mysqli du legacy (`MysqliHandler`) : un test qui passerait par là laisserait ses données en base.
+La connexion mysqli du legacy (`MysqliHandler`) est une connexion à part, hors de cette transaction :
+
+- une page legacy ne voit pas les données créées par Doctrine pendant le test, qui ne sont pas encore validées ;
+- ce qu'elle écrit reste en base.
+
+Pour un test qui en a besoin, l'attribut `#[SkipDatabaseRollback]` (`DAMA\DoctrineTestBundle\PHPUnit\SkipDatabaseRollback`), sur la méthode ou la classe, le fait tourner hors transaction. Ses données restent alors en base : à supprimer dans son `tearDown()`.
 
 ## Dépannage
 
