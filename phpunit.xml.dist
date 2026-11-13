@@ -38,6 +38,8 @@
     </source>
 
     <extensions>
+        <!-- chaque test tourne dans une transaction annulée à la fin : la base de test reste intacte -->
+        <bootstrap class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension" />
         <!-- ClockMock, DnsMock et DebugClassLoader (remplace SymfonyTestsListener) -->
         <bootstrap class="Symfony\Bridge\PhpUnit\SymfonyExtension" />
     </extensions>

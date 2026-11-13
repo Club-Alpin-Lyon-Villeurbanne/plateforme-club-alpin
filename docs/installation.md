@@ -54,6 +54,22 @@ Pour consommer les mails : `make consume-mails`
 
 ⚠️ L'upload d'images ne fonctionne pas dans un environnement dockerisé. 🚧
 
+## Tests
+
+```bash
+make tests clear=1                          # la première fois : crée la base de test (caf_test)
+make tests                                  # toute la suite
+make tests path=tests/Service/FooTest.php   # un seul fichier
+```
+
+Chaque test tourne dans une transaction annulée à la fin (`dama/doctrine-test-bundle`) : la base de test ne se remplit pas d'un run à l'autre. `clear=1` ne sert qu'à la recréer :
+
+- la première fois ;
+- après avoir récupéré une nouvelle migration ou une modification des fixtures ;
+- si des tests lancés depuis une branche plus ancienne, sans cette transaction, y ont laissé des données.
+
+Seules échappent à la transaction les écritures faites par la connexion mysqli du legacy (`MysqliHandler`) : un test qui passerait par là laisserait ses données en base.
+
 ## Dépannage
 
 ### Conflits d'images Docker

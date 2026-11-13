@@ -49,9 +49,6 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
     protected User $encadrant;
     protected User $adherent;
 
-    /** @var list<string> codes des commissions où le test a donné des rôles, retirés à la fin */
-    private array $commissionsAvecRoles = [];
-
     /** @var array{env: ?string, server: ?string} */
     private array $originalManagersEnv;
 
@@ -90,21 +87,7 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
 
     protected function tearDown(): void
     {
-        $base = $this->em()->getConnection();
-        foreach (array_unique($this->commissionsAvecRoles) as $code) {
-            $base->executeStatement('DELETE FROM caf_user_attr WHERE params_user_attr = ?', ['commission:' . $code]);
-        }
-        // Les deux commissions de chaque test, avec leurs notes. Les notes de sortie et celles d'une
-        // commission de la base (commissionVisible()) restent dans la base de test.
-        foreach (array_filter([$this->commissionDeTest ?? null, $this->autreCommission ?? null]) as $commission) {
-            $notes = 'SELECT id FROM expense_report WHERE commission_id = ?';
-            $base->executeStatement(sprintf('DELETE FROM expense_report_status_history WHERE expense_report_id IN (SELECT id FROM (%s) AS notes)', $notes), [$commission->getId()]);
-            $base->executeStatement(sprintf('DELETE FROM expense_attachment WHERE expense_report_id IN (SELECT id FROM (%s) AS notes)', $notes), [$commission->getId()]);
-            $base->executeStatement('DELETE FROM expense_report WHERE commission_id = ?', [$commission->getId()]);
-            $base->executeStatement('DELETE FROM caf_user_attr WHERE params_user_attr = ?', ['commission:' . $commission->getCode()]);
-            $base->executeStatement('DELETE FROM caf_commission WHERE id_commission = ?', [$commission->getId()]);
-        }
-
+        // Les données du test sont annulées avec sa transaction (dama/doctrine-test-bundle).
         // Restaurer la valeur d'origine (définie, même vide, par .env) : la supprimer
         // ferait échouer tous les tests suivants qui instancient le voter.
         foreach (['env' => '_ENV', 'server' => '_SERVER'] as $key => $superGlobal) {
@@ -125,7 +108,6 @@ abstract class ExpenseReportApiTestCase extends WebTestCase
 
     protected function donnerUnRole(User $utilisateur, string $role, Commission $commission): void
     {
-        $this->commissionsAvecRoles[] = $commission->getCode();
         $this->addAttribute($this->em()->find(User::class, $utilisateur->getId()), $role, 'commission:' . $commission->getCode());
     }
 

@@ -7,6 +7,8 @@ use App\Service\MailerLiteService;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Symfony\Bridge\PhpUnit\Attribute\TimeSensitive;
+use Symfony\Bridge\PhpUnit\ClockMock;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -194,8 +196,14 @@ class MailerLiteServiceTest extends TestCase
         $this->assertEquals(5, $result['imported']);
     }
 
+    /**
+     * Le pont PHPUnit de Symfony remplace sleep() dans MailerLiteService : la pause entre deux
+     * fournées ne coûte plus 6 s réelles.
+     */
+    #[TimeSensitive(MailerLiteService::class)]
     public function testPushToGroupWithBatching(): void
     {
+        $debut = ClockMock::time();
         $users = [];
         // Create 250 users to test batching (BATCH_SIZE is 100)
         for ($i = 0; $i < 250; ++$i) {
@@ -246,6 +254,9 @@ class MailerLiteServiceTest extends TestCase
 
         $this->assertEquals(250, $result['total']);
         $this->assertEquals(250, $result['imported']);
+
+        // deux pauses de 3 s entre les trois fournées
+        $this->assertSame(6, ClockMock::time() - $debut);
     }
 
     public function testPushToGroupHandlesApiError(): void
