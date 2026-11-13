@@ -1408,19 +1408,17 @@
             const btn1 = document.getElementById('submit_update_participants');
             const btn2 = document.getElementById('submit_contact_participants');
 
-            const contact_subject = document.getElementById('contact_subject');
+            // l'objet est facultatif : vide, l'e-mail garde le sujet automatique
             const contact_message = document.getElementById('contact_message');
             const contact_reply_to = document.querySelector('input[name="reply_to_option"]');
 
             // les contrôles de gestion (btn1/btn2/select) ne sont rendus qu'aux encadrants
             btn1?.addEventListener('click', () => {
-                contact_subject.required = false;
                 contact_message.required = false;
                 contact_reply_to.required = false;
             });
 
             btn2?.addEventListener('click', (event) => {
-                contact_subject.required = true;
                 contact_message.required = true;
                 contact_reply_to.required = true;
 
