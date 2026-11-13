@@ -53,7 +53,7 @@
                 {% if allowed('user_read_private') or app.user is same as (user) %}
                     {{ taux_macro.taux_presence(user, fiabilite, nb_absences, total_sorties) }}
 
-                    {{ content_macro.user_content(user, nb_articles, user_articles, nb_events, user_events, 'reduced') }}
+                    {{ content_macro.user_content(user, nb_articles, user_articles, nb_events, user_events, 'reduced', common_events, nb_common_events) }}
                 {% endif %}
             </div>
         </div>
