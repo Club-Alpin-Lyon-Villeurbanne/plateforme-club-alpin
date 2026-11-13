@@ -8,6 +8,12 @@
     <p>
         Vous venez d'être accepté(e) comme {{ role }} à la sortie <a href={{ event_url }}>{{ event_name }}</a>.
     </p>
+    {% if event_rdv_time or event_rdv %}
+    <p>
+        {% if event_rdv_time %}<b>Heure de rendez-vous :</b> {{ event_rdv_time }}<br>{% endif %}
+        {% if event_rdv %}<b>Lieu de rendez-vous :</b> {{ event_rdv }}{% endif %}
+    </p>
+    {% endif %}
     {% if hello_asso_url is defined %}
         <p>
             Voici le lien pour régler vos frais de participation sur HelloAsso : <a href="{{ hello_asso_url }}">payer</a>.
@@ -17,6 +23,12 @@
 
 {% block inner_txt %}
 Vous venez d'être accepté(e) comme {{ role }} à la sortie {{ event_name }} ({{ event_url }}).
+{% if event_rdv_time %}
+    Heure de rendez-vous : {{ event_rdv_time }}
+{% endif %}
+{% if event_rdv %}
+    Lieu de rendez-vous : {{ event_rdv }}
+{% endif %}
 {% if hello_asso_url is defined %}
     Voici le lien pour régler vos frais de participation sur HelloAsso : {{ hello_asso_url }}.
 {% endif %}
