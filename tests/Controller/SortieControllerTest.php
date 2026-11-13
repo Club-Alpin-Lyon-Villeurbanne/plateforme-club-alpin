@@ -483,11 +483,80 @@ class SortieControllerTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $userOwner->getNickname(), $userOwner->getEmail()));
-        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Message] ' . $event->getTitre() . ' du ' . $event->getStartDate()->format('d/m/Y'));
+        $this->assertEmailHeaderSame($emails[0], 'Subject', 'un objet de culte');
         $this->assertEmailTextBodyContains($emails[0], 'Vous avez reçu un message de');
+        // l'objet est le sujet du courriel (repris en titre par le gabarit commun) : plus de ligne « Objet : » dans le corps
+        $this->assertEmailTextBodyNotContains($emails[0], 'Objet :');
+        $this->assertEmailHtmlBodyNotContains($emails[0], 'Objet :');
         $this->assertEmailTextBodyContains($emails[0], 'tirelipimpon');
         $this->assertEmailHtmlBodyContains($emails[0], 'Vous avez reçu un message de');
         $this->assertEmailHtmlBodyContains($emails[0], 'tirelipimpon');
+    }
+
+    public function testContactParticipantsSansObjetGardeLeSujetAutomatique()
+    {
+        $userOwner = $this->signup();
+        $event = $this->createEvent($userOwner);
+        $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
+
+        $this->signin($userOwner);
+
+        $testParticipantId = $event->getParticipations(null, null)[0]->getId();
+        $this->client->request('POST', sprintf('/sortie/%d/contact-participants', $event->getId()), [
+            'csrf_token_contact' => $this->generateCsrfToken($this->client, 'contact_participants'),
+            'contact_participant' => [$testParticipantId => $testParticipantId],
+            'objet' => "  \t ",
+            'message' => 'tirelipimpon',
+        ]);
+        $this->assertResponseStatusCodeSame(302);
+
+        $emails = $this->getMailerMessages();
+        $this->assertCount(1, $emails);
+
+        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Message] ' . $event->getTitre() . ' du ' . $event->getStartDate()->format('d/m/Y'));
+        $this->assertEmailTextBodyNotContains($emails[0], 'Objet :');
+        $this->assertEmailTextBodyContains($emails[0], 'tirelipimpon');
+    }
+
+    public function testContactParticipantsObjetSurUneSeuleLigne()
+    {
+        $userOwner = $this->signup();
+        $event = $this->createEvent($userOwner);
+        $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
+
+        $this->signin($userOwner);
+
+        $testParticipantId = $event->getParticipations(null, null)[0]->getId();
+        $this->client->request('POST', sprintf('/sortie/%d/contact-participants', $event->getId()), [
+            'csrf_token_contact' => $this->generateCsrfToken($this->client, 'contact_participants'),
+            'contact_participant' => [$testParticipantId => $testParticipantId],
+            'objet' => " Changement d'horaire\r\n  du départ ",
+            'message' => 'tirelipimpon',
+        ]);
+        $this->assertResponseStatusCodeSame(302);
+
+        $emails = $this->getMailerMessages();
+        $this->assertCount(1, $emails);
+
+        $this->assertEmailHeaderSame($emails[0], 'Subject', "Changement d'horaire du départ");
+    }
+
+    public function testPageSortiePreremplitLObjetAvecLeSujetAutomatique(): void
+    {
+        $organizer = $this->signup();
+        $event = $this->createPublishedEvent($organizer);
+        $event->setTitre("Traversée de l'Aiguille");
+        $this->addAttribute($organizer, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $this->signin($organizer);
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%d.html', $event->getCode(), $event->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSame(
+            sprintf("[%s][Message] Traversée de l'Aiguille du %s", $event->getCommission()->getTitle(), $event->getStartDate()->format('d/m/Y')),
+            $crawler->filter('#contact_subject')->attr('value')
+        );
     }
 
     public function testContactParticipantsNoTarget()
@@ -532,7 +601,7 @@ class SortieControllerTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $userOwner->getNickname(), $userOwner->getEmail()));
-        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Message] ' . $event->getTitre() . ' du ' . $event->getStartDate()->format('d/m/Y'));
+        $this->assertEmailHeaderSame($emails[0], 'Subject', 'un objet de culte');
         $this->assertEmailTextBodyContains($emails[0], 'Vous avez reçu un message de');
         $this->assertEmailTextBodyContains($emails[0], 'Prout PROUT');
         $this->assertEmailHtmlBodyContains($emails[0], 'Vous avez reçu un message de');
