@@ -940,11 +940,20 @@ class SortieController extends AbstractController
         $cancelledByReferent = $participant !== $user;
 
         if ($participation->isStatusValide() || $participation->isStatusEnAttente()) {
-            // notifier les encadrants
-            $encadrants = $event->getEncadrants();
+            // notifier l'organisateur et les encadrants, comme pour l'inscription
+            // (indexés par id pour ne pas prévenir deux fois un organisateur qui encadre)
+            $destinataires = [];
+            if ($event->getUser()) {
+                $destinataires[$event->getUser()->getId()] = $event->getUser();
+            }
+            foreach ($event->getEncadrants() as $encadrant) {
+                $destinataires[$encadrant->getUser()->getId()] = $encadrant->getUser();
+            }
+            // inutile de prévenir la personne qui vient d'annuler (le participant ou son référent)
+            unset($destinataires[$user->getId()]);
             $reason = $request->request->get('cancel_reason') ?? '';
-            foreach ($encadrants as $encadrant) {
-                $mailer->send($encadrant->getUser(), 'transactional/sortie-desinscription', [
+            foreach ($destinataires as $destinataire) {
+                $mailer->send($destinataire, 'transactional/sortie-desinscription', [
                     'username' => $participant->getFullName(),
                     'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                     'event_name' => $event->getTitre(),
