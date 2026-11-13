@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Service\LoxyaAuthenticator;
 use App\Service\MaterielApiService;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -162,9 +163,7 @@ class MaterielApiServiceTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider provideNamesAndPseudos
-     */
+    #[DataProvider('provideNamesAndPseudos')]
     public function testPseudoKeepsOnlyUnaccentedLetters(string $firstname, string $lastname, string $expected): void
     {
         $calls = [];

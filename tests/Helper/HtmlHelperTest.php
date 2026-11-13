@@ -3,19 +3,18 @@
 namespace App\Tests\Helper;
 
 use App\Helper\HtmlHelper;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class HtmlHelperTest extends TestCase
 {
-    /**
-     * @dataProvider escapeDataProvider
-     */
+    #[DataProvider('escapeDataProvider')]
     public function testEscape(?string $input, string $expected): void
     {
         $this->assertEquals($expected, HtmlHelper::escape($input));
     }
 
-    public function escapeDataProvider(): array
+    public static function escapeDataProvider(): array
     {
         return [
             'escapes HTML tags' => [

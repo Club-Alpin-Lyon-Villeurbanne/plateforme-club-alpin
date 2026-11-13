@@ -16,6 +16,7 @@ use Monolog\Handler\TestHandler;
 use Monolog\Level;
 use Monolog\Logger;
 use Monolog\LogRecord;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 class FfcamSynchronizerTest extends WebTestCase
@@ -840,9 +841,7 @@ class FfcamSynchronizerTest extends WebTestCase
         $this->assertStringContainsString('Non renseigné (2)', implode("\n", \array_slice($rapports[0]['warning_details'], 0, 10)));
     }
 
-    /**
-     * @dataProvider fichiersAnnuelsIncomplets
-     */
+    #[DataProvider('fichiersAnnuelsIncomplets')]
     public function testSynchronizeAbortsWithoutBlockingAnyoneWhenColumnsAreMissing(string $cas): void
     {
         self::mockTime(new \DateTimeImmutable('2024-10-01'));
@@ -886,9 +885,7 @@ class FfcamSynchronizerTest extends WebTestCase
         ];
     }
 
-    /**
-     * @dataProvider fichiersAuNombreDeColonnesInattendu
-     */
+    #[DataProvider('fichiersAuNombreDeColonnesInattendu')]
     public function testSynchronizeWarnsButImportsWhenColumnCountChanges(int $ecart): void
     {
         $membre = $this->membre();

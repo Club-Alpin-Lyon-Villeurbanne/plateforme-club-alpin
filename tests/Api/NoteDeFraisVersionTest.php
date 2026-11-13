@@ -4,6 +4,7 @@ namespace App\Tests\Api;
 
 use App\Entity\ExpenseReport;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Un onglet resté ouvert sur une note renvoie la version qu'il a lue : s'il est périmé, son
@@ -145,9 +146,7 @@ class NoteDeFraisVersionTest extends ExpenseReportApiTestCase
         $this->assertSame($version, $this->versionLue($note));
     }
 
-    /**
-     * @dataProvider champsDuDemandeurProvider
-     */
+    #[DataProvider('champsDuDemandeurProvider')]
     public function testUnOngletResteOuvertApresLEnvoiApprendQueLaNoteEstPartie(string $champ, mixed $valeur): void
     {
         $note = $this->noteEnvoyee($this->owner, commission: $this->commissionDeTest);

@@ -62,7 +62,7 @@ class PaymentControllerTest extends WebTestCase
         $helloAssoClient->expects($this->once())
             ->method('createCheckoutIntent')
             ->with(
-                $this->isType('string'),
+                $this->isString(),
                 $this->callback(function (array $params) {
                     return 3500 === $params['totalAmount']
                         && 3500 === $params['initialAmount']

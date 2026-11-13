@@ -3,6 +3,7 @@
 namespace App\Tests\Api;
 
 use App\Entity\ExpenseReport;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Création d'une note hors sortie (POST /api/notes-de-frais avec un type) : règles de cohérence
@@ -32,9 +33,7 @@ class NoteHorsSortieCreationTest extends ExpenseReportApiTestCase
         $this->assertNull($note->isRefundRequired());
     }
 
-    /**
-     * @dataProvider champObligatoireProvider
-     */
+    #[DataProvider('champObligatoireProvider')]
     public function testLaCreationEstRefuseeSiUnChampObligatoireManque(string $champEnvoye, string $champRefuse): void
     {
         $this->assertRefused($this->create($this->owner, $this->achat([$champEnvoye => null])), $champRefuse);
@@ -109,9 +108,7 @@ class NoteHorsSortieCreationTest extends ExpenseReportApiTestCase
         $this->assertRefused($this->create($this->owner, $this->achat(['dateDepense' => '24/09/2026'])), 'dateDepense');
     }
 
-    /**
-     * @dataProvider typeRefuseProvider
-     */
+    #[DataProvider('typeRefuseProvider')]
     public function testUnTypeAutreQueFormationOuAchatEstRefuse(string $type): void
     {
         $this->assertRefused($this->create($this->owner, $this->achat(['type' => $type])), 'type');

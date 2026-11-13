@@ -7,6 +7,7 @@ use App\Entity\AccueilCircuitEnum;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\MailerLiteService;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -52,9 +53,7 @@ class MailerLiteAccueilSyncTest extends TestCase
         yield 'renouvellements' => [AccueilCircuitEnum::RENOUVELLEMENTS, 'GROUPE_RENOUVELLEMENT'];
     }
 
-    /**
-     * @dataProvider circuits
-     */
+    #[DataProvider('circuits')]
     public function testEnvoieLeCircuitDemandeVersSonGroupe(AccueilCircuitEnum $circuit, string $expectedGroupId): void
     {
         $user = $this->makeUser(1, 'a@example.com', '2026-09-10');

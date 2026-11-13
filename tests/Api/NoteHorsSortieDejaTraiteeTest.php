@@ -4,6 +4,7 @@ namespace App\Tests\Api;
 
 use App\Entity\ExpenseReportStatusHistory;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Plusieurs personnes peuvent décider d'une même note hors sortie : celle qui décide quand la note
@@ -13,9 +14,7 @@ class NoteHorsSortieDejaTraiteeTest extends ExpenseReportApiTestCase
 {
     private const DEJA_TRAITEE = 'Cette note a déjà été traitée.';
 
-    /**
-     * @dataProvider decisionsTardivesProvider
-     */
+    #[DataProvider('decisionsTardivesProvider')]
     public function testDeciderApresUnAutreEstRefuse(string $premierActeur, string $premiere, string $acteur, string $tardive): void
     {
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);

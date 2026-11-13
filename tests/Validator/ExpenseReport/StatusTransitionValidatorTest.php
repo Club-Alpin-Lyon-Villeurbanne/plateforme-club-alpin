@@ -7,6 +7,7 @@ use App\Utils\Enums\ExpenseReportStatusEnum;
 use App\Validator\ExpenseReport\ExpenseReportOriginalState;
 use App\Validator\ExpenseReport\StatusTransitionValidator;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class StatusTransitionValidatorTest extends TestCase
@@ -23,9 +24,7 @@ class StatusTransitionValidatorTest extends TestCase
         'tiers' => [],
     ];
 
-    /**
-     * @dataProvider transitionProvider
-     */
+    #[DataProvider('transitionProvider')]
     public function testTransitionIsAllowedOnlyForTheRightActor(string $actor, ExpenseReportStatusEnum $old, ExpenseReportStatusEnum $new, bool $allowed): void
     {
         $report = $this->existingReport();
@@ -53,9 +52,7 @@ class StatusTransitionValidatorTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider unchangedStatusProvider
-     */
+    #[DataProvider('unchangedStatusProvider')]
     public function testUnchangedStatusIsNotATransition(string $actor, ExpenseReportStatusEnum $status): void
     {
         $report = $this->existingReport();

@@ -71,10 +71,6 @@ endif
 	$(PHP) bin/phpunit ${path} $(args)
 .PHONY: tests
 
-phpunit-setup: ## Setup phpunit
-	@$(PHP) bin/phpunit --version
-.PHONY: phpunit-setup
-
 test-e2e: ## Run Playwright E2E tests
 	npx playwright test
 .PHONY: test-e2e
