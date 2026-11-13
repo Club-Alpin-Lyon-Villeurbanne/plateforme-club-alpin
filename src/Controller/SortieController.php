@@ -895,8 +895,11 @@ class SortieController extends AbstractController
             $replyToAddresses = $user->getEmail();
         }
 
+        // l'objet saisi devient le sujet du courriel : on le ramène à une seule ligne
+        $objet = trim((string) preg_replace('/\s+/u', ' ', (string) $request->request->get('objet')));
+
         $mailer->send($participations, 'transactional/message-sortie', [
-            'objet' => $request->request->get('objet'),
+            'objet' => $objet,
             'message_author' => sprintf('%s %s', $user->getFirstname(), strtoupper($user->getLastname())),
             'url_sortie' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'name_sortie' => $event->getTitre(),
