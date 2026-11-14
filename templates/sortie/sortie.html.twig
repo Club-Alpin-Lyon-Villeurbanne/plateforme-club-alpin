@@ -26,6 +26,11 @@
     {% endif %}
 {% endmacro %}
 
+{# Signale à la personne connectée qu'une information est masquée aux visiteurs non connectés. #}
+{% macro mention_visible_connecte() -%}
+    <span class="mini mention-visible-connecte" title="Cette information n'est pas affichée aux visiteurs non connectés.">(visible car vous êtes connecté·e)</span>
+{%- endmacro %}
+
 {% block stylesheets %}
     {{ parent() }}
     <style>
@@ -1010,13 +1015,15 @@
         {# Bloc détails cachés #}
         {% if event.detailsCaches %}
             <ul class="nice-list">
-                <li class="wide"><b>DÉTAILS PRATIQUES :</b><br />
-                    {% if allowed('user_read_limited') %}
+                {% if allowed('user_read_limited') %}
+                    <li class="wide"><b>DÉTAILS PRATIQUES :</b> {{ _self.mention_visible_connecte() }}<br />
                         {{ event.detailsCaches | converturls | nl2br }}
-                    {% else %}
+                    </li>
+                {% else %}
+                    <li class="wide"><b>DÉTAILS PRATIQUES :</b><br />
                         Détails de la sortie visibles après connexion
-                    {% endif %}
-                </li>
+                    </li>
+                {% endif %}
             </ul>
             <br style="clear:both" />
             <hr />
@@ -1033,10 +1040,10 @@
                 <ul class="nice-list">
                     {% if allowed('user_read_limited') %}
                         {% if event.tarif %}
-                            <li class="wide"><b>TARIF :</b> {{ event.tarif }} Euros</li>
+                            <li class="wide"><b>TARIF :</b> {{ event.tarif }} Euros {{ _self.mention_visible_connecte() }}</li>
                         {% endif %}
                         {% if event.tarifDetail %}
-                            <li class="wide"><b>DÉTAILS DES FRAIS :</b><br /> {{ event.tarifDetail | converturls | nl2br }}</li>
+                            <li class="wide"><b>DÉTAILS DES FRAIS :</b> {{ _self.mention_visible_connecte() }}<br /> {{ event.tarifDetail | converturls | nl2br }}</li>
                         {% endif %}
                     {% else %}
                         {% if event.tarif %}
@@ -1099,7 +1106,7 @@
 
             {% if allowed('user_read_limited') %}
                 <ul class="nice-list">
-                    <li class="wide"><b>RDV :</b> {% if event.rdv is not same as ('') %}{{ event.rdv }}{% else %}Voir sur la carte ci-dessous{% endif %}</li>
+                    <li class="wide"><b>RDV :</b> {% if event.rdv is not same as ('') %}{{ event.rdv }}{% else %}Voir sur la carte ci-dessous{% endif %} {{ _self.mention_visible_connecte() }}</li>
                     <li class="wide align-top"><b>S'Y RENDRE :</b></li>
                 </ul>
                 <div class="gps-apps">
