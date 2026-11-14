@@ -89,6 +89,12 @@
             align-items: flex-start;
             gap: 0 6px;
         }
+        /* déclarée après print.css : sans cette règle, le display: flex l'emporterait sur .noprint */
+        @media print {
+            .sortie-actions {
+                display: none;
+            }
+        }
         .sortie-actions-menu {
             position: relative;
         }
