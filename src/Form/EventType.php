@@ -406,7 +406,7 @@ class EventType extends AbstractType
             ->add('autoAccept', CheckboxType::class, [
                 'label' => 'Accepter automatiquement les demandes d\'inscription',
                 'required' => false,
-                'help' => ' Si vous cochez cette case, les demandes d\'inscription seront automatiquement acceptées, sous votre responsabilité.<br>Rien ne change pour les emails, tout se déroulera comme si vous acceptiez manuellement.',
+                'help' => ' Si vous cochez cette case, les demandes d\'inscription seront automatiquement acceptées, sous votre responsabilité. <span class="bold">Vous avez toujours la possibilité de désinscrire ou de refuser une inscription par la suite, dans la fiche de sortie, comme auparavant.</span><br>Rien ne change pour les emails, tout se déroulera comme si vous acceptiez manuellement.',
                 'help_attr' => [
                     'class' => 'mini',
                 ],
