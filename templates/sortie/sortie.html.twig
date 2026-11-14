@@ -81,6 +81,90 @@
         input:checked + .slider-round:before {
             transform: translateX(30px);
         }
+
+        /* Menu « Actions » de la fiche sortie */
+        .sortie-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 0 6px;
+        }
+        /* déclarée après print.css : sans cette règle, le display: flex l'emporterait sur .noprint */
+        @media print {
+            .sortie-actions {
+                display: none;
+            }
+        }
+        .sortie-actions-menu {
+            position: relative;
+        }
+        .sortie-actions-menu > summary {
+            list-style: none;
+            user-select: none;
+        }
+        .sortie-actions-menu > summary::-webkit-details-marker {
+            display: none;
+        }
+        .sortie-actions-menu > summary::after {
+            content: "▾";
+            margin-left: 6px;
+        }
+        .sortie-actions-menu[open] > summary {
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+        .sortie-actions-menu[open] > summary::after {
+            content: "▴";
+        }
+        .sortie-actions-liste {
+            position: absolute;
+            z-index: 50;
+            top: 100%;
+            left: 0;
+            margin-top: 4px;
+            padding: 2px 0;
+            background: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 9px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        }
+        .sortie-actions-liste ul {
+            margin: 0;
+            padding: 3px 0;
+            list-style: none;
+        }
+        .sortie-actions-liste ul + ul {
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        .sortie-actions-liste form {
+            margin: 0;
+        }
+        .sortie-actions-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-sizing: border-box;
+            width: 100%;
+            padding: 5px 16px 5px 12px;
+            border: 0;
+            background: none;
+            color: black;
+            font-family: DIN;
+            font-size: 0.9rem;
+            font-weight: 100;
+            text-align: left;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .sortie-actions-item:hover,
+        .sortie-actions-item:focus {
+            background-color: rgba(101, 178, 214, 0.15);
+            text-decoration: none;
+        }
+        .sortie-actions-item img {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
+        }
     </style>
 {% endblock %}
 
@@ -237,79 +321,132 @@
             </div>
         {% endif %}
 
-        <div class="tw-flex tw-gap-4">
-            {% if is_granted('SORTIE_DUPLICATE', event) %}
-            <form action="{{ path('sortie_duplicate', { event: event.id, mode: 'full' }) }}" method="post" class="loading">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
-
-                <a href="javascript:void(0)" onclick="$(this).parents('form').submit()" title="Créer une sortie avec les mêmes participants et les mêmes paramètres" class="nice2">
-                    <img src="/img/base/add.png" alt="Dupliquer la sortie avec ce groupe" title="" style="height:20px" />
-                    Dupliquer cette sortie avec ce groupe
-                </a>
-            </form>
-                <form action="{{ path('sortie_duplicate', { event: event.id, mode: 'empty' }) }}" method="post" class="loading">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
-
-                    <a href="javascript:void(0)" onclick="$(this).parents('form').submit()" title="Créer une sortie avec les mêmes paramètres (sans participant)" class="nice2">
-                        <img src="/img/base/add.png" alt="Dupliquer la sortie" title="" style="height:20px" />
-                        Dupliquer cette sortie
-                    </a>
-                </form>
-            {% endif %}
-        </div>
-
-        {% if app.user and event.user.id == app.user.id and event.isFinished %}
-            <a href="{{ path('article_new') }}?compterendu=true&amp;commission_article=-1&amp;evt_article={{ event.id }}" title="Vous êtes l'organisateur de cette sortie ? Rédigez un compte rendu" class="nice2 noprint">
-                <img src="/img/base/pencil_add.png" alt="" title="" style="" />
-                Compte rendu
-            </a><br>
-        {% endif %}
-
-        {% if is_granted('FICHE_SORTIE', event) %}
-        <a href="{{ path('feuille_sortie', {id: event.id}) }}" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2" target="_blank">
-            <img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
-            Imprimer la fiche de sortie
-        </a>
-        <a href="{{ path('sortie_pdf', { id: event.id }) }}" title="Imprimer la fiche de sortie en PDF" class="nice2" target="_blank">
-            <img src="/img/base/pdf.png" alt="PRINT" title="" style="height:20px" />
-            Imprimer la fiche de sortie en PDF
-        </a>
-        <a class="nice2" href="{{ path('sortie_xlsx', { id: event.id }) }}" title="Exporter la liste des participants en Excel">
-            <img src="/img/base/sheet.png" alt="" title="" /> Exporter la liste des participants en Excel
-        </a>
-        {% endif %}
-
         {% set my_status = event.participation(app.user) %}
 
-        {% if not event.isFinished %}
-            {% if allowed('user_read_limited') %}
-                <input id="add-to-calendar" type="button" class="nice2" value="📅 Ajouter à mon agenda" />
+        {# Actions secondaires regroupées dans le menu « Actions » ; chacune garde son contrôle de droits. #}
+        {% set peut_exporter = is_granted('FICHE_SORTIE', event) %}
+        {% set peut_dupliquer = is_granted('SORTIE_DUPLICATE', event) %}
+        {% set peut_rediger_compte_rendu = app.user and event.user.id == app.user.id and event.isFinished %}
+        {% set afficher_menu_actions = peut_exporter or peut_dupliquer or peut_rediger_compte_rendu %}
+        {% set afficher_agenda = not event.isFinished and allowed('user_read_limited') %}
 
-                {# lieu de l'événement : l'adresse du RDV, omise si elle n'est pas renseignée #}
-                {% set agenda_lieu = event.rdv|default('')|trim %}
-                <script>
-                const config = {
-                    name: "{{ event.titre|e('js') }}",
-                    description: "Fiche de la sortie : [url]{{ url('sortie', { code: event.code, id: event.id })|e('js') }}[/url]",
-                    startDate: "{{ event.startDate | intldate('yyyy-MM-dd') }}",
-                    startTime: "{{ event.startDate | date('H:i') }}",
-                    endDate: "{{ event.endDate | intldate('yyyy-MM-dd') }}",
-                    endTime: "{{ event.endDate | date('H:i') }}",
-                    {% if agenda_lieu is not same as('') %}
-                    location: "{{ agenda_lieu|e('js') }}",
-                    {% endif %}
-                    options: ['Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'],
-                    timeZone: "Europe/Paris",
-                    language: "fr"
-                };
-                const button = document.getElementById('add-to-calendar');
-                if (button) {
-                    button.addEventListener('click', () => atcb_action(config, button));
-                }
-                </script>
-            {% else %}
-                Vous n'avez pas accès à certaines informations de cette sortie car vous n'êtes pas connecté.
-            {% endif %}
+        {% if afficher_menu_actions or afficher_agenda %}
+            <div class="sortie-actions noprint">
+                {% if afficher_menu_actions %}
+                    <details class="sortie-actions-menu" id="sortie-actions-menu">
+                        <summary class="nice2">Actions</summary>
+                        <div class="sortie-actions-liste">
+                            {% if peut_exporter %}
+                                <ul>
+                                    <li>
+                                        <a href="{{ path('feuille_sortie', {id: event.id}) }}" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="sortie-actions-item" target="_blank">
+                                            <img src="/img/base/print.png" alt="" />
+                                            Imprimer la fiche de sortie
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ path('sortie_pdf', { id: event.id }) }}" title="Imprimer la fiche de sortie en PDF" class="sortie-actions-item" target="_blank">
+                                            <img src="/img/base/pdf.png" alt="" />
+                                            Imprimer la fiche de sortie en PDF
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ path('sortie_xlsx', { id: event.id }) }}" title="Exporter la liste des participants en Excel" class="sortie-actions-item">
+                                            <img src="/img/base/sheet.png" alt="" />
+                                            Exporter la liste des participants en Excel
+                                        </a>
+                                    </li>
+                                </ul>
+                            {% endif %}
+                            {% if peut_dupliquer %}
+                                <ul>
+                                    <li>
+                                        <form action="{{ path('sortie_duplicate', { event: event.id, mode: 'full' }) }}" method="post" class="loading">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
+                                            <button type="submit" title="Créer une sortie avec les mêmes participants et les mêmes paramètres" class="sortie-actions-item">
+                                                <img src="/img/base/add.png" alt="" />
+                                                Dupliquer cette sortie avec ce groupe
+                                            </button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form action="{{ path('sortie_duplicate', { event: event.id, mode: 'empty' }) }}" method="post" class="loading">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
+                                            <button type="submit" title="Créer une sortie avec les mêmes paramètres (sans participant)" class="sortie-actions-item">
+                                                <img src="/img/base/add.png" alt="" />
+                                                Dupliquer cette sortie
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            {% endif %}
+                            {% if peut_rediger_compte_rendu %}
+                                <ul>
+                                    <li>
+                                        <a href="{{ path('article_new') }}?compterendu=true&amp;commission_article=-1&amp;evt_article={{ event.id }}" title="Vous êtes l'organisateur de cette sortie ? Rédigez un compte rendu" class="sortie-actions-item">
+                                            <img src="/img/base/pencil_add.png" alt="" />
+                                            Rédiger un compte rendu
+                                        </a>
+                                    </li>
+                                </ul>
+                            {% endif %}
+                        </div>
+                    </details>
+
+                    <script>
+                    (() => {
+                        const menu = document.getElementById('sortie-actions-menu');
+                        const fermer = () => { menu.open = false; };
+
+                        // un clic en dehors du menu ou sur un lien (souvent ouvert dans un nouvel onglet) le referme
+                        document.addEventListener('click', (event) => {
+                            if (menu.open && !menu.contains(event.target)) {
+                                fermer();
+                            }
+                        });
+                        menu.querySelectorAll('a').forEach((lien) => lien.addEventListener('click', fermer));
+
+                        menu.addEventListener('keydown', (event) => {
+                            if ('Escape' === event.key && menu.open) {
+                                fermer();
+                                menu.querySelector('summary').focus();
+                            }
+                        });
+                    })();
+                    </script>
+                {% endif %}
+
+                {% if afficher_agenda %}
+                    <input id="add-to-calendar" type="button" class="nice2" value="📅 Ajouter à mon agenda" />
+
+                    {# lieu de l'événement : l'adresse du RDV, omise si elle n'est pas renseignée #}
+                    {% set agenda_lieu = event.rdv|default('')|trim %}
+                    <script>
+                    const config = {
+                        name: "{{ event.titre|e('js') }}",
+                        description: "Fiche de la sortie : [url]{{ url('sortie', { code: event.code, id: event.id })|e('js') }}[/url]",
+                        startDate: "{{ event.startDate | intldate('yyyy-MM-dd') }}",
+                        startTime: "{{ event.startDate | date('H:i') }}",
+                        endDate: "{{ event.endDate | intldate('yyyy-MM-dd') }}",
+                        endTime: "{{ event.endDate | date('H:i') }}",
+                        {% if agenda_lieu is not same as('') %}
+                        location: "{{ agenda_lieu|e('js') }}",
+                        {% endif %}
+                        options: ['Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'],
+                        timeZone: "Europe/Paris",
+                        language: "fr"
+                    };
+                    const button = document.getElementById('add-to-calendar');
+                    if (button) {
+                        button.addEventListener('click', () => atcb_action(config, button));
+                    }
+                    </script>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if not event.isFinished and not allowed('user_read_limited') %}
+            Vous n'avez pas accès à certaines informations de cette sortie car vous n'êtes pas connecté.
         {% endif %}
  
         <br />
