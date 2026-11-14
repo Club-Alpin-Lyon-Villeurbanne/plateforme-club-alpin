@@ -413,14 +413,19 @@
                 {% if afficher_agenda %}
                     <input id="add-to-calendar" type="button" class="nice2" value="📅 Ajouter à mon agenda" />
 
+                    {# lieu de l'événement : l'adresse du RDV, omise si elle n'est pas renseignée #}
+                    {% set agenda_lieu = event.rdv|default('')|trim %}
                     <script>
                     const config = {
                         name: "{{ event.titre|e('js') }}",
+                        description: "Fiche de la sortie : [url]{{ url('sortie', { code: event.code, id: event.id })|e('js') }}[/url]",
                         startDate: "{{ event.startDate | intldate('yyyy-MM-dd') }}",
                         startTime: "{{ event.startDate | date('H:i') }}",
                         endDate: "{{ event.endDate | intldate('yyyy-MM-dd') }}",
                         endTime: "{{ event.endDate | date('H:i') }}",
-                        location: "{{ event.rdv|e('js') }}",
+                        {% if agenda_lieu is not same as('') %}
+                        location: "{{ agenda_lieu|e('js') }}",
+                        {% endif %}
                         options: ['Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'],
                         timeZone: "Europe/Paris",
                         language: "fr"
