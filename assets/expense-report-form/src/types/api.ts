@@ -46,7 +46,7 @@ export interface ExpenseReport {
   id: number;
   refundRequired: boolean;
   status: string;
-  commentaireStatut: string;
+  commentaireStatut: string | null;
   utilisateur: User;
 }
 
