@@ -71,6 +71,30 @@ class SortieControllerTest extends WebTestCase
         $this->assertCount(1, $badgesPaye);
     }
 
+    public function testLaPremiereColonneDesInscritsEstLeNomAvecLaCaseDeContact(): void
+    {
+        $user = $this->signup();
+        $this->signin($user);
+
+        $event = $this->createEvent($user);
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE)->setStatusWho($user);
+        $participant = $this->signup();
+        $event->addParticipation($participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+
+        $this->assertResponseStatusCodeSame(200);
+        // la 1re colonne est figée au défilement du tableau (vue compétences) : ce doit être celle du nom
+        $tableau = $crawler->filter('.inscrits-table-container table');
+        $this->assertSame('Nom / Pseudo', trim($tableau->filter('thead th')->first()->text()));
+        $lignes = $tableau->filter('tbody tr');
+        $this->assertGreaterThanOrEqual(2, $lignes->count());
+        $this->assertCount($lignes->count(), $tableau->filter('tbody tr > td:first-child input.contact-cb'));
+        $nomsEnPremiereColonne = $tableau->filter('tbody tr > td:first-child')->each(fn ($td) => $td->text());
+        $this->assertStringContainsString(mb_strtoupper($participant->getLastname()), implode(' ', $nomsEnPremiereColonne));
+    }
+
     public function testDisplaySortieWithFiliationsAndEmpietementsToOwner()
     {
         $user = $this->signup();
