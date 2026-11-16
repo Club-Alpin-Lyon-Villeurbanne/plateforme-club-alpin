@@ -131,6 +131,25 @@
                 return false;
             });
 
+            function activateTab($tab) {
+                $('.manual-add-tab').removeClass('active');
+                $tab.addClass('active');
+                $('#manual-add-date-header').text('discovery' === $tab.data('show') ? 'Dates de validité' : 'Date d\'adhésion');
+            }
+
+            // Onglet dont les lignes sont affichées. Si le chargement d'un autre onglet échoue, DataTables
+            // garde ces lignes : on réactive alors cet onglet, pour rester cohérent et pouvoir réessayer.
+            let $shownTab = $('.manual-add-tab.active');
+            table.on('xhr.dt', function(e, settings, json) {
+                if (null === json) {
+                    activateTab($shownTab);
+                    table.ajax.url($shownTab.data('source'));
+                } else if (Number(json.draw) === settings.iDraw) {
+                    // réponse à la dernière requête, la seule que DataTables affiche
+                    $shownTab = $('.manual-add-tab.active');
+                }
+            });
+
             // Les onglets rechargent le tableau sans recharger la page, pour garder les sélections.
             $('.manual-add-tab').on('click', function(event) {
                 event.preventDefault();
@@ -139,9 +158,7 @@
                     return;
                 }
 
-                $('.manual-add-tab').removeClass('active');
-                $tab.addClass('active');
-                $('#manual-add-date-header').text('discovery' === $tab.data('show') ? 'Dates de validité' : 'Date d\'adhésion');
+                activateTab($tab);
                 // comme l'ancien rechargement de page : chaque onglet repart de sa liste complète
                 table.search('');
                 table.ajax.url($tab.data('source')).load();
