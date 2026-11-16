@@ -126,6 +126,30 @@ class CommissionControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(403);
     }
 
+    public function testChaqueEncadrantProposeAuFormulaireDeSortieALeLienVersSaFiche(): void
+    {
+        $commission = $this->createCommission();
+        $encadrant = $this->signup();
+        $encadrant->setFirstname('Jean')->setLastname('Cadre');
+        $this->addAttribute($encadrant, UserAttr::ENCADRANT, 'commission:' . $commission->getCode());
+        $coencadrant = $this->signup();
+        $coencadrant->setFirstname('Ko')->setLastname('Kadre');
+        $this->addAttribute($coencadrant, UserAttr::COENCADRANT, 'commission:' . $commission->getCode());
+
+        $this->signin($encadrant);
+        $crawler = $this->client->request('GET', '/encadrement-par-commission?commission=' . $commission->getId());
+
+        $this->assertResponseIsSuccessful();
+        foreach (['encadrants' => $encadrant, 'coencadrants' => $coencadrant] as $champ => $user) {
+            $case = $crawler->filter(sprintf('input[name="event[%s][]"][value="%d"]', $champ, $user->getId()));
+            $this->assertCount(1, $case);
+            $lien = $case->closest('label')->filter('a');
+            $this->assertCount(1, $lien);
+            $this->assertSame('/fiche-profil/' . $user->getId(), $lien->attr('href'));
+            $this->assertSame('Voir la fiche de ' . $user->getFullName(), $lien->attr('aria-label'));
+        }
+    }
+
     private function createBrevet(?Commission $commission): FormationReferentielBrevet
     {
         $brevet = (new FormationReferentielBrevet())
