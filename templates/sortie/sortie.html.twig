@@ -684,11 +684,10 @@
                     <input type="hidden" name="csrf_token_inscriptions" value="{{ csrf_token('sortie_update_inscriptions') }}" />
                     <input type="hidden" name="csrf_token_contact" value="{{ csrf_token('contact_participants') }}" />
 
-                    <div class="wide-table-container">
+                    <div class="wide-table-container inscrits-table-container">
                     <table class="datatable">
                         <thead>
                             <tr>
-                                <th class="select-contact"></th>
                                 <th>Nom / Pseudo</th>
                                 <th class="event-manage-user">Statut</th>
                                 <th class="event-manage-user">Rôle</th>
@@ -728,11 +727,11 @@
                                 {% endif %}
 
                                 <tr class="status{{ participation.status }}" style="color:gray; font-size:0.8rem;">
-                                    <td class="select-contact">
-                                        <input type="checkbox" id="contact_participant_{{ participation.id }}" name="contact_participant[{{ participation.id }}]" value="{{ participation.id }}" class="contact-cb {{ class }}" />
-                                    </td>
-
+                                    {# la case de sélection des destinataires reste dans la cellule du nom, pour que cette colonne soit la première, figée au défilement #}
                                     <td>
+                                        <span class="select-contact">
+                                            <input type="checkbox" id="contact_participant_{{ participation.id }}" name="contact_participant[{{ participation.id }}]" value="{{ participation.id }}" class="contact-cb {{ class }}" />
+                                        </span>
                                         {{ participation.user.firstname | capitalize }} {{ participation.user.lastname | upper }}<br/>
                                         <a href="{{ path('user_profile', {'id': participation.user.id, 'id_event': event.id}) }}" class="fancyframe userlink">{{ participation.user.nickname }}</a>
 
@@ -1578,6 +1577,9 @@
             // vue compétences & brevets OU gestion
             const toggle = document.getElementById('skill_view_toggle');
             toggle.addEventListener('change', (event) => {
+                // hauteur limitée en vue compétences : la ligne d'en-têtes reste visible au défilement
+                document.querySelector('.inscrits-table-container')?.classList.toggle('vue-competences', toggle.checked);
+
                 let elementsToHide = document.querySelectorAll('.event-user-skill');
                 let elementsToShow = document.querySelectorAll('.event-manage-user');
                 if (toggle.checked) {
