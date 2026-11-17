@@ -143,6 +143,27 @@ class SortieControllerTest extends WebTestCase
         $this->assertStringStartsWith('%PDF-', $this->client->getResponse()->getContent());
     }
 
+    public function testExportExcelDesParticipantsPourLEncadrant(): void
+    {
+        $user = $this->signup();
+        $this->signin($user);
+        $event = $this->createEvent($user);
+
+        $this->client->request('GET', sprintf('/sortie/%d/printXLSX', $event->getId()));
+
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testExportExcelDesParticipantsRefuseAUnAdherentQuiNEncadrePasLaSortie(): void
+    {
+        $event = $this->createEvent($this->signup());
+        $this->signin($this->signup());
+
+        $this->client->request('GET', sprintf('/sortie/%d/printXLSX', $event->getId()));
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
     public function testMenuActionsRegroupeLesActionsDeLOrganisateur(): void
     {
         $user = $this->signup();

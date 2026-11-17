@@ -1066,6 +1066,10 @@ class SortieController extends AbstractController
     #[Route(path: '/sortie/{id}/printXLSX', name: 'sortie_xlsx', requirements: ['id' => '\d+'])]
     public function generateXLSX(ExcelExport $excelExport, Evt $event, EventParticipationRepository $participationRepository): Response
     {
+        if (!$this->isGranted('FICHE_SORTIE', $event)) {
+            throw new AccessDeniedHttpException('Not allowed');
+        }
+
         $datas = $participationRepository->getSortedParticipations($event, null, EventParticipation::STATUS_VALIDE, true);
 
         $rsm = [' ', 'PARTICIPANTS (PRÉNOM, NOM)', 'LICENCE', 'AGE', 'TÉL.', 'TÉL. SECOURS', 'EMAIL'];
