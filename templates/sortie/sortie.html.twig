@@ -26,16 +26,43 @@
     {% endif %}
 {% endmacro %}
 
-{# Signale à la personne connectée, par un cadenas et son infobulle, qu'une information est masquée aux visiteurs non connectés. #}
+{# Signale à la personne connectée, par un cadenas et son infobulle, qu'une information est masquée aux visiteurs non connectés.
+   Infobulle en CSS (bloc stylesheets) plutôt qu'en attribut title : elle s'affiche sans délai, et aussi au clavier et au toucher. #}
 {% macro mention_visible_connecte() -%}
     {%- set mention = 'Visible car vous êtes connecté·e : les visiteurs non connectés ne voient pas cette information.' -%}
-    <img src="/img/base/lock_gray.png" class="mention-visible-connecte" alt="{{ mention }}" title="{{ mention }}" style="vertical-align: text-bottom; cursor: help;" />
+    <span class="mention-visible-connecte" tabindex="0" data-infobulle="{{ mention }}"><img src="/img/base/lock_gray.png" alt="{{ mention }}" /></span>
 {%- endmacro %}
 
 {% block stylesheets %}
     {{ parent() }}
     <style>
         .event-user-skill {display: none;}
+
+        /* Cadenas des informations réservées aux personnes connectées et son infobulle (macro mention_visible_connecte) */
+        ul.nice-list:has(.mention-visible-connecte) {overflow: visible; display: flow-root;}
+        .mention-visible-connecte {position: relative; display: inline-block; vertical-align: text-bottom; cursor: help;}
+        .mention-visible-connecte img {display: block;}
+        .mention-visible-connecte::after {
+            content: attr(data-infobulle);
+            position: absolute;
+            bottom: calc(100% + 6px);
+            left: -6px;
+            z-index: 10;
+            width: max-content;
+            max-width: 260px;
+            padding: 6px 8px;
+            border-radius: 4px;
+            background: #333;
+            color: #fff;
+            font-size: 0.8rem;
+            font-weight: normal;
+            line-height: 1.3;
+            text-align: left;
+            pointer-events: none;
+            visibility: hidden;
+        }
+        .mention-visible-connecte:hover::after,
+        .mention-visible-connecte:focus::after {visibility: visible;}
         .inscription-gestion-content .datatable {
             width: 595px;
             overflow: auto;
