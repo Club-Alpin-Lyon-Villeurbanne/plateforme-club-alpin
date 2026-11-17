@@ -419,8 +419,11 @@
                 {% if afficher_agenda %}
                     <input id="add-to-calendar" type="button" class="nice2" value="📅 Ajouter à mon agenda" />
 
-                    {# lieu de l'événement : l'adresse du RDV, omise si elle n'est pas renseignée #}
+                    {# lieu de l'événement : l'adresse du RDV, ou à défaut les coordonnées GPS du marqueur de la carte (« latitude,longitude ») #}
                     {% set agenda_lieu = event.rdv|default('')|trim %}
+                    {% if agenda_lieu is same as('') and (event.lat != 0 or event.long != 0) %}
+                        {% set agenda_lieu = event.lat|replace({',': '.'}) ~ ',' ~ event.long|replace({',': '.'}) %}
+                    {% endif %}
                     <script>
                     const config = {
                         name: "{{ event.titre|e('js') }}",

@@ -75,13 +75,34 @@ class SortieControllerTest extends WebTestCase
     }
 
     #[DataProvider('rdvNonRenseignes')]
-    public function testAjouterAMonAgendaSansRdvNeRenseignePasDeLieu(string $rdv): void
+    public function testAjouterAMonAgendaSansRdvDonneLesCoordonneesGpsCommeLieu(string $rdv): void
     {
         $user = $this->signup();
         $this->signin($user);
 
         $event = $this->createEvent($user);
         $event->setRdv($rdv);
+        $event->setLat('45.78303930');
+        $event->setLong('3.08418670');
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($user);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $code = $this->scriptAjouterAMonAgenda($event);
+
+        $this->assertSame('45.78303930,3.08418670', $this->champJs($code, 'location'));
+        $this->assertStringContainsString(sprintf('/sortie/%s-%d.html', $event->getCode(), $event->getId()), $this->champJs($code, 'description'));
+    }
+
+    public function testAjouterAMonAgendaSansRdvNiCoordonneesNeRenseignePasDeLieu(): void
+    {
+        $user = $this->signup();
+        $this->signin($user);
+
+        $event = $this->createEvent($user);
+        $event->setRdv('');
+        $event->setLat(0);
+        $event->setLong(0);
         $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
         $event->setStatusWho($user);
         $this->getContainer()->get('doctrine')->getManager()->flush();
@@ -89,7 +110,6 @@ class SortieControllerTest extends WebTestCase
         $code = $this->scriptAjouterAMonAgenda($event);
 
         $this->assertNull($this->champJs($code, 'location'));
-        $this->assertStringContainsString(sprintf('/sortie/%s-%d.html', $event->getCode(), $event->getId()), $this->champJs($code, 'description'));
     }
 
     public static function rdvNonRenseignes(): iterable
