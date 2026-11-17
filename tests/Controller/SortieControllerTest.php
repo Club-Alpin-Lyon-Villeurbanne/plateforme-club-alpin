@@ -192,11 +192,13 @@ class SortieControllerTest extends WebTestCase
         $this->assertAnySelectorTextContains('ul.nice-list li', 'Péage partagé entre les voitures');
 
         // Détails pratiques, tarif, détails des frais et RDV : les quatre informations masquées aux visiteurs.
-        $mentions = $crawler->filter('.mention-visible-connecte');
+        // Un cadenas les signale, la mention est dans son infobulle (et son texte alternatif).
+        $mention = 'Visible car vous êtes connecté·e : les visiteurs non connectés ne voient pas cette information.';
+        $mentions = $crawler->filter('img.mention-visible-connecte');
         $this->assertCount(4, $mentions);
-        foreach ($mentions as $mention) {
-            $this->assertSame('(visible car vous êtes connecté·e)', $mention->textContent);
-        }
+        $this->assertSame(array_fill(0, 4, $mention), $mentions->extract(['title']));
+        $this->assertSame(array_fill(0, 4, $mention), $mentions->extract(['alt']));
+        $this->assertSelectorTextNotContains('body', 'Visible car vous êtes connecté·e');
         foreach (['DÉTAILS PRATIQUES', 'TARIF', 'DÉTAILS DES FRAIS', 'RDV'] as $libelle) {
             $this->assertCount(1, $crawler->filter('ul.nice-list li')->reduce(
                 static fn ($li) => str_starts_with($li->filter('b')->text(''), $libelle . ' :')
