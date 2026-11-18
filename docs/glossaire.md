@@ -78,7 +78,7 @@ Diplôme fédéral de la filière « cadres », délivré par activité. Deux de
 Stage FFCAM suivi et validé par un adhérent (par exemple PSC1 ou une unité de formation « Neige et avalanches »), avec sa date et le numéro de la session.
 
 ### Niveau de pratique
-Niveau d'un adhérent dans une activité, filière « pratiquants » : INITIE, puis PERFECTIONNE, et SPECIALISE dans certaines activités seulement. Exemple : « INITIE en alpinisme ». Le niveau PERFECTIONNE dans l'activité est en général demandé pour se former au brevet d'initiateur 1er degré ; les conditions exactes dépendent de l'activité et du stage.
+Niveau d'un adhérent dans une activité, filière « pratiquants » : INITIE, puis PERFECTIONNE, et SPECIALISE dans certaines activités seulement. Exemple : « INITIE en alpinisme ». Le niveau PERFECTIONNE dans l'activité est le prérequis pour se former au brevet d'initiateur 1er degré. En escalade sur glace / dry tooling, le cursus d'initiateur demande le niveau SPECIALISE.
 
 ### Groupe de compétences (GDC)
 Subdivision d'un niveau de pratique. Chaque niveau est découpé en 4 chapitres, eux-mêmes découpés en parties ; chaque partie est un groupe de compétences, repéré par niveau-chapitre.partie (par exemple INI-2.1 ou PER-3.3). Un GDC est attesté par un initiateur. Quand tous les GDC d'un niveau sont validés, le niveau est obtenu.
