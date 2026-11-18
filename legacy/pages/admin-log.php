@@ -52,7 +52,7 @@ if (($currentPage['admin_page'] && !isGranted(SecurityConstants::ROLE_ADMIN)) ||
 					<td><img src="/img/base/' . $img . '" alt="" title="" style="vertical-align:middle" /> ' . HtmlHelper::escape($item['code_log_admin']) . '</td>
 					<td>' . HtmlHelper::escape($item['desc_log_admin']) . '</td>
 					<td><span style="display:none">' . $item['date_log_admin'] . '</span>' . date('d/m/y H:i', $item['date_log_admin']) . '</td>
-					<td>' . ($item['firstname_user'] ? HtmlHelper::escape($item['firstname_user'] . ' ' . $item['lastname_user']) : '') . '</td>
+					<td>' . HtmlHelper::escape(trim($item['firstname_user'] . ' ' . $item['lastname_user'])) . '</td>
 				</tr>';
             } ?>
 		</tbody>

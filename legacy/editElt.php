@@ -213,7 +213,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
         $stmt->close();
 
         // log
-        mylog('edit-html', 'Modif élément : <i>' . $code_content_html . '</i>', false); ?>
+        mylog('edit-html', 'Modif élément : « ' . $code_content_html . ' »', false); ?>
 		<script>
 			parent.$.fancybox.close();
             window.parent.location.reload();
