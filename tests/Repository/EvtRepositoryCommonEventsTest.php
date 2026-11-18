@@ -102,4 +102,93 @@ class EvtRepositoryCommonEventsTest extends WebTestCase
         $this->assertEmpty($this->repo()->getCommonEvents($userA, $userB, 0, 10));
         $this->assertCount(1, $this->repo()->getCommonEvents($userA, $userC, 0, 10));
     }
+
+    public function testExcludesWhenConsultedUserNotValidated(): void
+    {
+        $userA = $this->signup();
+        $userB = $this->signup();
+
+        // A est pré-inscrit (non confirmé) sur une sortie de B : le filtre vaut des deux côtés
+        $event = $this->createPastValidatedEvent($userB);
+        $event->addParticipation($userA, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_NON_CONFIRME);
+        $this->em()->flush();
+
+        $this->assertEmpty($this->repo()->getCommonEvents($userA, $userB, 0, 10));
+        $this->assertSame(0, $this->repo()->getCommonEventsCount($userA, $userB));
+    }
+
+    public function testExcludesCancelledEvent(): void
+    {
+        $userA = $this->signup();
+        $userB = $this->signup();
+
+        // L'annulation conserve les participations de l'encadrement
+        $event = $this->createPastValidatedEvent($userA);
+        $event->addParticipation($userB, EventParticipation::ROLE_COENCADRANT, EventParticipation::STATUS_VALIDE);
+        $event->setCancelled(true);
+        $this->em()->flush();
+
+        $this->assertEmpty($this->repo()->getCommonEvents($userA, $userB, 0, 10));
+        $this->assertSame(0, $this->repo()->getCommonEventsCount($userA, $userB));
+    }
+
+    public function testExcludesUnpublishedEvent(): void
+    {
+        $userA = $this->signup();
+        $userB = $this->signup();
+
+        $event = $this->createEvent($userA);
+        $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
+        $event->addParticipation($userB, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $this->em()->flush();
+
+        $this->assertEmpty($this->repo()->getCommonEvents($userA, $userB, 0, 10));
+        $this->assertSame(0, $this->repo()->getCommonEventsCount($userA, $userB));
+    }
+
+    public function testLoadsAllParticipationsOfTheEvent(): void
+    {
+        $userA = $this->signup();
+        $userB = $this->signup();
+        $userC = $this->signup();
+
+        $event = $this->createPastValidatedEvent($userA);
+        $event->addParticipation($userB, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $event->addParticipation($userC, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $this->em()->flush();
+        $this->em()->clear();
+
+        $userA = $this->em()->find(User::class, $userA->getId());
+        $userB = $this->em()->find(User::class, $userB->getId());
+
+        // Le témoin de places de la ligne de sortie compte toutes les participations validées
+        $common = $this->repo()->getCommonEvents($userA, $userB, 0, 10);
+
+        $this->assertCount(1, $common);
+        $this->assertSame(3, $common[0]->getParticipationsCount());
+    }
+
+    public function testLimitAppliesToEventsNotParticipations(): void
+    {
+        $userA = $this->signup();
+        $userB = $this->signup();
+
+        // La sortie la plus récente porte plusieurs participations validées de A
+        $latest = $this->createEvent($userA);
+        $latest->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $latest->setStartDate(new \DateTimeImmutable('+30 days'));
+        $latest->setEndDate(new \DateTimeImmutable('+31 days'));
+        $latest->addParticipation($userA, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $latest->addParticipation($userA, EventParticipation::ROLE_BENEVOLE, EventParticipation::STATUS_VALIDE);
+        $latest->addParticipation($userB, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+
+        foreach ([1, 2, 3] as $i) {
+            $event = $this->createPastValidatedEvent($userA);
+            $event->addParticipation($userB, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        }
+        $this->em()->flush();
+
+        $this->assertCount(3, $this->repo()->getCommonEvents($userA, $userB, 0, 3));
+        $this->assertSame(4, $this->repo()->getCommonEventsCount($userA, $userB));
+    }
 }

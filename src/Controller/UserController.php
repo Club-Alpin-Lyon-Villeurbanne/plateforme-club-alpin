@@ -64,6 +64,7 @@ class UserController extends AbstractController
         Mailer $mailer,
         EvtRepository $eventRepository,
         ArticleRepository $articleRepository,
+        UserRights $userRights,
     ): array {
         if ($user->isDeleted()) {
             throw new NotFoundHttpException('Cet adhérent est introuvable');
@@ -82,11 +83,12 @@ class UserController extends AbstractController
         );
         $userEvents = $eventRepository->getUserEvents($user, 0, 3, [Evt::STATUS_PUBLISHED_VALIDE]);
 
-        // Sorties en commun avec l'utilisateur connecté (sauf sur son propre profil)
+        // Sorties en commun avec l'utilisateur connecté : null masque la section
+        // (son propre profil, ou fiche réduite sans le droit de voir les sorties de l'adhérent)
         $loggedInUser = $this->getUser();
-        $commonEvents = [];
+        $commonEvents = null;
         $nbCommonEvents = 0;
-        if ($loggedInUser instanceof User && $loggedInUser->getId() !== $user->getId()) {
+        if ($loggedInUser instanceof User && $loggedInUser->getId() !== $user->getId() && $userRights->allowed('user_read_private')) {
             $commonEvents = $eventRepository->getCommonEvents($user, $loggedInUser, 0, 3);
             $nbCommonEvents = $eventRepository->getCommonEventsCount($user, $loggedInUser);
         }

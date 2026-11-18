@@ -274,7 +274,8 @@ class EvtRepository extends ServiceEntityRepository
     }
 
     /**
-     * Sorties auxquelles $user ET $otherUser participent tous deux (participation validée).
+     * Sorties auxquelles $user ET $otherUser participent tous deux (participation validée),
+     * hors sorties annulées.
      *
      * Pas de filtre de date : on reste cohérent avec « Dernières sorties »
      * (getUserEvents), qui liste aussi bien les sorties passées que futures.
@@ -302,7 +303,10 @@ class EvtRepository extends ServiceEntityRepository
     private function getCommonEventsDql(User $user, User $otherUser): QueryBuilder
     {
         return $this->getEventsByUserDql($user, [Evt::STATUS_PUBLISHED_VALIDE], [EventParticipation::STATUS_VALIDE])
+            // sans charger « p » : la limite porte sur les sorties et le nombre de places restantes reste juste
+            ->select('e')
             ->innerJoin('e.participations', 'p2', 'WITH', 'p2.user = :otherUser AND p2.status = :validStatus')
+            ->andWhere('e.cancelled = false')
             ->setParameter('otherUser', $otherUser)
             ->setParameter('validStatus', EventParticipation::STATUS_VALIDE)
             ->orderBy('e.startDate', 'desc')
