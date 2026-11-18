@@ -9,7 +9,8 @@ use PHPUnit\Framework\TestCase;
 
 class MetabaseServiceTest extends TestCase
 {
-    private string $secretKey = 'test-secret-key-12345';
+    // Même format que la clé d'intégration générée par Metabase ; php-jwt 7 refuse moins de 32 octets en HS256.
+    private string $secretKey = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef';
     private MetabaseService $service;
 
     protected function setUp(): void

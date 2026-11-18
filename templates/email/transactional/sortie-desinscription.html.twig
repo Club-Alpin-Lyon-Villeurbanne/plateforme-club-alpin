@@ -7,7 +7,11 @@
 {% block inner_html %}
     <p>
         {{ username }} était acceptée(e) ou en attente pour la sortie <a href="{{ event_url }}">{{ event_name }}</a>.
-        Il(elle) vient d'annuler sa participation.
+        {% if cancelled_by|default(null) %}
+            Son inscription vient d'être annulée par {{ cancelled_by }}, son adhérent(e) référent(e).
+        {% else %}
+            Il(elle) vient d'annuler sa participation.
+        {% endif %}
     </p>
     <p>
         Plus d'infos : {{ reason_explanation }}
@@ -20,7 +24,11 @@
 
 {% block inner_txt %}
     {{ username }} était acceptée(e) ou en attente pour la sortie {{ event_name }} ({{ event_url }}).
+    {% if cancelled_by|default(null) %}
+    Son inscription vient d'être annulée par {{ cancelled_by }}, son adhérent(e) référent(e).
+    {% else %}
     Il(elle) vient d'annuler sa participation.
+    {% endif %}
 
     Plus d'infos : {{ reason_explanation }}
       - Pseudo : {{ user.nickname }}

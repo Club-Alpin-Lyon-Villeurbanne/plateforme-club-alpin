@@ -5,23 +5,19 @@
 {% macro user_inscription_button(event, filiations, my_status, nInscritsTotal, free_seat_left, waiting_seat_left) %}
 
     {% if event.joinMax > 0 %}
-        {% set style = '' %}
-        {% if my_status and not my_status.isCovoiturage %}
-            {% set style = 'border:1px solid red; background:rgba(255,153,153,.4);' %}
-        {% endif %}
         <div style="text-align:center;">
             <br />
-            <a class="biglink" href="javascript:void(0)" onclick="$('#inscription').slideToggle(200)" title="" style="{{ style }}">
+            <a class="biglink" href="javascript:void(0)" onclick="$('#inscription').slideToggle(200)" title="">
             <span class="bleucaf">&gt;</span>
             {% if not my_status %}
                 JE SOUHAITE {% if free_seat_left > 0 %}ME PRÉ-INSCRIRE À CETTE SORTIE{% elseif waiting_seat_left > 0 %}REJOINDRE LA LISTE D'ATTENTE{% endif %}
-            {% elseif my_status.isCovoiturage %}
-            {% else %}
-            JE METS À JOUR MES PREFERENCES {% if style %}<img src="/img/base/bullet_error.png" title="Mettre à jour les préférences" width="16px">&nbsp;{% endif %}
+                {% if filiations|length > 0 %}
+                    <span class="bleucaf">&nbsp; / &nbsp;</span>
+                {% endif %}
             {% endif %}
 
             {% if filiations|length > 0 %}
-                <span class="bleucaf">&nbsp; / &nbsp;</span> PRÉ-INSCRIRE DES ADHÉRENTS AFFILIÉS
+                PRÉ-INSCRIRE DES ADHÉRENTS AFFILIÉS
             {% endif %}
             </a>
         </div>
@@ -29,6 +25,12 @@
         <hr /><div class="alerte">Pas de préinscription par internet</div>
     {% endif %}
 {% endmacro %}
+
+{# Signale à la personne connectée, par un cadenas et son infobulle, qu'une information est masquée aux visiteurs non connectés. #}
+{% macro mention_visible_connecte() -%}
+    {%- set mention = 'Visible car vous êtes connecté·e : les visiteurs non connectés ne voient pas cette information.' -%}
+    <img src="/img/base/lock_gray.png" class="mention-visible-connecte" alt="{{ mention }}" title="{{ mention }}" style="vertical-align: text-bottom; cursor: help;" />
+{%- endmacro %}
 
 {% block stylesheets %}
     {{ parent() }}
@@ -84,6 +86,90 @@
 
         input:checked + .slider-round:before {
             transform: translateX(30px);
+        }
+
+        /* Menu « Actions » de la fiche sortie */
+        .sortie-actions {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            gap: 0 6px;
+        }
+        /* déclarée après print.css : sans cette règle, le display: flex l'emporterait sur .noprint */
+        @media print {
+            .sortie-actions {
+                display: none;
+            }
+        }
+        .sortie-actions-menu {
+            position: relative;
+        }
+        .sortie-actions-menu > summary {
+            list-style: none;
+            user-select: none;
+        }
+        .sortie-actions-menu > summary::-webkit-details-marker {
+            display: none;
+        }
+        .sortie-actions-menu > summary::after {
+            content: "▾";
+            margin-left: 6px;
+        }
+        .sortie-actions-menu[open] > summary {
+            background-color: rgba(255, 255, 255, 0.6);
+        }
+        .sortie-actions-menu[open] > summary::after {
+            content: "▴";
+        }
+        .sortie-actions-liste {
+            position: absolute;
+            z-index: 50;
+            top: 100%;
+            left: 0;
+            margin-top: 4px;
+            padding: 2px 0;
+            background: #fff;
+            border: 1px solid rgba(0, 0, 0, 0.15);
+            border-radius: 9px;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+        }
+        .sortie-actions-liste ul {
+            margin: 0;
+            padding: 3px 0;
+            list-style: none;
+        }
+        .sortie-actions-liste ul + ul {
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        .sortie-actions-liste form {
+            margin: 0;
+        }
+        .sortie-actions-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-sizing: border-box;
+            width: 100%;
+            padding: 5px 16px 5px 12px;
+            border: 0;
+            background: none;
+            color: black;
+            font-family: DIN;
+            font-size: 0.9rem;
+            font-weight: 100;
+            text-align: left;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+        .sortie-actions-item:hover,
+        .sortie-actions-item:focus {
+            background-color: rgba(101, 178, 214, 0.15);
+            text-decoration: none;
+        }
+        .sortie-actions-item img {
+            width: 16px;
+            height: 16px;
+            object-fit: contain;
         }
     </style>
 {% endblock %}
@@ -241,74 +327,135 @@
             </div>
         {% endif %}
 
-        <div class="tw-flex tw-gap-4">
-            {% if is_granted('SORTIE_DUPLICATE', event) %}
-            <form action="{{ path('sortie_duplicate', { event: event.id, mode: 'full' }) }}" method="post" class="loading">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
-
-                <a href="javascript:void(0)" onclick="$(this).parents('form').submit()" title="Créer une sortie avec les mêmes participants et les mêmes paramètres" class="nice2">
-                    <img src="/img/base/add.png" alt="Dupliquer la sortie avec ce groupe" title="" style="height:20px" />
-                    Dupliquer cette sortie avec ce groupe
-                </a>
-            </form>
-                <form action="{{ path('sortie_duplicate', { event: event.id, mode: 'empty' }) }}" method="post" class="loading">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
-
-                    <a href="javascript:void(0)" onclick="$(this).parents('form').submit()" title="Créer une sortie avec les mêmes paramètres (sans participant)" class="nice2">
-                        <img src="/img/base/add.png" alt="Dupliquer la sortie" title="" style="height:20px" />
-                        Dupliquer cette sortie
-                    </a>
-                </form>
-            {% endif %}
-        </div>
-
-        {% if app.user and event.user.id == app.user.id and event.isFinished %}
-            <a href="{{ path('article_new') }}?compterendu=true&amp;commission_article=-1&amp;evt_article={{ event.id }}" title="Vous êtes l'organisateur de cette sortie ? Rédigez un compte rendu" class="nice2 noprint">
-                <img src="/img/base/pencil_add.png" alt="" title="" style="" />
-                Compte rendu
-            </a><br>
-        {% endif %}
-
-        {% if is_granted('FICHE_SORTIE', event) %}
-        <a href="{{ path('feuille_sortie', {id: event.id}) }}" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="nice2" target="_blank">
-            <img src="/img/base/print.png" alt="PRINT" title="" style="height:20px" />
-            Imprimer la fiche de sortie
-        </a>
-        <a href="{{ path('sortie_pdf', { id: event.id }) }}" title="Imprimer la fiche de sortie en PDF" class="nice2" target="_blank">
-            <img src="/img/base/pdf.png" alt="PRINT" title="" style="height:20px" />
-            Imprimer la fiche de sortie en PDF
-        </a>
-        <a class="nice2" href="{{ path('sortie_xlsx', { id: event.id }) }}" title="Exporter la liste des participants en Excel">
-            <img src="/img/base/sheet.png" alt="" title="" /> Exporter la liste des participants en Excel
-        </a>
-        {% endif %}
-
         {% set my_status = event.participation(app.user) %}
 
-        {% if not event.isFinished %}
-            {% if allowed('user_read_limited') %}
-                <input id="add-to-calendar" type="button" class="nice2" value="📅 Ajouter à mon agenda" />
+        {# Actions secondaires regroupées dans le menu « Actions » ; chacune garde son contrôle de droits. #}
+        {% set peut_exporter = is_granted('FICHE_SORTIE', event) %}
+        {% set peut_dupliquer = is_granted('SORTIE_DUPLICATE', event) %}
+        {% set peut_rediger_compte_rendu = app.user and event.user.id == app.user.id and event.isFinished %}
+        {% set afficher_menu_actions = peut_exporter or peut_dupliquer or peut_rediger_compte_rendu %}
+        {% set afficher_agenda = not event.isFinished and allowed('user_read_limited') %}
 
-                <script>
-                const config = {
-                    name: "{{ event.titre }}",
-                    startDate: "{{ event.startDate | intldate('yyyy-MM-dd') }}",
-                    startTime: "{{ event.startDate | date('H:i') }}",
-                    endDate: "{{ event.endDate | intldate('yyyy-MM-dd') }}",
-                    endTime: "{{ event.endDate | date('H:i') }}",
-                    location: "{{ event.rdv }}",
-                    options: ['Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'],
-                    timeZone: "Europe/Paris",
-                    language: "fr"
-                };
-                const button = document.getElementById('add-to-calendar');
-                if (button) {
-                    button.addEventListener('click', () => atcb_action(config, button));
-                }
-                </script>
-            {% else %}
-                Vous n'avez pas accès à certaines informations de cette sortie car vous n'êtes pas connecté.
-            {% endif %}
+        {% if afficher_menu_actions or afficher_agenda %}
+            <div class="sortie-actions noprint">
+                {% if afficher_menu_actions %}
+                    <details class="sortie-actions-menu" id="sortie-actions-menu">
+                        <summary class="nice2">Actions</summary>
+                        <div class="sortie-actions-liste">
+                            {% if peut_exporter %}
+                                <ul>
+                                    <li>
+                                        <a href="{{ path('feuille_sortie', {id: event.id}) }}" title="Ouvrir une nouvelle page avec la fiche complète des participants" class="sortie-actions-item" target="_blank">
+                                            <img src="/img/base/print.png" alt="" />
+                                            Imprimer la fiche de sortie
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ path('sortie_pdf', { id: event.id }) }}" title="Imprimer la fiche de sortie en PDF" class="sortie-actions-item" target="_blank">
+                                            <img src="/img/base/pdf.png" alt="" />
+                                            Imprimer la fiche de sortie en PDF
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="{{ path('sortie_xlsx', { id: event.id }) }}" title="Exporter la liste des participants en Excel" class="sortie-actions-item">
+                                            <img src="/img/base/sheet.png" alt="" />
+                                            Exporter la liste des participants en Excel
+                                        </a>
+                                    </li>
+                                </ul>
+                            {% endif %}
+                            {% if peut_dupliquer %}
+                                <ul>
+                                    <li>
+                                        <form action="{{ path('sortie_duplicate', { event: event.id, mode: 'full' }) }}" method="post" class="loading">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
+                                            <button type="submit" title="Créer une sortie avec les mêmes participants et les mêmes paramètres" class="sortie-actions-item">
+                                                <img src="/img/base/add.png" alt="" />
+                                                Dupliquer cette sortie avec ce groupe
+                                            </button>
+                                        </form>
+                                    </li>
+                                    <li>
+                                        <form action="{{ path('sortie_duplicate', { event: event.id, mode: 'empty' }) }}" method="post" class="loading">
+                                            <input type="hidden" name="csrf_token" value="{{ csrf_token('sortie_duplicate') }}" />
+                                            <button type="submit" title="Créer une sortie avec les mêmes paramètres (sans participant)" class="sortie-actions-item">
+                                                <img src="/img/base/add.png" alt="" />
+                                                Dupliquer cette sortie
+                                            </button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            {% endif %}
+                            {% if peut_rediger_compte_rendu %}
+                                <ul>
+                                    <li>
+                                        <a href="{{ path('article_new') }}?compterendu=true&amp;commission_article=-1&amp;evt_article={{ event.id }}" title="Vous êtes l'organisateur de cette sortie ? Rédigez un compte rendu" class="sortie-actions-item">
+                                            <img src="/img/base/pencil_add.png" alt="" />
+                                            Rédiger un compte rendu
+                                        </a>
+                                    </li>
+                                </ul>
+                            {% endif %}
+                        </div>
+                    </details>
+
+                    <script>
+                    (() => {
+                        const menu = document.getElementById('sortie-actions-menu');
+                        const fermer = () => { menu.open = false; };
+
+                        // un clic en dehors du menu ou sur un lien (souvent ouvert dans un nouvel onglet) le referme
+                        document.addEventListener('click', (event) => {
+                            if (menu.open && !menu.contains(event.target)) {
+                                fermer();
+                            }
+                        });
+                        menu.querySelectorAll('a').forEach((lien) => lien.addEventListener('click', fermer));
+
+                        menu.addEventListener('keydown', (event) => {
+                            if ('Escape' === event.key && menu.open) {
+                                fermer();
+                                menu.querySelector('summary').focus();
+                            }
+                        });
+                    })();
+                    </script>
+                {% endif %}
+
+                {% if afficher_agenda %}
+                    <input id="add-to-calendar" type="button" class="nice2" value="📅 Ajouter à mon agenda" />
+
+                    {# lieu de l'événement : l'adresse du RDV, ou à défaut les coordonnées GPS du marqueur de la carte (« latitude,longitude ») #}
+                    {% set agenda_lieu = event.rdv|default('')|trim %}
+                    {% if agenda_lieu is same as('') and (event.lat != 0 or event.long != 0) %}
+                        {% set agenda_lieu = event.lat|replace({',': '.'}) ~ ',' ~ event.long|replace({',': '.'}) %}
+                    {% endif %}
+                    <script>
+                    const config = {
+                        name: "{{ event.titre|e('js') }}",
+                        description: "Fiche de la sortie : [url]{{ url('sortie', { code: event.code, id: event.id })|e('js') }}[/url]",
+                        startDate: "{{ event.startDate | intldate('yyyy-MM-dd') }}",
+                        startTime: "{{ event.startDate | date('H:i') }}",
+                        endDate: "{{ event.endDate | intldate('yyyy-MM-dd') }}",
+                        endTime: "{{ event.endDate | date('H:i') }}",
+                        {% if agenda_lieu is not same as('') %}
+                        location: "{{ agenda_lieu|e('js') }}",
+                        {% endif %}
+                        options: ['Apple','Google','iCal','Outlook.com','Yahoo','Microsoft365'],
+                        timeZone: "Europe/Paris",
+                        language: "fr"
+                    };
+                    const button = document.getElementById('add-to-calendar');
+                    if (button) {
+                        button.addEventListener('click', () => atcb_action(config, button));
+                    }
+                    </script>
+                {% endif %}
+            </div>
+        {% endif %}
+
+        {% if not event.isFinished and not allowed('user_read_limited') %}
+            Vous n'avez pas accès à certaines informations de cette sortie car vous n'êtes pas connecté.
         {% endif %}
  
         <br />
@@ -384,7 +531,7 @@
                                     En cas de question, contactez la comptabilité.<br />&nbsp;
                                 </div>
                             </div>
-                        {% elseif event.statusLegal %}
+                        {% elseif event.legalStatusValide %}
                             {% include 'vuejs/expense-report-form.twig' %}
                         {% else %}
                             <div class="alerte info-container" style="margin-bottom:2rem !important">
@@ -414,6 +561,37 @@
                     <br />
                 {% endif %}
             {% endif %}
+        {% endif %}
+
+        {# inscriptions de mes affiliés : chacune s'annule séparément de la mienne,
+           avec les mêmes rôles que pour soi (un encadrant ou un stagiaire validé ne s'annule pas ici) #}
+        {% if not event.finished and allowed('evt_unjoin') %}
+            {% for filiation in filiations|default([]) %}
+                {% set filiation_status = event.participation(filiation) %}
+                {% if filiation_status and (filiation_status.status == constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')
+                    or (filiation_status.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') and filiation_status.role not in [constant('App\\Entity\\EventParticipation::ROLE_ENCADRANT'), constant('App\\Entity\\EventParticipation::ROLE_STAGIAIRE')])) %}
+                    {% set filiation_container_id = 'inscription-annuler-affilie-' ~ filiation.id %}
+                    <div class="{{ filiation_status.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') ? 'info' : 'alerte' }} info-container affilie-inscrit">
+                        <img src="/img/{{ filiation_status.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') ? 'inscrit-check' : 'inscrit-standby' }}.png" alt="" title=""/>
+                        <div class="text-container">
+                            {% if filiation_status.status == constant('App\\Entity\\EventParticipation::STATUS_VALIDE') %}
+                                Votre affilié(e) <b>{{ filiation.fullName }}</b> est inscrit(e) à cette sortie.
+                            {% else %}
+                                La demande d'inscription de votre affilié(e) <b>{{ filiation.fullName }}</b> est en attente de validation.
+                            {% endif %}
+                            <div class="button-container">
+                                <input type="button" class="nice" value="Désinscrire {{ filiation.fullName }}" onclick="$('#{{ filiation_container_id }}').slideToggle(200)" style="margin-top:6px;" />
+                            </div>
+                        </div>
+                    </div>
+                    {% include 'components/cancel-participation.html.twig' with {
+                        'my_status_id': filiation_status.id,
+                        'my_status': filiation_status.status,
+                        'container_id': filiation_container_id,
+                        'participant_name': filiation.fullName,
+                    } %}
+                {% endif %}
+            {% endfor %}
         {% endif %}
 
         {% if is_granted('SORTIE_INSCRIPTIONS_MODIFICATION', event) %}
@@ -515,11 +693,10 @@
                     <input type="hidden" name="csrf_token_inscriptions" value="{{ csrf_token('sortie_update_inscriptions') }}" />
                     <input type="hidden" name="csrf_token_contact" value="{{ csrf_token('contact_participants') }}" />
 
-                    <div class="wide-table-container">
+                    <div class="wide-table-container inscrits-table-container">
                     <table class="datatable">
                         <thead>
                             <tr>
-                                <th class="select-contact"></th>
                                 <th>Nom / Pseudo</th>
                                 <th class="event-manage-user">Statut</th>
                                 <th class="event-manage-user">Rôle</th>
@@ -559,11 +736,11 @@
                                 {% endif %}
 
                                 <tr class="status{{ participation.status }}" style="color:gray; font-size:0.8rem;">
-                                    <td class="select-contact">
-                                        <input type="checkbox" id="contact_participant_{{ participation.id }}" name="contact_participant[{{ participation.id }}]" value="{{ participation.id }}" class="contact-cb {{ class }}" />
-                                    </td>
-
+                                    {# la case de sélection des destinataires reste dans la cellule du nom, pour que cette colonne soit la première, figée au défilement #}
                                     <td>
+                                        <span class="select-contact">
+                                            <input type="checkbox" id="contact_participant_{{ participation.id }}" name="contact_participant[{{ participation.id }}]" value="{{ participation.id }}" class="contact-cb {{ class }}" />
+                                        </span>
                                         {{ participation.user.firstname | capitalize }} {{ participation.user.lastname | upper }}<br/>
                                         <a href="{{ path('user_profile', {'id': participation.user.id, 'id_event': event.id}) }}" class="fancyframe userlink">{{ participation.user.nickname }}</a>
 
@@ -771,7 +948,7 @@
 
                                     {% if event.hasPaymentForm %}
                                         <td class="event-manage-user">
-                                            {% if participation.hasPaid or participation.user.email in unrecognized_payers %}
+                                            {% if participation.hasPaid or (participation.user.email and participation.user.email in unrecognized_payers_emails) %}
                                                 <span class="tw-inline-flex tw-items-center tw-gap-1 tw-text-xs tw-font-medium tw-text-green-600 tw-whitespace-nowrap">
                                                     <svg class="tw-w-3 tw-h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
@@ -911,7 +1088,8 @@
 
                         <br />
                         <label for="objet">Objet :</label><br />
-                        <input id="contact_subject" type="text" name="objet" class="type1" style="width:95%" value="Note importante pour la sortie du {{ event.startDate | date('d/m') }}" /><br />
+                        {% import 'macros/sujet-message-sortie.html.twig' as sujet %}
+                        <input id="contact_subject" type="text" name="objet" class="type1" style="width:95%" value="{{ sujet.sujet_message_sortie(event.commission.title, event.titre, event.startDate ? event.startDate | date('d/m/Y')) }}" /><br />
                         <br />
 
                         <label>Répondre à ?</label><br />
@@ -977,13 +1155,15 @@
         {# Bloc détails cachés #}
         {% if event.detailsCaches %}
             <ul class="nice-list">
-                <li class="wide"><b>DÉTAILS PRATIQUES :</b><br />
-                    {% if allowed('user_read_limited') %}
+                {% if allowed('user_read_limited') %}
+                    <li class="wide"><b>DÉTAILS PRATIQUES :</b> {{ _self.mention_visible_connecte() }}<br />
                         {{ event.detailsCaches | converturls | nl2br }}
-                    {% else %}
+                    </li>
+                {% else %}
+                    <li class="wide"><b>DÉTAILS PRATIQUES :</b><br />
                         Détails de la sortie visibles après connexion
-                    {% endif %}
-                </li>
+                    </li>
+                {% endif %}
             </ul>
             <br style="clear:both" />
             <hr />
@@ -1000,10 +1180,10 @@
                 <ul class="nice-list">
                     {% if allowed('user_read_limited') %}
                         {% if event.tarif %}
-                            <li class="wide"><b>TARIF :</b> {{ event.tarif }} Euros</li>
+                            <li class="wide"><b>TARIF :</b> {{ _self.mention_visible_connecte() }} {{ event.tarif }} Euros</li>
                         {% endif %}
                         {% if event.tarifDetail %}
-                            <li class="wide"><b>DÉTAILS DES FRAIS :</b><br /> {{ event.tarifDetail | converturls | nl2br }}</li>
+                            <li class="wide"><b>DÉTAILS DES FRAIS :</b> {{ _self.mention_visible_connecte() }}<br /> {{ event.tarifDetail | converturls | nl2br }}</li>
                         {% endif %}
                     {% else %}
                         {% if event.tarif %}
@@ -1066,7 +1246,7 @@
 
             {% if allowed('user_read_limited') %}
                 <ul class="nice-list">
-                    <li class="wide"><b>RDV :</b> {% if event.rdv is not same as ('') %}{{ event.rdv }}{% else %}Voir sur la carte ci-dessous{% endif %}</li>
+                    <li class="wide"><b>RDV :</b> {{ _self.mention_visible_connecte() }} {% if event.rdv is not same as ('') %}{{ event.rdv }}{% else %}Voir sur la carte ci-dessous{% endif %}</li>
                     <li class="wide align-top"><b>S'Y RENDRE :</b></li>
                 </ul>
                 <div class="gps-apps">
@@ -1271,31 +1451,41 @@
                                                 {{ easy_include('inscrire-filiation-select') }}
 
                                                 <input type="hidden" name="filiations" value="on" />
+                                                {# les personnes déjà inscrites sont grisées et ne sont pas envoyées : ce formulaire n'inscrit que les nouvelles,
+                                                   la désinscription se fait avec les boutons « Annuler ma participation » / « Désinscrire … » #}
                                                 <br />
-                                                <label for="filiation_id_user_{{ app.user.id }}" style="width:100%;clear:both;overflow:hidden;">
+                                                <label for="filiation_id_user_{{ app.user.id }}" {% if my_status %}class="off"{% endif %} style="width:100%;clear:both;overflow:hidden;">
                                                     <input
                                                         type="checkbox"
                                                         checked="checked"
                                                         class="custom"
-                                                        name="id_user_filiation[]"
+                                                        {% if my_status %}disabled="disabled"{% else %}name="id_user_filiation[]"{% endif %}
                                                         value="{{ app.user.id }}"
                                                         id="filiation_id_user_{{ app.user.id }}" />
                                                     Moi-même (<a href="{{ path('user_profile', {'id': app.user.id, 'id_event': event.id}) }}" class="fancyframe userlink">{{ app.user.nickname }}</a>)
+                                                    {% if my_status %}<i>{{ my_status.status == constant('App\\Entity\\EventParticipation::STATUS_REFUSE') ? 'demande refusée' : 'déjà inscrit(e)' }}</i>{% endif %}
                                                 </label>
                                                 <br />
                                                 {% for filiation in filiations %}
+                                                    {% set filiation_status = event.participation(filiation) %}
                                                     <br />
-                                                    <label for="filiation_id_user_{{ filiation.id }}" style="width:100%;clear:both;overflow:hidden;">
+                                                    <label for="filiation_id_user_{{ filiation.id }}" {% if filiation_status %}class="off"{% endif %} style="width:100%;clear:both;overflow:hidden;">
                                                         <input
                                                             type="checkbox"
-                                                            onclick="$('#paiement_enfant_{{ filiation.id }}').slideToggle(200)"
                                                             class="custom"
-                                                            name="id_user_filiation[]"
+                                                            {% if filiation_status %}checked="checked" disabled="disabled"{% else %}name="id_user_filiation[]"{% endif %}
                                                             value="{{ filiation.id }}"
                                                             id="filiation_id_user_{{ filiation.id }}" />
                                                         {{ filiation.lastname }}, {{ filiation.firstname }} ({{ filiation.id }}, {{ filiation.nickname }})
+                                                        {% if filiation_status %}<i>{{ filiation_status.status == constant('App\\Entity\\EventParticipation::STATUS_REFUSE') ? 'demande refusée' : 'déjà inscrit(e)' }}</i>{% endif %}
                                                     </label>
                                                 {% endfor %}
+                                                {% if my_status or filiations|filter(f => event.participation(f))|length > 0 %}
+                                                    <p id="aide-desinscription" style="clear:both;padding-top:10px;">
+                                                        Les personnes déjà inscrites ne peuvent pas être décochées ici.
+                                                        Pour désinscrire l'une d'elles, utilisez le bouton «&nbsp;Annuler ma participation&nbsp;» ou «&nbsp;Désinscrire&nbsp;…&nbsp;» en haut de la page.
+                                                    </p>
+                                                {% endif %}
                                                 <hr class="clear" />
                                             {% endif %}
                                         </div>
@@ -1314,7 +1504,7 @@
                                                 {% if not my_status %}
                                                     ENVOYER MA DEMANDE D'INSCRIPTION
                                                 {% else %}
-                                                    METTRE A JOUR MES PREFERENCES
+                                                    INSCRIRE LES PERSONNES SÉLECTIONNÉES
                                                 {% endif %}
                                             </a>
                                         </p>
@@ -1370,19 +1560,17 @@
             const btn1 = document.getElementById('submit_update_participants');
             const btn2 = document.getElementById('submit_contact_participants');
 
-            const contact_subject = document.getElementById('contact_subject');
+            // l'objet est facultatif : vide, l'e-mail garde le sujet automatique
             const contact_message = document.getElementById('contact_message');
             const contact_reply_to = document.querySelector('input[name="reply_to_option"]');
 
             // les contrôles de gestion (btn1/btn2/select) ne sont rendus qu'aux encadrants
             btn1?.addEventListener('click', () => {
-                contact_subject.required = false;
                 contact_message.required = false;
                 contact_reply_to.required = false;
             });
 
             btn2?.addEventListener('click', (event) => {
-                contact_subject.required = true;
                 contact_message.required = true;
                 contact_reply_to.required = true;
 
@@ -1400,6 +1588,9 @@
             // vue compétences & brevets OU gestion
             const toggle = document.getElementById('skill_view_toggle');
             toggle.addEventListener('change', (event) => {
+                // hauteur limitée en vue compétences : la ligne d'en-têtes reste visible au défilement
+                document.querySelector('.inscrits-table-container')?.classList.toggle('vue-competences', toggle.checked);
+
                 let elementsToHide = document.querySelectorAll('.event-user-skill');
                 let elementsToShow = document.querySelectorAll('.event-manage-user');
                 if (toggle.checked) {

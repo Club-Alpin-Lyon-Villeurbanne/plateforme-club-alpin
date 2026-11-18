@@ -31,6 +31,9 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
 {
     use PaginationRepositoryTrait;
 
+    // Seul anonymizeUser() écrit ce prénom : la suppression admin et la fusion de doublons posent isDeleted sans anonymiser.
+    public const string PRENOM_ANONYMISE = 'compte';
+
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
@@ -200,14 +203,11 @@ SQL;
                 'excludeCafnum' => $excludeCafnum,
             ])
         ;
+        // Sans e-mail FFCAM, la fiche du site garde le sien : on ne peut pas les comparer.
         if (null !== $email) {
             $qb
                 ->andWhere('u.email = :email')
                 ->setParameter('email', $email)
-            ;
-        } else {
-            $qb
-                ->andWhere('u.email IS NULL')
             ;
         }
 
@@ -220,7 +220,7 @@ SQL;
     public function findDuplicateEmailUser(string $email, ?string $excludeCafnum = null)
     {
         return $this->createQueryBuilder('u')
-            ->where('u.email like :email')
+            ->where('u.email = :email')
             ->andWhere('u.cafnum != :excludeCafnum')
             ->orderBy('u.createdAt', 'DESC')
             ->setMaxResults(1)
@@ -376,6 +376,8 @@ SQL;
             ->leftJoin(Evt::class, 'e', Join::WITH, 'u.id = e.user')
             ->leftJoin(EventParticipation::class, 'p', Join::WITH, 'u.id = p.user')
             ->where('u.id != 1')     // super admin
+            ->andWhere('(u.isDeleted = false OR u.firstname <> :prenomAnonymise)')
+            ->setParameter('prenomAnonymise', self::PRENOM_ANONYMISE)
             ->andWhere('a.id is null')
             ->andWhere('c.id is null')
             ->andWhere('e.id is null')
@@ -401,6 +403,8 @@ SQL;
             ->leftJoin(Evt::class, 'e', Join::WITH, 'u.id = e.user')
             ->leftJoin(EventParticipation::class, 'p', Join::WITH, 'u.id = p.user')
             ->where('u.id != 1')     // super admin
+            ->andWhere('(u.isDeleted = false OR u.firstname <> :prenomAnonymise)')
+            ->setParameter('prenomAnonymise', self::PRENOM_ANONYMISE)
             ->andWhere('(a.id is not null or c.id is not null or e.id is not null or p.id is not null)')
         ;
         if (null !== $end) {
@@ -435,12 +439,13 @@ SQL;
             ->set('u.cookietoken', ':nullValue')
             ->set('u.doitRenouveler', ':falseValue')
             ->set('u.alerteRenouveler', ':falseValue')
+            ->set('u.profilePicture', ':nullValue')
             ->set('u.updatedAt', ':updatedAt')
             ->where('u.id = :user')
             ->setParameter('user', $user)
             ->setParameter('nullValue', null)
             ->setParameter('falseValue', false)
-            ->setParameter('firstname', 'compte')
+            ->setParameter('firstname', self::PRENOM_ANONYMISE)
             ->setParameter('lastname', 'supprimé ' . $user->getId())
             ->setParameter('nickname', 'Csuppr' . $user->getId())
             ->setParameter('updatedAt', (new \DateTime())->format('Y-m-d H:i:s'))

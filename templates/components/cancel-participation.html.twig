@@ -1,25 +1,47 @@
+{#
+    Formulaire d'annulation d'une participation.
+    - my_status_id, my_status : la participation à annuler et son statut
+    - container_id (facultatif) : id du bloc à déplier, unique sur la page
+    - participant_name (facultatif) : nom de l'affilié quand le référent annule son inscription
+#}
+{% set container_id = container_id|default('inscription-annuler') %}
+{% set participant_name = participant_name|default(null) %}
 <br>
 {% set wording = 'participation' %}
 {% if my_status is same as (constant('App\\Entity\\EventParticipation::STATUS_NON_CONFIRME')) %}
     {% set wording = 'demande d\'inscription' %}
 {% endif %}
-<div id="inscription-annuler" style="display: none;">
-    <h2>Annuler votre {{ wording }}</h2>
-    <p>Vous pouvez annuler instantanément votre {{ wording }}. L'organisateur recevra un e-mail pour l'en avertir.</p>
+<div id="{{ container_id }}" style="display: none;">
+    {% if participant_name %}
+        <h2>Annuler la {{ wording }} de {{ participant_name }}</h2>
+        <p>Vous pouvez annuler instantanément la {{ wording }} de {{ participant_name }}. L'organisateur recevra un e-mail pour l'en avertir.</p>
+    {% else %}
+        <h2>Annuler votre {{ wording }}</h2>
+        <p>Vous pouvez annuler instantanément votre {{ wording }}. L'organisateur recevra un e-mail pour l'en avertir.</p>
+    {% endif %}
     <br>
 
     <form action="{{ path('sortie_remove_participant', { id: my_status_id }) }}" method="post" class="loading">
         <input type="hidden" name="csrf_token" value="{{ csrf_token('remove_participant') }}" />
-        <label for="cancel_reason">Veuillez expliquer la raison de l'annulation de votre {{ wording }}</label>
-        <textarea id="cancel_reason" name="cancel_reason" class="type2" style="width:98%; min-height:80px" placeholder="ex : maladie, contraintes personnelles ou familiales, problème de matériel"></textarea>
+        <label for="cancel_reason_{{ container_id }}">Veuillez expliquer la raison de l'annulation de {{ participant_name ? 'cette' : 'votre' }} {{ wording }}</label>
+        <textarea id="cancel_reason_{{ container_id }}" name="cancel_reason" class="type2" style="width:98%; min-height:80px" placeholder="ex : maladie, contraintes personnelles ou familiales, problème de matériel"></textarea>
 
         <p style="text-align:center">
-            <a class="minilink" href="javascript:void(0)" title="Je maintiens ma {{ wording }} à la sortie" onclick="$('#inscription-annuler').slideToggle(200)">
-                RESTER INSCRIT
-            </a>
-            <a class="minilink btn-blue blanc" href="javascript:void(0)" title="J'annule ma {{ wording }} à la sortie" onclick="$(this).parents('form').submit()">
-                SE DÉSINSCRIRE
-            </a>
+            {% if participant_name %}
+                <a class="minilink" href="javascript:void(0)" title="Maintenir la {{ wording }} de {{ participant_name }}" onclick="$('#{{ container_id }}').slideToggle(200)">
+                    GARDER L'INSCRIPTION
+                </a>
+                <a class="minilink btn-blue blanc" href="javascript:void(0)" title="Annuler la {{ wording }} de {{ participant_name }}" onclick="$(this).parents('form').submit()">
+                    DÉSINSCRIRE {{ participant_name|upper }}
+                </a>
+            {% else %}
+                <a class="minilink" href="javascript:void(0)" title="Je maintiens ma {{ wording }} à la sortie" onclick="$('#{{ container_id }}').slideToggle(200)">
+                    RESTER INSCRIT
+                </a>
+                <a class="minilink btn-blue blanc" href="javascript:void(0)" title="J'annule ma {{ wording }} à la sortie" onclick="$(this).parents('form').submit()">
+                    SE DÉSINSCRIRE
+                </a>
+            {% endif %}
         </p>
     </form>
 </div>

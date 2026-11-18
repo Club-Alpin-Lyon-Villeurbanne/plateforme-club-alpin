@@ -32,7 +32,8 @@ class MysqliHandler
         $dbname = $this->params->get('legacy_env_DB_NAME');
 
         if ('test' === $this->kernelEnvironment) {
-            $dbname .= '_test';
+            // même base que Doctrine (config/packages/test/doctrine.yaml) : une base par TEST_TOKEN
+            $dbname .= '_test' . ($_SERVER['TEST_TOKEN'] ?? $_ENV['TEST_TOKEN'] ?? '');
         }
 
         $this->mysqli = new \mysqli($this->params->get('legacy_env_DB_HOST'), $this->params->get('legacy_env_DB_USER'), $this->params->get('legacy_env_DB_PASSWORD'), $dbname, $this->params->get('legacy_env_DB_PORT'));

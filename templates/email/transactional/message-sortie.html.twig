@@ -1,15 +1,14 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
+{# l'objet saisi par l'encadrant sert de sujet ; sans objet, on garde le sujet automatique #}
 {% block subject -%}
-    {% if commission %}[{{ commission }}]{% endif %}[Message] {{ name_sortie }} du {{ date_sortie }}
+    {% import 'macros/sujet-message-sortie.html.twig' as sujet %}
+    {%- if objet is not empty %}{{ objet }}{% else %}{{ sujet.sujet_message_sortie(commission, name_sortie, date_sortie) }}{% endif %}
 {%- endblock %}
 
 {% block inner_html %}
     <p>
         Vous avez reçu un message de <a href="{{ message_author_url }}">{{ message_author }}</a> au sujet de la sortie <a href="{{ url_sortie }}">{{ name_sortie }}</a>.
-    </p>
-    <p>
-        <b>Objet :</b> {{ objet }}
     </p>
     <p>
         <b>Message :</b>
@@ -21,8 +20,6 @@
 
 {% block inner_txt %}
 Vous avez reçu un message de <a href="{{ message_author_url }}">{{ message_author }}</a> au sujet de la sortie <a href="{{ url_sortie }}">{{ name_sortie }}</a>.
-
-Objet : {{ objet }}
 
 Message :
 

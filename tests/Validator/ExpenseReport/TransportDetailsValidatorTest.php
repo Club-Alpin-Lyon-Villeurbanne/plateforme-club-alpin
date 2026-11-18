@@ -5,14 +5,13 @@ namespace App\Tests\Validator\ExpenseReport;
 use App\Validator\ExpenseReport\AttachmentValidator;
 use App\Validator\ExpenseReport\TransportDetailsValidator;
 use Doctrine\Common\Collections\ArrayCollection;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class TransportDetailsValidatorTest extends TestCase
 {
-    /**
-     * @dataProvider transportAttachmentRequirementsProvider
-     */
+    #[DataProvider('transportAttachmentRequirementsProvider')]
     public function testValidateRequiredAttachmentsDependsOnPositiveAmounts(array $transport, array $expectedRequiredAttachments): void
     {
         $attachments = new ArrayCollection();

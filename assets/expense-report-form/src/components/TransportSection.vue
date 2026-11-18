@@ -75,6 +75,7 @@
             name="transport.rentalPrice"
             expense-id="rentalPrice"
             label="Location (€)"
+            help="Montant à rembourser, hors assurance (payée par le club)."
             :requires-attachment="true"
           />
           <Input

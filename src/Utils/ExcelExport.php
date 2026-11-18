@@ -91,7 +91,7 @@ class ExcelExport
                         if (null != $cellValue) {
                             $sheet->getCell($currentColumn . $startRow)->setValueExplicit($cellValue, $types[$cellKey]);
                         }
-                        ++$currentColumn;
+                        $currentColumn = str_increment($currentColumn);
                     }
                     ++$startRow;
                 }

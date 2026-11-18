@@ -38,8 +38,8 @@ class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $user->getNickname(), $user->getEmail()));
         $this->assertEmailTextBodyContains($emails[0], 'Si vous avez fait une erreur et souhaitez modifier votre note de frais,');
         $this->assertEmailHtmlBodyContains($emails[0], 'Si vous avez fait une erreur et souhaitez modifier votre note de frais,');
-        $this->assertEmailTextBodyContains($emails[0], 'est envoyée à la comptabilité.');
-        $this->assertEmailHtmlBodyContains($emails[0], 'a été traitée et est envoyée à la comptabilité.');
+        $this->assertEmailTextBodyContains($emails[0], 'est envoyée à la trésorerie.');
+        $this->assertEmailHtmlBodyContains($emails[0], 'a été traitée et est envoyée à la trésorerie.');
     }
 
     public function testItSendMailOnStatusChangeRejected()
@@ -96,7 +96,7 @@ class ExpenseReportStatusChangeSubscriberTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $user->getNickname(), $user->getEmail()));
-        $this->assertEmailTextBodyContains($emails[0], 'a été acceptée');
-        $this->assertEmailHtmlBodyContains($emails[0], 'a été traitée et a été acceptée');
+        $this->assertEmailTextBodyContains($emails[0], 'a été validée par la trésorerie');
+        $this->assertEmailHtmlBodyContains($emails[0], 'a été traitée et a été validée par la trésorerie');
     }
 }

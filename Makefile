@@ -71,10 +71,6 @@ endif
 	$(PHP) bin/phpunit ${path} $(args)
 .PHONY: tests
 
-phpunit-setup: ## Setup phpunit
-	@$(PHP) bin/phpunit --version
-.PHONY: phpunit-setup
-
 test-e2e: ## Run Playwright E2E tests
 	npx playwright test
 .PHONY: test-e2e
@@ -104,13 +100,13 @@ database-init-test: ## Init database for test
 docker-start: 
 	$(eval profile ?= dev)
 	@mkdir -p ~/.phive ~/.composer ~/.ssh
-	$(DOCKER_COMPOSE) --profile $(profile) up -d
+	$(DOCKER_COMPOSE) --profile $(profile) up -d --build
 .PHONY: docker-start
 
 
 docker-build: ## Build images
-	@$(DOCKER_COMPOSE) pull --parallel
-	@$(DOCKER_COMPOSE) build --pull --parallel
+	$(eval profile ?= dev)
+	@$(DOCKER_COMPOSE) --profile $(profile) build --pull
 .PHONY: docker-build
 
 docker-stop:

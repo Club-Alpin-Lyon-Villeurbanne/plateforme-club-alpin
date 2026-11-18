@@ -118,9 +118,15 @@
                                     }) }}
 
                                     {% if child.vars.value is same as ('cr') %}
-                                        <div id="sortie-liee" {% if edit_mode is same as (false) %}class="hidden"{% endif %}>
-                                            <br>
-                                            {{ form_row(form.evt) }}
+                                        <div id="sortie-liee" {% if form.articleType.vars.value is not same as ('cr') %}class="hidden"{% endif %}>
+                                            <p id="sortie-liee-commission-requise" class="mini{% if form.commission.vars.value is not empty %} hidden{% endif %}">
+                                                <br>
+                                                Choisissez d'abord une commission pour afficher ses sorties.
+                                            </p>
+                                            <div id="sortie-liee-champ" {% if form.commission.vars.value is empty %}class="hidden"{% endif %}>
+                                                <br>
+                                                {{ form_row(form.evt) }}
+                                            </div>
                                         </div>
                                     {% endif %}
                                 </div>
@@ -254,38 +260,76 @@
                 contentField.removeAttribute('required');
             }
 
-            let sortieLiee = document.getElementById('{{ form.evt.vars.id }}');
+            const commissionSelect = document.getElementById('{{ form.commission.vars.id }}');
+            const typeRadios = document.querySelectorAll('input[name="{{ form.articleType.vars.full_name }}"]');
+            const blocSortieLiee = document.getElementById('sortie-liee');
+            const messageCommissionRequise = document.getElementById('sortie-liee-commission-requise');
+            const champSortieLiee = document.getElementById('sortie-liee-champ');
+            let derniereRequeteSorties = 0;
+
+            // le champ « sortie liée » n'est visible et obligatoire que pour un compte rendu
+            function appliquerTypeArticle() {
+                const typeCoche = document.querySelector('input[name="{{ form.articleType.vars.full_name }}"]:checked');
+                const estCompteRendu = typeCoche !== null && typeCoche.value === 'cr';
+                const commissionChoisie = commissionSelect.value !== '';
+
+                blocSortieLiee.classList.toggle('hidden', !estCompteRendu);
+                messageCommissionRequise.classList.toggle('hidden', commissionChoisie);
+                champSortieLiee.classList.toggle('hidden', !commissionChoisie);
+
+                const selectSortie = champSortieLiee.querySelector('select');
+                if (selectSortie) {
+                    selectSortie.required = estCompteRendu && commissionChoisie;
+                }
+            }
+
+            typeRadios.forEach(function (radio) {
+                radio.addEventListener('change', appliquerTypeArticle);
+            });
 
             // sorties de la commission choisie
-            document.getElementById('article_commission').addEventListener('change', function() {
-                const selectedItem = document.getElementById('article_commission').selectedOptions[0];
-                const commission = encodeURIComponent(selectedItem.value);
+            commissionSelect.addEventListener('change', function () {
+                const numeroRequete = ++derniereRequeteSorties;
 
-                fetch('/sorties-par-commission?commission=' + commission, {
+                if (commissionSelect.value === '') {
+                    appliquerTypeArticle();
+
+                    return;
+                }
+
+                // retirer tout de suite l'ancienne liste : ses sorties ne sont pas celles de la commission choisie
+                champSortieLiee.innerHTML = '<p class="mini"><br>Chargement des sorties…</p>';
+                appliquerTypeArticle();
+
+                fetch('/sorties-par-commission?commission=' + encodeURIComponent(commissionSelect.value), {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     }
                 })
-                .then(response => response.text())
-                .then(html => {
-                    document.querySelector('#sortie-liee').innerHTML = html;
-                    sortieLiee = document.getElementById('form_evt');
-                });
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('HTTP ' + response.status);
+                    }
 
-                // sortie liée non obligatoire si pas CR
-                const radios = document.querySelectorAll('input[name="article[articleType]"]');
-                radios.forEach(function(radio) {
-                    radio.addEventListener('change', function() {
-                        if (this.value === 'cr') {
-                            document.getElementById('sortie-liee').style.display = 'block';
-                            sortieLiee.setAttribute('required', 'required');
-                        } else {
-                            document.getElementById('sortie-liee').style.display = 'none';
-                            sortieLiee.removeAttribute('required');
-                        }
-                    });
+                    return response.text();
+                })
+                .then(html => {
+                    // ignorer la réponse d'une commission entre-temps remplacée par une autre
+                    if (numeroRequete !== derniereRequeteSorties) {
+                        return;
+                    }
+                    champSortieLiee.innerHTML = html;
+                    appliquerTypeArticle();
+                })
+                .catch(() => {
+                    if (numeroRequete !== derniereRequeteSorties) {
+                        return;
+                    }
+                    champSortieLiee.innerHTML = '<p class="erreur">Impossible de charger les sorties de cette commission. Rechargez la page pour réessayer.</p>';
                 });
             });
+
+            appliquerTypeArticle();
 
             document.getElementById('article_form').addEventListener('submit', function (e) {
                 // vérifier que le contenu est rempli

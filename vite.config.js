@@ -23,6 +23,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         "expense-report-form": "./assets/expense-report-form/main.js",
+        "notes-de-frais": "./assets/notes-de-frais/main.ts",
         tailwind: "./assets/tailwind.js",
         modal: "./assets/js/modal/modal.js",
         modal_css: "./assets/styles/modal.css",

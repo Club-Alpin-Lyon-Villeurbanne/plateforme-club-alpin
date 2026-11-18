@@ -17,19 +17,8 @@ class MailerLiteService
         private readonly HttpClientInterface $httpClient,
         private readonly LoggerInterface $logger,
         private readonly ?string $apiKey = null,
-        private readonly ?string $welcomeGroupId = null,
         private readonly string $deployEnv = 'development',
     ) {
-    }
-
-    /**
-     * @param User[] $users
-     *
-     * @return array{total: int, imported: int, updated: int, failed: int, rejected: int, skipped: int}
-     */
-    public function syncNewMembers(array $users): array
-    {
-        return $this->pushToGroup((string) $this->welcomeGroupId, $users);
     }
 
     /**

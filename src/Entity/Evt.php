@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Serializer\Filter\GroupFilter;
+use App\Utils\StringUtils;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
@@ -24,15 +25,16 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 #[ApiResource(
     shortName: 'sortie',
     operations: [
-        new Get(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
-        new GetCollection(normalizationContext: ['groups' => ['event:read', 'commission:read', 'user:read', 'eventParticipation:read']]),
+        new Get(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:public', 'eventParticipation:read']]),
+        new GetCollection(normalizationContext: ['groups' => ['event:read', 'commission:read', 'user:public', 'eventParticipation:read']]),
     ],
     order: ['startDate' => 'ASC'],
+    paginationClientEnabled: false,
     security: "is_granted('ROLE_USER')",
 )]
-#[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact', 'participations.user.id' => 'exact'])]
+#[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact'])]
 #[ApiFilter(RangeFilter::class, properties: ['startDate'])]
-#[ApiFilter(GroupFilter::class, arguments: ['overrideDefaultGroups' => true])]
+#[ApiFilter(GroupFilter::class, arguments: ['overrideDefaultGroups' => true, 'whitelist' => ['event:read', 'event:details', 'commission:read', 'user:public', 'eventParticipation:read']])]
 #[ApiFilter(OrderFilter::class, properties: ['startDate'])]
 class Evt
 {
@@ -479,10 +481,17 @@ class Evt
     }
 
     /** @return EventParticipation[] */
-    #[Groups('eventParticipation:read')]
     public function getAllParticipations()
     {
         return $this->participations;
+    }
+
+    /** @return EventParticipation[] */
+    #[Groups('eventParticipation:read')]
+    #[SerializedName('participations')]
+    public function getParticipationsAcceptees(): array
+    {
+        return array_values($this->getParticipations()->toArray());
     }
 
     public function clearRoleParticipations(string $role = EventParticipation::ROLE_BENEVOLE): void
@@ -514,6 +523,29 @@ class Evt
         }
 
         return null;
+    }
+
+    /**
+     * Null si aucun ou plusieurs inscrits non payés portent ce nom : on ne devine pas.
+     */
+    public function findUnpaidParticipationByName(string $firstname, string $lastname): ?EventParticipation
+    {
+        $normalize = static fn (?string $name): string => preg_replace('/[^a-z]/', '', strtolower(StringUtils::removeDiacritics($name ?? '')));
+        $firstname = $normalize($firstname);
+        $lastname = $normalize($lastname);
+        if ('' === $firstname || '' === $lastname) {
+            return null;
+        }
+
+        $matches = $this->getParticipations(
+            EventParticipation::ROLES_SIMPLES,
+            [EventParticipation::STATUS_VALIDE, EventParticipation::STATUS_NON_CONFIRME],
+        )->filter(fn (EventParticipation $participation) => !$participation->hasPaid()
+            && $normalize($participation->getUser()->getFirstname()) === $firstname
+            && $normalize($participation->getUser()->getLastname()) === $lastname
+        );
+
+        return 1 === $matches->count() ? $matches->first() : null;
     }
 
     public function getParticipationById(int $id): ?EventParticipation
