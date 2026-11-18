@@ -15,6 +15,7 @@ use App\Utils\Enums\ExpenseReportStatusEnum;
 use App\Utils\Enums\ExpenseReportTypeEnum;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -49,12 +50,13 @@ class ExpenseReportCreateProcessor implements ProcessorInterface
             return $this->persistProcessor->process($expenseReport, $operation, $uriVariables, $context);
         }
 
-        //
-        // TODO: Check if the user is part of the encadrants group
-        //
         $event = $this->evtRepository->find($data->eventId);
         if (!$event) {
             throw new NotFoundHttpException('Event not found');
+        }
+
+        if (!$event->isEncadrant($user)) {
+            throw new AccessDeniedHttpException('Seuls les encadrants de la sortie peuvent créer sa note de frais.');
         }
 
         $existingReport = $this->expenseReportRepository->findOneBy([
