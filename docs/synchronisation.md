@@ -36,7 +36,7 @@ Cas particuliers :
 - **E-mail vide** côté FFCAM : l'e-mail du site n'est pas remplacé (avertissement dans le rapport).
 - **E-mail déjà utilisé** par un autre adhérent (couple, famille) : il est remplacé par `doublon.<n° de licence>-<e-mail>` pour respecter l'unicité ; la personne ne reçoit donc plus les e-mails du site (avertissement dans le rapport).
 - **Adhérent radié** : son compte est marqué « à renouveler ».
-- Un rapport récapitulatif est envoyé par e-mail après chaque synchronisation, même interrompue (`FfcamSyncReportMailer`). Si le fichier est absent ou si sa structure est invalide, rien n'est importé et aucun rapport n'est envoyé : l'erreur n'apparaît que dans les journaux.
+- Un rapport récapitulatif est envoyé par e-mail après chaque synchronisation, même interrompue (`FfcamSyncReportMailer`). Dans deux cas, rien n'est importé et aucun rapport n'est envoyé : si le fichier est absent, la commande affiche une erreur et s'arrête en échec ; si sa structure est invalide, l'erreur est journalisée.
 
 ### Cartes découverte
 
