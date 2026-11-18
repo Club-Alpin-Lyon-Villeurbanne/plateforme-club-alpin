@@ -19,22 +19,35 @@ class AdminLogAnonymizationCronCommand extends Command
     public function __construct(
         private readonly Connection $connection,
         private readonly LoggerInterface $logger,
-        #[Autowire(env: 'int:ADMIN_LOG_RETENTION_MONTHS')]
-        private readonly int $retentionMonths,
+        #[Autowire(env: 'ADMIN_LOG_RETENTION_MONTHS')]
+        private readonly string $retentionMonths,
     ) {
         parent::__construct();
     }
 
+    /**
+     * Même jour du mois cible, ou son dernier jour s'il est plus court : « -1 month » le 31 mars
+     * donnerait le 3 mars et anonymiserait des lignes trop récentes.
+     */
+    public static function retentionLimit(\DateTimeImmutable $now, int $months): \DateTimeImmutable
+    {
+        $targetMonth = $now->modify('first day of this month')->modify(sprintf('-%d months', $months));
+        $day = min((int) $now->format('j'), (int) $targetMonth->format('t'));
+
+        return $targetMonth->setDate((int) $targetMonth->format('Y'), (int) $targetMonth->format('n'), $day);
+    }
+
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        // Une durée nulle ou négative anonymiserait tout le journal, y compris les actions du jour.
-        if ($this->retentionMonths < 1) {
-            $this->logger->error('Admin log anonymization: ADMIN_LOG_RETENTION_MONTHS must be at least 1');
+        // Une durée invalide pourrait anonymiser trop de lignes, y compris les actions du jour.
+        $months = filter_var($this->retentionMonths, \FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]);
+        if (false === $months) {
+            $this->logger->error('Admin log anonymization: ADMIN_LOG_RETENTION_MONTHS must be a positive integer');
 
             return Command::FAILURE;
         }
 
-        $limit = (new \DateTimeImmutable(sprintf('-%d months', $this->retentionMonths)))->getTimestamp();
+        $limit = self::retentionLimit(new \DateTimeImmutable(), $months)->getTimestamp();
 
         $anonymized = $this->connection->executeStatement(
             'UPDATE caf_log_admin

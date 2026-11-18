@@ -52,7 +52,7 @@ if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
 				<tr>
 					<td><span style="display:none">' . $item['date_log_admin'] . '</span>' . date('d/m/y H:i', $item['date_log_admin']) . '</td>
 					<td><img src="/img/base/' . $img . '" alt="" title="" style="vertical-align:middle" /> ' . HtmlHelper::escape($item['code_log_admin']) . '</td>
-					<td>' . HtmlHelper::escape(strip_tags($item['desc_log_admin'])) . '</td>
+					<td>' . HtmlHelper::escape(str_replace(['<i>', '</i>'], '', $item['desc_log_admin'])) . '</td>
 					<td>' . HtmlHelper::escape($item['ip_log_admin']) . '</td>
 					<td>' . HtmlHelper::escape(trim($item['firstname_user'] . ' ' . $item['lastname_user'])) . '</td>
 				</tr>';

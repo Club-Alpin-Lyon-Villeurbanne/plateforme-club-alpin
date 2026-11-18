@@ -13,17 +13,20 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
 
     if ($code_content_html) {
         // update VIS
-        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("UPDATE `caf_content_html` SET  `vis_content_html` =  ? WHERE  `code_content_html` LIKE  ? AND  `lang_content_html` LIKE  'fr' ORDER BY  `date_content_html` DESC  LIMIT 1");
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("UPDATE `caf_content_html` SET  `vis_content_html` =  ? WHERE  `code_content_html` = ? AND  `lang_content_html` LIKE  'fr' ORDER BY  `date_content_html` DESC  LIMIT 1");
         $stmt->bind_param('is', $vis_content_html, $code_content_html);
         if ($stmt->execute()) {
             $result['success'] = true;
-            mylog('edit-html-vis', ($vis_content_html ? 'Activation' : 'Désactivation') . ' du bloc : « ' . $code_content_html . ' »', false);
+            // aucune trace si le bloc avait déjà cette visibilité
+            if ($stmt->affected_rows > 0) {
+                mylog('edit-html-vis', ($vis_content_html ? 'Activation' : 'Désactivation') . ' du bloc : « ' . $code_content_html . ' »', false);
+            }
         }
         $stmt->close();
         $log .= "\n req :  UPDATE ...";
         // retour contenu si visible
         if ($vis_content_html) {
-            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT `contenu_content_html` FROM  `caf_content_html` WHERE  `code_content_html` LIKE  ? AND  `lang_content_html` LIKE  'fr' ORDER BY  `date_content_html` DESC  LIMIT 1");
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare("SELECT `contenu_content_html` FROM  `caf_content_html` WHERE  `code_content_html` = ? AND  `lang_content_html` LIKE  'fr' ORDER BY  `date_content_html` DESC  LIMIT 1");
             $stmt->bind_param('s', $code_content_html);
             $stmt->execute();
             $handleSql = $stmt->get_result();
