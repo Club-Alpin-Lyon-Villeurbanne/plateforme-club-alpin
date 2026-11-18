@@ -23,11 +23,15 @@ class NoteSortieCreationTest extends ExpenseReportApiTestCase
 
     public function testUnParticipantNonEncadrantNePeutPasCreerSaNote(): void
     {
-        $sortie = $this->createEvent($this->owner);
-        $this->inscrire($sortie, $this->adherent, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        // Le bénévole d'encadrement n'est pas un encadrant : ROLES_ENCADREMENT_ETENDU ne suffirait pas.
+        foreach ([EventParticipation::ROLE_INSCRIT, EventParticipation::ROLE_BENEVOLE] as $role) {
+            $participant = $this->signup();
+            $sortie = $this->createEvent($this->signup());
+            $this->inscrire($sortie, $participant, $role, EventParticipation::STATUS_VALIDE);
 
-        $this->assertResponseStatus(403, $this->create($this->adherent, ['eventId' => $sortie->getId()]));
-        $this->assertNull($this->noteDe($this->adherent, $sortie));
+            $this->assertResponseStatus(403, $this->create($participant, ['eventId' => $sortie->getId()]));
+            $this->assertNull($this->noteDe($participant, $sortie), $role);
+        }
     }
 
     public function testUnEncadrantDontLaParticipationNEstPasValideeNePeutPasCreerSaNote(): void
@@ -48,21 +52,15 @@ class NoteSortieCreationTest extends ExpenseReportApiTestCase
         $this->assertSame('draft', $response['body']['status']);
     }
 
-    /**
-     * @dataProvider rolesDEncadrement
-     */
-    public function testLeCoEncadrantEtLeStagiaireCreentLeurNote(string $role): void
+    public function testLeCoEncadrantEtLeStagiaireCreentLeurNote(): void
     {
-        $sortie = $this->createEvent($this->owner);
-        $this->inscrire($sortie, $this->adherent, $role, EventParticipation::STATUS_VALIDE);
+        foreach ([EventParticipation::ROLE_COENCADRANT, EventParticipation::ROLE_STAGIAIRE] as $role) {
+            $participant = $this->signup();
+            $sortie = $this->createEvent($this->signup());
+            $this->inscrire($sortie, $participant, $role, EventParticipation::STATUS_VALIDE);
 
-        $this->assertResponseStatus(201, $this->create($this->adherent, ['eventId' => $sortie->getId()]));
-    }
-
-    public static function rolesDEncadrement(): iterable
-    {
-        yield 'co-encadrant' => [EventParticipation::ROLE_COENCADRANT];
-        yield 'stagiaire' => [EventParticipation::ROLE_STAGIAIRE];
+            $this->assertResponseStatus(201, $this->create($participant, ['eventId' => $sortie->getId()]));
+        }
     }
 
     public function testUneSortieInconnueResteIntrouvable(): void

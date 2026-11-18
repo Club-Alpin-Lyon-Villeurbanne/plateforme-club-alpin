@@ -567,7 +567,12 @@ class Evt
         }
 
         foreach ($this->getEncadrants() as $participation) {
-            if ($participation->getUser()?->getId() === $user->getId()) {
+            $participant = $participation->getUser();
+            if (null === $participant) {
+                continue;
+            }
+            // Utilisateurs non persistés : pas d'identifiant à comparer, on compare les objets.
+            if (null === $user->getId() ? $participant === $user : $participant->getId() === $user->getId()) {
                 return true;
             }
         }
