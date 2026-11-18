@@ -87,6 +87,20 @@ class LoginControllerTest extends WebTestCase
         $this->assertEmailHtmlBodyContains($emails[0], 'Votre mot de passe');
     }
 
+    public function testPasswordLostEnvoieLeLienALAdresseDuCompte(): void
+    {
+        $user = $this->signup(mt_rand() . 'test@clubalpinlyon.fr');
+
+        $this->client->request('GET', '/password-lost');
+        $this->client->submitForm('reset_password[submit]', [
+            'reset_password[email]' => strtoupper($user->getEmail()),
+        ]);
+
+        $emails = $this->getMailerMessages();
+        $this->assertCount(1, $emails);
+        $this->assertEmailHeaderSame($emails[0], 'To', $user->getEmail());
+    }
+
     public function testSetPassword()
     {
         $user = $this->signup(mt_rand() . 'test@clubalpinlyon.fr');
