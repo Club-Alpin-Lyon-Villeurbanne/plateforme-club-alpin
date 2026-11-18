@@ -56,7 +56,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     private Collection $attrs;
 
     #[ORM\Column(name: 'email_user', type: 'string', length: 200, unique: true, nullable: true)]
-    #[Groups('user:read')]
+    #[Groups('user:details')]
     private ?string $email = null;
 
     #[ORM\Column(name: 'gdrive_email', type: 'string', length: 200, unique: true, nullable: true)]

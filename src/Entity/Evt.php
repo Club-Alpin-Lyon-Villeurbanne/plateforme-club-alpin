@@ -33,7 +33,7 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 )]
 #[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact', 'participations.user.id' => 'exact'])]
 #[ApiFilter(RangeFilter::class, properties: ['startDate'])]
-#[ApiFilter(GroupFilter::class, arguments: ['overrideDefaultGroups' => true])]
+#[ApiFilter(GroupFilter::class, arguments: ['overrideDefaultGroups' => true, 'whitelist' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']])]
 #[ApiFilter(OrderFilter::class, properties: ['startDate'])]
 class Evt
 {

@@ -121,7 +121,6 @@ GET /api/sorties
       },
       "user": {
         "id": 42,
-        "email": "guide@clubalpin.fr",
         "prenom": "Jean",
         "nom": "DUPONT",
         "surnom": "JD"
@@ -150,6 +149,8 @@ Retourne les détails complets d'une sortie incluant les informations supplémen
 ```http
 GET /api/utilisateurs/{id}
 ```
+
+Ailleurs dans l'API (auteur d'une sortie ou d'un article, participants), un adhérent n'apparaît qu'avec son identifiant, son prénom, son nom et son pseudonyme. Son e-mail et ses coordonnées ne sont visibles que sur son propre profil.
 
 **Note :** Vous ne pouvez accéder qu'à vos propres informations ou celles d'un autre utilisateur si vous avez les droits admin.
 
