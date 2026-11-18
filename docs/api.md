@@ -120,9 +120,7 @@ GET /api/sorties
       },
       "user": {
         "id": 42,
-        "prenom": "Jean",
-        "nom": "DUPONT",
-        "surnom": "JD"
+        "pseudonyme": "JD"
       }
     }
   ],
