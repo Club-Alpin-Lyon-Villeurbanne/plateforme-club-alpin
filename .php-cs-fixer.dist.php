@@ -22,7 +22,7 @@ return (new PhpCsFixer\Config())
         // exécution en coercition de types. 16 fichiers du projet sont concernés.
         // La règle est neutralisée ici pour que la version de l'outil ne change pas
         // la sémantique du code ; c'est aussi pourquoi la contrainte Composer est
-        // épinglée en 3.87.*.
+        // épinglée en ~3.91.3.
         'declare_strict_types' => false,
         '@DoctrineAnnotation' => true,
         'trailing_comma_in_multiline' => false, // Désactive l'ajout de virgules en fin d'array

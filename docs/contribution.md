@@ -112,14 +112,14 @@ régénérer la baseline pour y faire entrer une erreur qu'on vient d'introduire
 
 ### PHP-CS-Fixer est épinglé
 
-La contrainte est volontairement fixée à `3.87.*`, pas `^3.87`. À partir de 3.95, le
+La contrainte est volontairement fixée à `~3.91.3`, pas `^3.91`. À partir de 3.95, le
 préréglage `@Symfony:risky` embarque `declare_strict_types` en stratégie `remove` :
 il retire `declare(strict_types=1)` des fichiers qui en ont un, ce qui fait basculer
 leur exécution en coercition de types. La règle est aussi neutralisée explicitement
 dans `.php-cs-fixer.dist.php`.
 
 Monter l'outil est possible, mais c'est une PR à part : il faut d'abord décider ce
-qu'on veut pour `strict_types` dans le projet (16 fichiers l'ont aujourd'hui, 354 ne
+qu'on veut pour `strict_types` dans le projet (16 fichiers l'ont aujourd'hui, 423 ne
 l'ont pas).
 
 ### Monter les niveaux

@@ -1,7 +1,7 @@
 parameters:
 	ignoreErrors:
 		-
-			message: '#^Call to an undefined method App\\Repository\\UserRepository\<App\\Entity\\User\>\:\:findOneByEmail\(\)\.$#'
+			message: '#^Call to an undefined method App\\Repository\\UserRepository\:\:findOneByEmail\(\)\.$#'
 			identifier: method.notFound
 			count: 10
 			path: src/Command/Dev/FixturesLoadCommand.php
@@ -81,7 +81,7 @@ parameters:
 		-
 			message: '#^Call to an undefined method ApiPlatform\\Metadata\\Operation\:\:getUriTemplate\(\)\.$#'
 			identifier: method.notFound
-			count: 1
+			count: 2
 			path: src/Doctrine/ExpenseReportExtension.php
 
 		-
@@ -134,6 +134,12 @@ parameters:
 
 		-
 			message: '#^Property App\\Entity\\Commission\:\:\$googleDriveId type mapping mismatch\: database can contain string\|null but property expects string\.$#'
+			identifier: doctrine.columnType
+			count: 1
+			path: src/Entity/Commission.php
+
+		-
+			message: '#^Property App\\Entity\\Commission\:\:\$mandatoryFields type mapping mismatch\: database can contain null but property expects array\.$#'
 			identifier: doctrine.columnType
 			count: 1
 			path: src/Entity/Commission.php
@@ -308,18 +314,6 @@ parameters:
 
 		-
 			message: '#^Property App\\Entity\\ExpenseReport\:\:\$createdAt type mapping mismatch\: property can contain DateTimeImmutable\|null but database expects DateTimeImmutable\.$#'
-			identifier: doctrine.columnType
-			count: 1
-			path: src/Entity/ExpenseReport.php
-
-		-
-			message: '#^Property App\\Entity\\ExpenseReport\:\:\$event type mapping mismatch\: property can contain App\\Entity\\Evt\|null but database expects App\\Entity\\Evt\.$#'
-			identifier: doctrine.associationType
-			count: 1
-			path: src/Entity/ExpenseReport.php
-
-		-
-			message: '#^Property App\\Entity\\ExpenseReport\:\:\$refundRequired type mapping mismatch\: property can contain bool\|null but database expects bool\.$#'
 			identifier: doctrine.columnType
 			count: 1
 			path: src/Entity/ExpenseReport.php
@@ -859,16 +853,94 @@ parameters:
 			path: src/Validator/UserPasswordValidator.php
 
 		-
-			message: '#^Call to an undefined method App\\Service\\MailerLiteService\:\:expects\(\)\.$#'
+			message: '#^Call to an undefined method Symfony\\Component\\Mime\\RawMessage\:\:getBcc\(\)\.$#'
 			identifier: method.notFound
-			count: 8
-			path: tests/Service/EmailMarketingSyncServiceTest.php
+			count: 1
+			path: tests/Api/ExpenseReportApiTestCase.php
 
 		-
-			message: '#^Call to an undefined method Psr\\Log\\LoggerInterface\:\:expects\(\)\.$#'
+			message: '#^Call to an undefined method Symfony\\Component\\Mime\\RawMessage\:\:getCc\(\)\.$#'
 			identifier: method.notFound
-			count: 10
-			path: tests/Service/EmailMarketingSyncServiceTest.php
+			count: 1
+			path: tests/Api/ExpenseReportApiTestCase.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Mime\\RawMessage\:\:getTo\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Api/ExpenseReportApiTestCase.php
+
+		-
+			message: '#^Method App\\Tests\\Api\\ExpenseReportApiTestCase\:\:mailsA\(\) should return list\<Symfony\\Component\\Mime\\Email\> but returns list\<Symfony\\Component\\Mime\\RawMessage\>\.$#'
+			identifier: return.type
+			count: 1
+			path: tests/Api/ExpenseReportApiTestCase.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\BrowserKit\\AbstractBrowser\:\:disableReboot\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Api/LoginThrottlingTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\BrowserKit\\AbstractBrowser\:\:disableReboot\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Api/NoteDeFraisEcrituresConcurrentesTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Mime\\RawMessage\:\:getHtmlBody\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Api/NoteHorsSortieDecisionMailsTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Mime\\RawMessage\:\:getSubject\(\)\.$#'
+			identifier: method.notFound
+			count: 2
+			path: tests/Api/NoteHorsSortieDecisionMailsTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Mime\\RawMessage\:\:getTextBody\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: tests/Api/NoteHorsSortieDecisionMailsTest.php
+
+		-
+			message: '#^Property App\\Tests\\Controller\\CommissionControllerTest\:\:\$em \(Doctrine\\ORM\\EntityManagerInterface\) does not accept Doctrine\\Persistence\\ObjectManager\.$#'
+			identifier: assign.propertyType
+			count: 1
+			path: tests/Controller/CommissionControllerTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\BrowserKit\\AbstractBrowser\:\:getContainer\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: tests/Controller/HelloAssoWebhookControllerTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\BrowserKit\\AbstractBrowser\:\:getKernel\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Controller/SortieControllerTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Mime\\RawMessage\:\:getBcc\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Controller/SortieControllerTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Mime\\RawMessage\:\:getSubject\(\)\.$#'
+			identifier: method.notFound
+			count: 1
+			path: tests/Controller/SortieControllerTest.php
+
+		-
+			message: '#^Call to an undefined method Symfony\\Component\\Mime\\RawMessage\:\:getTo\(\)\.$#'
+			identifier: method.notFound
+			count: 3
+			path: tests/Controller/SortieControllerTest.php
 
 		-
 			message: '#^Call to an undefined method Symfony\\Contracts\\Cache\\CacheInterface\:\:method\(\)\.$#'
@@ -943,22 +1015,16 @@ parameters:
 			path: tests/Service/ParticipantServiceTest.php
 
 		-
-			message: '#^Trying to mock an undefined method getRole\(\) on class stdClass\.$#'
-			identifier: phpunit.mockMethod
+			message: '#^Method App\\Tests\\Validator\\ExpenseReport\\FieldPermissionValidatorTest\:\:context\(\) should return Symfony\\Component\\Validator\\Context\\ExecutionContext but returns Symfony\\Component\\Validator\\Context\\ExecutionContextInterface\.$#'
+			identifier: return.type
 			count: 1
-			path: tests/Utils/ExcelExportTest.php
+			path: tests/Validator/ExpenseReport/FieldPermissionValidatorTest.php
 
 		-
-			message: '#^Trying to mock an undefined method getStatus\(\) on class stdClass\.$#'
-			identifier: phpunit.mockMethod
+			message: '#^Method App\\Tests\\Validator\\ExpenseReport\\StatusTransitionValidatorTest\:\:context\(\) should return Symfony\\Component\\Validator\\Context\\ExecutionContext but returns Symfony\\Component\\Validator\\Context\\ExecutionContextInterface\.$#'
+			identifier: return.type
 			count: 1
-			path: tests/Utils/ExcelExportTest.php
-
-		-
-			message: '#^Trying to mock an undefined method getUser\(\) on class stdClass\.$#'
-			identifier: phpunit.mockMethod
-			count: 1
-			path: tests/Utils/ExcelExportTest.php
+			path: tests/Validator/ExpenseReport/StatusTransitionValidatorTest.php
 
 		-
 			message: '#^Call to an undefined method App\\Repository\\UserRepository\:\:findOneByEmail\(\)\.$#'

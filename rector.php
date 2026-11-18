@@ -25,10 +25,8 @@ return RectorConfig::configure()
     ->withSkip([
         __DIR__ . '/src/Kernel.php', // fichier généré par Symfony
     ])
-    // Le projet tourne en PHP 8.3 ; on vise déjà 8.4 pour que la règle ci-dessous
-    // s'applique. La syntaxe qu'elle produit (`?Type $x = null`) est valide depuis
-    // PHP 7.1, il n'y a donc aucun risque à anticiper ici.
-    ->withPhpVersion(PhpVersion::PHP_84)
+    // Le projet tourne en PHP 8.5.
+    ->withPhpVersion(PhpVersion::PHP_85)
     ->withRules([
         // `Type $x = null` est déprécié à partir de PHP 8.4 : on écrit `?Type $x = null`.
         ExplicitNullableParamTypeRector::class,
