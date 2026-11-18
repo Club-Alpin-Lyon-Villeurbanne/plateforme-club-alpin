@@ -392,12 +392,16 @@ class SortieControllerTest extends WebTestCase
         $this->assertAnySelectorTextContains('ul.nice-list li', 'Péage partagé entre les voitures');
 
         // Détails pratiques, tarif, détails des frais et RDV : les quatre informations masquées aux visiteurs.
-        // Un cadenas les signale, la mention est dans son infobulle (et son texte alternatif).
+        // Un cadenas les signale, la mention est dans son infobulle CSS (data-infobulle) et dans le texte alternatif.
+        // Il est focalisable pour que l'infobulle s'affiche aussi au clavier et au toucher.
         $mention = 'Visible car vous êtes connecté·e : les visiteurs non connectés ne voient pas cette information.';
-        $mentions = $crawler->filter('img.mention-visible-connecte');
+        $mentions = $crawler->filter('span.mention-visible-connecte');
         $this->assertCount(4, $mentions);
-        $this->assertSame(array_fill(0, 4, $mention), $mentions->extract(['title']));
-        $this->assertSame(array_fill(0, 4, $mention), $mentions->extract(['alt']));
+        $this->assertSame(array_fill(0, 4, $mention), $mentions->extract(['data-infobulle']));
+        $this->assertSame(array_fill(0, 4, '0'), $mentions->extract(['tabindex']));
+        $this->assertSame(array_fill(0, 4, $mention), $mentions->filter('img')->extract(['alt']));
+        // Pas d'attribut title : l'infobulle native du navigateur se superposerait à la nôtre.
+        $this->assertSelectorNotExists('.mention-visible-connecte[title], .mention-visible-connecte [title]');
         $this->assertSelectorTextNotContains('body', 'Visible car vous êtes connecté·e');
         foreach (['DÉTAILS PRATIQUES', 'TARIF', 'DÉTAILS DES FRAIS', 'RDV'] as $libelle) {
             $this->assertCount(1, $crawler->filter('ul.nice-list li')->reduce(
