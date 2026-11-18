@@ -20,6 +20,9 @@ class ImportCommunesCommand extends Command
 {
     private const API_URL = 'https://datanova.laposte.fr/data-fair/api/v1/datasets/laposte-hexasmal/lines';
     private const PAGE_SIZE = 1000;
+    // On ne demande que les champs utiles : le dataset expose aussi `_contours_commune.geometry`
+    // (MultiPolygon de plusieurs Ko/ligne) qui, sur 39 000 communes, sature la mémoire (OOM).
+    private const SELECT_FIELDS = 'code_commune_insee,nom_de_la_commune,code_postal,libelle_d_acheminement,ligne_5,_geopoint';
 
     public function __construct(
         private readonly HttpClientInterface $httpClient,
@@ -30,6 +33,10 @@ class ImportCommunesCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        // 39 000 communes paginées par 1000 ; Sentry retient les spans HTTP par page,
+        // ce qui peut saturer le 128M par défaut de la CLI Clever Cloud.
+        ini_set('memory_limit', '512M');
+
         $io = new SymfonyStyle($input, $output);
         $io->title('Import des communes depuis l\'API La Poste');
 
@@ -37,7 +44,7 @@ class ImportCommunesCommand extends Command
         $io->comment('Table communes vidée.');
 
         $total = 0;
-        $url = self::API_URL . '?size=' . self::PAGE_SIZE;
+        $url = self::API_URL . '?size=' . self::PAGE_SIZE . '&select=' . self::SELECT_FIELDS;
 
         do {
             $response = $this->httpClient->request('GET', $url);
@@ -61,7 +68,7 @@ class ImportCommunesCommand extends Command
                     'nom_commune' => $row['nom_de_la_commune'] ?? '',
                     'code_postal' => $row['code_postal'] ?? '',
                     'libelle_acheminement' => $row['libelle_d_acheminement'] ?? '',
-                    'ligne5' => null,
+                    'ligne5' => $row['ligne_5'] ?? null,
                     'geopoint' => $geopoint ?: null,
                     'latitude' => (float) $lat,
                     'longitude' => (float) $long,
@@ -72,6 +79,10 @@ class ImportCommunesCommand extends Command
             $url = $data['next'] ?? null;
 
             $io->write("\r  $total communes importées...");
+
+            // Libère la réponse HTTP et ses éventuels spans Sentry/Cache.
+            unset($response, $data, $results);
+            gc_collect_cycles();
         } while ($url);
 
         $io->newLine();

@@ -25,7 +25,6 @@ use App\Repository\UserAttrRepository;
 use App\Repository\UserNotificationRepository;
 use App\Repository\UserRepository;
 use App\Security\SecurityConstants;
-use App\Service\EmailMarketingSyncService;
 use App\UserRights;
 use App\Utils\NicknameGenerator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -48,6 +47,9 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 class UserController extends AbstractController
 {
+    /** Vues de l'écran d'inscription manuelle ; toutes excluent les comptes supprimés. */
+    private const MANUAL_ADD_VIEWS = ['allvalid', 'discovery', 'nomade', 'external', 'all'];
+
     /**
      * @throws NonUniqueResultException
      * @throws NoResultException
@@ -384,11 +386,14 @@ class UserController extends AbstractController
                         'event_date' => $evtDate,
                         'commission' => $commissionTitle,
                         'status' => EventParticipation::STATUS_VALIDE === $status ? 'accepté' : 'pré-inscrit',
+                        'event_rdv' => $event->getRdv(),
+                        'event_rdv_time' => $event->getStartDate()?->format('H:i'),
                     ]);
                 } else {
                     $this->addFlash('error', 'La licence de ' . $user->getFullName() . ' a expiré. L\'adhésion doit être renouvelée avant l\'inscription.');
                 }
             }
+
             $em->flush();
 
             // envoi des mails aux encadrants
@@ -411,6 +416,8 @@ class UserController extends AbstractController
                     'firstname' => ucfirst($this->getUser()->getFirstname()),
                     'lastname' => strtoupper($this->getUser()->getLastname()),
                     'nickname' => $this->getUser()->getNickname(),
+                    'event_rdv' => $event->getRdv(),
+                    'event_rdv_time' => $event->getStartDate()?->format('H:i'),
                 ], [], null, $this->getUser()->getEmail());
             }
 
@@ -532,18 +539,29 @@ class UserController extends AbstractController
         string $page = 'users-list',
         ?string $show = null
     ): JsonResponse {
-        if (!$userRights->allowed('user_see_all')) {
-            throw $this->createAccessDeniedException('Not allowed');
-        }
-
         if (!$show) {
             $show = 'allvalid';
         }
+
+        $eventId = $request->query->getInt('event', 0);
+
+        // la liste d'inscription manuelle suit le droit de la sortie, pas celui de la liste des adhérents
+        if ('manual-add' === $page) {
+            $event = $eventRepository->find($eventId);
+            if (!$event instanceof Evt || !$this->isGranted('EVENT_JOINING_ADD', $event)) {
+                throw $this->createAccessDeniedException('Not allowed');
+            }
+            if (!in_array($show, self::MANUAL_ADD_VIEWS, true)) {
+                throw $this->createAccessDeniedException('Not allowed');
+            }
+        } elseif (!$userRights->allowed('user_see_all')) {
+            throw $this->createAccessDeniedException('Not allowed');
+        }
+
         $start = $request->query->getInt('start', 0);
         $length = $request->query->getInt('length', 100);
-        $searchText = $request->query->all()['search']['value'] ?? null;
-        $order = $request->query->all()['order'] ?? null;
-        $eventId = $request->query->getInt('event', 0);
+        $searchText = $request->query->all()['search']['value'] ?? '';
+        $order = $request->query->all()['order'] ?? [];
         $usersToIgnore = $this->getEventParticipants($eventId, $eventRepository);
 
         $recordsFiltered = $userRepository->getUsersCount($show, $searchText, $usersToIgnore);
@@ -670,12 +688,12 @@ class UserController extends AbstractController
                 'renew' => $renew,
                 'nickname' => '<a href="' . $this->generateUrl('user_profile', ['id' => $user->getId()]) . '" class="fancyframe userlink" title="Voir la fiche">' . $user->getNickname() . '</a>',
                 'age' => $age,
-                'tel' => $tel,
-                'email' => $email,
             ];
             if ('users-list' === $page) {
                 $resultLine = array_merge($resultLine, [
                     'tools' => $tools,
+                    'tel' => $tel,
+                    'email' => $email,
                     'cp' => $user->getCp(),
                     'ville' => $user->getVille(),
                     'license' => $license,
@@ -701,12 +719,12 @@ class UserController extends AbstractController
 
     #[Route(path: '/adherents-creer.html', name: 'user_create', priority: 10)]
     #[Route(path: '/adherents/modifier/{id}.html', name: 'user_update', requirements: ['id' => '\d+'], priority: 10)]
+    #[IsGranted('ROLE_USER')]
     #[Template('user/form.html.twig')]
     public function update(
         Request $request,
         UserRights $userRights,
         EntityManagerInterface $manager,
-        EmailMarketingSyncService $emailMarketingService,
         ?User $user = null,
     ): array|Response {
         /** @var User $currentUser */
@@ -782,15 +800,6 @@ class UserController extends AbstractController
 
                 $manager->persist($user);
                 $manager->flush();
-
-                if (!$isUpdate) {
-                    // Synchroniser avec MailerLite après création manuelle
-                    try {
-                        $emailMarketingService->syncUsers($user);
-                    } catch (\Exception $exception) {
-                        // Les logs seront automatiquement gérés par le service EmailMarketingSyncService
-                    }
-                }
 
                 $this->addFlash('success', $isUpdate ? 'L\'utilisateur a bien été modifié.' : 'L\'utilisateur a bien été créé.');
 

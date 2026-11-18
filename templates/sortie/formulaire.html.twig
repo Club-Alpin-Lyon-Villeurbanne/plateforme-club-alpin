@@ -82,10 +82,18 @@
             </div>
             <br style="clear:both" />
 
-            <div data-start-lat-field="{{ form.latDepart.vars.id }}" data-start-long-field="{{ form.longDepart.vars.id }}">
+            <div class="place-autocomplete">
                 {{ form_row(form.place) }}
+                <ul id="place_suggestions"></ul>
             </div>
-            <ul id="place_suggestions"></ul>
+            <small id="place_feedback" class="place-feedback"></small>
+            <div>
+                <label for="{{ form.etranger.vars.id }}" class="{% if form.etranger.vars.data %}up{% else %}down{% endif %}">
+                    {{ form_widget(form.etranger) }}
+                    {{ field_label(form.etranger) }}
+                </label>
+                {{ form_help(form.etranger) }}
+            </div>
             {{ form_row(form.latDepart) }}
             {{ form_row(form.longDepart) }}
         </div>
@@ -164,7 +172,7 @@
         <div class="trigger-me">
             {{ form_row(form.modeTransport) }}<br>
 
-            <div>
+            <div id="nb-vehicules-wrapper" data-modes-with-vehicles="{{ constant('App\\Entity\\TransportModeEnum::VALUES_REQUIRING_VEHICLE_COUNT')|join(',') }}">
                 {{ form_label(form.nbVehicules) }}
                 {{ form_errors(form.nbVehicules) }}
                 {{ form_widget(form.nbVehicules) }}
@@ -260,6 +268,49 @@
         #map-creersortie {
             margin: 0;
         }
+
+        /* Autocomplétion du lieu de départ : dropdown flottant */
+        .place-autocomplete {
+            position: relative;
+        }
+
+        #place_suggestions {
+            display: none;
+            position: absolute;
+            /* top / left / width sont positionnés en JS, juste sous l'input */
+            z-index: 1000;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            max-height: 240px;
+            overflow-y: auto;
+            background: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, .12);
+        }
+
+        #place_suggestions li {
+            padding: 6px 10px;
+        }
+
+        #place_suggestions li.is-active,
+        #place_suggestions li:hover {
+            background: #eef;
+        }
+
+        #event_place.place-input--error {
+            border: 2px solid #b00020;
+        }
+
+        .place-feedback {
+            display: block;
+            margin-top: 4px;
+        }
+
+        .place-feedback--todo {
+            color: #b00020;
+            font-weight: bold;
+        }
     </style>
     <link rel="stylesheet" href="/js/ckeditor5/ckeditor5.css">
 {% endblock %}
@@ -269,6 +320,7 @@
     {{ vite_entry_script_tags('participants') }}
     {{ vite_entry_script_tags('commission_switch') }}
     {{ vite_entry_script_tags('autocomplete_communes') }}
+    {{ vite_entry_script_tags('transport_mode_vehicles') }}
     <script src="https://unpkg.com/leaflet@1.6.0/dist/leaflet.js"
             integrity="sha512-gZwIG9x3wUXg2hdXF6+rVkLF/0Vi9U8D2Ntg4Ga5I5BZpVkVxlJWbSQtXPSiUTtC0TjtGOmxa1AJPuV0CPthew=="
             crossorigin=""></script>

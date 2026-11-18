@@ -3,6 +3,7 @@
 namespace App\Tests\Legacy;
 
 use App\Legacy\ContentHtml;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class ContentHtmlTest extends TestCase
@@ -53,9 +54,7 @@ class ContentHtmlTest extends TestCase
         $this->assertEquals(100, strlen($result));
     }
 
-    /**
-     * @dataProvider realPageAnchorsProvider
-     */
+    #[DataProvider('realPageAnchorsProvider')]
     public function testSlugifyMatchesExpectedAnchors(string $headingText, string $expectedSlug): void
     {
         $this->assertEquals($expectedSlug, ContentHtml::slugify($headingText));

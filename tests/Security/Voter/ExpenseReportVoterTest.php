@@ -2,6 +2,7 @@
 
 namespace App\Tests\Security\Voter;
 
+use App\Entity\ExpenseReport;
 use App\Entity\User;
 use App\Security\Voter\ExpenseReportVoter;
 use PHPUnit\Framework\TestCase;
@@ -61,5 +62,30 @@ class ExpenseReportVoterTest extends TestCase
 
         $res = $voter->vote($this->getToken($user), null, [ExpenseReportVoter::MANAGE_EXPENSE_REPORTS]);
         $this->assertSame(Voter::ACCESS_DENIED, $res);
+    }
+
+    public function testAccessGrantedToOwnerAndManagerOnly(): void
+    {
+        $voter = new ExpenseReportVoter('20');
+        $owner = $this->createMock(User::class);
+        $owner->method('getId')->willReturn(10);
+        $manager = $this->createMock(User::class);
+        $manager->method('getId')->willReturn(20);
+        $stranger = $this->createMock(User::class);
+        $stranger->method('getId')->willReturn(30);
+        $report = (new ExpenseReport())->setUser($owner);
+
+        $this->assertSame(Voter::ACCESS_GRANTED, $voter->vote($this->getToken($owner), $report, [ExpenseReportVoter::ACCESS_EXPENSE_REPORT]));
+        $this->assertSame(Voter::ACCESS_GRANTED, $voter->vote($this->getToken($manager), $report, [ExpenseReportVoter::ACCESS_EXPENSE_REPORT]));
+        $this->assertSame(Voter::ACCESS_DENIED, $voter->vote($this->getToken($stranger), $report, [ExpenseReportVoter::ACCESS_EXPENSE_REPORT]));
+    }
+
+    public function testAccessAbstainsWithoutExpenseReportSubject(): void
+    {
+        $voter = new ExpenseReportVoter('20');
+        $user = $this->createMock(User::class);
+        $user->method('getId')->willReturn(20);
+
+        $this->assertSame(Voter::ACCESS_ABSTAIN, $voter->vote($this->getToken($user), null, [ExpenseReportVoter::ACCESS_EXPENSE_REPORT]));
     }
 }

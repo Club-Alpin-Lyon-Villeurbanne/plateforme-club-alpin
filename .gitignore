@@ -7,10 +7,13 @@ backup/*
 public/robots.txt
 public/dev.txt
 /.npm/
+/.phive/
+/.ssh/
 /ffcam/
 /bin/tools
 
 /.php-cs-fixer.cache
+/.phpstan-tmp/
 
 ###> symfony/framework-bundle ###
 /.env.local
@@ -33,6 +36,7 @@ public/dev.txt
 /playwright/.cache/
 /e2e/.auth/
 .env.test
+/.playwright-mcp/
 ###< playwright ###
 
 ###> lexik/jwt-authentication-bundle ###
@@ -59,3 +63,8 @@ public/dev.txt
 AGENTS.md
 
 .clever.json
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###

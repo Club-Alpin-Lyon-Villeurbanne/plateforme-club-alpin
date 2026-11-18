@@ -27,3 +27,7 @@ Les tâches planifiées sont configurées dans le fichier `clevercloud/cron.json
 5. **Synchronisation des groupes Google** (`google-groups-sync.sh`)
    - Exécution : Tous les jours à 6h36
    - Synchronise les groupes Google avec les adhérents 
+
+## Hors de ce dépôt
+
+L'import FFCAM des formations, brevets, niveaux de pratique et groupes de compétences ne tourne pas chez Clever Cloud : il tourne chaque lundi matin sur GitHub Actions, dans le dépôt [ffcam-formations-scraper](https://github.com/Club-Alpin-Lyon-Villeurbanne/ffcam-formations-scraper). Voir [Formations, brevets et compétences FFCAM](schema-formations-competences.md).

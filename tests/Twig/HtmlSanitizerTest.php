@@ -2,6 +2,7 @@
 
 namespace App\Tests\Twig;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 
@@ -15,9 +16,7 @@ class HtmlSanitizerTest extends KernelTestCase
         $this->sanitizer = self::getContainer()->get('html_sanitizer.sanitizer.app.content_sanitizer');
     }
 
-    /**
-     * @dataProvider safeHtmlProvider
-     */
+    #[DataProvider('safeHtmlProvider')]
     public function testAllowsSafeHtml(string $input, string $expected): void
     {
         $result = $this->sanitizer->sanitize($input);
@@ -74,9 +73,7 @@ class HtmlSanitizerTest extends KernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider dangerousHtmlProvider
-     */
+    #[DataProvider('dangerousHtmlProvider')]
     public function testRemovesDangerousHtml(string $input, string $expected): void
     {
         $result = $this->sanitizer->sanitize($input);
@@ -129,9 +126,7 @@ class HtmlSanitizerTest extends KernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider youtubeIframeProvider
-     */
+    #[DataProvider('youtubeIframeProvider')]
     public function testAllowsYoutubeIframes(string $input): void
     {
         $result = $this->sanitizer->sanitize($input);
@@ -151,9 +146,7 @@ class HtmlSanitizerTest extends KernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider vimeoIframeProvider
-     */
+    #[DataProvider('vimeoIframeProvider')]
     public function testAllowsVimeoIframes(string $input): void
     {
         $result = $this->sanitizer->sanitize($input);

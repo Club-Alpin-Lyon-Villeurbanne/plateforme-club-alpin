@@ -87,7 +87,7 @@ class LoginController extends AbstractController
             $loginLinkDetails = $loginLinkHandler->createLoginLink($user);
             $loginLink = $loginLinkDetails->getUrl();
 
-            $mailer->send($email, 'transactional/password-lost', ['email' => $email, 'login_link' => $loginLink]);
+            $mailer->send($user->getEmail(), 'transactional/password-lost', ['email' => $user->getEmail(), 'login_link' => $loginLink]);
 
             return [
                 'username' => $email,
