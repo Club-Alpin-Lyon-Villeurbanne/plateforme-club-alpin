@@ -115,7 +115,7 @@ class MailerLiteAccueilSync extends Command
             return Command::SUCCESS;
         }
 
-        $marked = $this->syncGroup($circuit, (string) $groupId, $users, $output);
+        $marked = $this->syncGroup($circuit, $groupId, $users, $output);
         $this->userRepository->markAccueilSeason($marked, $season);
         $output->writeln(sprintf('%d adherent(s) marque(s) pour la saison %d.', \count($marked), $season));
 

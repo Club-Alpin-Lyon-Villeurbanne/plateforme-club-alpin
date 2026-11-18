@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Commission;
 use App\Entity\Evt;
+use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Entity\Usertype;
 use App\Helper\EventFormHelper;
