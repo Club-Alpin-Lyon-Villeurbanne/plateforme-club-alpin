@@ -34,7 +34,7 @@ class LogAdmin
     /**
      * @var string|null
      */
-    #[ORM\Column(name: 'ip_log_admin', type: 'string', length: 15, nullable: true)]
+    #[ORM\Column(name: 'ip_log_admin', type: 'string', length: 45, nullable: true)]
     private $ip;
 
     /**

@@ -7,6 +7,7 @@ use Egulias\EmailValidator\EmailValidator;
 use Egulias\EmailValidator\Validation\NoRFCWarningsValidation;
 use Symfony\Bridge\Twig\AppVariable;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
+use Symfony\Component\Security\Core\Authentication\Token\SwitchUserToken;
 
 global $_POST;
 global $allowedError; // Erreur facultative à afficher si la fonction renvoie false
@@ -189,6 +190,19 @@ function getUser(): ?User
     return null;
 };
 
+// personne à l'origine de l'action : en impersonification, celle qui impersonifie
+function getActingUser(): ?User
+{
+    $token = LegacyContainer::get('legacy_token_storage')->getToken();
+    if ($token instanceof SwitchUserToken) {
+        $token = $token->getOriginalToken();
+    }
+
+    $user = $token?->getUser();
+
+    return $user instanceof User ? $user : null;
+}
+
 function generateRoute(string $path, array $parameters = []): ?string
 {
     return LegacyContainer::get('legacy_router')->generate($path, $parameters);
@@ -208,11 +222,12 @@ function twigRender(string $path, array $params = []): ?string
 // enregistrement de l'activité sur le site
 function mylog($code, $desc, $connectme = true)
 {
-    $code_log_admin = LegacyContainer::get('legacy_mysqli_handler')->escapeString(trim($code));
-    $desc_log_admin = LegacyContainer::get('legacy_mysqli_handler')->escapeString(trim($desc));
+    // tronqués à la taille des colonnes : une valeur trop longue ferait échouer l'enregistrement
+    $code_log_admin = LegacyContainer::get('legacy_mysqli_handler')->escapeString(mb_substr(trim($code), 0, 100));
+    $desc_log_admin = LegacyContainer::get('legacy_mysqli_handler')->escapeString(mb_substr(trim($desc), 0, 200));
     $date_log_admin = time();
     $ip_log_admin = LegacyContainer::get('legacy_mysqli_handler')->escapeString($_SERVER['REMOTE_ADDR']);
-    $user_log_admin = getUser()?->getId();
+    $user_log_admin = getActingUser()?->getId();
     $user_log_admin_sql = $user_log_admin ? (int) $user_log_admin : 'NULL';
 
     $req = "INSERT INTO `caf_log_admin` (`code_log_admin` ,`desc_log_admin` ,`date_log_admin`, `ip_log_admin`, `user_log_admin`)

@@ -28,6 +28,10 @@ Les tâches planifiées sont configurées dans le fichier `clevercloud/cron.json
    - Exécution : Tous les jours à 6h36
    - Synchronise les groupes Google avec les adhérents 
 
+6. **Anonymisation du journal d'administration** (`anonymize-admin-logs.sh`)
+   - Exécution : Tous les jours à 7h38
+   - Retire l'utilisateur et l'adresse IP des lignes plus anciennes que `ADMIN_LOG_RETENTION_MONTHS` mois (12 par défaut). Le code, la description et la date de l'action sont conservés
+
 ## Hors de ce dépôt
 
 L'import FFCAM des formations, brevets, niveaux de pratique et groupes de compétences ne tourne pas chez Clever Cloud : il tourne chaque lundi matin sur GitHub Actions, dans le dépôt [ffcam-formations-scraper](https://github.com/Club-Alpin-Lyon-Villeurbanne/ffcam-formations-scraper). Voir [Formations, brevets et compétences FFCAM](schema-formations-competences.md).

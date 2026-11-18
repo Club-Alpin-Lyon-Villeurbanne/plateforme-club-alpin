@@ -17,6 +17,7 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
         $stmt->bind_param('is', $vis_content_html, $code_content_html);
         if ($stmt->execute()) {
             $result['success'] = true;
+            mylog('edit-html-vis', ($vis_content_html ? 'Activation' : 'Désactivation') . ' du bloc : « ' . $code_content_html . ' »', false);
         }
         $stmt->close();
         $log .= "\n req :  UPDATE ...";

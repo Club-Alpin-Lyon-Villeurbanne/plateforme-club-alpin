@@ -27,6 +27,16 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
             $result['content'] = stripslashes($contenu_content_inline);
         }
         $stmt->close();
+
+        if (!empty($result['success'])) {
+            $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT `code_content_inline` FROM `caf_content_inline` WHERE `id_content_inline` = ? LIMIT 1');
+            $stmt->bind_param('i', $id_content_inline);
+            $stmt->execute();
+            $contenuModifie = $stmt->get_result()->fetch_assoc();
+            $stmt->close();
+
+            mylog('edit-inline', 'Modif contenu inline : « ' . ($contenuModifie['code_content_inline'] ?? $id_content_inline) . ' »', false);
+        }
     } else {
         $result['error'] = 'id_content_inline missing or val not set';
     }
