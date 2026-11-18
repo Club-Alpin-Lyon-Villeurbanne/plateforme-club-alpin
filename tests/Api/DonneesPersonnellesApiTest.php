@@ -74,6 +74,7 @@ class DonneesPersonnellesApiTest extends WebTestCase
             'groups' => ['article:read', 'user:read', 'user:details'],
         ]);
 
+        $this->assertSame($this->participant->getId(), json_decode($contenu, true)['user']['id']);
         $this->assertStringNotContainsString(self::TELEPHONE, $contenu);
         $this->assertStringNotContainsString($this->participant->getEmail(), $contenu);
     }
