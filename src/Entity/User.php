@@ -2,11 +2,9 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Serializer\Filter\GroupFilter;
 use App\Repository\UserRepository;
 use App\Utils\EmailAlerts;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -32,7 +30,6 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
     ],
     security: "is_granted('ROLE_USER') and object == user",
 )]
-#[ApiFilter(GroupFilter::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSerializable
 {
     use TimestampableEntity;
@@ -46,7 +43,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Id]
     #[ORM\Column(name: 'id_user', type: 'bigint', nullable: false)]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:public'])]
     private ?int $id = null;
 
     #[ORM\Column(name: 'profile_type', type: Types::SMALLINT, nullable: false, options: ['default' => self::PROFILE_UNKNOWN, 'comment' => '1 licencié annuel du club, 2 carte découverte du club, 3 licencié autre club, 4 personne extérieure (ex formateur)'])]
@@ -85,7 +82,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     private ?string $lastname = null;
 
     #[ORM\Column(name: 'nickname_user', type: 'string', length: 20, nullable: false)]
-    #[Groups('user:read')]
+    #[Groups(['user:read', 'user:public'])]
     #[SerializedName('pseudonyme')]
     private string $nickname;
 

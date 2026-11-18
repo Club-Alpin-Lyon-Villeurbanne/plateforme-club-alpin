@@ -25,15 +25,16 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 #[ApiResource(
     shortName: 'sortie',
     operations: [
-        new Get(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
-        new GetCollection(normalizationContext: ['groups' => ['event:read', 'commission:read', 'user:read', 'eventParticipation:read']]),
+        new Get(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:public', 'eventParticipation:read']]),
+        new GetCollection(normalizationContext: ['groups' => ['event:read', 'commission:read', 'user:public', 'eventParticipation:read']]),
     ],
     order: ['startDate' => 'ASC'],
+    paginationClientEnabled: false,
     security: "is_granted('ROLE_USER')",
 )]
-#[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact', 'participations.user.id' => 'exact'])]
+#[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact'])]
 #[ApiFilter(RangeFilter::class, properties: ['startDate'])]
-#[ApiFilter(GroupFilter::class, arguments: ['overrideDefaultGroups' => true, 'whitelist' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']])]
+#[ApiFilter(GroupFilter::class, arguments: ['overrideDefaultGroups' => true, 'whitelist' => ['event:read', 'event:details', 'commission:read', 'user:public', 'eventParticipation:read']])]
 #[ApiFilter(OrderFilter::class, properties: ['startDate'])]
 class Evt
 {
@@ -480,10 +481,17 @@ class Evt
     }
 
     /** @return EventParticipation[] */
-    #[Groups('eventParticipation:read')]
     public function getAllParticipations()
     {
         return $this->participations;
+    }
+
+    /** @return EventParticipation[] */
+    #[Groups('eventParticipation:read')]
+    #[SerializedName('participations')]
+    public function getParticipationsAcceptees(): array
+    {
+        return array_values($this->getParticipations()->toArray());
     }
 
     public function clearRoleParticipations(string $role = EventParticipation::ROLE_BENEVOLE): void

@@ -94,7 +94,6 @@ GET /api/sorties
 - `page` : Numéro de page (défaut: 1)
 - `itemsPerPage` : Nombre d'éléments par page (défaut: 30, max: 30)
 - `commission` : Filtrer par ID de commission
-- `participations.user.id` : Filtrer par ID d'utilisateur participant
 - `startDate[gte]` : Sorties après cette date (format ISO 8601, ex: `2025-11-14T00:00:00`)
 - `startDate[lte]` : Sorties avant cette date (format ISO 8601, ex: `2025-11-17T23:59:59`)
 - `order[startDate]` : Tri par date (`asc` ou `desc`)
@@ -143,6 +142,8 @@ GET /api/sorties/{id}
 
 Retourne les détails complets d'une sortie incluant les informations supplémentaires (latitude, longitude, matériel, itinéraire, etc.)
 
+Comme sur la fiche sortie, `participations` ne contient que les participants acceptés, chacun avec son statut, son rôle et `utilisateur` (identifiant et pseudonyme). Les inscriptions en attente, refusées ou absentes n'y figurent pas. Il n'existe pas de point d'accès séparé pour les participations.
+
 ### 👥 Utilisateurs
 
 #### Détails de l'utilisateur connecté
@@ -150,7 +151,7 @@ Retourne les détails complets d'une sortie incluant les informations supplémen
 GET /api/utilisateurs/{id}
 ```
 
-Ailleurs dans l'API (auteur d'une sortie ou d'un article, participants), un adhérent n'apparaît qu'avec son identifiant, son prénom, son nom et son pseudonyme. Son e-mail et ses coordonnées ne sont visibles que sur son propre profil.
+Ailleurs dans l'API, un adhérent n'apparaît qu'avec son identifiant et son pseudonyme (organisateur et participants d'une sortie), ou avec son identifiant, son prénom, son nom et son pseudonyme (auteur d'un article, demandeur d'une note de frais). Son e-mail et ses coordonnées ne sont visibles que sur son propre profil, qu'on ne peut pas modifier en ajoutant `groups[]`.
 
 **Note :** Vous ne pouvez accéder qu'à vos propres informations ou celles d'un autre utilisateur si vous avez les droits admin.
 
@@ -374,44 +375,6 @@ Réservé au demandeur (`404` pour toute autre personne). Remplace le justificat
 GET /api/notes-de-frais/{expenseReportId}/pieces-jointes
 ```
 
-### 🎫 Participations aux sorties
-
-#### Liste des participations
-```http
-GET /api/participation-sorties
-```
-
-**Réponse exemple :**
-```json
-{
-  "data": [
-    {
-      "id": 123,
-      "statut": 1,
-      "role": "inscrit",
-      "dateInscription": 1735847547,
-      "utilisateur": {
-        "id": 42,
-        "prenom": "Marie",
-        "nom": "MARTIN"
-      },
-      "proposeCovoiturage": true
-    }
-  ],
-  "meta": {
-    "page": 1,
-    "perPage": 30,
-    "total": 250,
-    "pages": 9
-  }
-}
-```
-
-#### Détails d'une participation
-```http
-GET /api/participation-sorties/{id}
-```
-
 ## Statuts et codes
 
 ### Statuts des notes de frais
@@ -439,7 +402,7 @@ GET /api/participation-sorties/{id}
 
 ## Pagination
 
-La pagination est disponible sur tous les endpoints de collection avec des options de contrôle côté client :
+La pagination est disponible sur tous les endpoints de collection avec des options de contrôle côté client. Les sorties restent toujours paginées : `pagination=false` y est ignoré.
 
 ### Paramètres de pagination
 
@@ -457,7 +420,7 @@ GET /api/sorties?page=2&itemsPerPage=10
 Pour récupérer tous les résultats sans pagination :
 
 ```http
-GET /api/sorties?pagination=false
+GET /api/notes-de-frais?pagination=false
 ```
 
 ⚠️ **Attention** : Désactiver la pagination peut retourner un grand nombre de résultats et impacter les performances.
@@ -472,7 +435,7 @@ GET /api/notes-de-frais?itemsPerPage=50
 GET /api/notes-de-frais?pagination=false
 
 # Page 3 avec 15 éléments par page
-GET /api/participation-sorties?page=3&itemsPerPage=15
+GET /api/sorties?page=3&itemsPerPage=15
 
 # Combiné avec des filtres
 GET /api/notes-de-frais?itemsPerPage=20&inclure_brouillons=true&page=2
