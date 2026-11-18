@@ -1,6 +1,6 @@
 # Inscriptions aux sorties
 
-Logique principale : `SortieController::joinSortie`, `src/Security/Voter/UserJoinSortieVoter.php`, `src/Service/UserLicenseHelper.php`.
+Logique principale : `SortieController::join`, `src/Security/Voter/UserJoinSortieVoter.php`, `src/Service/UserLicenseHelper.php`.
 
 ## Conditions pour s'inscrire
 
@@ -26,30 +26,28 @@ Rôles : inscrit, manuel, bénévole, encadrant, co-encadrant, stagiaire, béné
 
 Deux plafonds distincts sont fixés sur la sortie :
 
-- la **jauge** : le nombre de places de la sortie (`join_max_evt`), **sans compter** la liste d'attente ;
-- la **liste d'attente** : un nombre de places supplémentaires (`waitingSeat`, optionnel), ouvertes une fois la jauge atteinte.
+- la **jauge** : le nombre de places de la sortie (`ngensMax`, recopié dans `join_max_evt` à l'enregistrement), **sans compter** la liste d'attente ;
+- la **liste d'attente** : un nombre de places supplémentaires (`waitingSeat`, optionnel), ouvertes une fois la jauge atteinte. Les places restantes valent `waitingSeat` moins le nombre d'inscriptions non confirmées.
 
-Quand la jauge est atteinte, le bouton d'inscription propose de « rejoindre la liste d'attente » tant qu'il en reste des places. Quand la liste d'attente est pleine, plus aucune inscription ne doit être possible.
+Quand la jauge est atteinte, le bouton d'inscription propose de « rejoindre la liste d'attente » tant qu'il en reste des places. Quand la liste d'attente est pleine, le bouton d'inscription n'est plus affiché. Ce plafond n'existe qu'à l'affichage de la page : `SortieController::join` ne le vérifie pas.
 
 ## Désinscription
 
-Un participant peut se désinscrire lui-même (droit `evt_unjoin`, `ParticipantAnnulationVoter`, `SortieController::removeParticipant`).
+Un participant peut se désinscrire lui-même, et un référent peut désinscrire ses affiliés (droit `evt_unjoin`, `ParticipantAnnulationVoter`, `SortieController::removeParticipant`).
 
 ## Qui est prévenu par e-mail
 
 | Événement | E-mail | Destinataires |
 |---|---|---|
 | Demande d'inscription | `sortie-demande-inscription` | l'**organisateur** de la sortie (son auteur) **et** l'encadrement validé |
-| Désinscription d'un participant validé ou non confirmé | `sortie-desinscription` | **uniquement** l'encadrement validé |
+| Désinscription d'un participant validé ou non confirmé | `sortie-desinscription` | l'**organisateur** de la sortie **et** l'encadrement validé, sauf la personne qui vient d'annuler |
 
 « Encadrement validé » = participations validées avec le rôle encadrant, co-encadrant ou stagiaire (`Evt::getEncadrants()` par défaut). Le **bénévole d'encadrement** n'en fait pas partie (il est seulement dans `EventParticipation::ROLES_ENCADREMENT_ETENDU`).
 
-À noter : l'organisateur reçoit les demandes d'inscription mais pas les désinscriptions, s'il n'a pas lui-même un rôle d'encadrement sur la sortie.
-
 ## Rappel de licence
 
-Chaque jour à 7 h 30, pour les sorties qui commencent dans **7 jours**, les participants dont la licence est à renouveler reçoivent un rappel, et l'encadrement est prévenu (`license-renew-reminder-cron`).
+Chaque jour à 7 h 30, pour les sorties qui commencent dans **7 jours**, les participants dont la licence ne couvre pas la sortie reçoivent un rappel, et l'organisateur et l'encadrement sont prévenus (`license-renew-reminder-cron`).
 
 ## Bilan carbone
 
-Le bilan carbone de la sortie est calculé à partir de la distance (service d'itinéraire OSRM) et du **nombre maximum de places**. Il est recalculé uniquement à la création ou à la modification de la sortie, pas à chaque inscription. Pas de bilan pour une sortie à l'étranger. Si le calcul de distance échoue lors d'une modification, l'ancienne distance est conservée.
+Le bilan carbone de la sortie est calculé à partir de la distance (service d'itinéraire OSRM), du mode de transport, du nombre de véhicules et du **nombre maximum de places**. Il est recalculé uniquement à la création ou à la modification de la sortie, pas à chaque inscription. Pas de bilan pour une sortie à l'étranger. Si le calcul de distance échoue lors d'une modification, l'ancienne distance est conservée.

@@ -23,7 +23,7 @@ Code : `src/Service/FfcamSynchronizer.php` (commande `ffcam-file-sync`, chaque j
 Pour chaque ligne du fichier :
 
 1. recherche du compte par **n° de licence** ;
-2. recherche d'un **doublon** : même nom, prénom et date de naissance (sans tenir compte de la casse), même e-mail (ou e-mail vide des deux côtés), avec un n° de licence différent ;
+2. recherche d'un **doublon** : même nom, prénom et date de naissance (sans tenir compte de la casse), même e-mail (comparé seulement si le fichier FFCAM en fournit un), avec un n° de licence différent ;
 3. doublon trouvé → **fusion** : le compte existant garde son historique et prend le nouveau n° de licence. Si une autre fiche porte déjà ce nouveau n° : sans compte activé (pas de mot de passe), les deux fiches sont consolidées ; avec un compte activé, rien n'est fusionné et une erreur « doublon ambigu » est remontée (rapport et Sentry) ;
 4. sinon, compte trouvé par n° → **mise à jour** ; aucun compte → **création** (le pseudo est généré automatiquement).
 
@@ -47,7 +47,7 @@ Fichier séparé `decouverte_XXXX.txt`, synchronisé chaque jour à 6 h 16 en pr
 Code : `src/Service/UserLicenseHelper.php`.
 
 - La saison va du 1er septembre au 31 août, avec une **tolérance jusqu'au 30 septembre**.
-- Après la synchronisation, les comptes dont la dernière adhésion est antérieure à la fin de la saison précédente sont marqués **« à renouveler »** (`doitRenouveler`), sauf les comptes créés manuellement et le super admin. Ce blocage n'est pas appliqué si la synchronisation a été interrompue.
+- Après la synchronisation, les comptes dont la dernière adhésion est antérieure à la fin de la saison précédente sont marqués **« à renouveler »** (`doitRenouveler`), sauf les comptes créés manuellement, les licenciés d'un autre club ajoutés sur le site (`nomade_user`) et le super admin. Ce blocage n'est pas appliqué si la synchronisation a été interrompue.
 - Un compte « à renouveler » ne peut plus s'inscrire aux sorties.
 - Pour une sortie, la licence doit être valide **jusqu'à la date de fin** de la sortie. Une carte découverte doit couvrir la sortie et ne pas commencer après son début.
 - Les licenciés d'un autre club et les personnes extérieures (profils 3 et 4) ne sont pas soumis à ces dates.
@@ -55,7 +55,7 @@ Code : `src/Service/UserLicenseHelper.php`.
 
 ### Anonymisation (RGPD)
 
-Chaque jour à 7 h 28 (commande `user-anonymization-cron`), les comptes dont la dernière adhésion est antérieure au **31 août de la saison N-2** sont anonymisés : nom remplacé par « supprimé <id> », e-mail, mot de passe, téléphones, adresse et photo effacés, brevets, notifications et rôles supprimés. Le compte est conservé (marqué supprimé) pour garder l'historique des sorties et des articles.
+Chaque jour à 7 h 28 (commande `user-anonymization-cron`), les comptes dont la dernière adhésion date **au plus tard du 31 août de la saison N-2** sont anonymisés (pour la saison 2026-2027 : jusqu'au 31 août 2024 inclus), sauf le super admin : prénom remplacé par « compte », nom par « supprimé <id> », e-mail, mot de passe, téléphones, adresse et photo effacés, brevets, notifications et rôles supprimés. Le compte est conservé (marqué supprimé) pour garder l'historique des sorties et des articles.
 
 ### Description fichier FFCAM
 voici la description du fichier fourni par la FFCAM:

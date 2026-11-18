@@ -44,10 +44,10 @@ Deux étapes indépendantes : la publication rend la sortie visible, la validati
 Demande d'inscription en attente de validation par l'encadrement (statut « non confirmé »). Voir [Inscriptions aux sorties](inscriptions-sorties.md).
 
 ### Jauge
-Nombre de places d'une sortie (`join_max_evt`), sans compter les places en liste d'attente. Voir [Inscriptions aux sorties](inscriptions-sorties.md#jauge-et-liste-dattente).
+Nombre de places d'une sortie (`ngensMax`), sans compter les places en liste d'attente. Voir [Inscriptions aux sorties](inscriptions-sorties.md#jauge-et-liste-dattente).
 
 ### Liste d'attente
-Places supplémentaires (nombre fixé sur la sortie, `waitingSeat`) ouvertes une fois la jauge atteinte. Quand la liste d'attente est pleine, plus aucune inscription n'est possible.
+Places supplémentaires (nombre fixé sur la sortie, `waitingSeat`) ouvertes une fois la jauge atteinte. Quand la liste d'attente est pleine, le bouton d'inscription n'est plus affiché.
 
 ### Carte découverte
 Adhésion FFCAM de courte durée, avec une date de début et de fin, synchronisée par un fichier séparé.
@@ -56,13 +56,13 @@ Adhésion FFCAM de courte durée, avec une date de début et de fin, synchronis�
 Lien familial déclaré à la FFCAM (référent familial) qui permet d'inscrire ses proches à une sortie.
 
 ### Nomade
-Ancien nom des personnes ajoutées manuellement à une sortie par l'encadrement : licenciés d'un autre club (profil 3) ou personnes extérieures, par exemple un formateur (profil 4). La colonne `nomade_user` n'est plus utilisée ; le créateur est conservé dans `nomade_parent_user`.
+Ancien nom des personnes ajoutées manuellement à une sortie par l'encadrement : licenciés d'un autre club (profil 3) ou personnes extérieures, par exemple un formateur (profil 4). La colonne `nomade_user` reste renseignée pour les licenciés d'un autre club, qu'elle exclut du blocage des licences expirées ; le créateur est conservé dans `nomade_parent_user`.
 
 ### À renouveler
 Compte dont la licence a expiré (après la tolérance du 30 septembre) : il ne peut plus s'inscrire aux sorties.
 
 ### Payeur non reconnu
-Paiement HelloAsso dont l'e-mail ne correspond à aucun compte du site. Voir [Hello Asso](hello-asso.md).
+Paiement HelloAsso qui ne correspond à aucun participant de la sortie, ni par l'e-mail, ni par le prénom et le nom. Voir [Hello Asso](hello-asso.md).
 
 ### Moulinette
 Nom courant des traitements automatiques (synchronisations FFCAM et Google, envois d'alertes). Voir [Tâches planifiées](taches-planifiees.md).
@@ -78,7 +78,7 @@ Diplôme fédéral de la filière « cadres », délivré par activité. Deux de
 Stage FFCAM suivi et validé par un adhérent (par exemple PSC1 ou une unité de formation « Neige et avalanches »), avec sa date et le numéro de la session.
 
 ### Niveau de pratique
-Niveau d'un adhérent dans une activité, filière « pratiquants » : INITIE, puis PERFECTIONNE, et SPECIALISE dans certaines activités seulement. Exemple : « INITIE en alpinisme ». Le niveau PERFECTIONNE n'est pas un prérequis pour le brevet d'initiateur 1er degré.
+Niveau d'un adhérent dans une activité, filière « pratiquants » : INITIE, puis PERFECTIONNE, et SPECIALISE dans certaines activités seulement. Exemple : « INITIE en alpinisme ». Le niveau PERFECTIONNE dans l'activité est en général demandé pour se former au brevet d'initiateur 1er degré ; les conditions exactes dépendent de l'activité et du stage.
 
 ### Groupe de compétences (GDC)
 Subdivision d'un niveau de pratique. Chaque niveau est découpé en 4 chapitres, eux-mêmes découpés en parties ; chaque partie est un groupe de compétences, repéré par niveau-chapitre.partie (par exemple INI-2.1 ou PER-3.3). Un GDC est attesté par un initiateur. Quand tous les GDC d'un niveau sont validés, le niveau est obtenu.

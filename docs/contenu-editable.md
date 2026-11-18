@@ -4,11 +4,11 @@ Ce document recense ce qui se modifie **depuis l'interface du site**, sans inter
 
 > **À tenir à jour** dans la PR qui ajoute, retire ou déplace un texte éditable ou un texte codé en dur : `templates/`, `src/Form/`, `legacy/`, `assets/`, `templates/email/`, ou un nouvel appel à `easy_include`.
 >
-> État établi à partir du commit `57d8bf6a` (13/09/2026).
+> État établi à partir du commit `6e2146cd` (18/11/2026).
 
 ## Principe
 
-Un élément est **éditable sans dev** s'il se modifie **depuis l'interface du site** (rôle *Gestionnaire contenu* `ROLE_CONTENT_MANAGER`, admin, ou droits de commission ou d'article). Un texte ou un lien **écrit dans le code** (templates Twig, formulaires PHP, composants Vue, e-mails) demande une intervention du dev.
+Un élément est **éditable sans dev** s'il se modifie **depuis l'interface du site** (rôle *Gestionnaire de contenu* `ROLE_CONTENT_MANAGER`, admin, ou droits de commission ou d'article). Un texte ou un lien **écrit dans le code** (templates Twig, formulaires PHP, composants Vue, e-mails) demande une intervention du dev.
 
 ## Liste A – éditable sans dev (équipe contenu)
 
@@ -22,15 +22,15 @@ Un élément est **éditable sans dev** s'il se modifie **depuis l'interface du 
 | A6 | **Partenaires / avantages adhérents** (privés et publics) | « ajouter / modifier un partenaire », logo, remise, tableau des avantages | Admin > Partenaires | table `caf_partenaires` (`PartnerController`, `admin-partenaires`) |
 | A7 | **Textes courts du site** : titres et descriptions des pages pour les moteurs de recherche, libellés « accueil », « contact », titre du logo… | « titre de la page », « description Google » | Admin > Contenus | table `caf_content_inline` (`admin-contenus`) |
 | A8 | **Fichiers déposés** (PDF des statuts, règlement intérieur, fiche d'inscription, documents téléchargeables) | « remplacer le PDF », « mettre la nouvelle version du document » | Admin > gestionnaire de fichiers, ou upload dans l'éditeur | `legacy/admin/ftp*.php`, `MediaUploadController` |
-| A9 | **Articles** (texte, mise en forme, commission de rattachement) | URL `/article/…`, « revoir l'article », « déplacer des articles vers la commission X » | Édition de l'article (auteur ou validateur) | `ArticleType` (champ commission modifiable) |
+| A9 | **Articles** (texte, mise en forme, commission de rattachement) | URL `/article/…`, « revoir l'article », « déplacer des articles vers la commission X » | Édition de l'article (auteur, ou droit `article_edit_notmine` sur la commission) | `ArticleType` (champ commission modifiable) |
 
 ## Liste D – codé en dur (dev : bug ou évolution)
 
 | # | Élément | Exemple de demande | Dans le code |
 |---|---|---|---|
-| D1 | **Menu personnel de l'adhérent connecté** (rubriques Sorties / Outils / Articles / Adhérents / Commissions / Statistiques), y compris les liens vers le guide de l'encadrement, le guide des responsables, les tutos vidéos, le Drive partagé | « Ajout de liens dans Mes Outils », « nouvelles pages dans le menu vert » | `templates/header.html.twig` (l. ~135-380) |
-| D2 | **Libellés et aides des formulaires** : création ou modification de sortie et d'article (dont l'encart « ligne éditoriale »), note de frais (« total remboursable »…) | « Changer le lien ligne éditoriale », « reformulation du formulaire de note de frais » | `src/Form/EventType.php`, `src/Form/ArticleType.php`, `assets/expense-report-form/` |
-| D3 | **Listes de matériel par défaut des sorties** (Rando raquettes, Randonnée montagne…) | « Mise à jour de la liste matériel Rando raquettes » | `src/Form/EventType.php` (~l. 600-630) |
+| D1 | **Menu personnel de l'adhérent connecté** (rubriques Sorties / Outils / Articles / Notes de frais / Adhérents / Commissions / Statistiques), y compris les liens vers le guide de l'encadrement, le guide des responsables, les tutos vidéos, le Drive partagé | « Ajout de liens dans Mes Outils », « nouvelles pages dans le menu vert » | `templates/header.html.twig` |
+| D2 | **Libellés et aides des formulaires** : création ou modification de sortie et d'article (dont l'encart « ligne éditoriale »), note de frais (« total remboursable »…) | « Changer le lien ligne éditoriale », « reformulation du formulaire de note de frais » | `src/Form/EventType.php`, `src/Form/ArticleType.php`, `assets/expense-report-form/`, `assets/notes-de-frais/` ; le lien de la ligne éditoriale est dans la variable d'environnement `EDITO_LINE_LINK` |
+| D3 | **Listes de matériel par défaut des sorties** (Rando raquettes, Randonnée montagne…) | « Mise à jour de la liste matériel Rando raquettes » | `src/Form/EventType.php` (`getStuffList()`, listes propres à chaque club) |
 | D4 | **E-mails automatiques** (confirmations, notifications, notes de frais) | « le mail de confirmation dit… » | `templates/email/` |
 | D5 | **Comportement de l'éditeur de texte** (iframes, ouverture des liens dans un nouvel onglet, markdown, images collées) | « l'éditeur ne garde pas… » | code front / sanitizer |
 | D6 | **Mise en page, ergonomie, arborescence, structure des pages** (couleurs des commissions, page contact repensée…) | « mieux identifier les commissions », « réflexion sur la page contact » | templates / CSS |
@@ -39,4 +39,4 @@ Un élément est **éditable sans dev** s'il se modifie **depuis l'interface du 
 
 `adresse-fiche-sortie`, `alerte-benevoles`, `alerte-licence-obsolete`, `alerte-licence-renouveler`, `bloc-partenaires`, `commission-staff-skills`, `commission_config_fields`, `complement-contacts-specifiques-fiche`, `event-skills`, `explication-nomades`, `formalites-gestion-des-inscrits`, `formalites-gestion-des-inscrits-evt-passe`, `formalites-inscription`, `full-profile-skills`, `gestion-des-articles-main`, `gestion-des-sorties-main`, `validation-des-sorties-main`, `info-inscription-licence-obsolete`, `info-inscription-non-connecte`, `info-inscription-passee`, `infos-profil-coordonnees-perso-ffcam`, `infos-profil-email-secondaire`, `infos-profil-filiation-enfants`, `infos-profil-filiation-parent`, `infos-profil-statuts`, `inscrire-filiation-select`, `local-club-description`, `main-pagelibre-<id>`, `mainfooter-1..3`, `mainmenu-connection`, `mainmenu-creer-mon-compte`, `materiel-access`, `materiel-explanation`, `methodologie-bilan-carbone`, `minivan-presentation`, `minivan-reservation`, `nav-menu-1..4`, `password-lost-confirm`, `password-lost-intro`, `presentation-<commission|general>`, `profil-infos`, `profil-sorties-next`, `profil-sorties-prev`, `signalement-intro`, `status-legal-<statut>`, `user_create`, `user_update`.
 
-Côté legacy : `404`, `commission-add-bigimg`, `commission-add-nom`, `commission-add-pictos`, `info-activer-commission`, `info-desactiver-commission`, `infos-supprimer-mon-commentaire`, `infos-supprimer-any-commentaire`.
+Côté legacy : `404`, `commission-add`, `commission-add-bigimg`, `commission-add-nom`, `commission-add-pictos`, `commission-edit`, `gestion-des-commissions`, `info-activer-commission`, `info-desactiver-commission`, `infos-supprimer-mon-commentaire`, `infos-supprimer-any-commentaire`.

@@ -29,17 +29,17 @@ Définir la variable d'environnement `HELLO_ASSO_ACTIVITY_TYPE_ID` pour définir
 
 Lors de la création de la campagne (= form dans le jargon Hello Asso), on stocke, au retour de l'appel API, l'URL de la billetterie et le slug. Ces informations sont stockées dans 2 nouveaux champs de la table `caf_evt` (`hello_asso_form_slug` et `payment_url`).
 
-Lors d'un paiement, Hello Asso appelle un webhook (à configurer dans Hello Asso) qui valide le paiement (si l'email correspond). Les paiements sont stockés dans la table `caf_evt_join` (`has_paid`). \
+Lors d'un paiement, Hello Asso appelle un webhook (à configurer dans Hello Asso) qui valide le paiement (voir les règles de gestion ci-dessous). Les paiements sont stockés dans la table `caf_evt_join` (`has_paid`). \
 Pour cela, il faut définir la variable d'environnement `HELLO_ASSO_WEBHOOK_SIGNATURE_KEY` ainsi que l'IP d'origine de l'appel webhook (`HELLO_ASSO_SERVER_IP`).
 
 ### Règles de gestion
 
-- La campagne est créée et publiée **au moment de la validation (publication) de la sortie**, si la sortie a une billetterie et n'a pas encore de campagne (`SortieController::validate`). En cas d'échec, l'erreur est journalisée et la sortie est publiée quand même.
+- La campagne est créée et publiée **au moment de la validation (publication) de la sortie**, si la sortie a une billetterie et n'a pas encore de campagne (`SortieController::sortieValidate`). En cas d'échec, l'erreur est journalisée et la sortie est publiée quand même.
 - La campagne est créée **sans limite de places** (`maxPayers` absent) : la jauge est gérée par la plateforme (`ngensMax`). Le prix est envoyé en centimes.
 - Le webhook (`HelloAssoWebhookController`) rattache un paiement :
   - à la **sortie**, par le slug de la campagne (`formSlug`) ; une campagne inconnue est ignorée ;
-  - à l'**adhérent**, par l'**e-mail du payeur**. S'il ne correspond à aucun compte, le paiement est enregistré comme « payeur non reconnu » (`EventUnrecognizedPayer`) et visible sur la sortie. Si l'adhérent existe mais n'est pas inscrit à la sortie, rien n'est coché (erreur journalisée).
-- Le webhook répond toujours 200, pour éviter que HelloAsso renvoie la notification.
+  - au **participant**, d'abord par l'**e-mail du payeur**, sinon par son **prénom et son nom** parmi les inscrits de la sortie qui n'ont pas encore payé, si une seule personne correspond (rapprochement journalisé en erreur, pour pouvoir le vérifier). Sans correspondance, le paiement est enregistré comme « payeur non reconnu » (`EventUnrecognizedPayer`) et visible sur la sortie.
+- Le webhook répond 200 dans le cas normal, y compris pour une notification ignorée ou un payeur non reconnu, pour éviter que HelloAsso renvoie la notification. Il répond 400 si l'IP d'origine ne correspond pas, 403 si une signature est fournie et invalide, et 503 si la mise à jour de Loxya échoue pour un paiement de matériel : HelloAsso retente alors l'envoi.
 - Les paiements de réservation de matériel (`metadata.reservation_id`) arrivent sur le même webhook, car HelloAsso n'accepte qu'une URL de notification par organisation.
 - Modifier la billetterie ou son montant sur une sortie publiée la renvoie en validation (voir [Validation des sorties](validation-sorties.md)), mais la campagne existante n'est pas modifiée (voir limitations ci-dessous).
 

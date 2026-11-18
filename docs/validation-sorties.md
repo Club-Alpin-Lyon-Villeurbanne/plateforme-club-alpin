@@ -25,7 +25,7 @@ La vérification porte sur la configuration de la matrice (table `caf_usertype_a
 
 ## Modification d'une sortie déjà publiée
 
-Lors de l'enregistrement d'une sortie publiée (`SortieController::edit`), la sortie **repasse en attente de validation** (`STATUS_PUBLISHED_UNSEEN`) si au moins un de ces éléments a changé :
+Lors de l'enregistrement d'une sortie publiée (`SortieController::create`, qui sert aussi à la modification), la sortie **repasse en attente de validation** (`STATUS_PUBLISHED_UNSEEN`) si au moins un de ces éléments a changé :
 
 - le nombre maximum de places (`ngensMax`) ;
 - le lieu (`place`) ;
@@ -44,7 +44,7 @@ Les droits se règlent dans la matrice des droits ; la logique est dans `src/Sec
 | Modifier | Sortie non terminée. Auteur de la sortie, ou droit `evt_validate` sur la commission, ou `evt_validate_all`. | `SortieUpdateVoter` |
 | Annuler | Sortie publiée, non annulée, non terminée. Auteur ou encadrant de la sortie avec `evt_cancel_own`, ou `evt_cancel` sur la commission, ou `evt_cancel_any`. Un motif est obligatoire. | `SortieAnnulationVoter` |
 | Désannuler | Sortie annulée et non terminée, mêmes droits que l'annulation. | `SortieAnnulationVoter` |
-| Supprimer | Sortie en brouillon, jamais publiée, sans note de frais. Auteur, ou `evt_delete` sur la commission. | `SortieDeleteVoter` |
+| Supprimer | Sortie en brouillon, non publiée, sans note de frais. Auteur, ou `evt_delete` sur la commission. | `SortieDeleteVoter` |
 | Dupliquer | Droit `evt_create` sur la commission **et** participation à la sortie d'origine (quel que soit le rôle). Deux modes : avec le groupe (participants repris) ou vide. | `DuplicateSortieVoter` |
 
 Une sortie **terminée** ne peut plus être modifiée ni annulée, par personne.
