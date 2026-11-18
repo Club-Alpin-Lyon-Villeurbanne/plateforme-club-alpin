@@ -1,13 +1,13 @@
-# La recette Flex de symfony/form active par défaut la protection CSRF « stateless »
-# (Symfony 7.2+) : le jeton n'est plus stocké en session mais validé par cookie
-# double-submit, avec repli sur les en-têtes Origin / Referer.
+# La recette Flex de symfony/form propose la protection CSRF « stateless » (Symfony 7.2+)
+# pour les identifiants de jeton listés plus bas (`submit`, `authenticate`, `logout`) :
+# le jeton n'est plus stocké en session, la requête est validée par cookie double-submit
+# ou par sa provenance (en-têtes Origin, Referer, Sec-Fetch-Site). Les autres
+# identifiants restent gérés par le jeton en session.
 #
 # Elle est laissée désactivée pour l'instant, volontairement : cette montée de version
-# doit rester iso-comportement. Le CSRF stateless change la validation de TOUS les
-# formulaires, y compris ceux rendus par le code `legacy/` et les appels AJAX qui
-# génèrent leur jeton hors du système Symfony. Un client qui n'envoie ni cookie
-# double-submit ni en-tête Origin voit sa soumission rejetée — vérifié ici : le
-# formulaire de connexion échoue en l'absence d'Origin.
+# doit rester iso-comportement. `authenticate` couvre le formulaire de connexion et
+# `submit` devient l'identifiant par défaut des formulaires Symfony. Lors d'un essai
+# local, le formulaire de connexion a été rejeté.
 #
 # À activer dans une PR dédiée, après avoir recensé les formulaires concernés.
 #
