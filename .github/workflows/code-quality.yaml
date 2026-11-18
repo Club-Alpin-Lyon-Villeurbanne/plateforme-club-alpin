@@ -71,8 +71,8 @@ jobs:
       - name: Warm up the Symfony container
         run: bin/console cache:warmup --env=dev
 
-      # L'analyse porte sur tout le projet : la baseline absorbe la dette existante,
-      # seules les nouvelles erreurs font échouer le job.
+      # L'analyse porte sur tout le projet. La baseline compte la dette existante par
+      # fichier, message et identifiant : tout écart avec ces compteurs fait échouer le job.
       - name: Run PHPStan
         run: vendor/bin/phpstan analyse -c phpstan.dist.neon --no-progress --memory-limit=-1
 

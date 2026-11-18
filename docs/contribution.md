@@ -104,7 +104,14 @@ versionnées dans `composer.lock` : pas d'installation séparée à faire.
 ### La baseline PHPStan
 
 `phpstan-baseline.neon` fige les erreurs qui existaient au moment où le niveau 3 a
-été activé : elles n'échouent pas en CI, mais **toute nouvelle erreur échoue**.
+été activé. Elle ne retient pas leur ligne : elle compte les occurrences de chaque
+erreur par fichier, message et identifiant, et la CI échoue dès que ce compte change.
+
+- **Corriger une occurrence fait échouer PHPStan** tant que le compteur n'est pas
+  ajusté : il faut relancer `make phpstan-baseline`.
+- **Ajouter une occurrence échoue**, sauf si la même PR en corrige une autre du même
+  message dans le même fichier : le compteur ne bouge pas et la nouvelle erreur reste
+  masquée. À surveiller en relecture.
 
 La bonne façon de la faire baisser est d'en corriger un lot, puis de lancer
 `make phpstan-baseline` et de committer la baseline réduite. Il ne faut jamais
