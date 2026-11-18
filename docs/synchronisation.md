@@ -7,8 +7,8 @@ Un Cronjob est configuré pour synchroniser les nouveaux adhérents avec le syst
 1. La FFCAM upload un fichier CSV chaque nuit
 2. Notre application parse ce fichier
 3. Pour chaque adhérent :
-   - Si l'adhérent existe (même nom, prénom, date de naissance) : mise à jour
-   - Si l'adhérent n'existe pas : création du compte
+   - Si un compte correspond (n° de licence, ou doublon détecté : voir [Rapprochement des comptes](#rapprochement-des-comptes)) : mise à jour ou fusion
+   - Sinon : création du compte
 
 ## Accès
 
@@ -36,7 +36,7 @@ Cas particuliers :
 - **E-mail vide** côté FFCAM : l'e-mail du site n'est pas remplacé (avertissement dans le rapport).
 - **E-mail déjà utilisé** par un autre adhérent (couple, famille) : il est remplacé par `doublon.<n° de licence>-<e-mail>` pour respecter l'unicité ; la personne ne reçoit donc plus les e-mails du site (avertissement dans le rapport).
 - **Adhérent radié** : son compte est marqué « à renouveler ».
-- Un rapport récapitulatif est envoyé par e-mail après chaque synchronisation (`FfcamSyncReportMailer`).
+- Un rapport récapitulatif est envoyé par e-mail après chaque synchronisation, même interrompue (`FfcamSyncReportMailer`). Si le fichier est absent ou si sa structure est invalide, rien n'est importé et aucun rapport n'est envoyé : l'erreur n'apparaît que dans les journaux.
 
 ### Cartes découverte
 
@@ -47,7 +47,7 @@ Fichier séparé `decouverte_XXXX.txt`, synchronisé chaque jour à 6 h 16 en pr
 Code : `src/Service/UserLicenseHelper.php`.
 
 - La saison va du 1er septembre au 31 août, avec une **tolérance jusqu'au 30 septembre**.
-- Après la synchronisation, les comptes dont la dernière adhésion est antérieure à la fin de la saison précédente sont marqués **« à renouveler »** (`doitRenouveler`), sauf les comptes créés manuellement, les licenciés d'un autre club ajoutés sur le site (`nomade_user`) et le super admin. Ce blocage n'est pas appliqué si la synchronisation a été interrompue.
+- Après la synchronisation, les comptes dont la dernière adhésion est antérieure à la fin de la saison précédente sont marqués **« à renouveler »** (`doitRenouveler`), sauf les comptes créés manuellement, les licenciés d'un autre club ajoutés sur le site (`nomade_user`) et le super admin. Ce blocage n'est pas appliqué si la synchronisation a été interrompue, si le fichier est absent (la commande `ffcam-file-sync` s'arrête alors en erreur) ou si sa structure est invalide.
 - Un compte « à renouveler » ne peut plus s'inscrire aux sorties.
 - Pour une sortie, la licence doit être valide **jusqu'à la date de fin** de la sortie. Une carte découverte doit couvrir la sortie et ne pas commencer après son début.
 - Les licenciés d'un autre club et les personnes extérieures (profils 3 et 4) ne sont pas soumis à ces dates.

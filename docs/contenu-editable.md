@@ -20,9 +20,9 @@ Un élément est **éditable sans dev** s'il se modifie **depuis l'interface du 
 | A4 | **Présentation d'une commission** (colonne de droite de la page d'accueil de la commission) | « présentation de la commission X » | Bouton « Modifier » sur le bloc | `easy_include('presentation-<code>')` |
 | A5 | **Nom, visuels et pictos d'une commission** | « renommer la commission », « changer l'image / le picto » | Gestion des commissions (droit `comm_edit`) | `legacy/pages/commission-edit.php` |
 | A6 | **Partenaires / avantages adhérents** (privés et publics) | « ajouter / modifier un partenaire », logo, remise, tableau des avantages | Admin > Partenaires | table `caf_partenaires` (`PartnerController`, `admin-partenaires`) |
-| A7 | **Textes courts du site** : titres et descriptions des pages pour les moteurs de recherche, libellés « accueil », « contact », titre du logo… | « titre de la page », « description Google » | Admin > Contenus | table `caf_content_inline` (`admin-contenus`) |
+| A7 | **Textes courts du site** : titres et descriptions des pages pour les moteurs de recherche, libellés « accueil », « contact », titre du logo… | « titre de la page », « description Google » | Admin > Contenus ; pour le titre d'une page libre : Admin > Pages libres | table `caf_content_inline` (`admin-contenus`) |
 | A8 | **Fichiers déposés** (PDF des statuts, règlement intérieur, fiche d'inscription, documents téléchargeables) | « remplacer le PDF », « mettre la nouvelle version du document » | Admin > gestionnaire de fichiers, ou upload dans l'éditeur | `legacy/admin/ftp*.php`, `MediaUploadController` |
-| A9 | **Articles** (texte, mise en forme, commission de rattachement) | URL `/article/…`, « revoir l'article », « déplacer des articles vers la commission X » | Édition de l'article (auteur, ou droit `article_edit_notmine` sur la commission) | `ArticleType` (champ commission modifiable) |
+| A9 | **Articles** (texte, mise en forme, commission de rattachement) | URL `/article/…`, « revoir l'article », « déplacer des articles vers la commission X » | Édition de l'article (auteur, ou droit `article_edit_notmine` sur la commission) ; pour le déplacer, droit `article_create` sur la commission cible | `ArticleType` (champ commission modifiable) |
 
 ## Liste D – codé en dur (dev : bug ou évolution)
 

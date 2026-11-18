@@ -72,7 +72,7 @@ Nom courant des traitements automatiques (synchronisations FFCAM et Google, envo
 Le cursus d'un adhérent comporte deux filières : « pratiquants » (niveaux de pratique) et « cadres » (brevets). Voir [Schéma formations et compétences](schema-formations-competences.md).
 
 ### Brevet
-Diplôme fédéral de la filière « cadres », délivré par activité. Deux degrés : initiateur 1er degré (brevet socle de l'activité) et initiateur 2e degré (spécialité dans l'activité). L'extranet FFCAM affiche pour chaque brevet quatre dates : obtention, migration, recyclage, formation continue.
+Diplôme fédéral de la filière « cadres », délivré par activité. Deux degrés d'initiateur : 1er degré (brevet socle de l'activité) et 2e degré (spécialité dans l'activité). Le 3e degré est le brevet d'instructeur, qui forme les initiateurs. L'extranet FFCAM affiche pour chaque brevet quatre dates : obtention, migration, recyclage, formation continue.
 
 ### Formation validée
 Stage FFCAM suivi et validé par un adhérent (par exemple PSC1 ou une unité de formation « Neige et avalanches »), avec sa date et le numéro de la session.
@@ -81,7 +81,7 @@ Stage FFCAM suivi et validé par un adhérent (par exemple PSC1 ou une unité de
 Niveau d'un adhérent dans une activité, filière « pratiquants » : INITIE, puis PERFECTIONNE, et SPECIALISE dans certaines activités seulement. Exemple : « INITIE en alpinisme ». Le niveau PERFECTIONNE dans l'activité est le prérequis pour se former au brevet d'initiateur 1er degré. En escalade sur glace / dry tooling, le cursus d'initiateur demande le niveau SPECIALISE.
 
 ### Groupe de compétences (GDC)
-Subdivision d'un niveau de pratique. Chaque niveau est découpé en 4 chapitres, eux-mêmes découpés en parties ; chaque partie est un groupe de compétences, repéré par niveau-chapitre.partie (par exemple INI-2.1 ou PER-3.3). Un GDC est attesté par un initiateur. Quand tous les GDC d'un niveau sont validés, le niveau est obtenu.
+Subdivision d'un niveau de pratique. Chaque niveau est découpé en 4 chapitres, eux-mêmes découpés en parties ; chaque partie est un groupe de compétences, repéré par niveau-chapitre.partie (par exemple INI-2.1 ou PER-3.3). Un GDC est attesté par un initiateur ou un instructeur au niveau INITIE ; aux niveaux PERFECTIONNE et SPECIALISE, par un instructeur, un professionnel agréé ou un initiateur accrédité. Quand tous les GDC d'un niveau sont validés, le niveau est obtenu.
 
 ## Outils
 

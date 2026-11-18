@@ -29,7 +29,7 @@ Deux plafonds distincts sont fixés sur la sortie :
 - la **jauge** : le nombre de places de la sortie (`ngensMax`, recopié dans `join_max_evt` à l'enregistrement), **sans compter** la liste d'attente ;
 - la **liste d'attente** : un nombre de places supplémentaires (`waitingSeat`, optionnel), ouvertes une fois la jauge atteinte. Les places restantes valent `waitingSeat` moins le nombre d'inscriptions non confirmées.
 
-Quand la jauge est atteinte, le bouton d'inscription propose de « rejoindre la liste d'attente » tant qu'il en reste des places. Quand la liste d'attente est pleine, le bouton d'inscription n'est plus affiché. Ce plafond n'existe qu'à l'affichage de la page : `SortieController::join` ne le vérifie pas.
+Quand la jauge est atteinte, le bouton d'inscription propose de « rejoindre la liste d'attente » tant qu'il en reste des places. Quand la liste d'attente est pleine, le bouton d'inscription n'est plus affiché, sauf pour un adhérent déjà inscrit qui a des affiliés : il peut encore les pré-inscrire. Ce plafond n'existe qu'à l'affichage de la page : `SortieController::join` ne le vérifie pas.
 
 ## Désinscription
 

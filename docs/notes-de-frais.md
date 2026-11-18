@@ -32,7 +32,7 @@ Les formations et les achats suivent un autre circuit : voir [Notes hors sortie]
 ### Rattachement et délai
 
 - Une note de sortie est toujours **rattachée à une sortie**.
-- Elle peut être saisie jusqu'à **120 jours après la fin de la sortie** (`Evt::EXPENSE_REPORT_DEADLINE_DAYS`).
+- Elle peut être déposée depuis la page de la sortie jusqu'à **120 jours après la fin de la sortie** (`Evt::EXPENSE_REPORT_DEADLINE_DAYS`). L'API ne contrôle pas ce délai.
 - Une sortie qui a une note de frais ne peut plus être supprimée.
 
 ### Statuts
@@ -52,7 +52,7 @@ Calcul serveur : `src/Service/ExpenseReportCalculator.php`. Paramètres dans `co
 | `tauxKilometriqueVoiture` | €/km en voiture personnelle | 0,20 |
 | `tauxKilometriqueMinibus` | €/km en minibus du club | 0,30 |
 | `divisionPeage` | diviseur appliqué au péage en voiture personnelle | 3 |
-| `nuiteeMaxRemboursable` | plafond remboursable par nuit d'hébergement | 60 € |
+| `nuiteeMaxRemboursable` | plafond remboursable par ligne d'hébergement | 60 € |
 
 | Type de transport | Formule |
 |---|---|
@@ -61,7 +61,7 @@ Calcul serveur : `src/Service/ExpenseReportCalculator.php`. Paramètres dans `co
 | Minibus de location | (location + carburant + péage) ÷ nombre de passagers |
 | Transports en commun | prix du billet |
 
-- **Hébergement** : chaque nuit est remboursable dans la limite de `nuiteeMaxRemboursable`.
+- **Hébergement** : chaque ligne est remboursable dans la limite de `nuiteeMaxRemboursable`. Il faut donc saisir une ligne par nuitée : deux nuits sur une seule ligne ne sont remboursées qu'à hauteur d'un plafond.
 - **Autres dépenses** : entièrement remboursables.
 - Le **total remboursable** peut donc être inférieur au total dépensé.
 
