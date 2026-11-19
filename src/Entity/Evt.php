@@ -530,9 +530,8 @@ class Evt
      */
     public function findUnpaidParticipationByName(string $firstname, string $lastname): ?EventParticipation
     {
-        $normalize = static fn (?string $name): string => preg_replace('/[^a-z]/', '', strtolower(StringUtils::removeDiacritics($name ?? '')));
-        $firstname = $normalize($firstname);
-        $lastname = $normalize($lastname);
+        $firstname = StringUtils::normalizeName($firstname);
+        $lastname = StringUtils::normalizeName($lastname);
         if ('' === $firstname || '' === $lastname) {
             return null;
         }
@@ -541,8 +540,8 @@ class Evt
             EventParticipation::ROLES_SIMPLES,
             [EventParticipation::STATUS_VALIDE, EventParticipation::STATUS_NON_CONFIRME],
         )->filter(fn (EventParticipation $participation) => !$participation->hasPaid()
-            && $normalize($participation->getUser()->getFirstname()) === $firstname
-            && $normalize($participation->getUser()->getLastname()) === $lastname
+            && StringUtils::normalizeName($participation->getUser()->getFirstname()) === $firstname
+            && StringUtils::normalizeName($participation->getUser()->getLastname()) === $lastname
         );
 
         return 1 === $matches->count() ? $matches->first() : null;
