@@ -7,12 +7,55 @@ Un Cronjob est configuré pour synchroniser les nouveaux adhérents avec le syst
 1. La FFCAM upload un fichier CSV chaque nuit
 2. Notre application parse ce fichier
 3. Pour chaque adhérent :
-   - Si l'adhérent existe (même nom, prénom, date de naissance) : mise à jour
-   - Si l'adhérent n'existe pas : création du compte
+   - Si un compte correspond (n° de licence, ou doublon détecté : voir [Rapprochement des comptes](#rapprochement-des-comptes)) : mise à jour ou fusion
+   - Sinon : création du compte
 
 ## Accès
 
 Les nouveaux adhérents peuvent accéder au site une fois leur compte créé. 
+
+## Règles de synchronisation
+
+Code : `src/Service/FfcamSynchronizer.php` (commande `ffcam-file-sync`, chaque jour à 7 h 03 en production).
+
+### Rapprochement des comptes
+
+Pour chaque ligne du fichier :
+
+1. recherche du compte par **n° de licence** ;
+2. recherche d'un **doublon** : même nom, prénom et date de naissance (sans tenir compte de la casse), même e-mail (comparé seulement si le fichier FFCAM en fournit un), avec un n° de licence différent ;
+3. doublon trouvé → **fusion** : le compte existant garde son historique et prend le nouveau n° de licence. Si une autre fiche porte déjà ce nouveau n° : sans compte activé (pas de mot de passe), les deux fiches sont consolidées ; avec un compte activé, rien n'est fusionné et une erreur « doublon ambigu » est remontée (rapport et Sentry) ;
+4. sinon, compte trouvé par n° → **mise à jour** ; aucun compte → **création** (le pseudo est généré automatiquement).
+
+### Données mises à jour
+
+Les données FFCAM **écrasent** celles du site : nom, prénom, date de naissance, civilité, référent familial (filiation), téléphones, e-mail, adresse, code postal, ville, radiation (date et motif), type de profil, fin de validité des cartes découverte. La date d'adhésion n'est remplacée que si le fichier en fournit une nouvelle. Corriger ces données se fait donc dans l'extranet FFCAM, pas sur le site.
+
+Cas particuliers :
+
+- **E-mail vide** côté FFCAM : l'e-mail du site n'est pas remplacé (avertissement dans le rapport).
+- **E-mail déjà utilisé** par un autre adhérent (couple, famille) : il est remplacé par `doublon.<n° de licence>-<e-mail>` pour respecter l'unicité ; la personne ne reçoit donc plus les e-mails du site (avertissement dans le rapport).
+- **Adhérent radié** : son compte est marqué « à renouveler ».
+- Un rapport récapitulatif est envoyé par e-mail après chaque synchronisation, même interrompue (`FfcamSyncReportMailer`). Dans deux cas, rien n'est importé et aucun rapport n'est envoyé : si le fichier est absent, la commande affiche une erreur et s'arrête en échec ; si sa structure est invalide, l'erreur est journalisée.
+
+### Cartes découverte
+
+Fichier séparé `decouverte_XXXX.txt`, synchronisé chaque jour à 6 h 16 en production (commande `ffcam-discovery-file-sync`, script `sync-nomads.sh`). Une carte dont la date de fin est déjà passée n'est pas importée.
+
+### Validité des licences
+
+Code : `src/Service/UserLicenseHelper.php`.
+
+- La saison va du 1er septembre au 31 août, avec une **tolérance jusqu'au 30 septembre**.
+- Après la synchronisation, les comptes dont la dernière adhésion est antérieure à la fin de la saison précédente sont marqués **« à renouveler »** (`doitRenouveler`), sauf les comptes créés manuellement, les licenciés d'un autre club ajoutés sur le site (`nomade_user`) et le super admin. Ce blocage n'est pas appliqué si la synchronisation a été interrompue, si le fichier est absent (la commande `ffcam-file-sync` s'arrête alors en erreur) ou si sa structure est invalide.
+- Un compte « à renouveler » ne peut plus s'inscrire aux sorties.
+- Pour une sortie, la licence doit être valide **jusqu'à la date de fin** de la sortie. Une carte découverte doit couvrir la sortie et ne pas commencer après son début.
+- Les licenciés d'un autre club et les personnes extérieures (profils 3 et 4) ne sont pas soumis à ces dates.
+- Les comptes listés dans `SPECIAL_ACCOUNTS_IDS` voient leur date d'adhésion remise au 1er septembre chaque année (commande `auto-renew-special-accounts`).
+
+### Anonymisation (RGPD)
+
+Chaque jour à 7 h 28 (commande `user-anonymization-cron`), les comptes dont la dernière adhésion date **au plus tard du 31 août de la saison N-2** sont anonymisés (pour la saison 2026-2027 : jusqu'au 31 août 2024 inclus), sauf le super admin : prénom remplacé par « compte », nom par « supprimé <id> », e-mail, mot de passe, téléphones, adresse et photo effacés, brevets, notifications et rôles supprimés. Le compte est conservé (marqué supprimé) pour garder l'historique des sorties et des articles.
 
 ### Description fichier FFCAM
 voici la description du fichier fourni par la FFCAM:
