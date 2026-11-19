@@ -17,6 +17,13 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
     $log .= "\n html_entity_decode :  \n" . $contenu_content_inline;
 
     if ($id_content_inline && isset($_POST['val'])) {
+        // code lu avant la mise à jour : une erreur de lecture ne laisse pas un contenu modifié sans réponse
+        $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('SELECT `code_content_inline` FROM `caf_content_inline` WHERE `id_content_inline` = ? LIMIT 1');
+        $stmt->bind_param('i', $id_content_inline);
+        $stmt->execute();
+        $contenuCible = $stmt->get_result()->fetch_assoc();
+        $stmt->close();
+
         $stmt = LegacyContainer::get('legacy_mysqli_handler')->prepare('UPDATE  `caf_content_inline` SET  `contenu_content_inline` =  ? WHERE  `caf_content_inline`.`id_content_inline` = ? LIMIT 1 ;');
         $stmt->bind_param('si', $contenu_content_inline, $id_content_inline);
         if (!$stmt->execute()) {
@@ -25,6 +32,11 @@ if (isGranted(SecurityConstants::ROLE_CONTENT_MANAGER)) {
             $result['success'] = true;
             $result['req'] = 'UPDATE caf_content_inline ...';
             $result['content'] = stripslashes($contenu_content_inline);
+
+            // aucune trace si le contenu n'existe pas ou reste identique
+            if ($stmt->affected_rows > 0) {
+                mylog('edit-inline', 'Modif contenu inline : « ' . $contenuCible['code_content_inline'] . ' »', false);
+            }
         }
         $stmt->close();
     } else {

@@ -4,10 +4,10 @@ use App\Helper\HtmlHelper;
 use App\Legacy\LegacyContainer;
 use App\Security\SecurityConstants;
 
-if (($currentPage['admin_page'] && !isGranted(SecurityConstants::ROLE_ADMIN)) || $currentPage['superadmin_page']) {
+if (!isGranted(SecurityConstants::ROLE_ADMIN)) {
     echo 'Votre session administrateur a expiré ou vos droits ne sont pas assez élevés pour accéder à cette page';
 } else {
-    $req = 'SELECT * FROM  `caf_log_admin` ORDER BY date_log_admin DESC LIMIT 0 , 5000';
+    $req = 'SELECT l.*, u.firstname_user, u.lastname_user FROM `caf_log_admin` l LEFT JOIN `caf_user` u ON l.user_log_admin = u.id_user ORDER BY l.date_log_admin DESC LIMIT 0 , 5000';
     $handleTab = [];
     $handleSql = LegacyContainer::get('legacy_mysqli_handler')->query($req);
     while ($handle = $handleSql->fetch_array(\MYSQLI_ASSOC)) {
@@ -22,6 +22,7 @@ if (($currentPage['admin_page'] && !isGranted(SecurityConstants::ROLE_ADMIN)) ||
 				<th>Code</th>
 				<th>Description</th>
 				<th>@IP</th>
+				<th>Utilisateur</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -51,8 +52,9 @@ if (($currentPage['admin_page'] && !isGranted(SecurityConstants::ROLE_ADMIN)) ||
 				<tr>
 					<td><span style="display:none">' . $item['date_log_admin'] . '</span>' . date('d/m/y H:i', $item['date_log_admin']) . '</td>
 					<td><img src="/img/base/' . $img . '" alt="" title="" style="vertical-align:middle" /> ' . HtmlHelper::escape($item['code_log_admin']) . '</td>
-					<td>' . HtmlHelper::escape($item['desc_log_admin']) . '</td>
+					<td>' . HtmlHelper::escapeAdminLogDescription($item['desc_log_admin']) . '</td>
 					<td>' . HtmlHelper::escape($item['ip_log_admin']) . '</td>
+					<td>' . HtmlHelper::escape(trim($item['firstname_user'] . ' ' . $item['lastname_user'])) . '</td>
 				</tr>';
             } ?>
 		</tbody>
