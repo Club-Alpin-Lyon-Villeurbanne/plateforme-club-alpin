@@ -565,6 +565,29 @@ class Evt
         return $this->getParticipations($types, [EventParticipation::STATUS_VALIDE]);
     }
 
+    /**
+     * Encadrant, stagiaire ou co-encadrant dont la participation est validée.
+     */
+    public function isEncadrant(?User $user): bool
+    {
+        if (null === $user) {
+            return false;
+        }
+
+        foreach ($this->getEncadrants() as $participation) {
+            $participant = $participation->getUser();
+            if (null === $participant) {
+                continue;
+            }
+            // Utilisateurs non persistés : pas d'identifiant à comparer, on compare les objets.
+            if (null === $user->getId() ? $participant === $user : $participant->getId() === $user->getId()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function getCommission(): ?Commission
     {
         return $this->commission;
