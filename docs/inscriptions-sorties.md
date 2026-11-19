@@ -39,10 +39,21 @@ Un participant peut se désinscrire lui-même, et un référent peut désinscrir
 
 | Événement | E-mail | Destinataires |
 |---|---|---|
-| Demande d'inscription | `sortie-demande-inscription` | l'**organisateur** de la sortie (son auteur) **et** l'encadrement validé |
+| Demande d'inscription | `sortie-demande-inscription` | l'**organisateur** de la sortie (son auteur) **et** l'encadrement validé, selon le réglage de chacun dans « Mes alertes » (voir ci-dessous) |
 | Désinscription d'un participant validé ou non confirmé | `sortie-desinscription` | l'**organisateur** de la sortie **et** l'encadrement validé, sauf la personne qui vient d'annuler |
 
-« Encadrement validé » = participations validées avec le rôle encadrant, co-encadrant ou stagiaire (`Evt::getEncadrants()` par défaut). Le **bénévole d'encadrement** n'en fait pas partie (il est seulement dans `EventParticipation::ROLES_ENCADREMENT_ETENDU`).
+« Encadrement validé » = participations validées avec le rôle encadrant, co-encadrant ou stagiaire (`Evt::getEncadrants()` par défaut). Le **bénévole d'encadrement** n'en fait pas partie (il est seulement dans `EventParticipation::ROLES_ENCADREMENT_ETENDU`). Ces destinataires sont donnés par `Evt::getOrganisateurEtEncadrants()`, qui ne compte qu'une fois un organisateur qui encadre aussi.
+
+### Réglage « Recevoir un e-mail pour chaque demande d'inscription »
+
+Chaque personne choisit dans **Mes alertes** (`/profil/alertes`, colonne `caf_user.alert_toutes_demandes_inscription`) si elle reçoit un e-mail pour chaque demande d'inscription aux sorties qu'elle organise ou encadre. Le réglage vaut pour toutes ses sorties.
+
+- **Coché** (par défaut, et pour tous les comptes existants) : un e-mail par demande, comme avant.
+- **Décoché** : un e-mail seulement pour les demandes accompagnées d'un message de l'adhérent.
+
+Un e-mail dont la demande contient un message a un objet qui commence par `[Message]`, quel que soit le réglage. Le réglage ne change rien aux e-mails de désinscription.
+
+Sur la fiche d'une sortie à venir et non annulée, l'organisateur et l'encadrement voient une cloche à côté du menu « Actions » : 🔔 s'ils reçoivent chaque demande, 🔕 sinon. Son infobulle rappelle le réglage et la cloche mène à « Mes alertes ». Le pied de l'e-mail de demande d'inscription y renvoie aussi.
 
 ## Rappel de licence
 
