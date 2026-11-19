@@ -25,6 +25,53 @@ Interface distincte développée en NextJS : [compta-club](https://github.com/Cl
 Les taux d'indemnités kilométriques sont également configurés dans :
 https://github.com/Club-Alpin-Lyon-Villeurbanne/compta-club/blob/main/app/config.ts
 
+## Règles de gestion des notes de sortie
+
+Les formations et les achats suivent un autre circuit : voir [Notes hors sortie](#notes-hors-sortie).
+
+### Rattachement et délai
+
+- Une note de sortie est toujours **rattachée à une sortie**.
+- Elle peut être déposée depuis la page de la sortie jusqu'à **120 jours après la fin de la sortie** (`Evt::EXPENSE_REPORT_DEADLINE_DAYS`). L'API ne contrôle pas ce délai.
+- Une sortie qui a une note de frais ne peut plus être supprimée.
+
+### Statuts
+
+`draft` (brouillon) → `submitted` (soumise) → `approved` (approuvée) → `accounted` (comptabilisée).
+
+Une note soumise peut aussi être `rejected` (refusée) : le demandeur peut alors la soumettre à nouveau (`rejected` → `submitted`). L'historique des changements de statut est conservé (entité `ExpenseReportStatusHistory`).
+
+Les décisions reviennent aux gestionnaires des notes de frais, qui agissent depuis compta-club : ce sont les utilisateurs dont l'identifiant figure dans la variable d'environnement `AUTHORIZED_IDS_FOR_EXPENSE_MANAGEMENT` (`ExpenseReportVoter`). Ce n'est pas un droit de la matrice.
+
+### Calcul
+
+Calcul serveur : `src/Service/ExpenseReportCalculator.php`. Paramètres dans `config/services.yaml` (clé `expense_report`), communs à tous les clubs :
+
+| Paramètre | Rôle | Valeur |
+|---|---|---|
+| `tauxKilometriqueVoiture` | €/km en voiture personnelle | 0,20 |
+| `tauxKilometriqueMinibus` | €/km en minibus du club | 0,30 |
+| `divisionPeage` | diviseur appliqué au péage en voiture personnelle | 3 |
+| `nuiteeMaxRemboursable` | plafond remboursable par ligne d'hébergement | 60 € |
+
+| Type de transport | Formule |
+|---|---|
+| Voiture personnelle | distance × taux voiture + péage ÷ `divisionPeage` |
+| Minibus du club | (distance × taux minibus + carburant + péage) ÷ nombre de passagers |
+| Minibus de location | (location + carburant + péage) ÷ nombre de passagers |
+| Transports en commun | prix du billet |
+
+- **Hébergement** : chaque ligne est remboursable dans la limite de `nuiteeMaxRemboursable`. Il faut donc saisir une ligne par nuitée : deux nuits sur une seule ligne ne sont remboursées qu'à hauteur d'un plafond.
+- **Autres dépenses** : entièrement remboursables.
+- Le **total remboursable** peut donc être inférieur au total dépensé.
+
+### Saisie (formulaire)
+
+Validation côté client : `assets/expense-report-form/src/schemas/expenses.ts`.
+
+- La partie **transport est obligatoire** : il faut choisir l'un des 4 types ci-dessus (pas d'option « sans transport »).
+- Voiture et minibus du club : distance d'au moins 1 km. Minibus : au moins 1 passager.
+- Chaque hébergement ou autre dépense doit valoir au moins 1 €.
 
 ## Notes hors sortie
 

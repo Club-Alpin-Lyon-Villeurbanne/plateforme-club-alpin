@@ -6,33 +6,32 @@ Les tâches récurrentes sont gérées directement depuis le code en s'appuyant 
 
 Les tâches planifiées sont configurées dans le fichier `clevercloud/cron.json` et les scripts associés sont stockés dans le répertoire `clevercloud/crons`. Pour plus d'informations, consultez la [documentation Clever Cloud sur les cronjobs](https://developers.clever-cloud.com/doc/administrate/cron/).
 
-Les horaires de `cron.json`, et donc ceux indiqués ci-dessous, sont en UTC : Clever Cloud n'applique un autre fuseau que si une ligne `CRON_TZ` le précède, ce qui n'est pas le cas ici. Ajouter une heure à Lyon en hiver, deux en été.
+Les horaires sont ceux du serveur, en UTC : Clever Cloud n'applique un autre fuseau que si une ligne `CRON_TZ` le précède dans `cron.json`, ce qui n'est pas le cas ici. Ajouter une heure à Lyon en hiver, deux en été. Certains scripts ne s'exécutent qu'en production (test de `DEPLOY_ENV` dans le script).
 
-## Tâches principales
+## Liste des tâches
 
-1. **Vérification de la validité des adhésions** (`sync-members.sh`)
-   - Exécution : Tous les jours à 7h03
-   - Vérifie la validité des adhésions via des fichiers FFCAM
+| Horaire (UTC) | Script | Commande | Rôle | Production uniquement |
+|---|---|---|---|---|
+| Tous les jours 5 h 54 | `send-reminders.sh` | `event-to-publish-reminder-cron` | Rappel aux responsables de commission des sorties en attente de validation | Oui |
+| Tous les jours 6 h 16 | `sync-nomads.sh` | `ffcam-discovery-file-sync` | Synchronisation des cartes découverte depuis le fichier FFCAM (voir [Synchronisation](synchronisation.md#cartes-découverte)) | Oui |
+| Tous les jours 6 h 36 | `google-groups-sync.sh` | `google-groups-sync --execute` | Synchronisation des groupes Google et des accès aux Drive partagés à partir des rôles sur le site | Oui |
+| Tous les jours 7 h 03 | `sync-members.sh` | `ffcam-file-sync` | Synchronisation des adhérents depuis le fichier FFCAM : création, mise à jour, fusion des doublons, blocage des licences expirées (voir [Synchronisation](synchronisation.md)) | Oui |
+| Tous les jours 7 h 28 | `anonymize-users.sh` | `user-anonymization-cron` | Anonymisation RGPD des comptes dont la dernière adhésion date au plus tard du 31 août de la saison N-2 (voir [Synchronisation](synchronisation.md#anonymisation-rgpd)) | Non |
+| Tous les jours 7 h 30 | `license-renew-reminder.sh` | `license-renew-reminder-cron` | Rappel de renouvellement de licence aux participants des sorties qui commencent dans 7 jours, et information de l'encadrement | Oui |
+| Tous les jours 7 h 38 | `anonymize-admin-logs.sh` | `admin-log-anonymization-cron` | Retrait de l'utilisateur et de l'adresse IP des lignes du journal d'administration plus anciennes que `ADMIN_LOG_RETENTION_MONTHS` mois (12 par défaut) ; le code, la description et la date de l'action sont conservés | Non |
+| Tous les jours 7 h 45 | `mailerlite-accueil-sync.sh nouveaux` | `mailerlite-accueil-sync --circuit nouveaux --execute` | Inscription des adhérents de la saison aux circuits d'accueil MailerLite | Oui |
+| Tous les jours 8 h 54 | `clean-alerts.sh` | `clean-alerts` | Suppression des notifications expirées | Non |
+| Le 1er septembre à 2 h 45 | `auto-renew-special-accounts.sh` | `auto-renew-special-accounts` | Remise au 1er septembre de la date d'adhésion des comptes spéciaux (`SPECIAL_ACCOUNTS_IDS`) | Non |
 
-2. **Sauvegarde des images** (`save-images.sh`)
-   - Exécution : Toutes les heures à XX:57
-   - Gère la sauvegarde des images du site
+## Groupes Google et Drive partagés
 
-3. **Rappels de validation des sorties** (`send-reminders.sh`)
-   - Exécution : Tous les jours à 5h54
-   - Envoie des rappels pour la validation des sorties
+`google-groups-sync` calcule les membres des groupes Google (listes de diffusion) à partir des rôles sur le site, puis les accès aux Drive partagés :
 
-4. **Nettoyage des alertes** (`clean-alerts.sh`)
-   - Exécution : Tous les jours à 8h54
-   - Nettoie les alertes obsolètes
+- groupe de commission : accès en écriture (`writer`) au Drive de la commission ;
+- responsables de commission : accès « organisateur de fichiers » (`fileOrganizer`) ;
+- Drive communs à tous : accès en commentaire (`commenter`).
 
-5. **Synchronisation des groupes Google** (`google-groups-sync.sh`)
-   - Exécution : Tous les jours à 6h36
-   - Synchronise les groupes Google avec les adhérents 
-
-6. **Anonymisation du journal d'administration** (`anonymize-admin-logs.sh`)
-   - Exécution : Tous les jours à 7 h 38 UTC
-   - Retire l'utilisateur et l'adresse IP des lignes plus anciennes que `ADMIN_LOG_RETENTION_MONTHS` mois (12 par défaut). Le code, la description et la date de l'action sont conservés
+Un accès manquant alors que le rôle est correct sur le site arrive donc au passage suivant (le lendemain matin).
 
 ## Hors de ce dépôt
 

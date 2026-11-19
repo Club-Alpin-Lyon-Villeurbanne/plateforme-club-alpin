@@ -4,6 +4,7 @@ namespace App\Legacy;
 
 use Symfony\Component\Config\Loader\Loader;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 

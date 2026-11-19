@@ -68,3 +68,16 @@ AGENTS.md
 /phpunit.xml
 /.phpunit.cache/
 ###< phpunit/phpunit ###
+
+###> phpstan/phpstan ###
+phpstan.neon
+###< phpstan/phpstan ###
+###> symfony/framework-bundle 7.4 ###
+# Généré au warmup pour l'autocomplétion de la configuration PHP, régénéré à chaque build.
+/config/reference.php
+###< symfony/framework-bundle 7.4 ###
+
+###> friendsofphp/php-cs-fixer ###
+/.php-cs-fixer.php
+/.php-cs-fixer.cache
+###< friendsofphp/php-cs-fixer ###
