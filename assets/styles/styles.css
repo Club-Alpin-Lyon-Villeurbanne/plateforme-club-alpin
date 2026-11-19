@@ -278,13 +278,13 @@ label.in_front {margin-top:15px; display:block; float:none; width:93%; backgroun
 .encart_article_small .commission-title a{color:#50B7E4;}
 .encart_article_small h2{font-family:DINBold; text-transform:none; font-size: 0.9rem; line-height:18px; padding:0;}
 .encart_article_small .summup{padding:2px 0 0 0;}
-table#agenda{width:100%; border-collapse:collapse; border-bottom:1px solid #c9c9c7;}
-table#agenda tr td{border-top:1px solid #c9c9c7; vertical-align:top;}
-table#agenda tr.up td{color:black;}
-table#agenda tr.off td{color:#CCCCCC;}
-table#agenda tr.weekendday td{background-color:#dcf0fa;}
-table#agenda td.agenda-gauche{border-right:1px solid #c9c9c7; width:140px; padding:6px 0 6px 4px;}
-table#agenda td hr{margin:0 0px 0 5px; padding:0; height:1px; border:none; background:url(../../public/img/bg-dottedhr.png) top left;}
+table#agenda, table.agenda{width:100%; border-collapse:collapse; border-bottom:1px solid #c9c9c7;}
+table#agenda tr td, table.agenda tr td{border-top:1px solid #c9c9c7; vertical-align:top;}
+table#agenda tr.up td, table.agenda tr.up td{color:black;}
+table#agenda tr.off td, table.agenda tr.off td{color:#CCCCCC;}
+table#agenda tr.weekendday td, table.agenda tr.weekendday td{background-color:#dcf0fa;}
+table#agenda td.agenda-gauche, table.agenda td.agenda-gauche{border-right:1px solid #c9c9c7; width:140px; padding:6px 0 6px 4px;}
+table#agenda td hr, table.agenda td hr{margin:0 0px 0 5px; padding:0; height:1px; border:none; background:url(../../public/img/bg-dottedhr.png) top left;}
 .agenda-date{float:right; font-family:DIN; color:#B9BFC1; font-size: 1.6rem; position:relative; bottom:44px; font-weight:100}
 .agenda-stat{padding:10px 0 0 133px; color:gray;}
 a.agenda-evt-debut{display:block; clear:both; padding:8px 10px 10px 0;}
