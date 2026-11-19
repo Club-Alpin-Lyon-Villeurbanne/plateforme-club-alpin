@@ -60,6 +60,7 @@ class ProfilController extends AbstractController
         $user->setAlertStatus(AlertType::Article, ArticlePublie::ACTU_CLUB_RUBRIQUE, false);
         $user->setAlertSortiePrefix($params['sortie-prefix-input']);
         $user->setAlertArticlePrefix($params['article-prefix-input']);
+        $user->setAlertToutesDemandesInscription(($params['toutes-demandes-inscription'] ?? '0') === '1');
 
         $em->flush();
 

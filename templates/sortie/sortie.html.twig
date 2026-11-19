@@ -39,11 +39,13 @@
     <style>
         .event-user-skill {display: none;}
 
-        /* Cadenas des informations réservées aux personnes connectées et son infobulle (macro mention_visible_connecte) */
+        /* Infobulles en CSS (attribut data-infobulle) : cadenas des informations réservées aux personnes connectées
+           (macro mention_visible_connecte) et cloche des e-mails de demande d'inscription */
         ul.nice-list:has(.mention-visible-connecte) {overflow: visible; display: flow-root;}
-        .mention-visible-connecte {position: relative; display: inline-block; vertical-align: text-bottom; cursor: help;}
+        [data-infobulle] {position: relative;}
+        .mention-visible-connecte {display: inline-block; vertical-align: text-bottom; cursor: help;}
         .mention-visible-connecte img {display: block;}
-        .mention-visible-connecte::after {
+        [data-infobulle]::after {
             content: attr(data-infobulle);
             position: absolute;
             bottom: 100%;
@@ -62,10 +64,12 @@
             font-weight: normal;
             line-height: 1.3;
             text-align: left;
+            /* garde les retours à la ligne du texte (\n dans data-infobulle) */
+            white-space: pre-line;
             visibility: hidden;
         }
-        .mention-visible-connecte:not(.infobulle-fermee):hover::after,
-        .mention-visible-connecte:not(.infobulle-fermee):focus::after {visibility: visible;}
+        [data-infobulle]:not(.infobulle-fermee):hover::after,
+        [data-infobulle]:not(.infobulle-fermee):focus::after {visibility: visible;}
         .inscription-gestion-content .datatable {
             width: 595px;
             overflow: auto;
@@ -365,8 +369,10 @@
         {% set peut_rediger_compte_rendu = app.user and event.user.id == app.user.id and event.isFinished %}
         {% set afficher_menu_actions = peut_exporter or peut_dupliquer or peut_rediger_compte_rendu %}
         {% set afficher_agenda = not event.isFinished and allowed('user_read_limited') %}
+        {# Cloche : rappelle à l'organisateur et à l'encadrement leur réglage des e-mails de demande d'inscription (« Mes alertes ») #}
+        {% set afficher_cloche = not event.isFinished and not event.cancelled and event.estPrevenuDesDemandesInscription(app.user) %}
 
-        {% if afficher_menu_actions or afficher_agenda %}
+        {% if afficher_menu_actions or afficher_agenda or afficher_cloche %}
             <div class="sortie-actions noprint">
                 {% if afficher_menu_actions %}
                     <details class="sortie-actions-menu" id="sortie-actions-menu">
@@ -480,6 +486,15 @@
                         button.addEventListener('click', () => atcb_action(config, button));
                     }
                     </script>
+                {% endif %}
+
+                {% if afficher_cloche %}
+                    {% if app.user.alertToutesDemandesInscription %}
+                        {% set cloche_infobulle = 'Vous recevez un e-mail pour chaque demande d\'inscription à cette sortie.\nPour ne recevoir que les demandes accompagnées d\'un message, cliquez sur la cloche : le réglage est dans « Mes alertes ».' %}
+                    {% else %}
+                        {% set cloche_infobulle = 'Vous ne recevez un e-mail que pour les demandes d\'inscription accompagnées d\'un message.\nPour les recevoir toutes, cliquez sur la cloche : le réglage est dans « Mes alertes ».' %}
+                    {% endif %}
+                    <a href="{{ path('profil_alertes') }}#demandes-inscription" class="nice2 cloche-demandes-inscription" data-infobulle="{{ cloche_infobulle }}" aria-label="{{ cloche_infobulle }}"><span aria-hidden="true">{{ app.user.alertToutesDemandesInscription ? '🔔' : '🔕' }}</span></a>
                 {% endif %}
             </div>
         {% endif %}
@@ -1666,22 +1681,22 @@
         });
     </script>
     <script>
-        // Infobulle du cadenas (macro mention_visible_connecte) : Échap la masque sans déplacer
-        // la souris ni le focus (WCAG 1.4.13). Elle revient au prochain survol ou focus.
+        // Infobulles en CSS (cadenas, cloche) : Échap les masque sans déplacer la souris ni le focus
+        // (WCAG 1.4.13). Elles reviennent au prochain survol ou focus.
         document.addEventListener('keydown', (event) => {
             if ('Escape' === event.key) {
-                document.querySelectorAll('.mention-visible-connecte:hover, .mention-visible-connecte:focus')
-                    .forEach((cadenas) => cadenas.classList.add('infobulle-fermee'));
+                document.querySelectorAll('[data-infobulle]:hover, [data-infobulle]:focus')
+                    .forEach((element) => element.classList.add('infobulle-fermee'));
             }
         });
-        document.querySelectorAll('.mention-visible-connecte').forEach((cadenas) => {
+        document.querySelectorAll('[data-infobulle]').forEach((element) => {
             const rouvrir = () => {
-                if (!cadenas.matches(':hover') && !cadenas.matches(':focus')) {
-                    cadenas.classList.remove('infobulle-fermee');
+                if (!element.matches(':hover') && !element.matches(':focus')) {
+                    element.classList.remove('infobulle-fermee');
                 }
             };
-            cadenas.addEventListener('mouseleave', rouvrir);
-            cadenas.addEventListener('blur', rouvrir);
+            element.addEventListener('mouseleave', rouvrir);
+            element.addEventListener('blur', rouvrir);
         });
     </script>
 {% endblock %}
