@@ -64,6 +64,8 @@
             font-weight: normal;
             line-height: 1.3;
             text-align: left;
+            /* garde les retours à la ligne du texte (\n dans data-infobulle) */
+            white-space: pre-line;
             visibility: hidden;
         }
         [data-infobulle]:not(.infobulle-fermee):hover::after,
@@ -488,9 +490,9 @@
 
                 {% if afficher_cloche %}
                     {% if app.user.alertToutesDemandesInscription %}
-                        {% set cloche_infobulle = 'Vous recevez un e-mail pour chaque demande d\'inscription à cette sortie. Pour ne recevoir que les demandes accompagnées d\'un message, cliquez sur la cloche : le réglage est dans « Mes alertes ».' %}
+                        {% set cloche_infobulle = 'Vous recevez un e-mail pour chaque demande d\'inscription à cette sortie.\nPour ne recevoir que les demandes accompagnées d\'un message, cliquez sur la cloche : le réglage est dans « Mes alertes ».' %}
                     {% else %}
-                        {% set cloche_infobulle = 'Vous ne recevez un e-mail que pour les demandes d\'inscription accompagnées d\'un message. Pour les recevoir toutes, cliquez sur la cloche : le réglage est dans « Mes alertes ».' %}
+                        {% set cloche_infobulle = 'Vous ne recevez un e-mail que pour les demandes d\'inscription accompagnées d\'un message.\nPour les recevoir toutes, cliquez sur la cloche : le réglage est dans « Mes alertes ».' %}
                     {% endif %}
                     <a href="{{ path('profil_alertes') }}#demandes-inscription" class="nice2 cloche-demandes-inscription" data-infobulle="{{ cloche_infobulle }}" aria-label="{{ cloche_infobulle }}"><span aria-hidden="true">{{ app.user.alertToutesDemandesInscription ? '🔔' : '🔕' }}</span></a>
                 {% endif %}

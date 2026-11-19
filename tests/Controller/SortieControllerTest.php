@@ -1056,8 +1056,9 @@ class SortieControllerTest extends WebTestCase
 
     public static function provideReglageDemandesInscription(): iterable
     {
-        yield 'chaque demande' => [true, '🔔', "Vous recevez un e-mail pour chaque demande d'inscription"];
-        yield 'seulement avec un message' => [false, '🔕', "Vous ne recevez un e-mail que pour les demandes d'inscription accompagnées d'un message"];
+        // la première phrase dit ce que l'on reçoit ; un retour à la ligne la sépare de la seconde (comment changer)
+        yield 'chaque demande' => [true, '🔔', "Vous recevez un e-mail pour chaque demande d'inscription à cette sortie.\nPour ne recevoir"];
+        yield 'seulement avec un message' => [false, '🔕', "Vous ne recevez un e-mail que pour les demandes d'inscription accompagnées d'un message.\nPour les recevoir toutes"];
     }
 
     public function testClocheDuReglageDesDemandesInscriptionPourUnCoencadrant(): void
