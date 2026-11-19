@@ -6,6 +6,8 @@ Les tâches récurrentes sont gérées directement depuis le code en s'appuyant 
 
 Les tâches planifiées sont configurées dans le fichier `clevercloud/cron.json` et les scripts associés sont stockés dans le répertoire `clevercloud/crons`. Pour plus d'informations, consultez la [documentation Clever Cloud sur les cronjobs](https://developers.clever-cloud.com/doc/administrate/cron/).
 
+Les horaires de `cron.json`, et donc ceux indiqués ci-dessous, sont en UTC : Clever Cloud n'applique un autre fuseau que si une ligne `CRON_TZ` le précède, ce qui n'est pas le cas ici. Ajouter une heure à Lyon en hiver, deux en été.
+
 ## Tâches principales
 
 1. **Vérification de la validité des adhésions** (`sync-members.sh`)
@@ -29,7 +31,7 @@ Les tâches planifiées sont configurées dans le fichier `clevercloud/cron.json
    - Synchronise les groupes Google avec les adhérents 
 
 6. **Anonymisation du journal d'administration** (`anonymize-admin-logs.sh`)
-   - Exécution : Tous les jours à 7h38
+   - Exécution : Tous les jours à 7 h 38 UTC
    - Retire l'utilisateur et l'adresse IP des lignes plus anciennes que `ADMIN_LOG_RETENTION_MONTHS` mois (12 par défaut). Le code, la description et la date de l'action sont conservés
 
 ## Hors de ce dépôt
