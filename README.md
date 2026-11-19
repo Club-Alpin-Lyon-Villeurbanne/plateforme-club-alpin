@@ -4,7 +4,7 @@
 [![Clever Cloud](https://img.shields.io/badge/Hébergement-Clever_cloud-yellow)](https://console.clever-cloud.com/)
 [![GitGuardian Security](https://img.shields.io/badge/GitGuardian-Monitored-green?logo=gitguardian)](https://dashboard.gitguardian.com/workspace/474277/incidents/secrets)
 ![PHP Version](https://img.shields.io/badge/PHP-8.5-blue?logo=php)
-![Symfony](https://img.shields.io/badge/Symfony-6.4-6d6dff?logo=symfony)
+![Symfony](https://img.shields.io/badge/Symfony-7.4_LTS-6d6dff?logo=symfony)
 ![Database](https://img.shields.io/badge/MySQL-8.0-4479A1?logo=mysql)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -21,7 +21,7 @@ Application web permettant de gérer un Club Alpin Francais! Ce projet est utili
 
 ### 🛠️ Stack technique
 
-- **Backend** : PHP 8.5, Symfony 6.4
+- **Backend** : PHP 8.5, Symfony 7.4 LTS
 - **Frontend** : Twig, Vue.js (pour les notes de frais), TailwindCSS (pour les notes de frais)
 - **Base de données** : MySQL 8.0
 - **Infrastructure** : Docker, Clever Cloud

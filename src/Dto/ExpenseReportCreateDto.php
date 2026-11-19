@@ -13,7 +13,7 @@ class ExpenseReportCreateDto
     #[Assert\When(expression: 'this.type === null', constraints: [new Assert\NotBlank()])]
     #[Assert\When(expression: 'this.type !== null', constraints: [new Assert\IsNull(message: 'Une note hors sortie n\'est pas rattachée à une sortie.')])]
     #[Assert\Positive]
-    public $eventId;
+    public ?int $eventId = null;
 
     #[Assert\Choice(choices: ['formation', 'autre'], message: 'Le type de note doit être « formation » ou « autre ».')]
     public ?string $type = null;
