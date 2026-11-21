@@ -36,6 +36,11 @@ class SansLienWhatsAppValidatorTest extends ConstraintValidatorTestCase
         yield 'majuscules' => ['HTTPS://CHAT.WHATSAPP.COM/ABCDEF'];
         yield 'dans un href, texte neutre' => ['<p>Le <a href="https://chat.whatsapp.com/AbCdEf">groupe de la sortie</a></p>'];
         yield 'schéma de l\'application' => ['<a href="whatsapp://send?text=bonjour">écrire</a>'];
+        yield 'entité décimale dans un href' => ['<a href="https://chat.whats&#97;pp.com/AbCdEf">groupe</a>'];
+        yield 'entité hexadécimale' => ['https://wa&#x2E;me/33612345678'];
+        yield 'entité sans point-virgule' => ['<a href="https://chat.whats&#97pp.com/AbCdEf">groupe</a>'];
+        yield 'entité nommée' => ['https://wa&period;me/33612345678'];
+        yield 'encodage d\'URL' => ['<a href="https://chat.whats%61pp.com/AbCdEf">groupe</a>'];
     }
 
     #[DataProvider('textesSansLienWhatsApp')]
@@ -55,5 +60,7 @@ class SansLienWhatsAppValidatorTest extends ConstraintValidatorTestCase
         yield 'domaine qui finit par wa.me' => ['https://java.me/doc'];
         yield 'domaine qui commence par wa.me' => ['https://wa.mexico.example/'];
         yield 'domaine qui contient whatsapp.com' => ['https://notwhatsapp.com/page'];
+        yield 'entités sans lien' => ['<p>Parents &amp; enfants&nbsp;: groupe WhatsApp &#224; venir</p>'];
+        yield 'domaine encodé qui finit par wa.me' => ['https://jav&#97;.me/doc'];
     }
 }

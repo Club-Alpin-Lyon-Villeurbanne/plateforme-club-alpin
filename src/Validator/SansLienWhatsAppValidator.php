@@ -30,8 +30,20 @@ class SansLienWhatsAppValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, 'string');
         }
 
-        if (preg_match(self::MOTIF, $value)) {
+        if (preg_match(self::MOTIF, $this->decoder($value))) {
             $this->context->buildViolation($constraint->message)->addViolation();
         }
+    }
+
+    /**
+     * Décode comme le navigateur, pour qu'un domaine écrit « whats&#97;pp » ou « whats%61pp » soit repéré :
+     * entités HTML (numériques même sans « ; »), puis encodage d'URL.
+     */
+    private function decoder(string $texte): string
+    {
+        // quantificateurs possessifs : « &#97; » ne doit pas devenir « &#9;7; »
+        $texte = preg_replace('/&#(x[0-9a-f]++|\d++)(?!;)/i', '&#$1;', $texte) ?? $texte;
+
+        return rawurldecode(html_entity_decode($texte, \ENT_QUOTES | \ENT_HTML5, 'UTF-8'));
     }
 }
