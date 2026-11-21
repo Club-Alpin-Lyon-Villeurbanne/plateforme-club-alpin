@@ -168,6 +168,32 @@ class EvtRepositoryCommonEventsTest extends WebTestCase
         $this->assertSame(3, $common[0]->getParticipationsCount());
     }
 
+    public function testReloadsParticipationsAlreadyLoadedByLatestEvents(): void
+    {
+        $userA = $this->signup();
+        $userB = $this->signup();
+        $userC = $this->signup();
+
+        $event = $this->createPastValidatedEvent($userA);
+        $event->addParticipation($userB, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $event->addParticipation($userC, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $this->em()->flush();
+        $this->em()->clear();
+
+        $userA = $this->em()->find(User::class, $userA->getId());
+        $userB = $this->em()->find(User::class, $userB->getId());
+
+        // Même enchaînement que la fiche profil : « Dernières sorties » ne charge que la participation de A
+        $latest = $this->repo()->getUserEvents($userA, 0, 3, [Evt::STATUS_PUBLISHED_VALIDE]);
+        $this->assertSame(1, $latest[0]->getParticipationsCount());
+
+        $common = $this->repo()->getCommonEvents($userA, $userB, 0, 3);
+
+        $this->assertCount(1, $common);
+        $this->assertSame($latest[0], $common[0]);
+        $this->assertSame(3, $common[0]->getParticipationsCount());
+    }
+
     public function testLimitAppliesToEventsNotParticipations(): void
     {
         $userA = $this->signup();

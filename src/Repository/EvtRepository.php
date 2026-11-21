@@ -11,6 +11,7 @@ use App\Trait\PaginationRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -284,7 +285,14 @@ class EvtRepository extends ServiceEntityRepository
      */
     public function getCommonEvents(User $user, User $otherUser, int $first, int $perPage): array
     {
-        return $this->getPaginatedResults($this->getCommonEventsDql($user, $otherUser), $first, $perPage);
+        return $this->getCommonEventsDql($user, $otherUser)
+            ->setFirstResult($first)
+            ->setMaxResults($perPage)
+            ->getQuery()
+            // Une sortie déjà chargée par getUserEvents() n'a que la participation de l'adhérent consulté :
+            // le rafraîchissement fait relire toutes ses participations, pour un témoin de places juste.
+            ->setHint(Query::HINT_REFRESH, true)
+            ->getResult();
     }
 
     /**
