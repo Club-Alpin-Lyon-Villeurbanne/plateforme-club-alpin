@@ -23,13 +23,20 @@
             <br>Les champs marqués d'un <span class="revalidation">*</span> demanderont une réapprobation de la sortie par un responsable de commission si vous les modifiez.
         </p>
 
-        {% if form.vars.errors|length > 0 %}
+        {# erreurs du formulaire et de ses champs : celle d'un champ en bas de page (ex. la description) passerait inaperçue #}
+        {% if form.vars.submitted and not form.vars.valid %}
             <br>
             <div class="alerte has-errors">
                 Le formulaire contient des erreurs, merci de vérifier votre saisie.<br><br>
                 <ul>
                     {% for error in form.vars.errors %}
                         <li>{{ error.message }}</li>
+                    {% endfor %}
+                    {% for champ in form.children %}
+                        {# les boutons d'envoi n'ont pas d'erreurs #}
+                        {% for error in champ.vars.errors ?? [] %}
+                            <li>{{ error.message }}</li>
+                        {% endfor %}
                     {% endfor %}
                 </ul>
             </div>

@@ -9,6 +9,7 @@ use App\Helper\MonthHelper;
 use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
 use App\UserRights;
+use App\Validator\SansLienWhatsApp;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -112,6 +113,9 @@ class ArticleType extends AbstractType
                     'class' => 'type1 wide',
                     'style' => 'width: 95%',
                 ],
+                'constraints' => [
+                    $this->sansLienWhatsApp(),
+                ],
             ])
             ->add('une', CheckboxType::class, [
                 'label' => 'Placer cet article à la Une ?',
@@ -136,6 +140,9 @@ class ArticleType extends AbstractType
                     'class' => 'type1 wide tinymce ckeditor',
                     'rows' => 15,
                     'style' => 'width: 100%; min-height:300px',
+                ],
+                'constraints' => [
+                    $this->sansLienWhatsApp(),
                 ],
             ])
             ->add('mediaUploadId', HiddenType::class, [
@@ -175,6 +182,16 @@ class ArticleType extends AbstractType
                 ],
             ])
         ;
+    }
+
+    /**
+     * Un article est visible sans connexion, et son contenu est repris dans le flux RSS.
+     */
+    private function sansLienWhatsApp(): SansLienWhatsApp
+    {
+        return new SansLienWhatsApp(
+            message: 'Les liens WhatsApp sont interdits dans un article, car il est visible sans connexion. Pour le groupe d\'une sortie, mettez le lien dans les « Détails pratiques » de la sortie, réservés aux adhérents connectés.',
+        );
     }
 
     public function configureOptions(OptionsResolver $resolver): void

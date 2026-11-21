@@ -110,4 +110,59 @@ class EventTypeTest extends WebTestCase
         self::assertSame(0.0, (float) $event->getLatDepart());
         self::assertSame(0.0, (float) $event->getLongDepart());
     }
+
+    public function testUnLienWhatsAppEstRefuseDansLaDescription(): void
+    {
+        $user = $this->signup();
+        $event = $this->newEvent($user);
+        $form = $this->buildForm($event, $user);
+
+        $form->submit([
+            'lat' => '45.7',
+            'long' => '4.8',
+            'description' => '<p>Groupe : <a href="https://chat.whatsapp.com/AbCdEf123456">ici</a></p>',
+        ], false);
+
+        self::assertFalse($form->isValid());
+        self::assertCount(1, $form->get('description')->getErrors());
+        self::assertStringContainsString('Détails pratiques', (string) $form->get('description')->getErrors());
+    }
+
+    public function testUnLienWhatsAppEstRefuseDansLesChampsPublics(): void
+    {
+        $user = $this->signup();
+        $event = $this->newEvent($user);
+        $form = $this->buildForm($event, $user);
+
+        $lien = 'https://chat.whatsapp.com/AbCdEf123456';
+        $form->submit([
+            'lat' => '45.7',
+            'long' => '4.8',
+            'titre' => 'Grand Som ' . $lien,
+            'rdv' => 'Parking, groupe ' . $lien,
+            'tarifDetail' => $lien,
+            'matos' => $lien,
+            'itineraire' => $lien,
+        ], false);
+
+        foreach (['titre', 'rdv', 'tarifDetail', 'matos', 'itineraire'] as $champ) {
+            self::assertStringContainsString('liens WhatsApp sont interdits', (string) $form->get($champ)->getErrors(), $champ);
+        }
+    }
+
+    public function testUnLienWhatsAppEstPermisDansLesDetailsPratiques(): void
+    {
+        $user = $this->signup();
+        $event = $this->newEvent($user);
+        $form = $this->buildForm($event, $user);
+
+        $form->submit([
+            'lat' => '45.7',
+            'long' => '4.8',
+            'details_caches' => 'Groupe : https://chat.whatsapp.com/AbCdEf123456',
+        ], false);
+
+        self::assertSame('Groupe : https://chat.whatsapp.com/AbCdEf123456', $event->getDetailsCaches());
+        self::assertStringNotContainsString('WhatsApp', (string) $form->getErrors(true));
+    }
 }
