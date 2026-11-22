@@ -7,11 +7,11 @@ namespace DoctrineMigrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-final class Version20260824120000 extends AbstractMigration
+final class Version20261122120000 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'Ajoute pending_email_changes sur caf_evt pour mémoriser le diff des champs critiques à la dépublication';
+        return 'Ajoute pending_email_changes sur caf_evt pour garder les modifications à annoncer aux participants quand une sortie dépubliée est republiée';
     }
 
     public function up(Schema $schema): void
