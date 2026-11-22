@@ -24,8 +24,24 @@
 2. Initialiser l'environnement :
 ```bash
 make init
-make database-init
+# Puis choisir UNE des deux cibles ci-dessous selon le besoin :
+make database-init        # seed minimal (12 communes), démarrage rapide
+# ou
+make database-bootstrap   # full import (~39 000 communes, ~2 min réseau)
 ```
+
+### Initialisation de la base de données
+
+Le projet propose deux cibles selon ton besoin :
+
+| Cible | Communes en base | Quand l'utiliser |
+|---|---|---|
+| `make database-init` | Seed minimal (12 communes montagne) | Démarrage rapide, CI |
+| `make database-bootstrap` | ~39 000 communes (API La Poste, ~2 min réseau) | Install initiale, autocomplete complet France |
+
+Le seed minimal inclut Lyon (1er & 3e), le massif du Mont-Blanc (Chamonix, Saint-Gervais, Annecy), les Écrins (Saint-Christophe-en-Oisans avec La Bérarde, Bourg-d'Oisans, Pelvoux, Briançon), la Vanoise (Pralognan, Bonneval-sur-Arc) et le Vercors (Villard-de-Lans) — suffisant pour tester le calcul du bilan carbone des sorties.
+
+Pour rafraîchir uniquement les communes sans toucher au reste : `make database-import-communes` (full) ou `make database-seed-communes` (minimal).
 
 ## Accès
 
@@ -37,6 +53,27 @@ make database-init
 Pour consommer les mails : `make consume-mails`
 
 ⚠️ L'upload d'images ne fonctionne pas dans un environnement dockerisé. 🚧
+
+## Tests
+
+```bash
+make tests clear=1                          # la première fois : crée la base de test (caf_test)
+make tests                                  # toute la suite
+make tests path=tests/Service/FooTest.php   # un seul fichier
+```
+
+Chaque test tourne dans une transaction annulée à la fin (`dama/doctrine-test-bundle`) : la base de test ne se remplit pas d'un run à l'autre. `clear=1` ne sert qu'à la recréer :
+
+- la première fois ;
+- après avoir récupéré une nouvelle migration ou une modification des fixtures ;
+- si des tests lancés depuis une branche plus ancienne, sans cette transaction, y ont laissé des données.
+
+La connexion mysqli du legacy (`MysqliHandler`) est une connexion à part, hors de cette transaction :
+
+- une page legacy ne voit pas les données créées par Doctrine pendant le test, qui ne sont pas encore validées ;
+- ce qu'elle écrit reste en base.
+
+Pour un test qui en a besoin, l'attribut `#[SkipDatabaseRollback]` (`DAMA\DoctrineTestBundle\PHPUnit\SkipDatabaseRollback`), sur la méthode ou la classe, le fait tourner hors transaction. Ses données restent alors en base : à supprimer dans son `tearDown()`.
 
 ## Dépannage
 

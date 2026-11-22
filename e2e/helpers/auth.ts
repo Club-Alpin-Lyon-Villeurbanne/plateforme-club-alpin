@@ -9,5 +9,6 @@ export const loginViaUI = async (page: Page, email: string, password: string) =>
   await page.locator('input[name="_username"]').fill(email);
   await page.locator('input[name="_password"]').fill(password);
   await page.locator('input[name="connect-button"]').click();
-  await page.waitForLoadState('networkidle');
+  // `load` (pas `networkidle`, flaky) : attend les scripts, requis pour les menus JS post-login.
+  await page.waitForLoadState('load');
 };

@@ -1,0 +1,87 @@
+{% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
+
+{# Jamais le choix entre don et remboursement : il ne doit pas peser sur la validation.
+   Chaque valideur reçoit son mail (prenom, autresValideurs). #}
+
+{% block subject -%}
+    Note de frais à valider : {{ objet }}
+{%- endblock %}
+
+{% block inner_html %}
+    <p>Bonjour{% if prenom %} {{ prenom }}{% endif %},</p>
+    <p>{{ demandeur }} a envoyé une note de frais à valider.</p>
+    <ul>
+        <li><strong>Demandeur :</strong> {{ demandeur }}</li>
+        <li><strong>Type :</strong> {{ type }}</li>
+        <li><strong>Commission :</strong> {{ commission }}</li>
+        <li><strong>Objet :</strong> {{ objet }}</li>
+        {% if dateDepense %}
+            <li><strong>{{ libelleDeLaDate }} :</strong> {{ dateDepense }}</li>
+        {% endif %}
+        <li><strong>Montant :</strong> {{ montant }}{% if partRemboursable %} ({{ partRemboursable }}){% endif %}</li>
+        {% if lienFormation %}
+            <li><strong>Formation :</strong> <a href="{{ lienFormation }}">{{ lienFormation }}</a></li>
+        {% endif %}
+    </ul>
+    {% if mot %}
+        <p><strong>Mot du demandeur :</strong><br>{{ mot|nl2br }}</p>
+    {% endif %}
+    {% if avertissements %}
+        <p><strong>À vérifier :</strong></p>
+        <ul>
+            {% for avertissement in avertissements %}
+                <li>{{ avertissement }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+    <p>
+        <a href="{{ lien }}" style="display: inline-block; padding: 8px 16px; border-radius: 6px; background-color: #0369a1; color: #ffffff; font-weight: bold; text-decoration: none;">Voir la note</a>
+    </p>
+    {% if autresValideurs %}
+        <p style="font-size: 12px; color: #6b7280;">{{ autresValideurs|join(', ', ' et ') }} {% if autresValideurs|length > 1 %}l'ont reçu aussi : la réponse de l'un de vous suffit.{% else %}l'a reçu aussi : la réponse de l'un de vous deux suffit.{% endif %}</p>
+    {% endif %}
+{% endblock %}
+
+{# Partie texte sans échappement HTML : elle se lit et se copie telle quelle. #}
+{% block txt %}{% autoescape false %}
+Note de frais à valider : {{ objet }}
+
+{{ block('inner_txt') }}
+{% endautoescape %}{% endblock %}
+
+{% block inner_txt %}{% autoescape false %}
+Bonjour{% if prenom %} {{ prenom }}{% endif %},
+
+{{ demandeur }} a envoyé une note de frais à valider.
+
+- Demandeur : {{ demandeur }}
+- Type : {{ type }}
+- Commission : {{ commission }}
+- Objet : {{ objet }}
+{% if dateDepense %}
+- {{ libelleDeLaDate }} : {{ dateDepense }}
+{% endif %}
+- Montant : {{ montant }}{% if partRemboursable %} ({{ partRemboursable }}){% endif %}
+
+{% if lienFormation %}
+- Formation : {{ lienFormation }}
+{% endif %}
+{% if mot %}
+
+Mot du demandeur :
+{{ mot }}
+{% endif %}
+{% if avertissements %}
+
+À vérifier :
+{% for avertissement in avertissements %}
+- {{ avertissement }}
+{% endfor %}
+{% endif %}
+
+Voir la note : {{ lien }}
+{% if autresValideurs %}
+
+{{ autresValideurs|join(', ', ' et ') }} {% if autresValideurs|length > 1 %}l'ont reçu aussi : la réponse de l'un de vous suffit.{% else %}l'a reçu aussi : la réponse de l'un de vous deux suffit.{% endif %}
+{% endif %}
+{% endautoescape %}{% endblock %}

@@ -32,33 +32,45 @@ cache-clear: ## Clear cache
 .PHONY: cache-clear
 
 ## —— ✅ Linting ——
-php-cs: bin/tools/php-cs-fixer ## Just analyze PHP code with php-cs-fixer
+php-cs: ## Just analyze PHP code with php-cs-fixer
 	$(eval args ?= )
-	@$(PHP) -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run $(args)
+	@$(PHP) -dmemory_limit=-1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run $(args)
 .PHONY: php-cs
 
-php-cs-fix: bin/tools/php-cs-fixer ## Analyze and fix PHP code with php-cs-fixer
+php-cs-fix: ## Analyze and fix PHP code with php-cs-fixer
 	$(eval args ?= )
-	@$(PHP) -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php $(args)
+	@$(PHP) -dmemory_limit=-1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php $(args)
 .PHONY: php-cs-fix
 
-php-cs-changed: bin/tools/php-cs-fixer ## Check only changed PHP files (for PRs)
+php-cs-changed: ## Check only changed PHP files (for PRs)
 	@echo "Checking changed PHP files..."
-	@git diff --name-only --cached --diff-filter=ACMRTUXB | grep -E '\.php$$' | xargs -r $(PHP) -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff || echo "No PHP files to check"
+	@git diff --name-only --cached --diff-filter=ACMRTUXB | grep -E '\.php$$' | xargs -r $(PHP) -dmemory_limit=-1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php --dry-run --diff || echo "No PHP files to check"
 .PHONY: php-cs-changed
 
-php-cs-fix-changed: bin/tools/php-cs-fixer ## Fix only changed PHP files
+php-cs-fix-changed: ## Fix only changed PHP files
 	@echo "Fixing changed PHP files..."
-	@git diff --name-only --cached --diff-filter=ACMRTUXB | grep -E '\.php$$' | xargs -r $(PHP) -dmemory_limit=-1 ./bin/tools/php-cs-fixer fix --config=.php-cs-fixer.dist.php || echo "No PHP files to fix"
+	@git diff --name-only --cached --diff-filter=ACMRTUXB | grep -E '\.php$$' | xargs -r $(PHP) -dmemory_limit=-1 vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.dist.php || echo "No PHP files to fix"
 .PHONY: php-cs-fix-changed
 
-phpstan: bin/tools/phpstan ## Analyze PHP code with phpstan
-	$(PHP) -dmemory_limit=-1 ./bin/tools/phpstan analyse legacy public src tests -c phpstan.neon -l 1
+phpstan: ## Analyze PHP code with phpstan (niveau et chemins définis dans phpstan.dist.neon)
+	$(PHP) -dmemory_limit=-1 vendor/bin/phpstan analyse -c phpstan.dist.neon
 .PHONY: phpstan
 
-phpstan-files: bin/tools/phpstan ## Analyze specific PHP files with phpstan
-	$(PHP) -dmemory_limit=-1 ./bin/tools/phpstan analyse $(FILES) -c phpstan.neon
+phpstan-files: ## Analyze specific PHP files with phpstan
+	$(PHP) -dmemory_limit=-1 vendor/bin/phpstan analyse $(FILES) -c phpstan.dist.neon
 .PHONY: phpstan-files
+
+phpstan-baseline: ## Regenerate the phpstan baseline (to run after fixing a batch of errors)
+	$(PHP) -dmemory_limit=-1 vendor/bin/phpstan analyse -c phpstan.dist.neon --generate-baseline=phpstan-baseline.neon
+.PHONY: phpstan-baseline
+
+rector: ## Show the changes Rector would make (dry-run)
+	$(PHP) -dmemory_limit=-1 vendor/bin/rector process --dry-run
+.PHONY: rector
+
+rector-fix: ## Apply Rector changes
+	$(PHP) -dmemory_limit=-1 vendor/bin/rector process
+.PHONY: rector-fix
 
 
 ## —— ✅ Test ——
@@ -70,10 +82,6 @@ ifdef clear
 endif
 	$(PHP) bin/phpunit ${path} $(args)
 .PHONY: tests
-
-phpunit-setup: ## Setup phpunit
-	@$(PHP) bin/phpunit --version
-.PHONY: phpunit-setup
 
 test-e2e: ## Run Playwright E2E tests
 	npx playwright test
@@ -95,6 +103,7 @@ database-init-test: ## Init database for test
 	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/data/schema_caf.sql
 	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/data/data_caf.sql
 	$(SYMFONY_CONSOLE) doctrine:migrations:migrate --no-interaction --env=test
+	$(MYSQL) -Dcaf_test -uroot -ptest < ./legacy/data/data_communes_seed.sql
 	$(MAKE) args="--env=test --no-interaction" database-fixtures-load
 .PHONY: database-init-test
 
@@ -103,13 +112,13 @@ database-init-test: ## Init database for test
 docker-start: 
 	$(eval profile ?= dev)
 	@mkdir -p ~/.phive ~/.composer ~/.ssh
-	$(DOCKER_COMPOSE) --profile $(profile) up -d
+	$(DOCKER_COMPOSE) --profile $(profile) up -d --build
 .PHONY: docker-start
 
 
 docker-build: ## Build images
-	@$(DOCKER_COMPOSE) pull --parallel
-	@$(DOCKER_COMPOSE) build --pull --parallel
+	$(eval profile ?= dev)
+	@$(DOCKER_COMPOSE) --profile $(profile) build --pull
 .PHONY: docker-build
 
 docker-stop:
@@ -142,13 +151,23 @@ npm-watch: ## Watch the frontend files
 .PHONY: npm-watch
 
 ## —— 📊 Database ——
-database-init: ## Init database
+database-init: ## Init database (seed minimal de communes — CI rapide)
 	$(MAKE) database-drop
 	$(MAKE) database-create
 	$(MAKE) database-import
 	$(MAKE) database-migrate
+	$(MAKE) database-seed-communes
 	$(MAKE) args="--env=dev --no-interaction" database-fixtures-load
 .PHONY: database-init
+
+database-bootstrap: ## Setup dev complet : database-init + import des ~39 000 communes (~2 min réseau)
+	$(MAKE) database-init
+	$(MAKE) database-import-communes
+.PHONY: database-bootstrap
+
+database-seed-communes: ## Seed minimal de communes montagne (Lyon, Mont-Blanc, Écrins, Vanoise, Vercors)
+	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/data/data_communes_seed.sql
+.PHONY: database-seed-communes
 
 database-drop: ## Create database
 	$(SYMFONY_CONSOLE) doctrine:database:drop --force --if-exists
@@ -164,6 +183,10 @@ database-create: ## Create database
 database-import: ## Make import
 	$(MYSQL) -Dcaf -uroot -ptest < ./legacy/data/data_caf.sql
 .PHONY: database-import
+
+database-import-communes: ## Import communes françaises (coordonnées GPS, ~39 000 entrées via API La Poste)
+	$(SYMFONY_CONSOLE) app:import-communes
+.PHONY: database-import-communes
 
 database-migration: ## Make migration
 	$(SYMFONY_CONSOLE) make:migration
@@ -200,14 +223,6 @@ exec: ## Execute a command in a container (container="cafsite", cmd="bash", user
 logs: ## View output from containers (services="")
 	@$(DOCKER_COMPOSE) logs -f $(services)
 .PHONY: logs
-
-phive: bin/tools/phpstan bin/tools/php-cs-fixer
-bin/tools/phpstan bin/tools/php-cs-fixer: phive.xml
-	@$(PHP) -d memory_limit=1G /usr/local/bin/phive install --copy --trust-gpg-keys 8E730BA25823D8B5,CF1A108D0E7AE720,E82B2FB314E9906E,CA7C2C7A30C8E8E1274A847651C67305FFC2E5C0
-
-phive-update:
-	$(PHP) -d memory_limit=1G /usr/local/bin/phive update
-.PHONY: phive-update
 
 ## —— 🛠️  Others ——
 help: ## List of commands

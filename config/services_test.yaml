@@ -1,3 +1,29 @@
+parameters:
+  # Barème d'exemple, indépendant des valeurs de la prod : les tests d'API vérifient la mécanique
+  # des délais, seuils et plafonds, quelles que soient les valeurs votées par le club.
+  expense_report:
+    nuiteeMaxRemboursable: 60
+    tauxKilometriqueVoiture: 0.2
+    tauxKilometriqueMinibus: 0.3
+    divisionPeage: 3
+    horsSortie:
+      delaiEnvoiJours:
+        autre: 30
+      seuilAvertissement: 200
+      formation:
+        tauxKilometrique: 0.40
+        plafonds:
+          parNature:
+            voiture: { montant: 200, portee: note }
+            peage: { montant: 60, portee: note }
+            train: { montant: 130, portee: note }
+            hebergement: { montant: 60, portee: ligne }
+          total: ~
+      autre:
+        plafonds:
+          parNature: {}
+          total: ~
+
 services:
   _defaults:
     autowire: true

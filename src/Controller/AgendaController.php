@@ -29,7 +29,7 @@ class AgendaController extends AbstractController
         $year = (int) ($request->query->get('year') ?: date('Y'));
         $month = (int) ($request->query->get('month') ?: date('m'));
 
-        if ($year <= 2000) {
+        if ($year <= 2000 || $year > (int) date('Y') + 2) {
             $year = (int) date('Y');
         }
         if ($month < 1 || $month > 12) {

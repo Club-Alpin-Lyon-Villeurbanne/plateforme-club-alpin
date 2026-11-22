@@ -27,6 +27,11 @@ abstract class WebTestCase extends BaseWebTestCase
     {
         parent::setUp();
         $this->client = static::createClient();
+
+        // Les tentatives de connexion (login_throttling, 15 minutes) sont comptées dans le cache,
+        // hors de la transaction du test : sans ce vidage, elles s'additionnent d'un test et d'un
+        // run à l'autre jusqu'à bloquer l'IP des tests.
+        static::getContainer()->get('cache.rate_limiter')->clear();
     }
 
     protected function signup(?string $email = null, ?string $mdp = null): User

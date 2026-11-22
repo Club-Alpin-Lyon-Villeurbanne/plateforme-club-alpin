@@ -38,6 +38,21 @@ class UserRightRepository extends ServiceEntityRepository
         return $this->processRightsResults($results);
     }
 
+    public function hasAnyRoleWithRight(string $rightCode): bool
+    {
+        $sql = '
+            SELECT COUNT(*) AS cnt
+            FROM caf_userright ur
+            INNER JOIN caf_usertype_attr uta ON ur.id_userright = uta.right_usertype_attr
+            WHERE ur.code_userright = :rightCode
+        ';
+
+        $statement = $this->getEntityManager()->getConnection()->prepare($sql);
+        $statement->bindValue('rightCode', $rightCode);
+
+        return (int) $statement->executeQuery()->fetchOne() > 0;
+    }
+
     public function getRightsByUserType(string $userType): array
     {
         $sql = '

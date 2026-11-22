@@ -88,6 +88,7 @@ a .notification, a:hover .notification{text-decoration:none;}
 select.type1{border-color:#eaeaea; padding-top:5px; padding-bottom:6px;}
 .type2{font-family:Verdana; color:black; background-color:#e6e6e6; border:none; box-shadow:inset 0 0 5px 0 #b4b2b2;padding:8px 5px; width:180px; font-weight:100; margin:3px 3px 3px 0;}
 .type2:focus{background-color:#ccff99; outline:0;}
+.type2:disabled{background-color:#ededed; color:#a0a0a0; box-shadow:none; cursor:not-allowed; opacity:.7;}
 .type1::placeholder, .type2::placeholder{color: #666; opacity: 1}
 .userlink{font-weight:inherit;}
 .userlink:hover, .userlink:focus {text-decoration:underline;}
@@ -143,6 +144,8 @@ a#toolbar-commission.toptrigger b{white-space:normal;}
 #toolbar-user .notification-user span{display:inline-block; height:15px; width:15px; text-align:center; line-height:15px; font-family:DINBold; font-weight:100; padding:3px; border-radius:15px; background:#8dc540; box-shadow:0 0 7px -2px black;}
 #toolbar-user .notification-user-alerte{height:0px; width:62px; position:relative; z-index:51; bottom:11px; text-align:right}
 #toolbar-user .notification-user-alerte span{display:inline-block; height:15px; width:15px; text-align:center; line-height:15px; font-family:DINBold; font-weight:100; padding:3px; border-radius:15px; background:#f15a24; color: black; box-shadow:0 0 7px -2px black;}
+/* Le « ! » du profil incomplet cachait le compteur : le compteur se place à sa gauche. */
+#toolbar-user .notification-user-alerte + .notification-user span{margin-right:24px;}
 #toolbar-user-hidden .nav-user{float:left; width:200px; padding:0 11px 0 0;}
 #toolbar-user-hidden .nav-user a{font-weight:inherit; color:inherit;}
 #toolbar-user-hidden .nav-user a .star{display:block; float:left; width:0px; position:relative; right:14px; bottom:1px;}
@@ -413,6 +416,10 @@ form .niveau.editable:hover .input{background-image:none;}
 .small{font-size: 0.7rem; color:gray;}
 #main-pagelibre-76 table td {padding: 5px;}
 #main-pagelibre-76 table td img {max-width: 250px;}
+/* Tableaux CKEditor des pages libres : ne jamais dépasser la colonne de contenu */
+figure.table {max-width: 100%; overflow-x: auto;}
+figure.table a {overflow-wrap: anywhere;}
+figure.table img {max-width: 100%; height: auto;}
 .pt15 { padding-top: 15px;}
 
 @media print {
@@ -598,6 +605,23 @@ table.table-striped tr:hover, table.table-striped tbody tr:hover {
     height: 100%;
     background-color: #999;
     z-index: 1;
+}
+/* Fiche sortie : tableau des inscrits. La 1ère colonne figée garde la couleur de statut de la ligne sur un fond opaque */
+.inscrits-table-container table td:first-child,
+.inscrits-table-container table td:first-child::before {
+    background-color: white;
+    background-image: inherit;
+}
+.inscrits-table-container table tr.odd td:first-child,
+.inscrits-table-container table tr.odd td:first-child::before {
+    background-color: #fafafa; /* blanc + voile rgba(200, 200, 200, 0.1) des lignes impaires DataTables */
+}
+.inscrits-table-container table thead tr:first-child th:first-child {
+    background-color: #f0f0ee; /* même fond que les autres en-têtes DataTables */
+}
+/* Vue compétences : hauteur limitée pour que la ligne d'en-têtes reste visible pendant le défilement */
+.inscrits-table-container.vue-competences {
+    max-height: 90vh;
 }
 
 #form-event .alerte {

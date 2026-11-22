@@ -20,17 +20,25 @@
           props.class
         ]"
         :name="name"
+        :aria-describedby="help ? helpId : undefined"
       />
       <div class="tw-text-red-500" v-if="errorMessage">
         Ce champ ne peut pas être vide
       </div>
+      <p
+        v-if="help"
+        :id="helpId"
+        class="tw-mt-1 tw-text-xs tw-leading-4 tw-text-gray-500"
+      >
+        {{ help }}
+      </p>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { useField } from "vee-validate";
-import { onMounted, watch } from "vue";
+import { computed, onMounted, watch } from "vue";
 
 const props = defineProps<{
   label: string;
@@ -39,7 +47,11 @@ const props = defineProps<{
   defaultValue?: number;
   class?: string
   inputWidth?: string;
+  // aide courte affichée sous le champ
+  help?: string;
 }>();
+
+const helpId = computed(() => `${props.name}-aide`);
 
 const { value, errorMessage, meta, resetField } = useField(() => props.name);
 
