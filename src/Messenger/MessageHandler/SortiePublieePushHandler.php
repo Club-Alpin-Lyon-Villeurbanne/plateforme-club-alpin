@@ -20,7 +20,7 @@ class SortiePublieePushHandler
     {
         $evt = $this->evtRepository->find($message->id);
 
-        if (!$evt) {
+        if (!$evt || $evt->isSkipNewSortieAlert()) {
             return;
         }
 
