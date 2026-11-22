@@ -1020,6 +1020,7 @@ class SortieController extends AbstractController
         $newEvent->setGroupe($event->getGroupe());
         $newEvent->setJoinStartDate(new \DateTimeImmutable());
         $newEvent->setAutoAccept($event->isAutoAccept());
+        $newEvent->setSkipNewSortieAlert($event->isSkipNewSortieAlert());
         $newEvent->setIsDraft(true);
         $newEvent->setLatDepart($event->getLatDepart());
         $newEvent->setLongDepart($event->getLongDepart());

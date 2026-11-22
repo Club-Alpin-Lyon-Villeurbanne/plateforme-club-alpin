@@ -25,11 +25,7 @@ class SortiePublieeHandler
     {
         $evt = $this->evtRepository->find($message->id);
 
-        if (!$evt) {
-            return;
-        }
-
-        if ($evt->isSkipNewSortieAlert()) {
+        if (!$evt || $evt->isSkipNewSortieAlert()) {
             return;
         }
 

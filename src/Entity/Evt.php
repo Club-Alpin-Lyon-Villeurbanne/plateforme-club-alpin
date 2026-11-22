@@ -63,7 +63,7 @@ class Evt
     #[ORM\Column(name: 'auto_accept', type: 'boolean', nullable: false, options: ['default' => false])]
     private bool $autoAccept = false;
 
-    #[ORM\Column(name: 'skip_new_sortie_alert', type: 'boolean', nullable: false, options: ['default' => false])]
+    #[ORM\Column(name: 'skip_new_sortie_alert', type: 'boolean', nullable: false, options: ['default' => false, 'comment' => 'Ne pas envoyer l\'alerte « Nouvelle sortie » (mail et push) à la publication'])]
     private bool $skipNewSortieAlert = false;
 
     #[ORM\Column(name: 'is_draft', type: 'boolean', nullable: false, options: ['default' => true])]

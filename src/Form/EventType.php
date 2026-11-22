@@ -404,7 +404,7 @@ class EventType extends AbstractType
                 ],
             ])
             ->add('skipNewSortieAlert', CheckboxType::class, [
-                'label' => 'Cocher cette case si le groupe est déjà constitué (cycle par exemple) : ne pas envoyer d\'alerte par mail "Nouvelle sortie"',
+                'label' => 'Ne pas envoyer l\'alerte « Nouvelle sortie » aux abonnés (groupe déjà constitué, cycle…)',
                 'required' => false,
             ])
             ->add('autoAccept', CheckboxType::class, [
