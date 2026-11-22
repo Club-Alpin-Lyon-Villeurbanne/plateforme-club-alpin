@@ -3,6 +3,7 @@
 namespace App\Tests\Controller;
 
 use App\Tests\WebTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ManualAddDataTest extends WebTestCase
 {
@@ -31,6 +32,19 @@ class ManualAddDataTest extends WebTestCase
 
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('Content-Type', 'application/json');
+    }
+
+    public function testLeTableauSeChargeSansParametresDeTriNiDeRecherche(): void
+    {
+        $organizer = $this->signup();
+        $this->signin($organizer);
+        $event = $this->createEvent($organizer);
+        $query = $this->datatablesQuery($event->getId());
+        unset($query['order'], $query['search']);
+
+        $this->client->request('GET', '/users/data/manual-add/allvalid', $query);
+
+        $this->assertResponseIsSuccessful();
     }
 
     public function testLeTableauNExposePasLesCoordonneesDesAdherents(): void
@@ -88,9 +102,7 @@ class ManualAddDataTest extends WebTestCase
         $this->assertResponseStatusCodeSame(403);
     }
 
-    /**
-     * @dataProvider vuesDeLEcranDInscriptionManuelle
-     */
+    #[DataProvider('vuesDeLEcranDInscriptionManuelle')]
     public function testLesVuesDeLEcranRestentAccessibles(string $show): void
     {
         $organizer = $this->signup();

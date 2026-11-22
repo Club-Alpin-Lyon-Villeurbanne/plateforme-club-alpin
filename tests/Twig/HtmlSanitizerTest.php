@@ -2,6 +2,7 @@
 
 namespace App\Tests\Twig;
 
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HtmlSanitizer\HtmlSanitizerInterface;
 
@@ -15,9 +16,7 @@ class HtmlSanitizerTest extends KernelTestCase
         $this->sanitizer = self::getContainer()->get('html_sanitizer.sanitizer.app.content_sanitizer');
     }
 
-    /**
-     * @dataProvider safeHtmlProvider
-     */
+    #[DataProvider('safeHtmlProvider')]
     public function testAllowsSafeHtml(string $input, string $expected): void
     {
         $result = $this->sanitizer->sanitize($input);
@@ -59,9 +58,11 @@ class HtmlSanitizerTest extends KernelTestCase
                 '<img src="https://www.youtube.com/image.jpg" alt="Image" width="100" height="100">',
                 '<img src="https://www.youtube.com/image.jpg" alt="Image" width="100" height="100" />',
             ],
+            // Depuis Symfony 7.4 sous PHP 8.4+, le sanitizer analyse avec le parseur HTML5 natif,
+            // qui insère le <tbody> implicite comme le font les navigateurs.
             'table' => [
                 '<table><tr><th>Header</th></tr><tr><td>Cell</td></tr></table>',
-                '<table><tr><th>Header</th></tr><tr><td>Cell</td></tr></table>',
+                '<table><tbody><tr><th>Header</th></tr><tr><td>Cell</td></tr></tbody></table>',
             ],
             'blockquote' => [
                 '<blockquote>Quote</blockquote>',
@@ -74,9 +75,7 @@ class HtmlSanitizerTest extends KernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider dangerousHtmlProvider
-     */
+    #[DataProvider('dangerousHtmlProvider')]
     public function testRemovesDangerousHtml(string $input, string $expected): void
     {
         $result = $this->sanitizer->sanitize($input);
@@ -129,9 +128,7 @@ class HtmlSanitizerTest extends KernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider youtubeIframeProvider
-     */
+    #[DataProvider('youtubeIframeProvider')]
     public function testAllowsYoutubeIframes(string $input): void
     {
         $result = $this->sanitizer->sanitize($input);
@@ -151,9 +148,7 @@ class HtmlSanitizerTest extends KernelTestCase
         ];
     }
 
-    /**
-     * @dataProvider vimeoIframeProvider
-     */
+    #[DataProvider('vimeoIframeProvider')]
     public function testAllowsVimeoIframes(string $input): void
     {
         $result = $this->sanitizer->sanitize($input);

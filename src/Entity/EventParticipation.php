@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
-use ApiPlatform\Metadata\Get;
-use ApiPlatform\Metadata\GetCollection;
 use App\Repository\EventParticipationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
@@ -16,15 +14,7 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 #[ORM\Table(name: 'caf_evt_join')]
 #[ORM\Entity(repositoryClass: EventParticipationRepository::class)]
 #[UniqueEntity(fields: ['evt', 'user'], message: 'Cette participation existe déjà')]
-#[ApiResource(
-    shortName: 'participation-sortie',
-    operations: [
-        new GetCollection(),
-        new Get(),
-    ],
-    normalizationContext: ['groups' => ['eventParticipation:read', 'user:read']],
-    security: "is_granted('ROLE_USER')",
-)]
+#[ApiResource(shortName: 'participation-sortie', operations: [])]
 class EventParticipation implements \JsonSerializable
 {
     use TimestampableEntity;

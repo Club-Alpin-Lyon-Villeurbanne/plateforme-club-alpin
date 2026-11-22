@@ -62,6 +62,21 @@ Le `--ff-only` garantit un historique linéaire et échoue si `production` a div
 - **Protéger la branche `production`** : Activer la protection dans GitHub Settings pour éviter les pushs directs non autorisés
 - Toujours valider sur staging avant de déployer en production
 
+## Changer de version de PHP
+
+La version mineure de PHP (8.5 aujourd'hui) est fixée à la fois dans le dépôt et sur Clever Cloud. Les deux doivent changer ensemble : un build Clever dont la version de PHP ne correspond pas à `composer.json` échoue au `composer install`, et l'application reste sur son instance précédente.
+
+Dans le dépôt, en une seule PR :
+
+- `composer.json` : `require.php`, puis `composer update --lock`. `composer why-not php 8.6.0` liste les dépendances qui bloquent la nouvelle version.
+- `docker/Dockerfile` : `PHP_VERSION`, et les versions des extensions si elles ne compilent pas.
+- `.github/actions/prepare-for-quality/action.yml` : `php-version`.
+- `README.md` : le badge et la ligne « Backend ».
+
+Sur Clever Cloud, c'est la variable `CC_PHP_VERSION` de chaque application (prod de chaque club et staging). Lyon et le staging la lisent dans un configuration provider partagé, Clermont dans le sien, et Chambéry la porte directement sur l'application. Il faut la modifier là où elle est définie, sinon on crée un doublon. Elle ne prend effet qu'au build suivant. La changer au moment du déploiement qui apporte la nouvelle version : à la fusion dans `main` pour le staging, à la mise en production de chaque club pour la prod. Le log de build n'affiche que la version mineure. La version exacte se lit avec `clever ssh --alias <app> --instance any --command 'php -v'`.
+
+En local, `make docker-start` reconstruit l'image quand le Dockerfile change.
+
 ## Token Clever Cloud
 
 > **Note importante** : Un seul token Clever Cloud est partagé entre tous les clubs utilisant cette plateforme.

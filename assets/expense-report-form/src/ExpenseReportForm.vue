@@ -23,14 +23,11 @@
         </div>
         <div v-else>
           <div
-            v-if="expenseReport.statusComment"
-            class="tw-mb-4 tw-rounded-lg tw-border-x-4 tw-border-red-500 tw-bg-red-50 tw-p-2"
+            v-if="messageDeRefus"
+            class="tw-mx-4 tw-mb-6 tw-rounded-md tw-border-l-4 tw-border-red-500 tw-bg-red-50 tw-px-4 tw-py-3 tw-text-sm tw-text-red-800"
           >
-            <div class="tw-text-red-700">
-              <p class="tw-font-semibold tw-italic">
-                {{ expenseReport.statusComment }}
-              </p>
-            </div>
+            <p class="tw-font-semibold">Message de la trésorerie</p>
+            <p class="tw-mt-1 tw-whitespace-pre-line">«&nbsp;{{ messageDeRefus }}&nbsp;»</p>
           </div>
           <form class="tw-space-y-6 tw-px-4">
             <TransportSection />
@@ -201,6 +198,16 @@ const badge = computed(
     }
   },
 );
+
+// Le message laissé avec le refus, s'il y en a un. Un ancien message reste en base après le renvoi
+// de la note : il ne concerne que la note refusée.
+const messageDeRefus = computed((): string | null => {
+  if (expenseReport.value?.status !== ExpenseStatus.REJECTED) {
+    return null;
+  }
+
+  return expenseReport.value.commentaireStatut?.trim() || null;
+});
 
 const submitLabel = computed(() => {
   const isRejected = expenseReport.value?.status === ExpenseStatus.REJECTED;

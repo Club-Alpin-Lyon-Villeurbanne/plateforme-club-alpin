@@ -3,15 +3,26 @@
 namespace App\Tests\Service;
 
 use App\Repository\UserRepository;
+use App\Service\FfcamFileParser;
 use App\Service\FfcamSynchronizer;
+use App\Service\FfcamSyncReportMailer;
+use App\Service\UserLicenseHelper;
 use App\Tests\TestHelpers\FfcamTestHelper;
 use App\Tests\WebTestCase;
+use App\Utils\MemberMerger;
 use Doctrine\ORM\EntityManagerInterface;
 use Faker\Factory;
-use SlopeIt\ClockMock\ClockMock;
+use Monolog\Handler\TestHandler;
+use Monolog\Level;
+use Monolog\Logger;
+use Monolog\LogRecord;
+use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Component\Clock\Test\ClockSensitiveTrait;
 
 class FfcamSynchronizerTest extends WebTestCase
 {
+    use ClockSensitiveTrait;
+
     private $faker;
 
     protected function setUp(): void
@@ -108,6 +119,108 @@ class FfcamSynchronizerTest extends WebTestCase
         $this->assertEquals('hashedpassword', $existingUser->getPassword());
     }
 
+    public function testSynchronizeKeepsSiteEmailWhenFfcamEmailIsEmpty(): void
+    {
+        $identifiant = rand(100000000000, 999999999999);
+        $email = 'test-' . bin2hex(random_bytes(10)) . '@clubalpinlyon.fr';
+        $lastname = $this->faker->lastName();
+        $firstname = $this->faker->firstName();
+
+        $existingUser = $this->signup();
+        $existingUser
+            ->setCafnum($identifiant)
+            ->setFirstname($firstname)
+            ->setLastname($lastname)
+            ->setEmail($email);
+
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        $em->persist($existingUser);
+        $em->flush();
+
+        $filePath = FfcamTestHelper::generateFile([
+            [
+                'cafnum' => $identifiant,
+                'lastname' => $lastname,
+                'firstname' => $firstname,
+                'email' => '',
+            ],
+        ]);
+
+        $journal = new TestHandler();
+        $rapports = [];
+        $this->synchroniseurObserve($journal, $rapports)->synchronize($filePath);
+
+        $existingUser = self::getContainer()->get(UserRepository::class)->find($existingUser->getId());
+
+        $this->assertSame(1, $rapports[0]['updated']);
+        $this->assertSame($email, $existingUser->getEmail());
+        $this->assertFalse($journal->hasWarningThatContains('replaces database email'));
+        $this->assertTrue($journal->hasWarningThatContains('FFCAM email is empty'));
+    }
+
+    public function testSynchronizeMergesNewLicenceWithoutFfcamEmailAndKeepsSiteEmail(): void
+    {
+        $ancienNumero = rand(100000000000, 999999999999);
+        $nouveauNumero = rand(100000000000, 999999999999);
+        $email = 'test-' . bin2hex(random_bytes(10)) . '@clubalpinlyon.fr';
+        $lastname = $this->faker->lastName();
+        $firstname = $this->faker->firstName();
+
+        $existingUser = $this->signup();
+        $existingUser
+            ->setCafnum($ancienNumero)
+            ->setFirstname($firstname)
+            ->setLastname($lastname)
+            ->setBirthdate(new \DateTimeImmutable('1985-03-14'))
+            ->setEmail($email);
+
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        $em->persist($existingUser);
+        $em->flush();
+
+        $filePath = FfcamTestHelper::generateFile([
+            [
+                'cafnum' => $nouveauNumero,
+                'lastname' => $lastname,
+                'firstname' => $firstname,
+                'birthday' => '1985-03-14',
+                'email' => '',
+            ],
+        ]);
+
+        self::getContainer()->get(FfcamSynchronizer::class)->synchronize($filePath);
+
+        $existingUser = self::getContainer()->get(UserRepository::class)->find($existingUser->getId());
+
+        $this->assertEquals($nouveauNumero, $existingUser->getCafnum());
+        $this->assertSame($email, $existingUser->getEmail());
+    }
+
+    public function testSynchronizeDoesNotTreatUnderscoreAsWildcardInEmails(): void
+    {
+        $jeton = bin2hex(random_bytes(8));
+
+        $autreAdherent = $this->signup();
+        $autreAdherent->setEmail('a.' . $jeton . '@clubalpinlyon.fr');
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        $em->flush();
+
+        $identifiant = rand(100000000000, 999999999999);
+        $filePath = FfcamTestHelper::generateFile([
+            [
+                'cafnum' => $identifiant,
+                'lastname' => $this->faker->lastName(),
+                'firstname' => $this->faker->firstName(),
+                'email' => 'a_' . $jeton . '@clubalpinlyon.fr',
+            ],
+        ]);
+
+        self::getContainer()->get(FfcamSynchronizer::class)->synchronize($filePath);
+
+        $user = self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber($identifiant);
+        $this->assertSame('a_' . $jeton . '@clubalpinlyon.fr', $user->getEmail());
+    }
+
     public function testSynchronizeSetsLicenceExpiredFlagOnly(): void
     {
         $identifiant1 = rand(100000000000, 999999999999);
@@ -123,7 +236,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ],
         ]);
 
-        ClockMock::freeze(new \DateTime('2024-09-15'));
+        self::mockTime(new \DateTimeImmutable('2024-09-15'));
 
         $existingUser = $this->signup();
         $existingUser
@@ -143,8 +256,6 @@ class FfcamSynchronizerTest extends WebTestCase
 
         $this->assertTrue($existingUser->getAlerteRenouveler());
         $this->assertFalse($existingUser->getDoitRenouveler());
-
-        ClockMock::reset();
     }
 
     public function testSynchronizeSetsExpiredAndRenewalFlag(): void
@@ -162,7 +273,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ],
         ]);
 
-        ClockMock::freeze(new \DateTime('2024-10-15'));
+        self::mockTime(new \DateTimeImmutable('2024-10-15'));
 
         $existingUser = $this->signup();
         $existingUser
@@ -182,8 +293,6 @@ class FfcamSynchronizerTest extends WebTestCase
 
         $this->assertFalse($existingUser->getAlerteRenouveler());
         $this->assertTrue($existingUser->getDoitRenouveler());
-
-        ClockMock::reset();
     }
 
     public function testSynchronizeBlocksExpiredAccounts(): void
@@ -201,7 +310,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ],
         ]);
 
-        ClockMock::freeze(new \DateTime('2024-10-01'));
+        self::mockTime(new \DateTimeImmutable('2024-10-01'));
 
         $expiredUser = $this->signup();
         $expiredUser
@@ -236,7 +345,7 @@ class FfcamSynchronizerTest extends WebTestCase
             ],
         ]);
 
-        ClockMock::freeze(new \DateTime('2024-11-16'));
+        self::mockTime(new \DateTimeImmutable('2024-11-16'));
 
         $expiredUser = $this->signup();
         $expiredUser
@@ -256,8 +365,6 @@ class FfcamSynchronizerTest extends WebTestCase
 
         $this->assertFalse($expiredUser->getDoitRenouveler());
         $this->assertFalse($expiredUser->getAlerteRenouveler());
-
-        ClockMock::reset();
     }
 
     public function testSynchronizeDetectsAndMergesDuplicateUsers(): void
@@ -301,6 +408,7 @@ class FfcamSynchronizerTest extends WebTestCase
         $this->assertEquals($identifiant2, $existingUser->getCafnum());
         $this->assertEquals($email1, $existingUser->getEmail());
         $this->assertEquals('hashedpassword', $existingUser->getPassword());
+        $this->assertSame('Masculin', $existingUser->getCiv());
 
         $duplicateUser = self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber($identifiant1);
         $this->assertNull($duplicateUser);
@@ -637,5 +745,278 @@ class FfcamSynchronizerTest extends WebTestCase
         ];
 
         return [$row, $oldCafnum, $newCafnum, $historic->getId()];
+    }
+
+    // Régression prod 02/09/2026 : une ville de 33 caractères dépassait ville_user(30),
+    // le flush fermait l'EntityManager et les 34 adhérents suivants du fichier étaient perdus.
+    public function testSynchronizeImportsMembersFollowingAnOverlongCity(): void
+    {
+        $identifiantVilleLongue = rand(100000000000, 999999999999);
+        $identifiantSuivant = rand(100000000000, 999999999999);
+
+        $filePath = FfcamTestHelper::generateFile([
+            [
+                'cafnum' => $identifiantVilleLongue,
+                'lastname' => $this->faker->lastName(),
+                'firstname' => $this->faker->firstName(),
+                'email' => $this->faker->email(),
+                'ville' => 'VILLENEUVE-LA-GARENNE, 92, FRANCE',
+            ],
+            [
+                'cafnum' => $identifiantSuivant,
+                'lastname' => $this->faker->lastName(),
+                'firstname' => $this->faker->firstName(),
+                'email' => $this->faker->email(),
+            ],
+        ]);
+
+        $synchronizer = self::getContainer()->get(FfcamSynchronizer::class);
+        $synchronizer->synchronize($filePath);
+
+        $userRepository = self::getContainer()->get(UserRepository::class);
+
+        $userVilleLongue = $userRepository->findOneByLicenseNumber($identifiantVilleLongue);
+        $this->assertNotNull($userVilleLongue, "L'adhérent dont la ville dépasse 30 caractères doit être importé");
+        $this->assertEquals('Villeneuve-La-Garenne, 92, France', $userVilleLongue->getVille());
+
+        $this->assertNotNull(
+            $userRepository->findOneByLicenseNumber($identifiantSuivant),
+            'Les adhérents suivants ne doivent pas être perdus'
+        );
+    }
+
+    public function testSynchronizeNormalizesOldAndNewSexeFormats(): void
+    {
+        $attendus = [
+            'M' => 'Masculin',
+            'M.' => 'Masculin',
+            'MME' => 'Féminin',
+            'Mme' => 'Féminin',
+            'MLLE' => 'Féminin',
+            'Masculin' => 'Masculin',
+            'Féminin' => 'Féminin',
+            ' féminin ' => 'Féminin',
+            'Autre' => 'Autre',
+            '' => null,
+        ];
+
+        $membres = [];
+        foreach (array_keys($attendus) as $sexe) {
+            $membres[(string) $sexe] = $this->membre(['sexe' => (string) $sexe]);
+        }
+
+        self::getContainer()->get(FfcamSynchronizer::class)->synchronize(FfcamTestHelper::generateFile(array_values($membres)));
+
+        $userRepository = self::getContainer()->get(UserRepository::class);
+        foreach ($attendus as $sexe => $attendu) {
+            $user = $userRepository->findOneByLicenseNumber($membres[(string) $sexe]['cafnum']);
+            $this->assertSame($attendu, $user->getCiv(), "Sexe « $sexe » dans le fichier");
+        }
+    }
+
+    public function testSynchronizeKeepsUnknownSexeAndAlertsOnce(): void
+    {
+        $inconnu1 = $this->membre(['sexe' => 'Non renseigné']);
+        $inconnu2 = $this->membre(['sexe' => 'Non renseigné']);
+        $suivant = $this->membre();
+        // Une adresse partagée produit un avertissement par adhérent : le mail n'en affiche que 10.
+        $famille = array_map(fn () => $this->membre(['email' => 'famille@example.org']), range(1, 11));
+
+        $journal = new TestHandler();
+        $rapports = [];
+        $this->synchroniseurObserve($journal, $rapports)->synchronize(FfcamTestHelper::generateFile([...$famille, $inconnu1, $inconnu2, $suivant]));
+
+        $userRepository = self::getContainer()->get(UserRepository::class);
+        $this->assertSame('Non rensei', $userRepository->findOneByLicenseNumber($inconnu1['cafnum'])->getCiv());
+        $this->assertSame('Non rensei', $userRepository->findOneByLicenseNumber($inconnu2['cafnum'])->getCiv());
+        $this->assertNotNull($userRepository->findOneByLicenseNumber($suivant['cafnum']));
+
+        $erreurs = $this->erreurs($journal);
+        $this->assertCount(1, $erreurs);
+        $this->assertSame('Valeurs de sexe inconnues dans le fichier FFCAM', $erreurs[0]->message, 'Message fixe : Sentry regroupe les passages');
+        $this->assertStringContainsString('Non renseigné (2)', $erreurs[0]->context['valeurs']);
+
+        $this->assertCount(1, $rapports);
+        $this->assertGreaterThan(10, \count($rapports[0]['warning_details']));
+        $this->assertStringContainsString('Non renseigné (2)', implode("\n", \array_slice($rapports[0]['warning_details'], 0, 10)));
+    }
+
+    #[DataProvider('fichiersAnnuelsIncomplets')]
+    public function testSynchronizeAbortsWithoutBlockingAnyoneWhenColumnsAreMissing(string $cas): void
+    {
+        self::mockTime(new \DateTimeImmutable('2024-10-01'));
+
+        $adherent = $this->signup();
+        $adherent
+            ->setCafnum((string) rand(100000000000, 999999999999))
+            ->setJoinDate(new \DateTimeImmutable('2023-09-01'))
+            ->setNomade(false)
+            ->setDoitRenouveler(false);
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        $em->persist($adherent);
+        $em->flush();
+
+        $nouveau = $this->membre(['adhesionDate' => '2024-09-15']);
+        $fichier = FfcamTestHelper::generateFile([$this->membre(), $nouveau]);
+        if ('première ligne tronquée' === $cas) {
+            $lignes = explode("\n", file_get_contents($fichier));
+            $lignes[0] = implode(';', \array_slice(explode(';', $lignes[0]), 0, 20));
+            file_put_contents($fichier, implode("\n", $lignes));
+        } else {
+            file_put_contents($fichier, '');
+        }
+
+        $journal = new TestHandler();
+        $rapports = [];
+        $this->synchroniseurObserve($journal, $rapports)->synchronize($fichier);
+        $em->clear();
+
+        $userRepository = self::getContainer()->get(UserRepository::class);
+        $this->assertFalse($userRepository->find($adherent->getId())->getDoitRenouveler(), 'Personne ne doit être bloqué');
+        $this->assertNull($userRepository->findOneByLicenseNumber($nouveau['cafnum']), 'Aucune ligne ne doit être traitée');
+        $this->assertCount(1, $this->erreurs($journal));
+    }
+
+    public static function fichiersAnnuelsIncomplets(): array
+    {
+        return [
+            'première ligne tronquée' => ['première ligne tronquée'],
+            'fichier vide' => ['fichier vide'],
+        ];
+    }
+
+    #[DataProvider('fichiersAuNombreDeColonnesInattendu')]
+    public function testSynchronizeWarnsButImportsWhenColumnCountChanges(int $ecart): void
+    {
+        $membre = $this->membre();
+        $fichier = FfcamTestHelper::generateFile([$membre]);
+        $colonnes = explode(';', rtrim(file_get_contents($fichier), "\n"));
+        $colonnes = $ecart > 0 ? array_merge($colonnes, array_fill(0, $ecart, 'EN PLUS')) : \array_slice($colonnes, 0, $ecart);
+        file_put_contents($fichier, implode(';', $colonnes) . "\n");
+
+        $journal = new TestHandler();
+        $rapports = [];
+        $this->synchroniseurObserve($journal, $rapports)->synchronize($fichier);
+
+        $this->assertNotNull(self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber($membre['cafnum']));
+        $this->assertCount(0, $this->erreurs($journal));
+        $this->assertStringContainsString('colonnes', implode("\n", $rapports[0]['warning_details']));
+    }
+
+    public static function fichiersAuNombreDeColonnesInattendu(): array
+    {
+        return [
+            'colonnes en plus' => [10],
+            'colonnes en moins, au-dessus du minimum' => [-2],
+        ];
+    }
+
+    public function testSynchronizeIgnoresLeadingBlankLines(): void
+    {
+        $membre = $this->membre();
+        $fichier = FfcamTestHelper::generateFile([$membre]);
+        file_put_contents($fichier, "\n" . file_get_contents($fichier));
+
+        $journal = new TestHandler();
+        $rapports = [];
+        $this->synchroniseurObserve($journal, $rapports)->synchronize($fichier);
+
+        $this->assertNotNull(self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber($membre['cafnum']));
+        $this->assertCount(0, $this->erreurs($journal));
+    }
+
+    public function testDiscoverySynchronizeNormalizesSexeAndAlertsOnUnknownValues(): void
+    {
+        $fichier = tempnam(sys_get_temp_dir(), 'ffcam_');
+        file_put_contents($fichier, $this->ligneDecouverte('D100001', 'MLLE') . $this->ligneDecouverte('D100002', 'Inconnu'));
+
+        $journal = new TestHandler();
+        $rapports = [];
+        $this->synchroniseurObserve($journal, $rapports)->discoverySynchronize($fichier);
+
+        $userRepository = self::getContainer()->get(UserRepository::class);
+        $this->assertSame('Féminin', $userRepository->findOneByLicenseNumber('D100001')->getCiv());
+        $this->assertSame('Inconnu', $userRepository->findOneByLicenseNumber('D100002')->getCiv());
+
+        $erreurs = $this->erreurs($journal);
+        $this->assertCount(1, $erreurs);
+        $this->assertStringContainsString('Inconnu (1)', $erreurs[0]->context['valeurs']);
+    }
+
+    public function testDiscoverySynchronizeAbortsWhenColumnsAreMissing(): void
+    {
+        $fichier = tempnam(sys_get_temp_dir(), 'ffcam_');
+        file_put_contents($fichier, $this->ligneDecouverte('D100003', 'M', 10) . $this->ligneDecouverte('D100004'));
+
+        $journal = new TestHandler();
+        $rapports = [];
+        $this->synchroniseurObserve($journal, $rapports)->discoverySynchronize($fichier);
+
+        $this->assertNull(self::getContainer()->get(UserRepository::class)->findOneByLicenseNumber('D100004'), 'Aucune ligne ne doit être traitée');
+        $this->assertCount(1, $this->erreurs($journal));
+    }
+
+    public function testDiscoverySynchronizeAcceptsEmptyFile(): void
+    {
+        $fichier = tempnam(sys_get_temp_dir(), 'ffcam_');
+        file_put_contents($fichier, "\n");
+
+        $journal = new TestHandler();
+        $rapports = [];
+        $this->synchroniseurObserve($journal, $rapports)->discoverySynchronize($fichier);
+
+        $this->assertCount(0, $this->erreurs($journal));
+        $this->assertCount(1, $rapports);
+    }
+
+    private function membre(array $valeurs = []): array
+    {
+        return $valeurs + [
+            'cafnum' => rand(100000000000, 999999999999),
+            'lastname' => $this->faker->lastName(),
+            'firstname' => $this->faker->firstName(),
+            'email' => $this->faker->unique()->email(),
+        ];
+    }
+
+    private function ligneDecouverte(string $numero, string $sexe = 'M', int $colonnes = 25): string
+    {
+        $champs = array_fill(0, $colonnes, '');
+        $valeurs = [$numero, '24', '2099-01-01', '08:00', '1990-05-20', $sexe, $this->faker->lastName(), $this->faker->firstName()];
+        array_splice($champs, 0, \count($valeurs), $valeurs);
+        if ($colonnes > 16) {
+            $champs[16] = $this->faker->unique()->email();
+        }
+
+        return mb_convert_encoding(implode(';', $champs), 'ISO-8859-1', 'UTF-8') . "\n";
+    }
+
+    private function synchroniseurObserve(TestHandler $journal, array &$rapports): FfcamSynchronizer
+    {
+        $rapport = $this->createMock(FfcamSyncReportMailer::class);
+        $rapport->method('sendSyncReport')->willReturnCallback(function (array $stats) use (&$rapports) {
+            $rapports[] = $stats;
+        });
+
+        $container = self::getContainer();
+
+        return new FfcamSynchronizer(
+            new Logger('test', [$journal]),
+            $container->get(EntityManagerInterface::class),
+            $container->get(UserRepository::class),
+            $container->get(FfcamFileParser::class),
+            $container->get(MemberMerger::class),
+            $container->get(UserLicenseHelper::class),
+            $rapport,
+        );
+    }
+
+    /** @return LogRecord[] */
+    private function erreurs(TestHandler $journal): array
+    {
+        return array_values(array_filter(
+            $journal->getRecords(),
+            static fn (LogRecord $record) => $record->level->isHigherThan(Level::Warning),
+        ));
     }
 }

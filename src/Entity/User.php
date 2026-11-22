@@ -2,11 +2,9 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Metadata\Get;
 use ApiPlatform\Metadata\Patch;
-use ApiPlatform\Serializer\Filter\GroupFilter;
 use App\Repository\UserRepository;
 use App\Utils\EmailAlerts;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -32,7 +30,6 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
     ],
     security: "is_granted('ROLE_USER') and object == user",
 )]
-#[ApiFilter(GroupFilter::class)]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSerializable
 {
     use TimestampableEntity;
@@ -46,7 +43,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Id]
     #[ORM\Column(name: 'id_user', type: 'bigint', nullable: false)]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
-    #[Groups(['user:read'])]
+    #[Groups(['user:read', 'user:public'])]
     private ?int $id = null;
 
     #[ORM\Column(name: 'profile_type', type: Types::SMALLINT, nullable: false, options: ['default' => self::PROFILE_UNKNOWN, 'comment' => '1 licencié annuel du club, 2 carte découverte du club, 3 licencié autre club, 4 personne extérieure (ex formateur)'])]
@@ -56,7 +53,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     private Collection $attrs;
 
     #[ORM\Column(name: 'email_user', type: 'string', length: 200, unique: true, nullable: true)]
-    #[Groups('user:read')]
+    #[Groups('user:details')]
     private ?string $email = null;
 
     #[ORM\Column(name: 'gdrive_email', type: 'string', length: 200, unique: true, nullable: true)]
@@ -85,7 +82,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     private ?string $lastname = null;
 
     #[ORM\Column(name: 'nickname_user', type: 'string', length: 20, nullable: false)]
-    #[Groups('user:read')]
+    #[Groups(['user:read', 'user:public'])]
     #[SerializedName('pseudonyme')]
     private string $nickname;
 
@@ -108,7 +105,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[SerializedName('codePostal')]
     private ?string $cp = null;
 
-    #[ORM\Column(name: 'ville_user', type: 'string', length: 30, nullable: true)]
+    #[ORM\Column(name: 'ville_user', type: 'string', length: 50, nullable: true)]
     #[Groups('user:details')]
     private ?string $ville = null;
 
@@ -116,7 +113,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[Groups('user:details')]
     private ?string $pays = null;
 
-    #[ORM\Column(name: 'civ_user', type: 'string', length: 10, nullable: true)]
+    #[ORM\Column(name: 'civ_user', type: 'string', length: 10, nullable: true, options: ['comment' => 'Sexe tel que fourni par la FFCAM : Masculin, Féminin ou Autre'])]
     #[Groups('user:details')]
     #[SerializedName('civilite')]
     private ?string $civ = null;
@@ -178,6 +175,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(name: 'join_date', type: Types::DATETIME_IMMUTABLE, nullable: true, options: ['comment' => 'Date de dernière prise de licence annuelle ou date de début de validité carte découverte'])]
     #[Groups('user:details')]
     private ?\DateTimeInterface $joinDate = null;
+
+    #[ORM\Column(name: 'accueil_season', type: Types::SMALLINT, nullable: false, options: ['default' => 0, 'comment' => "Saison du dernier envoi de circuit d'accueil MailerLite (0 = jamais)"])]
+    private int $accueilSeason = 0;
 
     #[ORM\Column(name: 'radiation_date', type: Types::DATE_IMMUTABLE, nullable: true, options: ['comment' => 'Date de radiation FFCAM'])]
     private ?\DateTimeInterface $radiationDate = null;
@@ -318,7 +318,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
 
     public function getId(): ?int
     {
-        return null !== $this->id ? (int) $this->id : null;
+        return null !== $this->id ? $this->id : null;
     }
 
     public function getEmail(): ?string
@@ -482,7 +482,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this->civ;
     }
 
-    public function setCiv(string $civ): self
+    public function setCiv(?string $civ): self
     {
         $this->civ = $civ;
 
@@ -788,9 +788,21 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
         return $this->joinDate;
     }
 
-    public function setJoinDate(?\DateTimeInterface $joinDate): self
+    public function setJoinDate(?\DateTimeImmutable $joinDate): self
     {
         $this->joinDate = $joinDate;
+
+        return $this;
+    }
+
+    public function getAccueilSeason(): int
+    {
+        return $this->accueilSeason;
+    }
+
+    public function setAccueilSeason(int $accueilSeason): self
+    {
+        $this->accueilSeason = $accueilSeason;
 
         return $this;
     }

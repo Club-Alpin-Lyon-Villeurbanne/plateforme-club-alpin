@@ -7,9 +7,12 @@ use ApiPlatform\State\ProcessorInterface;
 use ApiPlatform\Validator\ValidatorInterface;
 use App\Dto\ExpenseReportCreateDto;
 use App\Entity\ExpenseReport;
+use App\Entity\User;
+use App\Repository\CommissionRepository;
 use App\Repository\EvtRepository;
 use App\Repository\ExpenseReportRepository;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use App\Utils\Enums\ExpenseReportTypeEnum;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpKernel\Exception\ConflictHttpException;
@@ -23,7 +26,8 @@ class ExpenseReportCreateProcessor implements ProcessorInterface
         private ValidatorInterface $validator,
         private Security $security,
         private ExpenseReportRepository $expenseReportRepository,
-        private EvtRepository $evtRepository
+        private EvtRepository $evtRepository,
+        private CommissionRepository $commissionRepository,
     ) {
     }
 
@@ -36,6 +40,13 @@ class ExpenseReportCreateProcessor implements ProcessorInterface
         $user = $this->security->getUser();
         if (!$user) {
             throw new \LogicException('User must be logged in to create an expense report');
+        }
+
+        if (null !== $data->type) {
+            $expenseReport = $this->nouvelleNoteHorsSortie($data, $user);
+            $this->validator->validate($expenseReport);
+
+            return $this->persistProcessor->process($expenseReport, $operation, $uriVariables, $context);
         }
 
         //
@@ -64,5 +75,16 @@ class ExpenseReportCreateProcessor implements ProcessorInterface
         $this->validator->validate($expenseReport);
 
         return $this->persistProcessor->process($expenseReport, $operation, $uriVariables, $context);
+    }
+
+    private function nouvelleNoteHorsSortie(ExpenseReportCreateDto $data, User $demandeur): ExpenseReport
+    {
+        $note = ExpenseReport::nouvelleNoteHorsSortie($demandeur, ExpenseReportTypeEnum::from($data->type));
+        $note->setCommission(null !== $data->commissionId ? $this->commissionRepository->find($data->commissionId) : null);
+        $note->setObjet($data->objet);
+        $note->setDateDepense(null !== $data->dateDepense ? new \DateTimeImmutable($data->dateDepense) : null);
+        $note->setLienFormation($data->lienFormation);
+
+        return $note;
     }
 }

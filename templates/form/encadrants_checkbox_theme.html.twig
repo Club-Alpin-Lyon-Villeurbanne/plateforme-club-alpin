@@ -2,10 +2,16 @@
     {{ form_errors(form) }}
     {% for child in form %}
         {% set custom_id = child.vars.unique_block_prefix ~ '_' ~ child.vars.value %}
+        {% set nom = field_label(child) %}
         <label for="{{ child.vars.id }}" class="{% if child.vars.checked %}up{% else %}down{% endif %}">
             {{ form_widget(child, { attr: { 'data-id': custom_id } }) }}
-            {{ field_label(child) }}
-            <a class="fancyframe" href="{{ path('user_profile', {'id': field_value(child)}) }}" title="Voir la fiche"><img src="/img/base/bullet_toggle_plus.png" alt="I" title="" /></a>
+            {{ nom }}
+            {# lien interactif dans le label : un clic ouvre la fiche sans cocher ni décocher la case #}
+            <a class="fancyframe tw-inline-flex tw-items-center tw-justify-center tw-w-8 tw-h-8 -tw-my-1 tw-ml-1 tw-align-middle tw-rounded-full tw-text-gray-500 hover:tw-text-gray-900 hover:tw-bg-gray-200 focus-visible:tw-text-gray-900 focus-visible:tw-bg-gray-200" href="{{ path('user_profile', {'id': field_value(child)}) }}" title="Voir la fiche de {{ nom }}" aria-label="Voir la fiche de {{ nom }}">
+                <svg class="tw-w-5 tw-h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" focusable="false">
+                    <path fill-rule="evenodd" clip-rule="evenodd" d="M7.5 6a4.5 4.5 0 1 1 9 0 4.5 4.5 0 0 1-9 0ZM3.751 20.105a8.25 8.25 0 0 1 16.498 0 .75.75 0 0 1-.437.695A18.683 18.683 0 0 1 12 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 0 1-.437-.695Z"/>
+                </svg>
+            </a>
         </label>
     {% endfor %}
 {% endblock %}

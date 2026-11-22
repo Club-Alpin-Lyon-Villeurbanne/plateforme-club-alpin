@@ -1,6 +1,6 @@
 <template>
   <div class="tw-flex tw-flex-col">
-    <Input :name="name" :label="label" type="number" />
+    <Input :name="name" :label="label" :help="help" type="number" />
     
     <AttachmentField
       v-if="requiresAttachment"
@@ -28,6 +28,7 @@ interface Props {
   label: string;
   expenseId: string;
   requiresAttachment?: boolean;
+  help?: string;
 }
 
 const props = withDefaults(

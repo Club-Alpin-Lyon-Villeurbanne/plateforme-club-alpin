@@ -8,10 +8,11 @@ use App\Utils\MemberMerger;
 use App\Utils\NicknameGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Clock\ClockAwareTrait;
 
 class FfcamSynchronizer
 {
-    private bool $hasTolerancyPeriodPassed;
+    use ClockAwareTrait;
 
     public function __construct(
         private readonly LoggerInterface $logger,
@@ -22,10 +23,6 @@ class FfcamSynchronizer
         private readonly UserLicenseHelper $userLicenseHelper,
         private readonly ?FfcamSyncReportMailer $syncReportMailer = null,
     ) {
-        $today = new \DateTime();
-        $endDate = new \DateTime($today->format('Y') . '-' . UserLicenseHelper::LICENSE_TOLERANCY_PERIOD_END);
-
-        $this->hasTolerancyPeriodPassed = $today > $endDate;
     }
 
     public function synchronize(?string $ffcamFilePath = null): void
@@ -41,7 +38,16 @@ class FfcamSynchronizer
             return;
         }
 
+        try {
+            $structureWarning = $this->fileParser->checkStructure($ffcamFilePath);
+        } catch (\UnexpectedValueException $e) {
+            $this->logger->error($e->getMessage());
+
+            return;
+        }
+
         $stats = $this->processMembers($this->fileParser->parse($ffcamFilePath));
+        $this->reportFileAnomalies($stats, basename($ffcamFilePath), $structureWarning);
 
         $this->archiveFile($ffcamFilePath, $stats);
         $this->logResults($ffcamFilePath, $stats);
@@ -73,7 +79,16 @@ class FfcamSynchronizer
             return;
         }
 
+        try {
+            $structureWarning = $this->fileParser->checkStructure($ffcamFilePath, 'discovery');
+        } catch (\UnexpectedValueException $e) {
+            $this->logger->error($e->getMessage());
+
+            return;
+        }
+
         $stats = $this->processMembers($this->fileParser->parse($ffcamFilePath, 'discovery'));
+        $this->reportFileAnomalies($stats, basename($ffcamFilePath), $structureWarning);
 
         $this->archiveFile($ffcamFilePath, $stats);
         $this->logResults($ffcamFilePath, $stats);
@@ -84,6 +99,32 @@ class FfcamSynchronizer
         $this->syncReportMailer?->sendSyncReport($stats, $startTime, $endTime, 'discovery');
     }
 
+    // En tête des avertissements, que le mail tronque à 10 ; une seule alerte par passage, au message fixe
+    // pour que Sentry regroupe les passages.
+    private function reportFileAnomalies(array &$stats, string $file, ?string $structureWarning): void
+    {
+        $anomalies = [];
+
+        if (null !== $structureWarning) {
+            $this->logger->warning($structureWarning);
+            $anomalies[] = $structureWarning;
+        }
+
+        $unknownSexes = $this->fileParser->getUnknownSexes();
+        if ($unknownSexes) {
+            arsort($unknownSexes);
+            $values = array_map(static fn ($value, int $count) => "$value ($count)", array_keys($unknownSexes), $unknownSexes);
+            $others = \count($values) - 10;
+            $listed = implode(', ', \array_slice($values, 0, 10)) . ($others > 0 ? " et $others autre" . ($others > 1 ? 's' : '') : '');
+
+            $this->logger->error('Valeurs de sexe inconnues dans le fichier FFCAM', ['fichier' => $file, 'valeurs' => $listed]);
+            $anomalies[] = "Valeurs de sexe inconnues dans le fichier FFCAM $file : $listed";
+        }
+
+        $stats['warnings'] += \count($anomalies);
+        array_unshift($stats['warning_details'], ...$anomalies);
+    }
+
     private function isFileValid(string $filePath): bool
     {
         return file_exists($filePath) && is_file($filePath);
@@ -92,11 +133,12 @@ class FfcamSynchronizer
     private function processMembers(\Generator $members): array
     {
         $stats = ['inserted' => 0, 'updated' => 0, 'merged' => 0, 'errors' => 0, 'warnings' => 0, 'error_details' => [], 'merged_details' => [], 'warning_details' => []];
+        $tolerancyPeriodPassed = $this->userLicenseHelper->hasTolerancyPeriodPassed();
 
         /** @var User $parsedUser */
         foreach ($members as $parsedUser) {
             // date de validité déjà dépassée ? si oui, on n'importe pas
-            if (null !== $parsedUser->getDiscoveryEndDatetime() && $parsedUser->getDiscoveryEndDatetime() < new \DateTime()) {
+            if (null !== $parsedUser->getDiscoveryEndDatetime() && $parsedUser->getDiscoveryEndDatetime() < $this->now()) {
                 continue;
             }
 
@@ -188,7 +230,9 @@ class FfcamSynchronizer
                     if ($existingUser instanceof User) {
                         // update user
                         if (
-                            $parsedUser->getEmail() !== $existingUser->getEmail()
+                            !empty($parsedUser->getEmail())
+                            && !empty($existingUser->getEmail())
+                            && $parsedUser->getEmail() !== $existingUser->getEmail()
                             && empty($existingUser->getRadiationDate())
                         ) {
                             $warningMessage = sprintf('%s: FFCAM email (%s) replaces database email (%s) (which was different)', $existingUser->getCafnum(), $parsedUser->getEmail(), $existingUser->getEmail());
@@ -197,7 +241,7 @@ class FfcamSynchronizer
                             $stats['warning_details'][] = $warningMessage;
                         }
 
-                        $this->updateExistingUser($existingUser, $parsedUser);
+                        $this->updateExistingUser($existingUser, $parsedUser, $tolerancyPeriodPassed);
                         $this->entityManager->persist($existingUser);
                         ++$stats['updated'];
                     } else {
@@ -276,7 +320,7 @@ class FfcamSynchronizer
         return true;
     }
 
-    private function updateExistingUser(User $existingUser, User $parsedUser): void
+    private function updateExistingUser(User $existingUser, User $parsedUser, bool $tolerancyPeriodPassed): void
     {
         $existingUser
             ->setFirstname($parsedUser->getFirstname())
@@ -286,12 +330,11 @@ class FfcamSynchronizer
             ->setCafnumParent($parsedUser->getCafnumParent())
             ->setTel($parsedUser->getTel())
             ->setTel2($parsedUser->getTel2())
-            ->setEmail($parsedUser->getEmail())
             ->setAdresse($parsedUser->getAdresse())
             ->setCp($parsedUser->getCp())
             ->setVille($parsedUser->getVille())
-            ->setDoitRenouveler($parsedUser->getDoitRenouveler() && $this->hasTolerancyPeriodPassed)
-            ->setAlerteRenouveler($parsedUser->getAlerteRenouveler() && !$this->hasTolerancyPeriodPassed)
+            ->setDoitRenouveler($parsedUser->getDoitRenouveler() && $tolerancyPeriodPassed)
+            ->setAlerteRenouveler($parsedUser->getAlerteRenouveler() && !$tolerancyPeriodPassed)
             ->setUpdatedAt(new \DateTime())
             ->setManuel(false)
             ->setNomade($parsedUser->getNomade())
@@ -307,6 +350,11 @@ class FfcamSynchronizer
             $existingUser
                 ->setDoitRenouveler(true)
             ;
+        }
+
+        // Un e-mail vide côté FFCAM ne doit pas effacer celui du site.
+        if (!empty($parsedUser->getEmail())) {
+            $existingUser->setEmail($parsedUser->getEmail());
         }
 
         // Ne pas effacer la date d'adhésion quand l'adhésion parsée est expirée (valeur nulle).
