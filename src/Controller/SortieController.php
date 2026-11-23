@@ -321,9 +321,9 @@ class SortieController extends AbstractController
                     $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
                     // pas d'e-mail tout de suite : les participants recevront ces changements à la republication
                     $event->setPendingEmailChanges($emailChanges);
-                } elseif (Evt::STATUS_PUBLISHED_UNSEEN === $event->getStatus() && null !== $event->getPendingEmailChanges()) {
-                    // sortie dépubliée qui attend sa republication : les éditions successives s'ajoutent aux
-                    // changements déjà en attente (une sortie jamais publiée n'en a pas et n'en accumule pas)
+                } elseif (\in_array($event->getStatus(), [Evt::STATUS_PUBLISHED_UNSEEN, Evt::STATUS_PUBLISHED_REFUSE], true) && null !== $event->getPendingEmailChanges()) {
+                    // sortie dépubliée (ou refusée depuis) qui attend sa republication : les éditions successives
+                    // s'ajoutent aux changements déjà en attente (une sortie jamais publiée n'en a pas et n'en accumule pas)
                     $event->setPendingEmailChanges($this->mergePendingEmailChanges($event->getPendingEmailChanges(), $emailChanges));
                 } elseif (!$event->isDraft() && (!empty($emailChanges['withValues']) || !empty($emailChanges['linkedFields']))) {
                     $this->sendUpdateNotificationEmail($mailer, $event, false, $emailChanges['withValues'], array_column($emailChanges['linkedFields'], 'label'));
@@ -1454,6 +1454,13 @@ class SortieController extends AbstractController
         }
         if (($originalData['matos'] ?? '') !== ($event->getMatos() ?? '')) {
             $linkedFields[] = ['key' => 'matos', 'label' => 'matériel', 'old' => $originalData['matos'] ?? null, 'new' => $event->getMatos()];
+        }
+        // marqueur déplacé sur la carte : c'est le lieu exact du RDV, même quand le champ texte ne change pas
+        // (arrondi à l'échelle de la colonne, 8 décimales)
+        $oldPoint = round((float) ($originalData['lat'] ?? 0), 8) . ', ' . round((float) ($originalData['long'] ?? 0), 8);
+        $newPoint = round((float) $event->getLat(), 8) . ', ' . round((float) $event->getLong(), 8);
+        if ($oldPoint !== $newPoint) {
+            $linkedFields[] = ['key' => 'pointRdv', 'label' => 'point de RDV sur la carte', 'old' => $oldPoint, 'new' => $newPoint];
         }
 
         return ['withValues' => $withValues, 'linkedFields' => $linkedFields];

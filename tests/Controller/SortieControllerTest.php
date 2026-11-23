@@ -583,6 +583,39 @@ class SortieControllerTest extends WebTestCase
         $this->assertEmailHtmlBodyNotContains($emails[0], 'Lieu de RDV covoiturage');
     }
 
+    public function testUneSortieRefuseePuisModifieeAnnonceLaDerniereValeurALaRepublication(): void
+    {
+        [$event, $organisateur, $inscrit] = $this->sortiePublieeAvecUnInscrit();
+
+        $event = $this->modifierSortie($event, ['place' => '74000 Annecy']);
+        $event = $this->refuserSortie($event);
+        // le refus garde les changements en attente : la modification suivante doit s'y ajouter
+        $this->signin($organisateur->getEmail());
+        $event = $this->modifierSortie($event, ['place' => '38250 Villard-de-Lans']);
+
+        $this->assertSame(Evt::STATUS_PUBLISHED_REFUSE, $event->getStatus());
+        $this->assertCount(0, $this->emailsEnvoyesA($inscrit));
+
+        $this->validerSortie($event);
+
+        $emails = $this->emailsEnvoyesA($inscrit);
+        $this->assertCount(1, $emails);
+        $this->assertEmailTextBodyContains($emails[0], 'Lieu de départ : 69001 Lyon 1er Arrondissement → 38250 Villard-de-Lans');
+    }
+
+    public function testDeplacerLeMarqueurDuRendezVousEstAnnonceAuxInscrits(): void
+    {
+        [$event, , $inscrit] = $this->sortiePublieeAvecUnInscrit();
+
+        $event = $this->modifierSortie($event, ['lat' => '45.7578', 'long' => '4.832']);
+
+        $emails = $this->emailsEnvoyesA($inscrit);
+        $this->assertCount(1, $emails);
+        $this->assertEmailHtmlBodyContains($emails[0], 'Des modifications ont été apportées à la sortie (point de RDV sur la carte).');
+        $this->assertEmailHtmlBodyNotContains($emails[0], 'Lieu de RDV covoiturage');
+        $this->assertSame(Evt::STATUS_PUBLISHED_VALIDE, $event->getStatus());
+    }
+
     public function testUneSortieJamaisPublieeNAccumulePasDeModifications(): void
     {
         [$event, , $inscrit] = $this->sortiePublieeAvecUnInscrit();
@@ -2062,6 +2095,21 @@ class SortieControllerTest extends WebTestCase
 
         $this->client->request('POST', sprintf('/sortie/%d/validate', $event->getId()), [
             'csrf_token' => $this->generateCsrfToken($this->client, 'sortie_validate'),
+        ]);
+        $this->assertResponseRedirects();
+
+        return $this->rechargerSortie($event);
+    }
+
+    private function refuserSortie(Evt $event): Evt
+    {
+        $validateur = $this->signup();
+        $this->addAttribute($validateur, UserAttr::RESPONSABLE_COMMISSION, 'commission:' . $event->getCommission()->getCode());
+        $this->signin($validateur);
+
+        $this->client->request('POST', sprintf('/sortie/%d/refus', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'sortie_refus'),
+            'msg' => 'Lieu de départ à revoir',
         ]);
         $this->assertResponseRedirects();
 
