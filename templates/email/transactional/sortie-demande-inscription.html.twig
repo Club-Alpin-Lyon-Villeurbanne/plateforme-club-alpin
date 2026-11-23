@@ -1,7 +1,7 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
 {% block subject -%}
-    {% if message %}[Message]{% endif %}{% if commission %}[{{ commission }}]{% endif %}[{{ inscrits | length  }} nouvelle{{ inscrits|length > 1 ? 's' : '' }} demande{{ inscrits|length > 1 ? 's' : '' }}] Préinscription à {{ event_name }} du {{ event_date }}
+    {% if message is not empty %}[Message]{% endif %}{% if commission %}[{{ commission }}]{% endif %}[{{ inscrits | length  }} nouvelle{{ inscrits|length > 1 ? 's' : '' }} demande{{ inscrits|length > 1 ? 's' : '' }}] Préinscription à {{ event_name }} du {{ event_date }}
 {%- endblock %}
 
 {% block inner_html %}
@@ -15,7 +15,7 @@
                 <b>Nom :</b> <a href="{{ inscrit.profile_url }}">{{ inscrit.firstname }} {{ inscrit.lastname }}</a>
             </li>
         {% endfor %}
-        {% if message %}
+        {% if message is not empty %}
         <li>
             <b>Message :</b> {{ message }}
         </li>
@@ -41,7 +41,7 @@
         Nom : {{ inscrit.firstname }} {{ inscrit.lastname }} - {{ inscrit.profile_url }}
     {% endfor %}
 
-    {% if message %}
+    {% if message is not empty %}
         Message : {{ message }}
     {% endif %}
 

@@ -51,7 +51,7 @@ Chaque personne choisit dans **Mes alertes** (`/profil/alertes`, colonne `caf_us
 - **Coché** (par défaut, et pour tous les comptes existants) : un e-mail par demande, comme avant.
 - **Décoché** : un e-mail seulement pour les demandes accompagnées d'un message de l'adhérent.
 
-Un e-mail dont la demande contient un message a un objet qui commence par `[Message]`, quel que soit le réglage. Le réglage ne change rien aux e-mails de désinscription.
+Un e-mail dont la demande contient un message a un objet qui commence par `[Message]`, quel que soit le réglage. Un message fait seulement d'espaces, insécables compris, compte comme absent ; tout autre texte, même « 0 », est un message. Le réglage ne change rien aux e-mails de désinscription.
 
 Sur la fiche d'une sortie à venir et non annulée, l'organisateur et l'encadrement voient une cloche à côté du menu « Actions » : 🔔 s'ils reçoivent chaque demande, 🔕 sinon. Son infobulle rappelle le réglage et la cloche mène à « Mes alertes ». Le pied de l'e-mail de demande d'inscription y renvoie aussi.
 

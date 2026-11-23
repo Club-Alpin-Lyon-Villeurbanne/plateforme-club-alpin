@@ -1119,7 +1119,8 @@ class SortieController extends AbstractController
             }
         }
 
-        $joinMessage = trim((string) ($data['message'] ?? ''));
+        // mb_trim retire aussi les espaces Unicode (insécables…) : un message qui n'en contient que compte comme vide
+        $joinMessage = mb_trim((string) ($data['message'] ?? ''));
 
         // CGUs
         if (!isset($data['confirm']) || 'on' != $data['confirm']) {

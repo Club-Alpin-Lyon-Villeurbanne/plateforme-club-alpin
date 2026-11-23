@@ -1019,19 +1019,43 @@ class SortieControllerTest extends WebTestCase
         $this->assertStringStartsWith(sprintf('[%s]', $event->getCommission()->getTitle()), $emails[0]->getSubject());
     }
 
-    public function testDemandeInscriptionAvecUnMessageVideNEstPasEnvoyeeAQuiNeVeutQueLesMessages(): void
+    #[DataProvider('provideMessageVide')]
+    public function testDemandeInscriptionAvecUnMessageVideNEstPasEnvoyeeAQuiNeVeutQueLesMessages(string $message): void
     {
         $organisateur = $this->signup();
         $organisateur->setAlertToutesDemandesInscription(false);
         $event = $this->createSortiePubliee($organisateur);
 
         $participant = $this->signup();
-        $this->demanderInscription($event, $participant, "  \n ");
+        $this->demanderInscription($event, $participant, $message);
 
         $this->assertSame([], $this->emailsDemandeInscription());
         // le participant reçoit toujours la confirmation de sa demande
         $this->assertCount(1, $this->getMailerMessages());
         $this->assertSame([$participant->getEmail()], $this->destinataires($this->getMailerMessages()[0]));
+    }
+
+    public static function provideMessageVide(): iterable
+    {
+        yield 'espaces et retour à la ligne' => ["  \n "];
+        yield 'espaces insécables' => ["\u{a0}\u{202f} \u{a0}"];
+    }
+
+    public function testDemandeInscriptionAvecLeMessage0EstUnMessage(): void
+    {
+        // « 0 » est faux pour un test de vérité en PHP comme en Twig, mais c'est bien un message
+        $organisateur = $this->signup();
+        $organisateur->setAlertToutesDemandesInscription(false);
+        $event = $this->createSortiePubliee($organisateur);
+
+        $this->demanderInscription($event, $this->signup(), ' 0 ');
+
+        $emails = $this->emailsDemandeInscription();
+        $this->assertCount(1, $emails);
+        $this->assertSame([$organisateur->getEmail()], $this->destinataires($emails[0]));
+        $this->assertStringStartsWith('[Message]', $emails[0]->getSubject());
+        $this->assertEmailHtmlBodyContains($emails[0], '<b>Message :</b> 0');
+        $this->assertEmailTextBodyContains($emails[0], 'Message : 0' . "\n");
     }
 
     #[DataProvider('provideReglageDemandesInscription')]
