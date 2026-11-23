@@ -10,6 +10,7 @@ use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\User;
 use App\Trait\PaginationRepositoryTrait;
+use App\Utils\StringUtils;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -187,18 +188,28 @@ SQL;
         }
     }
 
+    /**
+     * Fiche du site (la plus récente) d'un adhérent qui revient avec un nouveau numéro de licence.
+     * Les noms sont comparés sans accents, espaces, tirets ni majuscules : la FFCAM écrit parfois
+     * « Jean Pierre DUPONT » une personne inscrite « Jean-Pierre DU PONT ». Cette comparaison
+     * ne s'écrit pas en SQL : on charge les fiches de même date de naissance (et même e-mail),
+     * puis on compare les noms en PHP.
+     */
     public function findDuplicateUser(string $lastname, string $firstname, \DateTimeImmutable $birthday, string $excludeCafnum, ?string $email = null): ?User
     {
+        $lastname = StringUtils::normalizeName($lastname);
+        $firstname = StringUtils::normalizeName($firstname);
+        if ('' === $lastname || '' === $firstname) {
+            return null;
+        }
+
         $qb = $this->createQueryBuilder('u')
-            ->where('LOWER(u.lastname) = LOWER(:lastname)')
-            ->andWhere('LOWER(u.firstname) = LOWER(:firstname)')
-            ->andWhere('u.birthdate = :birthday')
+            ->select('u.id', 'u.lastname', 'u.firstname')
+            ->where('u.birthdate = :birthday')
             ->andWhere('u.cafnum != :excludeCafnum')
             ->orderBy('u.createdAt', 'DESC')
-            ->setMaxResults(1)
+            ->addOrderBy('u.id', 'DESC')
             ->setParameters([
-                'lastname' => $lastname,
-                'firstname' => $firstname,
                 'birthday' => $birthday,
                 'excludeCafnum' => $excludeCafnum,
             ])
@@ -211,10 +222,16 @@ SQL;
             ;
         }
 
-        return $qb
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        foreach ($qb->getQuery()->getArrayResult() as $candidate) {
+            if (
+                StringUtils::normalizeName($candidate['lastname']) === $lastname
+                && StringUtils::normalizeName($candidate['firstname']) === $firstname
+            ) {
+                return $this->find($candidate['id']);
+            }
+        }
+
+        return null;
     }
 
     public function findDuplicateEmailUser(string $email, ?string $excludeCafnum = null)
