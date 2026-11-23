@@ -66,6 +66,26 @@
 					</tbody>
 				</table>
 
+				{# Cible du lien de la cloche des fiches sortie et du lien des e-mails de demande d'inscription #}
+				<table id="demandes-inscription" style="width: 100%;margin-top: 20px;">
+					<thead>
+						<tr style="height:30px;">
+							<th colspan="2" style="text-align: left;">Demandes d'inscription aux sorties que vous organisez ou encadrez</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr style="height:30px;">
+							<td>
+								<label for="toutes-demandes-inscription">Recevoir un e-mail pour chaque demande d'inscription</label>
+								<br /><small>Si la case est décochée, vous ne recevez un e-mail que pour les demandes accompagnées d'un message de l'adhérent ; son objet commence alors par «&nbsp;[Message]&nbsp;».</small>
+							</td>
+							<td style="text-align: center;width: 120px;">
+								<input value="1" id="toutes-demandes-inscription" name="toutes-demandes-inscription" type="checkbox" {{ app.user.alertToutesDemandesInscription ? 'checked="checked"' }} />
+							</td>
+						</tr>
+					</tbody>
+				</table>
+
 				<p style="text-align: center;margin-top: 20px;">
 					<button type="submit" style="cursor: pointer; border: none;" class="biglink" title="Enregistrer">
 						<span class="bleucaf">&gt;</span>

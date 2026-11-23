@@ -1,7 +1,7 @@
 {% extends format == 'html' ? 'email/transactional/layout.html.twig' : 'email/transactional/layout.txt.twig' %}
 
 {% block subject -%}
-    {% if commission %}[{{ commission }}]{% endif %}[{{ inscrits | length  }} nouvelle{{ inscrits|length > 1 ? 's' : '' }} demande{{ inscrits|length > 1 ? 's' : '' }}] Préinscription à {{ event_name }} du {{ event_date }}
+    {% if message is not empty %}[Message]{% endif %}{% if commission %}[{{ commission }}]{% endif %}[{{ inscrits | length  }} nouvelle{{ inscrits|length > 1 ? 's' : '' }} demande{{ inscrits|length > 1 ? 's' : '' }}] Préinscription à {{ event_name }} du {{ event_date }}
 {%- endblock %}
 
 {% block inner_html %}
@@ -15,7 +15,7 @@
                 <b>Nom :</b> <a href="{{ inscrit.profile_url }}">{{ inscrit.firstname }} {{ inscrit.lastname }}</a>
             </li>
         {% endfor %}
-        {% if message %}
+        {% if message is not empty %}
         <li>
             <b>Message :</b> {{ message }}
         </li>
@@ -28,6 +28,8 @@
     {% endif %}
     <p>
         Vous recevez ce message car vous êtes encadrant ou organisateur de cette sortie.
+        Vous pouvez choisir de recevoir un e-mail pour chaque demande d'inscription, ou seulement pour celles accompagnées
+        d'un message, dans <a href="{{ alertes_url }}">Mes alertes</a>.
     </p>
 {% endblock %}
 
@@ -39,7 +41,7 @@
         Nom : {{ inscrit.firstname }} {{ inscrit.lastname }} - {{ inscrit.profile_url }}
     {% endfor %}
 
-    {% if message %}
+    {% if message is not empty %}
         Message : {{ message }}
     {% endif %}
 
@@ -48,4 +50,6 @@
     {% endif %}
 
     Vous recevez ce message car vous êtes encadrant ou organisateur de cette sortie.
+    Vous pouvez choisir de recevoir un e-mail pour chaque demande d'inscription, ou seulement pour celles accompagnées
+    d'un message, dans Mes alertes : {{ alertes_url }}
 {% endblock %}

@@ -980,14 +980,8 @@ class SortieController extends AbstractController
 
         if ($participation->isStatusValide() || $participation->isStatusEnAttente()) {
             // notifier l'organisateur et les encadrants, comme pour l'inscription
-            // (indexés par id pour ne pas prévenir deux fois un organisateur qui encadre)
-            $destinataires = [];
-            if ($event->getUser()) {
-                $destinataires[$event->getUser()->getId()] = $event->getUser();
-            }
-            foreach ($event->getEncadrants() as $encadrant) {
-                $destinataires[$encadrant->getUser()->getId()] = $encadrant->getUser();
-            }
+            // (sans tenir compte du réglage « Mes alertes », qui ne concerne que les demandes d'inscription)
+            $destinataires = $event->getOrganisateurEtEncadrants();
             // inutile de prévenir la personne qui vient d'annuler (le participant ou son référent)
             unset($destinataires[$user->getId()]);
             $reason = $request->request->get('cancel_reason') ?? '';
@@ -1159,7 +1153,8 @@ class SortieController extends AbstractController
             }
         }
 
-        $joinMessage = $data['message'] ?? '';
+        // mb_trim retire aussi les espaces Unicode (insécables…) : un message qui n'en contient que compte comme vide
+        $joinMessage = mb_trim((string) ($data['message'] ?? ''));
 
         // CGUs
         if (!isset($data['confirm']) || 'on' != $data['confirm']) {
@@ -1270,11 +1265,12 @@ class SortieController extends AbstractController
                 $em->flush();
 
                 // E-MAIL À L'ORGANISATEUR ET AUX ENCADRANTS
-                $destinataires = [];
-                $destinataires[] = $event->getUser();
-                foreach ($event->getEncadrants() as $encadrant) {
-                    $destinataires[] = $encadrant->getUser();
-                }
+                // une demande accompagnée d'un message est envoyée à tous ; les autres, seulement à ceux
+                // qui veulent un e-mail pour chaque demande (réglage dans « Mes alertes », activé par défaut)
+                $destinataires = array_filter(
+                    $event->getOrganisateurEtEncadrants(),
+                    fn (User $destinataire) => '' !== $joinMessage || $destinataire->getAlertToutesDemandesInscription(),
+                );
 
                 // infos sur la sortie
                 $evtUrl = $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
@@ -1285,7 +1281,7 @@ class SortieController extends AbstractController
                     $paymentUrl = $event->getPaymentUrl();
                 }
 
-                // infos sur le nouvel inscrit (et ses affiliés)
+                // infos sur le nouvel inscrit (et ses affiliés) ; sans destinataire, Mailer::send n'envoie rien
                 $mailer->send($destinataires, 'transactional/sortie-demande-inscription', [
                     'role' => $role_evt_join,
                     'event_name' => $evtName,
@@ -1307,6 +1303,7 @@ class SortieController extends AbstractController
                     'nickname' => $user->getNickname(),
                     'message' => $joinMessage,
                     'covoiturage' => $is_covoiturage,
+                    'alertes_url' => $this->generateUrl('profil_alertes', [], UrlGeneratorInterface::ABSOLUTE_URL) . '#demandes-inscription',
                 ], [], $user, $user);
 
                 // E-MAIL AU PRE-INSCRIT

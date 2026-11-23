@@ -267,7 +267,10 @@ class UserController extends AbstractController
             throw new BadRequestException('Jeton de validation invalide.');
         }
 
-        $show = $request->query->get('show') ?: 'allvalid';
+        $show = $request->query->get('show');
+        if (!in_array($show, self::MANUAL_ADD_VIEWS, true)) {
+            $show = 'allvalid';
+        }
 
         return [
             'event' => $event,

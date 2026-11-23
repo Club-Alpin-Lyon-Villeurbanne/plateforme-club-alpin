@@ -1066,6 +1066,222 @@ class SortieControllerTest extends WebTestCase
         $this->assertEmailHtmlBodyContains($emailParticipant, '<b>Lieu de rendez-vous :</b> Hotel de ville');
     }
 
+    public function testDemandeInscriptionSansMessageNePrevientQueCeuxQuiVeulentChaqueDemande(): void
+    {
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        // createEvent inscrit l'organisateur comme encadrant de la sortie
+        $organisateur = $this->signup();
+        $organisateur->setAlertToutesDemandesInscription(false);
+        $event = $this->createSortiePubliee($organisateur);
+        $encadrant = $this->signup();
+        $event->addParticipation($encadrant, EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE);
+        $coencadrant = $this->signup();
+        $coencadrant->setAlertToutesDemandesInscription(false);
+        $event->addParticipation($coencadrant, EventParticipation::ROLE_COENCADRANT, EventParticipation::STATUS_VALIDE);
+        $em->flush();
+
+        $this->demanderInscription($event, $this->signup());
+
+        $emails = $this->emailsDemandeInscription();
+        $this->assertCount(1, $emails);
+        $this->assertSame([$encadrant->getEmail()], $this->destinataires($emails[0]));
+        $this->assertStringNotContainsString('[Message]', $emails[0]->getSubject());
+        $this->assertEmailHtmlBodyContains($emails[0], '/profil/alertes#demandes-inscription');
+        $this->assertEmailTextBodyContains($emails[0], '/profil/alertes#demandes-inscription');
+    }
+
+    public function testDemandeInscriptionAvecMessagePrevientToutLEncadrementAvecMentionDansLObjet(): void
+    {
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        $organisateur = $this->signup();
+        $organisateur->setAlertToutesDemandesInscription(false);
+        $event = $this->createSortiePubliee($organisateur);
+        $encadrant = $this->signup();
+        $encadrant->setAlertToutesDemandesInscription(false);
+        $event->addParticipation($encadrant, EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE);
+        $em->flush();
+
+        $this->demanderInscription($event, $this->signup(), "  Pas de crampons, est-ce critique ?\n ");
+
+        $emails = $this->emailsDemandeInscription();
+        $this->assertCount(1, $emails);
+        $attendus = [$organisateur->getEmail(), $encadrant->getEmail()];
+        sort($attendus);
+        $this->assertSame($attendus, $this->destinataires($emails[0]));
+        $this->assertEmailHeaderSame($emails[0], 'Subject', sprintf(
+            '[Message][%s][1 nouvelle demande] Préinscription à %s du %s',
+            $event->getCommission()->getTitle(),
+            $event->getTitre(),
+            $event->getStartDate()->format('d/m/Y'),
+        ));
+        // message sans les espaces autour
+        $this->assertEmailTextBodyContains($emails[0], 'Message : Pas de crampons, est-ce critique ?' . "\n");
+    }
+
+    public function testDemandeInscriptionSansMessageEnvoyeeUneSeuleFoisALOrganisateurQuiEncadre(): void
+    {
+        // réglage par défaut : un e-mail pour chaque demande
+        $organisateur = $this->signup();
+        $event = $this->createSortiePubliee($organisateur);
+
+        $this->demanderInscription($event, $this->signup());
+
+        $emails = $this->emailsDemandeInscription();
+        $this->assertCount(1, $emails);
+        $this->assertSame([$organisateur->getEmail()], $this->destinataires($emails[0]));
+        $this->assertStringStartsWith(sprintf('[%s]', $event->getCommission()->getTitle()), $emails[0]->getSubject());
+    }
+
+    #[DataProvider('provideMessageVide')]
+    public function testDemandeInscriptionAvecUnMessageVideNEstPasEnvoyeeAQuiNeVeutQueLesMessages(string $message): void
+    {
+        $organisateur = $this->signup();
+        $organisateur->setAlertToutesDemandesInscription(false);
+        $event = $this->createSortiePubliee($organisateur);
+
+        $participant = $this->signup();
+        $this->demanderInscription($event, $participant, $message);
+
+        $this->assertSame([], $this->emailsDemandeInscription());
+        // le participant reçoit toujours la confirmation de sa demande
+        $this->assertCount(1, $this->getMailerMessages());
+        $this->assertSame([$participant->getEmail()], $this->destinataires($this->getMailerMessages()[0]));
+    }
+
+    public static function provideMessageVide(): iterable
+    {
+        yield 'espaces et retour à la ligne' => ["  \n "];
+        yield 'espaces insécables' => ["\u{a0}\u{202f} \u{a0}"];
+    }
+
+    public function testDemandeInscriptionAvecLeMessage0EstUnMessage(): void
+    {
+        // « 0 » est faux pour un test de vérité en PHP comme en Twig, mais c'est bien un message
+        $organisateur = $this->signup();
+        $organisateur->setAlertToutesDemandesInscription(false);
+        $event = $this->createSortiePubliee($organisateur);
+
+        $this->demanderInscription($event, $this->signup(), ' 0 ');
+
+        $emails = $this->emailsDemandeInscription();
+        $this->assertCount(1, $emails);
+        $this->assertSame([$organisateur->getEmail()], $this->destinataires($emails[0]));
+        $this->assertStringStartsWith('[Message]', $emails[0]->getSubject());
+        $this->assertEmailHtmlBodyContains($emails[0], '<b>Message :</b> 0');
+        $this->assertEmailTextBodyContains($emails[0], 'Message : 0' . "\n");
+    }
+
+    #[DataProvider('provideReglageDemandesInscription')]
+    public function testClocheDuReglageDesDemandesInscriptionPourLOrganisateur(bool $toutesLesDemandes, string $cloche, string $infobulle): void
+    {
+        $organisateur = $this->signup();
+        $organisateur->setAlertToutesDemandesInscription($toutesLesDemandes);
+        $event = $this->createSortiePubliee($organisateur);
+        $this->signin($organisateur);
+
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+
+        $lien = $crawler->filter('.sortie-actions a.cloche-demandes-inscription');
+        $this->assertCount(1, $lien);
+        $this->assertSame('/profil/alertes#demandes-inscription', $lien->attr('href'));
+        $this->assertSame($cloche, $lien->text());
+        $this->assertStringStartsWith($infobulle, $lien->attr('data-infobulle'));
+        $this->assertStringContainsString("«\u{a0}Mes alertes\u{a0}»", $lien->attr('data-infobulle'));
+        $this->assertSame($lien->attr('data-infobulle'), $lien->attr('aria-label'));
+    }
+
+    public static function provideReglageDemandesInscription(): iterable
+    {
+        // la première phrase dit ce que l'on reçoit ; un retour à la ligne la sépare de la seconde (comment changer)
+        yield 'chaque demande' => [true, '🔔', "Vous recevez un e-mail pour chaque demande d'inscription à cette sortie.\nPour ne recevoir"];
+        yield 'seulement avec un message' => [false, '🔕', "Vous ne recevez un e-mail que pour les demandes d'inscription accompagnées d'un message.\nPour les recevoir toutes"];
+    }
+
+    public function testClocheDuReglageDesDemandesInscriptionPourUnCoencadrant(): void
+    {
+        $event = $this->createSortiePubliee($this->signup());
+        $coencadrant = $this->signup();
+        $event->addParticipation($coencadrant, EventParticipation::ROLE_COENCADRANT, EventParticipation::STATUS_VALIDE);
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        $this->signin($coencadrant);
+
+        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertSelectorExists('a.cloche-demandes-inscription');
+    }
+
+    public function testPasDeClochePourUnParticipant(): void
+    {
+        $event = $this->createSortiePubliee($this->signup());
+        $participant = $this->signup();
+        $event->addParticipation($participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        $this->signin($participant);
+
+        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertSelectorNotExists('.cloche-demandes-inscription');
+    }
+
+    public function testPasDeClocheSurUneSortieAnnulee(): void
+    {
+        $organisateur = $this->signup();
+        $event = $this->createSortiePubliee($organisateur);
+        $event->setCancelled(true);
+        $event->setCancelledWho($organisateur);
+        $event->setCancellationDate(new \DateTimeImmutable());
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        $this->signin($organisateur);
+
+        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertSelectorNotExists('.cloche-demandes-inscription');
+    }
+
+    private function createSortiePubliee(User $organisateur): Evt
+    {
+        $event = $this->createEvent($organisateur);
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($organisateur);
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+
+        return $event;
+    }
+
+    private function demanderInscription(Evt $event, User $participant, string $message = ''): void
+    {
+        $this->signin($participant);
+        $this->client->request('POST', sprintf('/sortie/%d/rejoindre', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'join_event'),
+            'confirm' => 'on',
+            'message' => $message,
+        ]);
+        $this->assertResponseStatusCodeSame(302);
+    }
+
+    /** @return Email[] les e-mails de demande d'inscription envoyés à l'organisateur et à l'encadrement */
+    private function emailsDemandeInscription(): array
+    {
+        return array_values(array_filter(
+            $this->getMailerMessages(),
+            static fn ($email) => $email instanceof Email
+                && 1 === preg_match('/\[\d+ nouvelles? demandes?\] Préinscription à/', $email->getSubject()),
+        ));
+    }
+
+    /** @return string[] adresses des destinataires (to et bcc), triées */
+    private function destinataires(Email $email): array
+    {
+        $adresses = array_map(
+            static fn (Address $adresse) => $adresse->getAddress(),
+            array_merge($email->getTo(), $email->getBcc()),
+        );
+        sort($adresses);
+
+        return $adresses;
+    }
+
     public function testSortieUpdateInscriptionsRefuse()
     {
         $userOwner = $this->signup();

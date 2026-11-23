@@ -525,6 +525,92 @@ class FfcamSynchronizerTest extends WebTestCase
         $this->assertEquals($identifiant1, $existingUser1->getCafnum());
     }
 
+    public function testSynchronizeMergesReturningMemberWhoseNameIsWrittenDifferently(): void
+    {
+        // Signalé par Chambéry à chaque rentrée : un ancien adhérent reprend une licence (nouveau
+        // numéro) et la FFCAM écrit son nom un peu autrement que la fiche du site.
+        $oldCafnum = (string) rand(100000000000, 999999999999);
+        $newCafnum = (string) rand(100000000000, 999999999999);
+        $email = 'revenant-' . bin2hex(random_bytes(8)) . '@clubalpinlyon.fr';
+
+        $existingUser = $this->signup(null, 'hashedpassword');
+        $existingUser
+            ->setCafnum($oldCafnum)
+            ->setFirstname('Jean-Pierre')
+            ->setLastname('DU PONT')
+            ->setBirthdate(new \DateTimeImmutable('1990-01-01'))
+            ->setEmail($email)
+            ->setDoitRenouveler(true);
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        $em->persist($existingUser);
+        $em->flush();
+        $existingId = $existingUser->getId();
+        $this->createEvent($existingUser);
+
+        $journal = new TestHandler();
+        $rapports = [];
+        $this->synchroniseurObserve($journal, $rapports)->synchronize(FfcamTestHelper::generateFile([[
+            'cafnum' => $newCafnum,
+            'lastname' => 'DUPONT',
+            'firstname' => 'Jean Pierre',
+            'birthday' => '1990-01-01',
+            'email' => $email,
+        ]]));
+
+        $repository = self::getContainer()->get(UserRepository::class);
+        $mergedUser = $repository->findOneByLicenseNumber($newCafnum);
+        $this->assertSame($existingId, $mergedUser->getId(), 'La fiche du site prend le nouveau numéro');
+        $this->assertSame($email, $mergedUser->getEmail());
+        $this->assertSame('hashedpassword', $mergedUser->getPassword());
+        $this->assertNull($repository->findOneByLicenseNumber($oldCafnum));
+        $this->assertNull($repository->findOneBy(['email' => 'doublon.' . $newCafnum . '-' . $email]), 'Aucun second compte');
+
+        $participations = (int) $em->getConnection()->fetchOne('SELECT COUNT(*) FROM caf_evt_join WHERE user_evt_join = ?', [$existingId]);
+        $this->assertSame(1, $participations, "L'historique reste sur la fiche fusionnée");
+
+        $this->assertSame(1, $rapports[0]['merged']);
+        $this->assertSame(0, $rapports[0]['inserted']);
+        $this->assertSame($oldCafnum, (string) $rapports[0]['merged_details'][0]['old_cafnum']);
+    }
+
+    public function testSynchronizeDoesNotMergeDifferentPeopleBornTheSameDay(): void
+    {
+        // Même date de naissance et adresse de la famille, mais prénoms différents : deux personnes.
+        $siteCafnum = (string) rand(100000000000, 999999999999);
+        $newCafnum = (string) rand(100000000000, 999999999999);
+        $lastname = $this->faker->lastName();
+        $email = 'famille-' . bin2hex(random_bytes(8)) . '@clubalpinlyon.fr';
+
+        $existingUser = $this->signup(null, 'hashedpassword');
+        $existingUser
+            ->setCafnum($siteCafnum)
+            ->setFirstname('Marie')
+            ->setLastname($lastname)
+            ->setBirthdate(new \DateTimeImmutable('1990-01-01'))
+            ->setEmail($email);
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        $em->persist($existingUser);
+        $em->flush();
+        $existingId = $existingUser->getId();
+
+        $journal = new TestHandler();
+        $rapports = [];
+        $this->synchroniseurObserve($journal, $rapports)->synchronize(FfcamTestHelper::generateFile([[
+            'cafnum' => $newCafnum,
+            'lastname' => $lastname,
+            'firstname' => 'Paul',
+            'birthday' => '1990-01-01',
+            'email' => $email,
+        ]]));
+
+        $repository = self::getContainer()->get(UserRepository::class);
+        $this->assertSame($siteCafnum, $repository->find($existingId)->getCafnum());
+        $newUser = $repository->findOneByLicenseNumber($newCafnum);
+        $this->assertNotSame($existingId, $newUser->getId());
+        $this->assertSame(0, $rapports[0]['merged']);
+        $this->assertSame(1, $rapports[0]['inserted']);
+    }
+
     public function testHandlesUpdatesUserEvenIfMergeIsPossible(): void
     {
         $identifiant1 = rand(100000000000, 999999999999);
@@ -993,7 +1079,7 @@ class FfcamSynchronizerTest extends WebTestCase
 
     private function synchroniseurObserve(TestHandler $journal, array &$rapports): FfcamSynchronizer
     {
-        $rapport = $this->createMock(FfcamSyncReportMailer::class);
+        $rapport = $this->createStub(FfcamSyncReportMailer::class);
         $rapport->method('sendSyncReport')->willReturnCallback(function (array $stats) use (&$rapports) {
             $rapports[] = $stats;
         });
