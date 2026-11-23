@@ -15,6 +15,7 @@
         tr .cross{	display:block;	}
         tr.up .tick{	display:block;	}
         tr.up .cross{	display:none;	}
+        a.boutonFancy.manual-add-tab.active {background:#d3d6ff}
     </style>
     <link rel="stylesheet" href="/tools/datatables/media/css/jquery.dataTables.css" type="text/css" media="screen" />
 {% endblock %}
@@ -24,12 +25,56 @@
     <script type="text/javascript" src="https://cdn.datatables.net/1.13.8/js/jquery.dataTables.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
-            $('.datatables').dataTable({
+            // Personnes cochées, indexées par id : conservées d'un onglet (et d'une page) à l'autre
+            // tant que la fenêtre reste ouverte, puis envoyées toutes ensemble à l'étape suivante.
+            const selection = new Map();
+            const $form = $('#manual-add-form');
+            const $counter = $('#manual-add-selection-count');
+
+            function markRow($row, selected) {
+                $row.toggleClass('up', selected);
+                $row.find('input[type=checkbox]').prop('checked', selected);
+            }
+
+            function updateCounter() {
+                const count = selection.size;
+                $counter.text(0 === count
+                    ? 'Aucune personne sélectionnée'
+                    : count + (count > 1 ? ' personnes sélectionnées' : ' personne sélectionnée'));
+            }
+
+            function activateTab($tab) {
+                $('.manual-add-tab').removeClass('active');
+                $tab.addClass('active');
+                $('#manual-add-date-header').text('discovery' === $tab.data('show') ? 'Dates de validité' : 'Date d\'adhésion');
+            }
+
+            // Onglet dont les lignes sont affichées. Si le chargement d'un autre onglet échoue, DataTables
+            // garde ces lignes : on réactive alors cet onglet, pour rester cohérent et pouvoir réessayer.
+            let $shownTab = $('.manual-add-tab.active');
+
+            const table = $('.datatables').DataTable({
                 processing: true,
                 serverSide: true,
                 ajax: {
-                    url: '{{ path('users_data', {'page': 'manual-add', 'show': show}) }}',
-                    data: { event: {{ event.id }} }
+                    url: $shownTab.data('source'),
+                    data: { event: {{ event.id }} },
+                    beforeSend: function(jqXHR) {
+                        // DataTables n'affiche que la réponse à la dernière requête envoyée : la réponse
+                        // ou l'échec d'une requête dépassée (onglet changé entre-temps) est ignoré.
+                        const $tab = $('.manual-add-tab.active');
+                        const isLatest = function() { return jqXHR === table.settings()[0].jqXHR; };
+                        jqXHR.done(function() {
+                            if (isLatest()) {
+                                $shownTab = $tab;
+                            }
+                        }).fail(function() {
+                            if (isLatest()) {
+                                activateTab($shownTab);
+                                table.ajax.url($shownTab.data('source'));
+                            }
+                        });
+                    }
                 },
                 columns: [
                     { data: 'check' },
@@ -44,6 +89,7 @@
                 createdRow: function(row, data, dataIndex) {
                     $(row).attr('id', 'tr-' + data.id);
                     $(row).addClass('vis-on');
+                    markRow($(row), selection.has(String(data.id)));
                 },
                 columnDefs: [
                     {
@@ -84,14 +130,62 @@
                 ],
             });
 
-            $(document).on('click', 'tr', function(){
-                const checkbox = $(this).find('input[type=checkbox]');
-                checkbox.attr('checked', !checkbox.attr('checked'));
-                if(checkbox.attr('checked'))	$(this).find('input[type=hidden]').removeAttr('disabled');
-                else							$(this).find('input[type=hidden]').attr('disabled', 'disabled');
-                $(this).toggleClass('up');
+            // délégué depuis document, comme avant : le lien du pseudo ouvre toujours la fiche (fancybox)
+            $(document).on('click', '.datatables tbody tr', function() {
+                const $row = $(this);
+                const $checkbox = $row.find('input[type=checkbox]');
+                if (0 === $checkbox.length) {
+                    // ligne « Aucun adhérent à afficher »
+                    return false;
+                }
+
+                const id = $checkbox.val();
+                if (selection.has(id)) {
+                    selection.delete(id);
+                    markRow($row, false);
+                } else {
+                    selection.set(id, {
+                        civ: $row.find('input[name="civ_user[]"]').val(),
+                        lastname: $row.find('input[name="lastname_user[]"]').val(),
+                        firstname: $row.find('input[name="firstname_user[]"]').val(),
+                        nickname: $row.find('input[name="nickname_user[]"]').val(),
+                    });
+                    markRow($row, true);
+                }
+                updateCounter();
+
                 return false;
             });
+
+            // Les onglets rechargent le tableau sans recharger la page, pour garder les sélections.
+            $('.manual-add-tab').on('click', function(event) {
+                event.preventDefault();
+                const $tab = $(this);
+                if ($tab.hasClass('active')) {
+                    return;
+                }
+
+                activateTab($tab);
+                // comme l'ancien rechargement de page : chaque onglet repart de sa liste complète
+                table.search('');
+                table.ajax.url($tab.data('source')).load();
+            });
+
+            // La validation porte sur toutes les sélections, y compris celles des onglets non affichés.
+            $form.on('submit', function() {
+                const $inputs = $('#manual-add-selection-inputs').empty();
+                selection.forEach(function(person, id) {
+                    $inputs.append(
+                        $('<input type="hidden" name="id_user[]" />').val(id),
+                        $('<input type="hidden" name="civ_user[]" />').val(person.civ),
+                        $('<input type="hidden" name="lastname_user[]" />').val(person.lastname),
+                        $('<input type="hidden" name="firstname_user[]" />').val(person.firstname),
+                        $('<input type="hidden" name="nickname_user[]" />').val(person.nickname)
+                    );
+                });
+            });
+
+            updateCounter();
         });
     </script>
 {% endblock %}
@@ -100,59 +194,49 @@
     <div id="includer-stuff">
         <h1>Inscrire manuellement des participants à cette sortie</h1>
 
+        {% set views = {
+            allvalid: '✔️ Adhérents club (lic. valide)',
+            discovery: '🧐 Cartes découverte',
+            nomade: '🌍 Adhérents autres clubs',
+            external: '✍️ Personnes externes',
+            all: '📋 Tous',
+        } %}
         <p>
-            <a href="{{ path('event_manual_add_select', {event: event.id, show: 'allvalid'}) }}"
-               class="boutonFancy"
-               {% if show is same as ('allvalid') %}style="background:#d3d6ff"{% endif %}>
-            ✔️ Adhérents club (lic. valide)
-            </a>&nbsp;
-
-            <a href="{{ path('event_manual_add_select', {event: event.id, 'show': 'discovery'}) }}"
-                class="boutonFancy"
-                {% if show is same as ('discovery') %}style="background:#d3d6ff"{% endif %}>
-            🧐 Cartes découverte
-            </a>&nbsp;
-
-            <a href="{{ path('event_manual_add_select', {event: event.id, 'show': 'nomade'}) }}"
-                class="boutonFancy"
-                {% if show is same as ('nomade') %}style="background:#d3d6ff"{% endif %}>
-            🌍 Adhérents autres clubs
-            </a>&nbsp;
-
-            <a href="{{ path('event_manual_add_select', {event: event.id, 'show': 'external'}) }}"
-                class="boutonFancy"
-                {% if show is same as ('external') %}style="background:#d3d6ff"{% endif %}>
-            ✍️ Personnes externes
-            </a>&nbsp;
-
-            <a href="{{ path('event_manual_add_select', {event: event.id, show: 'all'}) }}"
-               class="boutonFancy"
-               {% if show is same as ('all') %}style="background:#d3d6ff"{% endif %}>
-            📋 Tous
-            </a>
+            {% for key, label in views %}
+                <a href="{{ path('event_manual_add_select', {event: event.id, show: key}) }}"
+                   class="boutonFancy manual-add-tab{% if show is same as (key) %} active{% endif %}"
+                   data-show="{{ key }}"
+                   data-source="{{ path('users_data', {page: 'manual-add', show: key}) }}">
+                {{ label }}
+                </a>{% if not loop.last %}&nbsp;{% endif %}
+            {% endfor %}
         </p>
         <br />
 
-        <form action="{{ path('event_manual_add', {event: event.id}) }}" method="post" enctype="multipart/form-data" class="loading">
+        {# Le tableau sert uniquement à choisir : les personnes sélectionnées sont envoyées par le formulaire ci-dessous. #}
+        <table class="datatables">
+            <thead>
+            <tr>
+                <th></th>
+                <th>n° licence FFCAM / Infos</th>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Pseudo</th>
+                <th id="manual-add-date-header">Date{% if show is same as ('discovery') %}s de validité{% else %} d'adhésion{% endif %}</th>
+                <th>Âge</th>
+                <th>E-mail renseigné ?</th>
+            </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <br style="clear:both" />
+        <br />
+
+        <form id="manual-add-form" action="{{ path('event_manual_add', {event: event.id}) }}" method="post" enctype="multipart/form-data" class="loading">
             <input type="hidden" name="csrf_token" value="{{ csrf_token('event_manual_add') }}" />
-            <table class="datatables">
-                <thead>
-                <tr>
-                    <th></th>
-                    <th>n° licence FFCAM / Infos</th>
-                    <th>Nom</th>
-                    <th>Prénom</th>
-                    <th>Pseudo</th>
-                    <th>Date{% if show is same as ('discovery') %}s de validité{% else %} d'adhésion{% endif %}</th>
-                    <th>Âge</th>
-                    <th>E-mail renseigné ?</th>
-                </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-            <br style="clear:both" />
-            <br />
+            <div id="manual-add-selection-inputs"></div>
+            <p id="manual-add-selection-count"></p>
             <a class="biglink" href="javascript:void(0)" title="Enregistrer" onclick="$(this).parents('form').submit()">
                 <span class="bleucaf">&gt;</span>
                 Étape suivante : attribuer les rôles
