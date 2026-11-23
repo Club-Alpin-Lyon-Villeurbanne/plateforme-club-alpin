@@ -161,6 +161,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $alertArticlePrefix = null;
 
+    #[ORM\Column(name: 'alert_toutes_demandes_inscription', type: 'boolean', nullable: false, options: ['default' => 1, 'comment' => "Si vaut 0 : l'organisateur ou l'encadrant d'une sortie ne reçoit un e-mail que pour les demandes d'inscription accompagnées d'un message"])]
+    #[Groups(['user:details', 'user:write'])]
+    private bool $alertToutesDemandesInscription = true;
+
     #[ORM\Column(name: 'materiel_account_created_at', type: 'datetime', nullable: true, options: ['comment' => 'Date de création du compte sur la plateforme de matériel'])]
     private ?\DateTimeInterface $materielAccountCreatedAt = null;
 
@@ -738,6 +742,22 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, \JsonSe
     public function setAlertArticlePrefix(?string $alertArticlePrefix): self
     {
         $this->alertArticlePrefix = $alertArticlePrefix;
+
+        return $this;
+    }
+
+    /**
+     * Vrai : un e-mail pour chaque demande d'inscription aux sorties que l'on organise ou encadre.
+     * Faux : seulement pour les demandes accompagnées d'un message.
+     */
+    public function getAlertToutesDemandesInscription(): bool
+    {
+        return $this->alertToutesDemandesInscription;
+    }
+
+    public function setAlertToutesDemandesInscription(bool $alertToutesDemandesInscription): self
+    {
+        $this->alertToutesDemandesInscription = $alertToutesDemandesInscription;
 
         return $this;
     }
