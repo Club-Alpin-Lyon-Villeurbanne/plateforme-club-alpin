@@ -565,6 +565,29 @@ class Evt
     }
 
     /**
+     * Encadrant, stagiaire ou co-encadrant dont la participation est validée.
+     */
+    public function isEncadrant(?User $user): bool
+    {
+        if (null === $user) {
+            return false;
+        }
+
+        foreach ($this->getEncadrants() as $participation) {
+            $participant = $participation->getUser();
+            if (null === $participant) {
+                continue;
+            }
+            // Utilisateurs non persistés : pas d'identifiant à comparer, on compare les objets.
+            if (null === $user->getId() ? $participant === $user : $participant->getId() === $user->getId()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Personnes prévenues des inscriptions et désinscriptions : l'organisateur et l'encadrement
      * (encadrants, coencadrants, stagiaires). Indexées par id, pour ne compter qu'une fois
      * un organisateur qui encadre aussi la sortie.
