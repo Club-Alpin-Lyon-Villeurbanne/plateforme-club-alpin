@@ -15,6 +15,10 @@ twig:
         default_alert_article_prefix: "%env(ALERT_ARTICLE_PREFIX)%"
         default_alert_sortie_prefix: "%env(ALERT_SORTIE_PREFIX)%"
         site_version: "%env(string:COMMIT_ID)%"
+        ffcam_search_url: "%env(FFCAM_SEARCH_URL)%"
+        ffcam_adhesion_base_url: "%env(FFCAM_ADHESION_BASE_URL)%"
+        ffcam_adhesion_hchk: "%env(FFCAM_ADHESION_HCHK)%"
+        ffcam_idclub: "%club_cafnum_prefix%"
 
 when@test:
     twig:

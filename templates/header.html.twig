@@ -103,6 +103,14 @@
                     {% if not app.user %}
                         {# creer un compte (vers page profil) #}
                         <div style="width:640px; float:left; border-right:1px solid #c6e39f; min-height:120px; padding:0px 5px 0 0">
+                            {% set ffcam_url = ffcam_adhesion_hchk
+                                ? ffcam_adhesion_base_url ~ '?' ~ {IDCLUB: ffcam_idclub, Hchk: ffcam_adhesion_hchk}|url_encode
+                                : ffcam_search_url %}
+                            <div style="margin-bottom: 20px;">
+                                <p class="menutitle">Adhérer au club</p>
+                                <p>L'adhésion se fait sur le site de la FFCAM. Elle est prise en compte sous 24h.</p>
+                                <a class="nice2" href="{{ ffcam_url }}">Adhérer au club</a>
+                            </div>
                             {{ easy_include('mainmenu-creer-mon-compte', 'menucontent')}}
                         </div>
 
