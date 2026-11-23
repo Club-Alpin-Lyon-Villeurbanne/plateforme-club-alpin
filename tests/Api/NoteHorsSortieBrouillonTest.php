@@ -4,6 +4,7 @@ namespace App\Tests\Api;
 
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use App\Utils\Enums\ExpenseReportTypeEnum;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Brouillon d'une note hors sortie : relecture, modification par PATCH, droits et justificatifs.
@@ -63,9 +64,7 @@ class NoteHorsSortieBrouillonTest extends ExpenseReportApiTestCase
         $this->assertSame('Cordes pour la SAE', $this->reload($note)->getObjet());
     }
 
-    /**
-     * @dataProvider champDeLaDemandeProvider
-     */
+    #[DataProvider('champDeLaDemandeProvider')]
     public function testLeProprietaireNeModifiePlusUneNoteTransmise(string $champ): void
     {
         $note = $this->creerAchat($this->owner, ExpenseReportStatusEnum::APPROVED);
@@ -73,9 +72,7 @@ class NoteHorsSortieBrouillonTest extends ExpenseReportApiTestCase
         $this->assertRefused($this->patch($this->owner, $note, [$champ => $this->nouvelleValeur($champ)]), $champ);
     }
 
-    /**
-     * @dataProvider champDeLaDemandeProvider
-     */
+    #[DataProvider('champDeLaDemandeProvider')]
     public function testUnGestionnaireNeModifiePasLeBrouillonDUnAdherent(string $champ): void
     {
         $note = $this->creerAchat($this->owner);

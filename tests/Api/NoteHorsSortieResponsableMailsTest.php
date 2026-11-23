@@ -3,6 +3,7 @@
 namespace App\Tests\Api;
 
 use App\Entity\User;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Mime\Email;
 
 /**
@@ -13,14 +14,6 @@ use Symfony\Component\Mime\Email;
 class NoteHorsSortieResponsableMailsTest extends ExpenseReportApiTestCase
 {
     private const SUJET_A_VALIDER = 'Note de frais à valider : Dégaines pour la SAE';
-
-    protected function tearDown(): void
-    {
-        // L'adresse est unique en base : une adresse vide laissée ici ferait échouer le test suivant.
-        $this->em()->getConnection()->executeStatement('UPDATE caf_user SET email_user = NULL WHERE email_user = \'\'');
-
-        parent::tearDown();
-    }
 
     public function testChaqueValideurRecoitSonPropreMail(): void
     {
@@ -76,9 +69,7 @@ class NoteHorsSortieResponsableMailsTest extends ExpenseReportApiTestCase
         $this->assertStringNotContainsString('reçu aussi', $mail->getTextBody());
     }
 
-    /**
-     * @dataProvider choixProvider
-     */
+    #[DataProvider('choixProvider')]
     public function testLeMailAuxValideursNeDitRienDuChoixEntreDonEtRemboursement(bool $remboursement): void
     {
         $this->noteEnvoyee($this->adherent, $remboursement, commission: $this->commissionDeTest);
@@ -119,9 +110,7 @@ class NoteHorsSortieResponsableMailsTest extends ExpenseReportApiTestCase
         $this->assertSame(['Votre note de frais « Dégaines pour la SAE » est envoyée à la trésorerie.'], $this->sujetsA($this->responsableAutreCommission));
     }
 
-    /**
-     * @dataProvider sansAdresseProvider
-     */
+    #[DataProvider('sansAdresseProvider')]
     public function testUnResponsableSansAdresseNEstPasValideur(?string $adresse): void
     {
         $this->changerLAdresse($this->responsable, $adresse);
@@ -134,9 +123,7 @@ class NoteHorsSortieResponsableMailsTest extends ExpenseReportApiTestCase
         $this->assertSame([$this->coResponsable->getId()], array_column($this->show($this->adherent, $note)['body']['valideurs'], 'id'));
     }
 
-    /**
-     * @dataProvider sansAdresseProvider
-     */
+    #[DataProvider('sansAdresseProvider')]
     public function testSansResponsableAvecUneAdresseLaNoteVaALaTresorerie(?string $adresse): void
     {
         $this->changerLAdresse($this->responsable, $adresse);

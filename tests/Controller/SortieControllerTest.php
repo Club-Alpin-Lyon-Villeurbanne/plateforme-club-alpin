@@ -7,14 +7,18 @@ use App\Entity\EventUnrecognizedPayer;
 use App\Entity\Evt;
 use App\Entity\ExpenseReport;
 use App\Entity\TransportModeEnum;
+use App\Entity\User;
 use App\Entity\UserAttr;
 use App\Helper\CarbonCostHelper;
 use App\Messenger\Message\SortiePubliee;
 use App\Tests\WebTestCase;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use Doctrine\ORM\EntityManagerInterface;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Mailer\Messenger\SendEmailMessage;
 use Symfony\Component\Messenger\MessageBusInterface;
+use Symfony\Component\Mime\Address;
+use Symfony\Component\Mime\Email;
 
 class SortieControllerTest extends WebTestCase
 {
@@ -29,6 +33,119 @@ class SortieControllerTest extends WebTestCase
         $this->getContainer()->get('doctrine')->getManager()->flush();
         $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
         $this->assertResponseStatusCodeSame(200);
+    }
+
+    public function testAjouterAMonAgendaConserveLesCaracteresSpeciaux(): void
+    {
+        $user = $this->signup();
+        $this->signin($user);
+
+        $titre = 'Saint-Jean d\'Arvey & "Pétchi" </script>';
+        $rdv = 'Parking de l\'église & "La Cure"';
+
+        $event = $this->createEvent($user);
+        $event->setTitre($titre);
+        $event->setRdv($rdv);
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($user);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $code = $this->scriptAjouterAMonAgenda($event);
+
+        $this->assertSame($titre, $this->champJs($code, 'name'));
+        $this->assertSame($rdv, $this->champJs($code, 'location'));
+    }
+
+    public function testAjouterAMonAgendaDonneLeLienDeLaSortieEtLeLieuDeRdv(): void
+    {
+        $user = $this->signup();
+        $this->signin($user);
+
+        $event = $this->createEvent($user);
+        $event->setRdv('  Parking du Pont de Chéruy  ');
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($user);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $code = $this->scriptAjouterAMonAgenda($event);
+
+        $this->assertSame(
+            sprintf('Fiche de la sortie : [url]http://localhost/sortie/%s-%d.html[/url]', $event->getCode(), $event->getId()),
+            $this->champJs($code, 'description'),
+        );
+        $this->assertSame('Parking du Pont de Chéruy', $this->champJs($code, 'location'));
+    }
+
+    #[DataProvider('rdvNonRenseignes')]
+    public function testAjouterAMonAgendaSansRdvDonneLesCoordonneesGpsCommeLieu(string $rdv): void
+    {
+        $user = $this->signup();
+        $this->signin($user);
+
+        $event = $this->createEvent($user);
+        $event->setRdv($rdv);
+        $event->setLat('45.78303930');
+        $event->setLong('3.08418670');
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($user);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $code = $this->scriptAjouterAMonAgenda($event);
+
+        $this->assertSame('45.78303930,3.08418670', $this->champJs($code, 'location'));
+        $this->assertStringContainsString(sprintf('/sortie/%s-%d.html', $event->getCode(), $event->getId()), $this->champJs($code, 'description'));
+    }
+
+    public function testAjouterAMonAgendaSansRdvNiCoordonneesNeRenseignePasDeLieu(): void
+    {
+        $user = $this->signup();
+        $this->signin($user);
+
+        $event = $this->createEvent($user);
+        $event->setRdv('');
+        $event->setLat(0);
+        $event->setLong(0);
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($user);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $code = $this->scriptAjouterAMonAgenda($event);
+
+        $this->assertNull($this->champJs($code, 'location'));
+    }
+
+    public static function rdvNonRenseignes(): iterable
+    {
+        yield 'vide' => [''];
+        yield 'espaces' => ['   '];
+    }
+
+    /** Affiche la fiche sortie et renvoie le code du script « Ajouter à mon agenda ». */
+    private function scriptAjouterAMonAgenda(Evt $event): string
+    {
+        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+
+        $script = $this->client->getCrawler()->filterXPath('//script[contains(., "atcb_action")]');
+        $this->assertCount(1, $script, 'Le script « Ajouter à mon agenda » doit être présent et non coupé.');
+
+        return $script->text();
+    }
+
+    /** Valeur décodée d'un champ chaîne de la configuration JavaScript, ou null s'il est absent. */
+    private function champJs(string $code, string $champ): ?string
+    {
+        if (!preg_match('/\b' . $champ . ': "((?:[^"\\\\]|\\\\.)*)",/', $code, $valeur)) {
+            return null;
+        }
+
+        return $this->decodeChaineJs($valeur[1]);
+    }
+
+    /** Décode une chaîne JavaScript échappée par Twig (\xHH, \uHHHH, \/). */
+    private function decodeChaineJs(string $chaine): string
+    {
+        return json_decode('"' . preg_replace('/\\\\x([0-9A-Fa-f]{2})/', '\\u00$1', $chaine) . '"', true, 512, \JSON_THROW_ON_ERROR);
     }
 
     public function testFicheSortieEnPdfPourLEncadrant(): void
@@ -46,6 +163,104 @@ class SortieControllerTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertResponseHeaderSame('Content-Type', 'application/pdf');
         $this->assertStringStartsWith('%PDF-', $this->client->getResponse()->getContent());
+    }
+
+    public function testExportExcelDesParticipantsPourLEncadrant(): void
+    {
+        $user = $this->signup();
+        $this->signin($user);
+        $event = $this->createEvent($user);
+
+        $this->client->request('GET', sprintf('/sortie/%d/printXLSX', $event->getId()));
+
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testExportExcelDesParticipantsRefuseAUnAdherentQuiNEncadrePasLaSortie(): void
+    {
+        $event = $this->createEvent($this->signup());
+        $this->signin($this->signup());
+
+        $this->client->request('GET', sprintf('/sortie/%d/printXLSX', $event->getId()));
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testMenuActionsRegroupeLesActionsDeLOrganisateur(): void
+    {
+        $user = $this->signup();
+        $event = $this->createEvent($user);
+        // droit de créer une sortie dans la commission : nécessaire pour dupliquer
+        $this->addAttribute($user, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
+        // sortie terminée : le compte rendu est proposé à l'organisateur
+        $event->setStartDate(new \DateTimeImmutable('-3 days'))->setEndDate(new \DateTimeImmutable('-2 days'));
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+        $this->signin($user);
+
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $menu = $crawler->filter('details#sortie-actions-menu');
+        $this->assertCount(1, $menu);
+        $this->assertSame('Actions', trim($menu->filter('summary')->text()));
+        $this->assertSame([
+            'Imprimer la fiche de sortie',
+            'Imprimer la fiche de sortie en PDF',
+            'Exporter la liste des participants en Excel',
+            'Dupliquer cette sortie avec ce groupe',
+            'Dupliquer cette sortie',
+            'Rédiger un compte rendu',
+        ], $menu->filter('.sortie-actions-item')->each(fn ($item) => trim($item->text())));
+
+        $router = $this->getContainer()->get('router');
+        $this->assertSame([
+            $router->generate('feuille_sortie', ['id' => $event->getId()]),
+            $router->generate('sortie_pdf', ['id' => $event->getId()]),
+            $router->generate('sortie_xlsx', ['id' => $event->getId()]),
+            $router->generate('article_new') . '?compterendu=true&commission_article=-1&evt_article=' . $event->getId(),
+        ], $menu->filter('a.sortie-actions-item')->each(fn ($lien) => $lien->attr('href')));
+        $this->assertSame([
+            $router->generate('sortie_duplicate', ['event' => $event->getId(), 'mode' => 'full']),
+            $router->generate('sortie_duplicate', ['event' => $event->getId(), 'mode' => 'empty']),
+        ], $menu->filter('form')->each(fn ($form) => $form->attr('action')));
+
+        // les actions ne sont plus affichées en double hors du menu
+        $this->assertCount(2, $crawler->filter('form[action*="/duplicate/"]'));
+        $this->assertCount(1, $crawler->filter(sprintf('a[href="%s"]', $router->generate('sortie_xlsx', ['id' => $event->getId()]))));
+    }
+
+    public function testMenuActionsNeProposeQueLesActionsAutorisees(): void
+    {
+        // encadrant de la sortie sans droit de création dans la commission, sortie à venir
+        $user = $this->signup();
+        $event = $this->createEvent($user);
+        $this->signin($user);
+
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSame([
+            'Imprimer la fiche de sortie',
+            'Imprimer la fiche de sortie en PDF',
+            'Exporter la liste des participants en Excel',
+        ], $crawler->filter('#sortie-actions-menu .sortie-actions-item')->each(fn ($item) => trim($item->text())));
+        $this->assertCount(0, $crawler->filter('form[action*="/duplicate/"]'));
+        $this->assertCount(1, $crawler->filter('.sortie-actions #add-to-calendar'));
+    }
+
+    public function testPasDeMenuActionsPourUnAdherentSansDroitSurLaSortie(): void
+    {
+        $organisateur = $this->signup();
+        $event = $this->createEvent($organisateur);
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE)->setStatusWho($organisateur);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+        $this->signin($this->signup());
+
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertCount(0, $crawler->filter('#sortie-actions-menu'));
+        $this->assertCount(1, $crawler->filter('.sortie-actions #add-to-calendar'));
     }
 
     public function testParticipantPayeSousSonEmailApparaitPayeMaisPasUnNomadeSansEmail(): void
@@ -69,6 +284,30 @@ class SortieControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
         $badgesPaye = $crawler->filter('td.event-manage-user span')->reduce(fn ($span) => 'Payé' === trim($span->text()));
         $this->assertCount(1, $badgesPaye);
+    }
+
+    public function testLaPremiereColonneDesInscritsEstLeNomAvecLaCaseDeContact(): void
+    {
+        $user = $this->signup();
+        $this->signin($user);
+
+        $event = $this->createEvent($user);
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE)->setStatusWho($user);
+        $participant = $this->signup();
+        $event->addParticipation($participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+
+        $this->assertResponseStatusCodeSame(200);
+        // la 1re colonne est figée au défilement du tableau (vue compétences) : ce doit être celle du nom
+        $tableau = $crawler->filter('.inscrits-table-container table');
+        $this->assertSame('Nom / Pseudo', trim($tableau->filter('thead th')->first()->text()));
+        $lignes = $tableau->filter('tbody tr');
+        $this->assertGreaterThanOrEqual(2, $lignes->count());
+        $this->assertCount($lignes->count(), $tableau->filter('tbody tr > td:first-child input.contact-cb'));
+        $nomsEnPremiereColonne = $tableau->filter('tbody tr > td:first-child')->each(fn ($td) => $td->text());
+        $this->assertStringContainsString(mb_strtoupper($participant->getLastname()), implode(' ', $nomsEnPremiereColonne));
     }
 
     public function testDisplaySortieWithFiliationsAndEmpietementsToOwner()
@@ -139,6 +378,65 @@ class SortieControllerTest extends WebTestCase
         $this->getContainer()->get('doctrine')->getManager()->flush();
         $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
         $this->assertResponseStatusCodeSame(200);
+    }
+
+    public function testInformationsReserveesSignaleesALaPersonneConnectee(): void
+    {
+        $user = $this->signup();
+        $event = $this->createSortiePublieeAvecInformationsReservees($this->signup());
+        $this->signin($user);
+
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+
+        $this->assertSelectorTextContains('.description_evt', 'Une chtite sortie');
+        $this->assertAnySelectorTextContains('ul.nice-list li', 'Covoiturage : voir le tableau partagé');
+        $this->assertAnySelectorTextContains('ul.nice-list li', 'Péage partagé entre les voitures');
+
+        // Détails pratiques, tarif, détails des frais et RDV : les quatre informations masquées aux visiteurs.
+        // Un cadenas les signale, la mention est dans son infobulle CSS (data-infobulle) et dans le texte alternatif.
+        // Il est focalisable pour que l'infobulle s'affiche aussi au clavier et au toucher.
+        $mention = 'Visible car vous êtes connecté·e : les visiteurs non connectés ne voient pas cette information.';
+        $mentions = $crawler->filter('span.mention-visible-connecte');
+        $this->assertCount(4, $mentions);
+        $this->assertSame(array_fill(0, 4, $mention), $mentions->extract(['data-infobulle']));
+        $this->assertSame(array_fill(0, 4, '0'), $mentions->extract(['tabindex']));
+        $this->assertSame(array_fill(0, 4, $mention), $mentions->filter('img')->extract(['alt']));
+        // Pas d'attribut title : l'infobulle native du navigateur se superposerait à la nôtre.
+        $this->assertSelectorNotExists('.mention-visible-connecte[title], .mention-visible-connecte [title]');
+        $this->assertSelectorTextNotContains('body', 'Visible car vous êtes connecté·e');
+        foreach (['DÉTAILS PRATIQUES', 'TARIF', 'DÉTAILS DES FRAIS', 'RDV'] as $libelle) {
+            $this->assertCount(1, $crawler->filter('ul.nice-list li')->reduce(
+                static fn ($li) => str_starts_with($li->filter('b')->text(''), $libelle . ' :')
+                    && 1 === $li->filter('.mention-visible-connecte')->count()
+            ), sprintf('Mention absente de « %s ».', $libelle));
+        }
+    }
+
+    public function testInformationsReserveesSansMentionPourLeVisiteur(): void
+    {
+        $event = $this->createSortiePublieeAvecInformationsReservees($this->signup());
+
+        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+
+        $this->assertSelectorNotExists('.mention-visible-connecte');
+        $this->assertSelectorTextNotContains('body', 'Covoiturage : voir le tableau partagé');
+        $this->assertAnySelectorTextContains('ul.nice-list li', 'Détails de la sortie visibles après connexion');
+        $this->assertAnySelectorTextContains('ul.nice-list li', 'lieu et heures visibles après connexion');
+    }
+
+    private function createSortiePublieeAvecInformationsReservees(User $encadrant): Evt
+    {
+        $event = $this->createEvent($encadrant);
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($encadrant);
+        $event->setDetailsCaches('Covoiturage : voir le tableau partagé');
+        $event->setTarif(12.5);
+        $event->setTarifDetail('Péage partagé entre les voitures');
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        return $event;
     }
 
     public function testSortieValidate()
@@ -446,11 +744,80 @@ class SortieControllerTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $userOwner->getNickname(), $userOwner->getEmail()));
-        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Message] ' . $event->getTitre() . ' du ' . $event->getStartDate()->format('d/m/Y'));
+        $this->assertEmailHeaderSame($emails[0], 'Subject', 'un objet de culte');
         $this->assertEmailTextBodyContains($emails[0], 'Vous avez reçu un message de');
+        // l'objet est le sujet du courriel (repris en titre par le gabarit commun) : plus de ligne « Objet : » dans le corps
+        $this->assertEmailTextBodyNotContains($emails[0], 'Objet :');
+        $this->assertEmailHtmlBodyNotContains($emails[0], 'Objet :');
         $this->assertEmailTextBodyContains($emails[0], 'tirelipimpon');
         $this->assertEmailHtmlBodyContains($emails[0], 'Vous avez reçu un message de');
         $this->assertEmailHtmlBodyContains($emails[0], 'tirelipimpon');
+    }
+
+    public function testContactParticipantsSansObjetGardeLeSujetAutomatique()
+    {
+        $userOwner = $this->signup();
+        $event = $this->createEvent($userOwner);
+        $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
+
+        $this->signin($userOwner);
+
+        $testParticipantId = $event->getParticipations(null, null)[0]->getId();
+        $this->client->request('POST', sprintf('/sortie/%d/contact-participants', $event->getId()), [
+            'csrf_token_contact' => $this->generateCsrfToken($this->client, 'contact_participants'),
+            'contact_participant' => [$testParticipantId => $testParticipantId],
+            'objet' => "  \t ",
+            'message' => 'tirelipimpon',
+        ]);
+        $this->assertResponseStatusCodeSame(302);
+
+        $emails = $this->getMailerMessages();
+        $this->assertCount(1, $emails);
+
+        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Message] ' . $event->getTitre() . ' du ' . $event->getStartDate()->format('d/m/Y'));
+        $this->assertEmailTextBodyNotContains($emails[0], 'Objet :');
+        $this->assertEmailTextBodyContains($emails[0], 'tirelipimpon');
+    }
+
+    public function testContactParticipantsObjetSurUneSeuleLigne()
+    {
+        $userOwner = $this->signup();
+        $event = $this->createEvent($userOwner);
+        $this->addAttribute($userOwner, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
+
+        $this->signin($userOwner);
+
+        $testParticipantId = $event->getParticipations(null, null)[0]->getId();
+        $this->client->request('POST', sprintf('/sortie/%d/contact-participants', $event->getId()), [
+            'csrf_token_contact' => $this->generateCsrfToken($this->client, 'contact_participants'),
+            'contact_participant' => [$testParticipantId => $testParticipantId],
+            'objet' => " Changement d'horaire\r\n  du départ ",
+            'message' => 'tirelipimpon',
+        ]);
+        $this->assertResponseStatusCodeSame(302);
+
+        $emails = $this->getMailerMessages();
+        $this->assertCount(1, $emails);
+
+        $this->assertEmailHeaderSame($emails[0], 'Subject', "Changement d'horaire du départ");
+    }
+
+    public function testPageSortiePreremplitLObjetAvecLeSujetAutomatique(): void
+    {
+        $organizer = $this->signup();
+        $event = $this->createPublishedEvent($organizer);
+        $event->setTitre("Traversée de l'Aiguille");
+        $this->addAttribute($organizer, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $this->signin($organizer);
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%d.html', $event->getCode(), $event->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSame(
+            sprintf("[%s][Message] Traversée de l'Aiguille du %s", $event->getCommission()->getTitle(), $event->getStartDate()->format('d/m/Y')),
+            $crawler->filter('#contact_subject')->attr('value')
+        );
     }
 
     public function testContactParticipantsNoTarget()
@@ -495,7 +862,7 @@ class SortieControllerTest extends WebTestCase
         $this->assertCount(1, $emails);
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $userOwner->getNickname(), $userOwner->getEmail()));
-        $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Message] ' . $event->getTitre() . ' du ' . $event->getStartDate()->format('d/m/Y'));
+        $this->assertEmailHeaderSame($emails[0], 'Subject', 'un objet de culte');
         $this->assertEmailTextBodyContains($emails[0], 'Vous avez reçu un message de');
         $this->assertEmailTextBodyContains($emails[0], 'Prout PROUT');
         $this->assertEmailHtmlBodyContains($emails[0], 'Vous avez reçu un message de');
@@ -532,8 +899,274 @@ class SortieControllerTest extends WebTestCase
 
         $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $participant->getNickname(), $participant->getEmail()));
         $this->assertEmailHeaderSame($emails[0], 'Subject', '[' . $event->getCommission()->getTitle() . '][Acceptée] Votre demande d\'inscription à ' . $event->getTitre() . ' du ' . $event->getStartDate()->format('d/m/Y'));
+
         $this->assertEmailTextBodyContains($emails[0], 'accepté(e)');
+        $this->assertEmailTextBodyContains($emails[0], 'Heure de rendez-vous : ' . $event->getStartDate()->format('H:i'));
+        $this->assertEmailTextBodyContains($emails[0], 'Lieu de rendez-vous : Hotel de ville');
+
         $this->assertEmailHtmlBodyContains($emails[0], 'accepté(e)');
+        $this->assertEmailHtmlBodyContains($emails[0], '<b>Heure de rendez-vous :</b> ' . $event->getStartDate()->format('H:i'));
+        $this->assertEmailHtmlBodyContains($emails[0], '<b>Lieu de rendez-vous :</b> Hotel de ville');
+    }
+
+    public function testSortieJoinAutoAcceptEnvoieMailDeConfirmationAvecRendezVous()
+    {
+        $userOwner = $this->signup();
+        $event = $this->createEvent($userOwner);
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($userOwner);
+        $event->setAutoAccept(true);
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+
+        $participant = $this->signup();
+        $this->signin($participant);
+
+        $this->client->request('POST', sprintf('/sortie/%d/rejoindre', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'join_event'),
+            'confirm' => 'on',
+            'message' => 'Bonjour, je participe !',
+        ]);
+        $this->assertResponseStatusCodeSame(302);
+
+        // 2 mails : un aux encadrants, un au participant accepté
+        $emails = $this->getMailerMessages();
+        $this->assertCount(2, $emails);
+
+        $emailParticipant = null;
+        foreach ($emails as $email) {
+            if (str_contains($email->getSubject(), '[Acceptée]')) {
+                $emailParticipant = $email;
+            }
+        }
+        $this->assertNotNull($emailParticipant, 'Le participant doit recevoir un mail de confirmation.');
+
+        $recipients = array_map(fn ($address) => $address->getAddress(), $emailParticipant->getTo());
+        $recipients = array_merge($recipients, array_map(fn ($address) => $address->getAddress(), $emailParticipant->getBcc()));
+        $this->assertContains($participant->getEmail(), $recipients);
+
+        $this->assertEmailTextBodyContains($emailParticipant, 'accepté(e)');
+        $this->assertEmailTextBodyContains($emailParticipant, 'Heure de rendez-vous : ' . $event->getStartDate()->format('H:i'));
+        $this->assertEmailTextBodyContains($emailParticipant, 'Lieu de rendez-vous : Hotel de ville');
+
+        $this->assertEmailHtmlBodyContains($emailParticipant, 'accepté(e)');
+        $this->assertEmailHtmlBodyContains($emailParticipant, '<b>Heure de rendez-vous :</b> ' . $event->getStartDate()->format('H:i'));
+        $this->assertEmailHtmlBodyContains($emailParticipant, '<b>Lieu de rendez-vous :</b> Hotel de ville');
+    }
+
+    public function testDemandeInscriptionSansMessageNePrevientQueCeuxQuiVeulentChaqueDemande(): void
+    {
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        // createEvent inscrit l'organisateur comme encadrant de la sortie
+        $organisateur = $this->signup();
+        $organisateur->setAlertToutesDemandesInscription(false);
+        $event = $this->createSortiePubliee($organisateur);
+        $encadrant = $this->signup();
+        $event->addParticipation($encadrant, EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE);
+        $coencadrant = $this->signup();
+        $coencadrant->setAlertToutesDemandesInscription(false);
+        $event->addParticipation($coencadrant, EventParticipation::ROLE_COENCADRANT, EventParticipation::STATUS_VALIDE);
+        $em->flush();
+
+        $this->demanderInscription($event, $this->signup());
+
+        $emails = $this->emailsDemandeInscription();
+        $this->assertCount(1, $emails);
+        $this->assertSame([$encadrant->getEmail()], $this->destinataires($emails[0]));
+        $this->assertStringNotContainsString('[Message]', $emails[0]->getSubject());
+        $this->assertEmailHtmlBodyContains($emails[0], '/profil/alertes#demandes-inscription');
+        $this->assertEmailTextBodyContains($emails[0], '/profil/alertes#demandes-inscription');
+    }
+
+    public function testDemandeInscriptionAvecMessagePrevientToutLEncadrementAvecMentionDansLObjet(): void
+    {
+        $em = self::getContainer()->get(EntityManagerInterface::class);
+        $organisateur = $this->signup();
+        $organisateur->setAlertToutesDemandesInscription(false);
+        $event = $this->createSortiePubliee($organisateur);
+        $encadrant = $this->signup();
+        $encadrant->setAlertToutesDemandesInscription(false);
+        $event->addParticipation($encadrant, EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE);
+        $em->flush();
+
+        $this->demanderInscription($event, $this->signup(), "  Pas de crampons, est-ce critique ?\n ");
+
+        $emails = $this->emailsDemandeInscription();
+        $this->assertCount(1, $emails);
+        $attendus = [$organisateur->getEmail(), $encadrant->getEmail()];
+        sort($attendus);
+        $this->assertSame($attendus, $this->destinataires($emails[0]));
+        $this->assertEmailHeaderSame($emails[0], 'Subject', sprintf(
+            '[Message][%s][1 nouvelle demande] Préinscription à %s du %s',
+            $event->getCommission()->getTitle(),
+            $event->getTitre(),
+            $event->getStartDate()->format('d/m/Y'),
+        ));
+        // message sans les espaces autour
+        $this->assertEmailTextBodyContains($emails[0], 'Message : Pas de crampons, est-ce critique ?' . "\n");
+    }
+
+    public function testDemandeInscriptionSansMessageEnvoyeeUneSeuleFoisALOrganisateurQuiEncadre(): void
+    {
+        // réglage par défaut : un e-mail pour chaque demande
+        $organisateur = $this->signup();
+        $event = $this->createSortiePubliee($organisateur);
+
+        $this->demanderInscription($event, $this->signup());
+
+        $emails = $this->emailsDemandeInscription();
+        $this->assertCount(1, $emails);
+        $this->assertSame([$organisateur->getEmail()], $this->destinataires($emails[0]));
+        $this->assertStringStartsWith(sprintf('[%s]', $event->getCommission()->getTitle()), $emails[0]->getSubject());
+    }
+
+    #[DataProvider('provideMessageVide')]
+    public function testDemandeInscriptionAvecUnMessageVideNEstPasEnvoyeeAQuiNeVeutQueLesMessages(string $message): void
+    {
+        $organisateur = $this->signup();
+        $organisateur->setAlertToutesDemandesInscription(false);
+        $event = $this->createSortiePubliee($organisateur);
+
+        $participant = $this->signup();
+        $this->demanderInscription($event, $participant, $message);
+
+        $this->assertSame([], $this->emailsDemandeInscription());
+        // le participant reçoit toujours la confirmation de sa demande
+        $this->assertCount(1, $this->getMailerMessages());
+        $this->assertSame([$participant->getEmail()], $this->destinataires($this->getMailerMessages()[0]));
+    }
+
+    public static function provideMessageVide(): iterable
+    {
+        yield 'espaces et retour à la ligne' => ["  \n "];
+        yield 'espaces insécables' => ["\u{a0}\u{202f} \u{a0}"];
+    }
+
+    public function testDemandeInscriptionAvecLeMessage0EstUnMessage(): void
+    {
+        // « 0 » est faux pour un test de vérité en PHP comme en Twig, mais c'est bien un message
+        $organisateur = $this->signup();
+        $organisateur->setAlertToutesDemandesInscription(false);
+        $event = $this->createSortiePubliee($organisateur);
+
+        $this->demanderInscription($event, $this->signup(), ' 0 ');
+
+        $emails = $this->emailsDemandeInscription();
+        $this->assertCount(1, $emails);
+        $this->assertSame([$organisateur->getEmail()], $this->destinataires($emails[0]));
+        $this->assertStringStartsWith('[Message]', $emails[0]->getSubject());
+        $this->assertEmailHtmlBodyContains($emails[0], '<b>Message :</b> 0');
+        $this->assertEmailTextBodyContains($emails[0], 'Message : 0' . "\n");
+    }
+
+    #[DataProvider('provideReglageDemandesInscription')]
+    public function testClocheDuReglageDesDemandesInscriptionPourLOrganisateur(bool $toutesLesDemandes, string $cloche, string $infobulle): void
+    {
+        $organisateur = $this->signup();
+        $organisateur->setAlertToutesDemandesInscription($toutesLesDemandes);
+        $event = $this->createSortiePubliee($organisateur);
+        $this->signin($organisateur);
+
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+
+        $lien = $crawler->filter('.sortie-actions a.cloche-demandes-inscription');
+        $this->assertCount(1, $lien);
+        $this->assertSame('/profil/alertes#demandes-inscription', $lien->attr('href'));
+        $this->assertSame($cloche, $lien->text());
+        $this->assertStringStartsWith($infobulle, $lien->attr('data-infobulle'));
+        $this->assertStringContainsString("«\u{a0}Mes alertes\u{a0}»", $lien->attr('data-infobulle'));
+        $this->assertSame($lien->attr('data-infobulle'), $lien->attr('aria-label'));
+    }
+
+    public static function provideReglageDemandesInscription(): iterable
+    {
+        // la première phrase dit ce que l'on reçoit ; un retour à la ligne la sépare de la seconde (comment changer)
+        yield 'chaque demande' => [true, '🔔', "Vous recevez un e-mail pour chaque demande d'inscription à cette sortie.\nPour ne recevoir"];
+        yield 'seulement avec un message' => [false, '🔕', "Vous ne recevez un e-mail que pour les demandes d'inscription accompagnées d'un message.\nPour les recevoir toutes"];
+    }
+
+    public function testClocheDuReglageDesDemandesInscriptionPourUnCoencadrant(): void
+    {
+        $event = $this->createSortiePubliee($this->signup());
+        $coencadrant = $this->signup();
+        $event->addParticipation($coencadrant, EventParticipation::ROLE_COENCADRANT, EventParticipation::STATUS_VALIDE);
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        $this->signin($coencadrant);
+
+        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertSelectorExists('a.cloche-demandes-inscription');
+    }
+
+    public function testPasDeClochePourUnParticipant(): void
+    {
+        $event = $this->createSortiePubliee($this->signup());
+        $participant = $this->signup();
+        $event->addParticipation($participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        $this->signin($participant);
+
+        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertSelectorNotExists('.cloche-demandes-inscription');
+    }
+
+    public function testPasDeClocheSurUneSortieAnnulee(): void
+    {
+        $organisateur = $this->signup();
+        $event = $this->createSortiePubliee($organisateur);
+        $event->setCancelled(true);
+        $event->setCancelledWho($organisateur);
+        $event->setCancellationDate(new \DateTimeImmutable());
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+        $this->signin($organisateur);
+
+        $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertSelectorNotExists('.cloche-demandes-inscription');
+    }
+
+    private function createSortiePubliee(User $organisateur): Evt
+    {
+        $event = $this->createEvent($organisateur);
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($organisateur);
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+
+        return $event;
+    }
+
+    private function demanderInscription(Evt $event, User $participant, string $message = ''): void
+    {
+        $this->signin($participant);
+        $this->client->request('POST', sprintf('/sortie/%d/rejoindre', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'join_event'),
+            'confirm' => 'on',
+            'message' => $message,
+        ]);
+        $this->assertResponseStatusCodeSame(302);
+    }
+
+    /** @return Email[] les e-mails de demande d'inscription envoyés à l'organisateur et à l'encadrement */
+    private function emailsDemandeInscription(): array
+    {
+        return array_values(array_filter(
+            $this->getMailerMessages(),
+            static fn ($email) => $email instanceof Email
+                && 1 === preg_match('/\[\d+ nouvelles? demandes?\] Préinscription à/', $email->getSubject()),
+        ));
+    }
+
+    /** @return string[] adresses des destinataires (to et bcc), triées */
+    private function destinataires(Email $email): array
+    {
+        $adresses = array_map(
+            static fn (Address $adresse) => $adresse->getAddress(),
+            array_merge($email->getTo(), $email->getBcc()),
+        );
+        sort($adresses);
+
+        return $adresses;
     }
 
     public function testSortieUpdateInscriptionsRefuse()
@@ -935,6 +1568,84 @@ class SortieControllerTest extends WebTestCase
         $this->assertSame(1825.0, $event->getCoutCarbonePerPerson(), 'perPerson inchangé par un retrait');
     }
 
+    public function testDesinscriptionPrevientLOrganisateurNonEncadrantEtLEncadrement(): void
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+
+        $organisateur = $this->signup();
+        $event = $this->createEvent($organisateur);
+        // l'organisateur n'encadre pas : il est seulement bénévole d'encadrement
+        $event->getParticipation($organisateur)->setRole(EventParticipation::ROLE_BENEVOLE);
+        $encadrant = $this->signup();
+        $event->addParticipation($encadrant, EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE);
+        $participant = $this->signup();
+        $event->addParticipation($participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $em->flush();
+
+        $this->seDesinscrire($event, $participant);
+
+        $destinataires = array_map(
+            fn ($email) => $email->getTo()[0]->getAddress(),
+            $this->getMailerMessages(),
+        );
+        sort($destinataires);
+        $attendus = [$organisateur->getEmail(), $encadrant->getEmail()];
+        sort($attendus);
+        $this->assertSame($attendus, $destinataires);
+
+        $email = $this->getMailerMessages()[0];
+        $this->assertEmailHeaderSame($email, 'Subject', sprintf(
+            '[%s][Désinscription] %s %s pour %s du %s',
+            $event->getCommission()->getTitle(),
+            $participant->getFirstname(),
+            $participant->getLastname(),
+            $event->getTitre(),
+            $event->getStartDate()->format('d/m/Y'),
+        ));
+    }
+
+    public function testDesinscriptionPrevientUneSeuleFoisLOrganisateurEncadrant(): void
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+
+        // createEvent inscrit l'organisateur comme encadrant de la sortie
+        $organisateur = $this->signup();
+        $event = $this->createEvent($organisateur);
+        $participant = $this->signup();
+        $event->addParticipation($participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_NON_CONFIRME);
+        $em->flush();
+
+        $this->seDesinscrire($event, $participant);
+
+        $emails = $this->getMailerMessages();
+        $this->assertCount(1, $emails);
+        $this->assertSame($organisateur->getEmail(), $emails[0]->getTo()[0]->getAddress());
+    }
+
+    public function testDesinscriptionDUneParticipationRefuseeNePrevientPersonne(): void
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+
+        $organisateur = $this->signup();
+        $event = $this->createEvent($organisateur);
+        $participant = $this->signup();
+        $event->addParticipation($participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_REFUSE);
+        $em->flush();
+
+        $this->seDesinscrire($event, $participant);
+
+        $this->assertCount(0, $this->getMailerMessages());
+    }
+
+    private function seDesinscrire(Evt $event, User $participant): void
+    {
+        $this->signin($participant);
+        $this->client->request('POST', sprintf('/sortie/remove-participant/%d', $event->getParticipation($participant)->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'remove_participant'),
+        ]);
+        $this->assertResponseStatusCodeSame(302);
+    }
+
     /**
      * Symétrique : valider une inscription en attente ne doit rien recalculer.
      */
@@ -968,6 +1679,195 @@ class SortieControllerTest extends WebTestCase
         $em->refresh($event);
 
         $this->assertSame(1825.0, $event->getCoutCarbonePerPerson(), 'perPerson inchangé par la validation');
+    }
+
+    /**
+     * Renvoyer le formulaire d'inscription sans recocher un affilié déjà inscrit
+     * (ou candidat) ne doit pas le désinscrire.
+     */
+    public function testJoinNeDesinscritPasUnAffilieNonCoche(): void
+    {
+        $organizer = $this->signup();
+        $event = $this->createPublishedEvent($organizer);
+        [$referent, $affilie] = $this->createReferentEtAffilie();
+        $event->addParticipation($affilie, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_NON_CONFIRME);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $this->signin($referent);
+        $this->client->request('POST', sprintf('/sortie/%d/rejoindre', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'join_event'),
+            'confirm' => 'on',
+            'filiations' => 'on',
+            'id_user_filiation' => [(string) $referent->getId()],
+            'message' => '',
+        ]);
+
+        $this->assertResponseRedirects(sprintf('/sortie/%s-%d.html', $event->getCode(), $event->getId()));
+        $this->assertNotNull($this->findParticipation($event, $affilie), 'l\'affilié non coché reste inscrit');
+        $this->assertNotNull($this->findParticipation($event, $referent), 'le référent coché est inscrit');
+    }
+
+    public function testJoinSansNouvelInscritNeNotifiePersonne(): void
+    {
+        $organizer = $this->signup();
+        $event = $this->createPublishedEvent($organizer);
+        [$referent, $affilie] = $this->createReferentEtAffilie();
+        $event->addParticipation($referent, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $event->addParticipation($affilie, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $this->signin($referent);
+        $this->client->request('POST', sprintf('/sortie/%d/rejoindre', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'join_event'),
+            'confirm' => 'on',
+            'filiations' => 'on',
+            'id_user_filiation' => [(string) $referent->getId()],
+            'message' => '',
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertNotNull($this->findParticipation($event, $referent));
+        $this->assertNotNull($this->findParticipation($event, $affilie));
+        $this->assertCount(0, $this->getMailerMessages());
+    }
+
+    public function testReferentDesinscritSonAffilieSansSInscrire(): void
+    {
+        $organizer = $this->signup();
+        $event = $this->createPublishedEvent($organizer);
+        [$referent, $affilie] = $this->createReferentEtAffilie();
+        $participationAffilie = $event->addParticipation($affilie, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $this->signin($referent);
+        $this->client->request('POST', sprintf('/sortie/remove-participant/%d', $participationAffilie->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'remove_participant'),
+            'cancel_reason' => 'malade',
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $this->assertNull($this->findParticipation($event, $affilie), 'l\'affilié est désinscrit');
+        $this->assertNull($this->findParticipation($event, $referent), 'le référent ne se retrouve pas inscrit');
+
+        // l'encadrement est averti, comme pour une désinscription par l'adhérent lui-même
+        $emails = $this->getMailerMessages();
+        $this->assertCount(1, $emails);
+        $this->assertEmailHeaderSame($emails[0], 'To', sprintf('%s <%s>', $organizer->getNickname(), $organizer->getEmail()));
+        $this->assertEmailTextBodyContains($emails[0], sprintf('annulée par %s', $referent->getFullName()));
+        $this->assertEmailTextBodyContains($emails[0], 'malade');
+    }
+
+    public function testAdherentNePeutPasDesinscrireUnAdherentQuiNEstPasSonAffilie(): void
+    {
+        $organizer = $this->signup();
+        $event = $this->createPublishedEvent($organizer);
+        $participant = $this->signup();
+        $participation = $event->addParticipation($participant, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $this->signin($this->signup());
+        $this->client->request('POST', sprintf('/sortie/remove-participant/%d', $participation->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'remove_participant'),
+        ]);
+
+        $this->assertResponseStatusCodeSame(403);
+        $this->assertNotNull($this->findParticipation($event, $participant));
+    }
+
+    public function testPageSortieProposeLaDesinscriptionDeLAffilie(): void
+    {
+        $organizer = $this->signup();
+        $event = $this->createPublishedEvent($organizer);
+        [$referent, $affilie] = $this->createReferentEtAffilie();
+        $participationAffilie = $event->addParticipation($affilie, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $this->signin($referent);
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%d.html', $event->getCode(), $event->getId()));
+
+        $this->assertResponseIsSuccessful();
+        // un formulaire d'annulation dédié à l'affilié
+        $form = $crawler->filter(sprintf('#inscription-annuler-affilie-%d form', $affilie->getId()));
+        $this->assertCount(1, $form);
+        $this->assertSame(sprintf('/sortie/remove-participant/%d', $participationAffilie->getId()), $form->attr('action'));
+        // dans le formulaire d'inscription, l'affilié déjà inscrit n'est plus envoyé
+        $caseAffilie = $crawler->filter(sprintf('#filiation_id_user_%d', $affilie->getId()));
+        $this->assertSame('disabled', $caseAffilie->attr('disabled'));
+        $this->assertNull($caseAffilie->attr('name'));
+        // la ligne est grisée et une aide indique comment désinscrire
+        $this->assertSame('off', $crawler->filter(sprintf('label[for="filiation_id_user_%d"]', $affilie->getId()))->attr('class'));
+        $this->assertNull($crawler->filter(sprintf('label[for="filiation_id_user_%d"]', $referent->getId()))->attr('class'), 'le référent non inscrit reste cochable');
+        $this->assertSelectorTextContains('#aide-desinscription', 'ne peuvent pas être décochées');
+    }
+
+    /**
+     * Mêmes rôles que pour sa propre participation : un coencadrant ou un bénévole
+     * d'encadrement validé peut être désinscrit, pas un encadrant ni un stagiaire.
+     */
+    public function testPageSortieDesinscriptionDesAffiliesSelonLeRole(): void
+    {
+        $organizer = $this->signup();
+        $event = $this->createPublishedEvent($organizer);
+        [$referent, $coencadrant] = $this->createReferentEtAffilie();
+        $benevole = $this->signup()->setCafnumParent($referent->getCafnum());
+        $encadrant = $this->signup()->setCafnumParent($referent->getCafnum());
+        $stagiaire = $this->signup()->setCafnumParent($referent->getCafnum());
+        $event->addParticipation($coencadrant, EventParticipation::ROLE_COENCADRANT, EventParticipation::STATUS_VALIDE);
+        $event->addParticipation($benevole, EventParticipation::ROLE_BENEVOLE, EventParticipation::STATUS_VALIDE);
+        $event->addParticipation($encadrant, EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE);
+        $event->addParticipation($stagiaire, EventParticipation::ROLE_STAGIAIRE, EventParticipation::STATUS_VALIDE);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $this->signin($referent);
+        $this->client->request('GET', sprintf('/sortie/%s-%d.html', $event->getCode(), $event->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists(sprintf('#inscription-annuler-affilie-%d form', $coencadrant->getId()));
+        $this->assertSelectorExists(sprintf('#inscription-annuler-affilie-%d form', $benevole->getId()));
+        $this->assertSelectorNotExists(sprintf('#inscription-annuler-affilie-%d', $encadrant->getId()));
+        $this->assertSelectorNotExists(sprintf('#inscription-annuler-affilie-%d', $stagiaire->getId()));
+    }
+
+    public function testPageSortieSansInscritNAffichePasLAideDeDesinscription(): void
+    {
+        $organizer = $this->signup();
+        $event = $this->createPublishedEvent($organizer);
+        [$referent] = $this->createReferentEtAffilie();
+
+        $this->signin($referent);
+        $this->client->request('GET', sprintf('/sortie/%s-%d.html', $event->getCode(), $event->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists(sprintf('#filiation_id_user_%d[name]', $referent->getId()));
+        $this->assertSelectorNotExists('#aide-desinscription');
+    }
+
+    protected function createPublishedEvent($organizer): Evt
+    {
+        $event = $this->createEvent($organizer);
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($organizer);
+        $event->setJoinStartDate(new \DateTimeImmutable('-1 day'));
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        return $event;
+    }
+
+    /** @return User[] le référent puis son affilié */
+    protected function createReferentEtAffilie(): array
+    {
+        $referent = $this->signup();
+        $affilie = $this->signup()->setCafnumParent($referent->getCafnum());
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        return [$referent, $affilie];
+    }
+
+    protected function findParticipation(Evt $event, User $user): ?EventParticipation
+    {
+        return $this->getContainer()->get('doctrine')->getManager()
+            ->getRepository(EventParticipation::class)
+            ->findOneBy(['evt' => $event, 'user' => $user]);
     }
 
     /**

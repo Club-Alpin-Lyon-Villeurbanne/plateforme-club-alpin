@@ -416,6 +416,10 @@ form .niveau.editable:hover .input{background-image:none;}
 .small{font-size: 0.7rem; color:gray;}
 #main-pagelibre-76 table td {padding: 5px;}
 #main-pagelibre-76 table td img {max-width: 250px;}
+/* Tableaux CKEditor des pages libres : ne jamais dépasser la colonne de contenu */
+figure.table {max-width: 100%; overflow-x: auto;}
+figure.table a {overflow-wrap: anywhere;}
+figure.table img {max-width: 100%; height: auto;}
 .pt15 { padding-top: 15px;}
 
 @media print {
@@ -601,6 +605,23 @@ table.table-striped tr:hover, table.table-striped tbody tr:hover {
     height: 100%;
     background-color: #999;
     z-index: 1;
+}
+/* Fiche sortie : tableau des inscrits. La 1ère colonne figée garde la couleur de statut de la ligne sur un fond opaque */
+.inscrits-table-container table td:first-child,
+.inscrits-table-container table td:first-child::before {
+    background-color: white;
+    background-image: inherit;
+}
+.inscrits-table-container table tr.odd td:first-child,
+.inscrits-table-container table tr.odd td:first-child::before {
+    background-color: #fafafa; /* blanc + voile rgba(200, 200, 200, 0.1) des lignes impaires DataTables */
+}
+.inscrits-table-container table thead tr:first-child th:first-child {
+    background-color: #f0f0ee; /* même fond que les autres en-têtes DataTables */
+}
+/* Vue compétences : hauteur limitée pour que la ligne d'en-têtes reste visible pendant le défilement */
+.inscrits-table-container.vue-competences {
+    max-height: 90vh;
 }
 
 #form-event .alerte {

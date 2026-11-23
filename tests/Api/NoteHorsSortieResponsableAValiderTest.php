@@ -4,6 +4,7 @@ namespace App\Tests\Api;
 
 use App\Entity\User;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\DomCrawler\Crawler;
 
 /**
@@ -16,9 +17,7 @@ class NoteHorsSortieResponsableAValiderTest extends ExpenseReportApiTestCase
     // Le filtre de la page « Demandes déjà traitées ».
     private const TRAITEES = ['status' => ['preapproved', 'approved', 'rejected', 'accounted']];
 
-    /**
-     * @dataProvider responsablesProvider
-     */
+    #[DataProvider('responsablesProvider')]
     public function testLeResponsableVoitLesNotesEnvoyeesDeSaCommission(string $acteur): void
     {
         $deSaCommission = $this->creerAchat($this->adherent, ExpenseReportStatusEnum::SUBMITTED, null, $this->commissionDeTest);
@@ -87,9 +86,7 @@ class NoteHorsSortieResponsableAValiderTest extends ExpenseReportApiTestCase
         $this->assertSame([$sienne->getId()], $this->ids($this->aValider($this->coResponsable)));
     }
 
-    /**
-     * @dataProvider sansDroitEtFiltresProvider
-     */
+    #[DataProvider('sansDroitEtFiltresProvider')]
     public function testSansEtreValideurLaListeEstVide(string $acteur, array $filtres): void
     {
         $this->creerAchat($this->adherent, ExpenseReportStatusEnum::SUBMITTED, null, $this->commissionDeTest);
@@ -109,9 +106,7 @@ class NoteHorsSortieResponsableAValiderTest extends ExpenseReportApiTestCase
         }
     }
 
-    /**
-     * @dataProvider filtresProvider
-     */
+    #[DataProvider('filtresProvider')]
     public function testLeResponsableDUneAutreCommissionNeVoitPasLaNote(array $filtres): void
     {
         $note = $this->creerAchat($this->adherent, ExpenseReportStatusEnum::SUBMITTED, null, $this->commissionDeTest);
@@ -157,9 +152,8 @@ class NoteHorsSortieResponsableAValiderTest extends ExpenseReportApiTestCase
 
     /**
      * Le filtre sur le choix trierait les notes selon la valeur cachée au responsable.
-     *
-     * @dataProvider choixProvider
      */
+    #[DataProvider('choixProvider')]
     public function testLeFiltreSurLeChoixNeRenseignePasLeResponsable(string $choix): void
     {
         $this->noteEnvoyee($this->adherent, true, commission: $this->commissionDeTest);

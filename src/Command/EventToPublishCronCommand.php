@@ -54,7 +54,7 @@ class EventToPublishCronCommand extends Command
             }
         }
 
-        foreach ($responsables as $userEmail => $infos) {
+        foreach ($responsables as $infos) {
             // Générer les URLs absolues pour chaque sortie
             $sortiesWithUrls = array_map(function (Evt $sortie) {
                 return [

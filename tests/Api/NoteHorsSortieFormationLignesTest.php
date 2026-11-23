@@ -3,6 +3,7 @@
 namespace App\Tests\Api;
 
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Lignes d'une formation : une nature par ligne, des kilomètres pour la voiture, et un justificatif
@@ -25,9 +26,7 @@ class NoteHorsSortieFormationLignesTest extends ExpenseReportApiTestCase
         $this->assertSame($details, $this->reload($note)->getDetails());
     }
 
-    /**
-     * @dataProvider lignesRefuseesProvider
-     */
+    #[DataProvider('lignesRefuseesProvider')]
     public function testLesLignesMalFormeesDUneFormationSontRefusees(string $details, string $message): void
     {
         $note = $this->creerFormation($this->encadrant);
@@ -45,9 +44,7 @@ class NoteHorsSortieFormationLignesTest extends ExpenseReportApiTestCase
         yield 'distance à plus de deux décimales' => ['{"lignes":[{"id":"ligne-1","nature":"voiture","distance":12.345}]}', 'Dépense 1 : la distance ne peut pas avoir plus de deux décimales.'];
     }
 
-    /**
-     * @dataProvider lignesSansNatureProvider
-     */
+    #[DataProvider('lignesSansNatureProvider')]
     public function testUnBrouillonDeFormationGardeUneLigneSansNature(string $details): void
     {
         $note = $this->creerFormation($this->encadrant);
@@ -62,9 +59,7 @@ class NoteHorsSortieFormationLignesTest extends ExpenseReportApiTestCase
         yield 'nature vide' => ['{"lignes":[{"id":"ligne-1","montant":40,"description":"","nature":null}]}'];
     }
 
-    /**
-     * @dataProvider envoiSansNatureProvider
-     */
+    #[DataProvider('envoiSansNatureProvider')]
     public function testUneFormationNeSEnvoiePasSansLaNatureDeChaqueLigne(array $lignes, string $message): void
     {
         $note = $this->creerFormation($this->encadrant, json_encode(['lignes' => $lignes]));
@@ -85,9 +80,7 @@ class NoteHorsSortieFormationLignesTest extends ExpenseReportApiTestCase
         ];
     }
 
-    /**
-     * @dataProvider autreSansDescriptionProvider
-     */
+    #[DataProvider('autreSansDescriptionProvider')]
     public function testUneDepenseAutreNeSEnvoiePasSansDescription(array $lignes, string $message): void
     {
         $note = $this->creerFormation($this->encadrant, json_encode(['lignes' => $lignes]));
@@ -155,9 +148,7 @@ class NoteHorsSortieFormationLignesTest extends ExpenseReportApiTestCase
         $this->assertResponseStatus(200, $this->envoyer($this->encadrant, $note));
     }
 
-    /**
-     * @dataProvider voitureSansKilometresProvider
-     */
+    #[DataProvider('voitureSansKilometresProvider')]
     public function testUneVoitureSansKilometresNeSEnvoiePas(string $details, string $message): void
     {
         $note = $this->creerFormation($this->encadrant, $details);

@@ -3,6 +3,7 @@
 namespace App\Tests\Api;
 
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Envoi d'une note hors sortie (brouillon ou note à corriger vers « envoyée ») : contrôles de
@@ -33,9 +34,7 @@ class NoteHorsSortieEnvoiTest extends ExpenseReportApiTestCase
 
     // —— Contrôles de soumission ——
 
-    /**
-     * @dataProvider sansDepenseProvider
-     */
+    #[DataProvider('sansDepenseProvider')]
     public function testEnvoiRefuseSansDepense(?string $details): void
     {
         $note = $this->creerAchat($this->owner, ExpenseReportStatusEnum::DRAFT, $details);
@@ -50,9 +49,7 @@ class NoteHorsSortieEnvoiTest extends ExpenseReportApiTestCase
         yield 'liste vide' => ['{"lignes":[]}'];
     }
 
-    /**
-     * @dataProvider montantNonPositifProvider
-     */
+    #[DataProvider('montantNonPositifProvider')]
     public function testEnvoiRefuseAvecUnMontantNulOuNegatif(?float $montant, string $message): void
     {
         $lignes = json_encode(['lignes' => [
@@ -168,9 +165,7 @@ class NoteHorsSortieEnvoiTest extends ExpenseReportApiTestCase
 
     // —— Une fois envoyée ——
 
-    /**
-     * @dataProvider champDeLaNoteProvider
-     */
+    #[DataProvider('champDeLaNoteProvider')]
     public function testLeProprietaireNeModifiePlusUneNoteEnvoyee(string $champ, mixed $valeur): void
     {
         $note = $this->creerAchat($this->owner, ExpenseReportStatusEnum::DRAFT, self::LIGNES);

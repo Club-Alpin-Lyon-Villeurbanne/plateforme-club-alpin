@@ -6,6 +6,7 @@ use App\Entity\ExpenseReport;
 use App\Utils\Enums\ExpenseReportStatusEnum;
 use App\Validator\ExpenseReport\ExpenseReportOriginalState;
 use App\Validator\ExpenseReport\FieldPermissionValidator;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
 class FieldPermissionValidatorTest extends TestCase
@@ -24,9 +25,7 @@ class FieldPermissionValidatorTest extends TestCase
     private const CLAIM_EDITORS = ['propriétaire', 'gestionnaire propriétaire'];
     private const CLAIM_EDITABLE_STATUSES = [ExpenseReportStatusEnum::DRAFT, ExpenseReportStatusEnum::REJECTED];
 
-    /**
-     * @dataProvider claimFieldProvider
-     */
+    #[DataProvider('claimFieldProvider')]
     public function testClaimCanOnlyBeChangedByTheOwnerBeforeSubmission(string $field, string $actor, ExpenseReportStatusEnum $oldStatus, bool $allowed): void
     {
         $report = $this->report($oldStatus);
@@ -50,9 +49,7 @@ class FieldPermissionValidatorTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider statusCommentProvider
-     */
+    #[DataProvider('statusCommentProvider')]
     public function testStatusCommentCanOnlyBeSetByAManagerWhenChangingTheStatus(string $actor, ExpenseReportStatusEnum $oldStatus, ExpenseReportStatusEnum $newStatus, bool $allowed): void
     {
         $report = $this->report($newStatus);
@@ -78,9 +75,7 @@ class FieldPermissionValidatorTest extends TestCase
         }
     }
 
-    /**
-     * @dataProvider unchangedProvider
-     */
+    #[DataProvider('unchangedProvider')]
     public function testResendingStoredValuesIsAlwaysAccepted(string $actor, ExpenseReportStatusEnum $oldStatus): void
     {
         $this->assertSame([], $this->refusedFields($actor, $oldStatus, $this->report($oldStatus)));

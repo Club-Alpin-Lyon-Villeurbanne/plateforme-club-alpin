@@ -4,6 +4,7 @@ namespace App\Tests\Api;
 
 use App\Entity\User;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * « Gestion des notes de frais » ne donne rien de plus à un gestionnaire : la trésorerie travaille
@@ -11,9 +12,7 @@ use App\Utils\Enums\ExpenseReportStatusEnum;
  */
 class NoteHorsSortieAValiderTest extends ExpenseReportApiTestCase
 {
-    /**
-     * @dataProvider filtresProvider
-     */
+    #[DataProvider('filtresProvider')]
     public function testUnGestionnaireQuiNEstPasResponsableRecoitUneListeVide(array $filtres): void
     {
         $this->creerAchat($this->owner, ExpenseReportStatusEnum::SUBMITTED);

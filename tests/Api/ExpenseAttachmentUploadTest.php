@@ -6,6 +6,7 @@ use App\Entity\ExpenseAttachment;
 use App\Entity\ExpenseReport;
 use App\Entity\User;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Justificatifs (POST /api/notes-de-frais/{id}/pieces-jointes) : modifiables seulement
@@ -43,9 +44,7 @@ class ExpenseAttachmentUploadTest extends ExpenseReportApiTestCase
         $this->assertFileDoesNotExist($doublon);
     }
 
-    /**
-     * @dataProvider frozenStatusProvider
-     */
+    #[DataProvider('frozenStatusProvider')]
     public function testAttachmentsAreFrozenOnceSubmitted(ExpenseReportStatusEnum $status): void
     {
         $report = $this->createReport($this->owner, $status);

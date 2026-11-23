@@ -563,7 +563,7 @@ class SortieController extends AbstractController
         }
 
         $flush = true;
-        foreach ($request->request->all('id_evt_join', []) as $participationId) {
+        foreach ($request->request->all('id_evt_join') as $participationId) {
             $status = $request->request->get('status_evt_join_' . $participationId);
             $role = $request->request->get('role_evt_join_' . $participationId);
 
@@ -653,6 +653,8 @@ class SortieController extends AbstractController
                 'event_name' => $event->getTitre(),
                 'commission' => $event->getCommission()->getTitle(),
                 'event_date' => $event->getStartDate()->format('d/m/Y'),
+                'event_rdv' => $event->getRdv(),
+                'event_rdv_time' => $event->getStartDate()?->format('H:i'),
             ];
             if ($event->hasPaymentForm() && $event->hasPaymentSendMail()) {
                 $context['hello_asso_url'] = $event->getPaymentUrl();
@@ -895,8 +897,11 @@ class SortieController extends AbstractController
             $replyToAddresses = $user->getEmail();
         }
 
+        // l'objet saisi devient le sujet du courriel : on le ramène à une seule ligne
+        $objet = trim((string) preg_replace('/\s+/u', ' ', (string) $request->request->get('objet')));
+
         $mailer->send($participations, 'transactional/message-sortie', [
-            'objet' => $request->request->get('objet'),
+            'objet' => $objet,
             'message_author' => sprintf('%s %s', $user->getFirstname(), strtoupper($user->getLastname())),
             'url_sortie' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
             'name_sortie' => $event->getTitre(),
@@ -935,14 +940,20 @@ class SortieController extends AbstractController
 
         /** @var User */
         $user = $this->getUser();
+        $participant = $participation->getUser();
+        // le référent désinscrit l'un de ses affiliés (cf. ParticipantAnnulationVoter)
+        $cancelledByReferent = $participant !== $user;
 
         if ($participation->isStatusValide() || $participation->isStatusEnAttente()) {
-            // notifier les encadrants
-            $encadrants = $event->getEncadrants();
+            // notifier l'organisateur et les encadrants, comme pour l'inscription
+            // (sans tenir compte du réglage « Mes alertes », qui ne concerne que les demandes d'inscription)
+            $destinataires = $event->getOrganisateurEtEncadrants();
+            // inutile de prévenir la personne qui vient d'annuler (le participant ou son référent)
+            unset($destinataires[$user->getId()]);
             $reason = $request->request->get('cancel_reason') ?? '';
-            foreach ($encadrants as $encadrant) {
-                $mailer->send($encadrant->getUser(), 'transactional/sortie-desinscription', [
-                    'username' => $participation->getUser()->getFirstname() . ' ' . $participation->getUser()->getLastname(),
+            foreach ($destinataires as $destinataire) {
+                $mailer->send($destinataire, 'transactional/sortie-desinscription', [
+                    'username' => $participant->getFullName(),
                     'event_url' => $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
                     'event_name' => $event->getTitre(),
                     'commission' => $event->getCommission()->getTitle(),
@@ -950,11 +961,16 @@ class SortieController extends AbstractController
                     'reason_explanation' => $reason,
                     'user' => $user,
                     'profile_url' => $this->generateUrl('user_full', ['id' => $user->getId()], UrlGeneratorInterface::ABSOLUTE_URL),
+                    'cancelled_by' => $cancelledByReferent ? $user->getFullName() : null,
                 ], [], null, $user->getEmail());
             }
         }
 
-        $this->addFlash('info', 'La participation est annulée');
+        if ($cancelledByReferent) {
+            $this->addFlash('info', sprintf('L\'inscription de %s est annulée', $participant->getFullName()));
+        } else {
+            $this->addFlash('info', 'La participation est annulée');
+        }
 
         return $this->redirect($this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]));
     }
@@ -1044,6 +1060,10 @@ class SortieController extends AbstractController
     #[Route(path: '/sortie/{id}/printXLSX', name: 'sortie_xlsx', requirements: ['id' => '\d+'])]
     public function generateXLSX(ExcelExport $excelExport, Evt $event, EventParticipationRepository $participationRepository): Response
     {
+        if (!$this->isGranted('FICHE_SORTIE', $event)) {
+            throw new AccessDeniedHttpException('Not allowed');
+        }
+
         $datas = $participationRepository->getSortedParticipations($event, null, EventParticipation::STATUS_VALIDE, true);
 
         $rsm = [' ', 'PARTICIPANTS (PRÉNOM, NOM)', 'LICENCE', 'AGE', 'TÉL.', 'TÉL. SECOURS', 'EMAIL'];
@@ -1081,31 +1101,30 @@ class SortieController extends AbstractController
         $errTab = [];
         $hasFiliations = false;
         $affiliatedJoiningUsers = [];
-        $affiliatedLeavingUsers = [];
         $is_covoiturage = null;
         $paymentUrl = null;
 
-        // affiliés qu'on inscrit
+        // personnes cochées à inscrire (moi et/ou mes affiliés)
+        // ce formulaire ne désinscrit personne : une case non cochée laisse l'inscription
+        // existante en place, la désinscription passe par sortie_remove_participant
         $idUsersFiliations = !empty($data['id_user_filiation']) ? array_map('intval', $data['id_user_filiation']) : [];
         if (isset($data['filiations']) && 'on' == $data['filiations']) {
             $hasFiliations = true;
             foreach ($idUsersFiliations as $id_user_tmp) {
-                $affiliatedJoiningUsers[] = $userRepository->find($id_user_tmp);
+                $affiliatedJoiningUser = \in_array($id_user_tmp, $affiliatedUserIds, true) ? $userRepository->find($id_user_tmp) : null;
+                // déjà inscrit => on ne fait rien
+                if ($affiliatedJoiningUser && !$event->getParticipation($affiliatedJoiningUser)) {
+                    $affiliatedJoiningUsers[] = $affiliatedJoiningUser;
+                }
             }
         }
 
-        // affiliés qu'on désinscrit
-        foreach ($affiliatedUserIds as $affiliatedUserId) {
-            if (!\in_array($affiliatedUserId, $idUsersFiliations, true)) {
-                $affiliatedLeavingUsers[] = $userRepository->find($affiliatedUserId);
-            }
-        }
-
-        $joinMessage = $data['message'];
+        // mb_trim retire aussi les espaces Unicode (insécables…) : un message qui n'en contient que compte comme vide
+        $joinMessage = mb_trim((string) ($data['message'] ?? ''));
 
         // CGUs
         if (!isset($data['confirm']) || 'on' != $data['confirm']) {
-            $errTab[] = "Merci de cocher la case &laquo; J'ai lu les conditions...&raquo;";
+            $errTab[] = "Merci de cocher la case « J'ai lu les conditions... »";
         }
 
         // sortie publiée ?
@@ -1155,7 +1174,7 @@ class SortieController extends AbstractController
                 $auto_accept = false;
                 $nbNewJoins = 1;
                 if ($hasFiliations) {
-                    $nbNewJoins = \count($idUsersFiliations);
+                    $nbNewJoins = \count($affiliatedJoiningUsers);
                 }
 
                 // vérification nombre de places restantes
@@ -1191,33 +1210,33 @@ class SortieController extends AbstractController
                 // filiations
                 else {
                     foreach ($affiliatedJoiningUsers as $affiliatedJoiningUser) {
-                        // si déjà inscrit => on ne fait rien
-                        $joined = $event->getParticipation($affiliatedJoiningUser);
-                        if (!$joined) {
-                            if (!$affiliatedJoiningUser->getDoitRenouveler()) {
-                                $event->addParticipation($affiliatedJoiningUser, $role_evt_join, $status_evt_join);
-                                $inscrits[] = $affiliatedJoiningUser;
-                            } else {
-                                $this->addFlash('error', sprintf('La licence de %s a expiré. L\'adhésion doit être renouvelée avant l\'inscription.', $affiliatedJoiningUser->getFullName()));
-                            }
+                        if (!$affiliatedJoiningUser->getDoitRenouveler()) {
+                            $event->addParticipation($affiliatedJoiningUser, $role_evt_join, $status_evt_join);
+                            $inscrits[] = $affiliatedJoiningUser;
+                        } else {
+                            $this->addFlash('error', sprintf('La licence de %s a expiré. L\'adhésion doit être renouvelée avant l\'inscription.', $affiliatedJoiningUser->getFullName()));
                         }
                     }
-                    foreach ($affiliatedLeavingUsers as $affiliatedLeavingUser) {
-                        $participation = $event->getParticipation($affiliatedLeavingUser);
-                        if ($participation) {
-                            $event->removeParticipation($participation);
-                        }
+                }
+
+                // personne de nouveau : rien à enregistrer ni à notifier
+                if (empty($inscrits)) {
+                    if ($hasFiliations && empty($affiliatedJoiningUsers)) {
+                        $this->addFlash('info', 'Les personnes sélectionnées sont déjà inscrites à cette sortie.');
                     }
+
+                    return $this->redirectToRoute('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]);
                 }
 
                 $em->flush();
 
                 // E-MAIL À L'ORGANISATEUR ET AUX ENCADRANTS
-                $destinataires = [];
-                $destinataires[] = $event->getUser();
-                foreach ($event->getEncadrants() as $encadrant) {
-                    $destinataires[] = $encadrant->getUser();
-                }
+                // une demande accompagnée d'un message est envoyée à tous ; les autres, seulement à ceux
+                // qui veulent un e-mail pour chaque demande (réglage dans « Mes alertes », activé par défaut)
+                $destinataires = array_filter(
+                    $event->getOrganisateurEtEncadrants(),
+                    fn (User $destinataire) => '' !== $joinMessage || $destinataire->getAlertToutesDemandesInscription(),
+                );
 
                 // infos sur la sortie
                 $evtUrl = $this->generateUrl('sortie', ['code' => $event->getCode(), 'id' => $event->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
@@ -1228,7 +1247,7 @@ class SortieController extends AbstractController
                     $paymentUrl = $event->getPaymentUrl();
                 }
 
-                // infos sur le nouvel inscrit (et ses affiliés)
+                // infos sur le nouvel inscrit (et ses affiliés) ; sans destinataire, Mailer::send n'envoie rien
                 $mailer->send($destinataires, 'transactional/sortie-demande-inscription', [
                     'role' => $role_evt_join,
                     'event_name' => $evtName,
@@ -1250,6 +1269,7 @@ class SortieController extends AbstractController
                     'nickname' => $user->getNickname(),
                     'message' => $joinMessage,
                     'covoiturage' => $is_covoiturage,
+                    'alertes_url' => $this->generateUrl('profil_alertes', [], UrlGeneratorInterface::ABSOLUTE_URL) . '#demandes-inscription',
                 ], [], $user, $user);
 
                 // E-MAIL AU PRE-INSCRIT
@@ -1261,6 +1281,8 @@ class SortieController extends AbstractController
                         'event_url' => $evtUrl,
                         'event_date' => $evtDate,
                         'commission' => $commissionTitle,
+                        'event_rdv' => $event->getRdv(),
+                        'event_rdv_time' => $event->getStartDate()?->format('H:i'),
                     ];
                     if ($event->hasPaymentForm() && $event->hasPaymentSendMail()) {
                         $params['hello_asso_url'] = $event->getPaymentUrl();
@@ -1303,6 +1325,10 @@ class SortieController extends AbstractController
                     ]);
                 }
             }
+        }
+
+        foreach ($errTab as $error) {
+            $this->addFlash('error', $error);
         }
 
         return $this->redirectToRoute('sortie', ['code' => $event->getCode(), 'id' => $event->getId()]);

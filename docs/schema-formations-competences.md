@@ -13,6 +13,23 @@ flowchart LR
 
 Pour comprendre l'import lui-même (ce qu'il lit, comment il range, que faire d'une alerte), voir sa documentation : [Comment ça marche](https://github.com/Club-Alpin-Lyon-Villeurbanne/ffcam-formations-scraper/blob/main/docs/comment-ca-marche.md).
 
+## Notions métier
+
+Les définitions sont dans le [glossaire](glossaire.md#cursus-ffcam).
+
+### Brevets d'initiateur par activité
+
+| 1er degré (brevet socle) | 2e degré (spécialités) |
+|--------------------------|------------------------|
+| Escalade SAE | aucune |
+| Escalade SNE | Grandes voies équipées, Grandes voies, Escalade sur glace - dry, Escalade - perfectionnement sportif, Via ferrata |
+| Alpinisme | Grandes voies équipées, Grandes voies, Escalade sur glace - dry, Cascade de glace |
+| Ski de randonnée | Ski alpinisme |
+| Snowboard de randonnée | Snowboard alpinisme |
+| Randonnée montagne | Randonnée alpine, Raquettes à neige |
+| Trail | aucune |
+| Vélo de montagne | aucune |
+
 ## Les tables
 
 Chaque type de donnée a trois tables :

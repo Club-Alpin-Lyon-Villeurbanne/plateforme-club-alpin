@@ -4,6 +4,7 @@ namespace App\Tests\Api;
 
 use App\Entity\ExpenseReportStatusHistory;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * La trésorerie valide ou renvoie une note hors sortie ; le demandeur corrige et renvoie.
@@ -34,9 +35,7 @@ class NoteHorsSortieDecisionTest extends ExpenseReportApiTestCase
         $this->assertResponseStatus(200, $this->patch($this->otherManager, $note, ['status' => 'approved']));
     }
 
-    /**
-     * @dataProvider sansMessageProvider
-     */
+    #[DataProvider('sansMessageProvider')]
     public function testLeRenvoiDUneNoteHorsSortieExigeUnMessage(array $message): void
     {
         $note = $this->creerAchat($this->owner, ExpenseReportStatusEnum::SUBMITTED);
@@ -84,9 +83,7 @@ class NoteHorsSortieDecisionTest extends ExpenseReportApiTestCase
         $this->assertFalse($this->show($this->manager, $note)['body']['peutDecider']);
     }
 
-    /**
-     * @dataProvider peutDeciderProvider
-     */
+    #[DataProvider('peutDeciderProvider')]
     public function testPeutDecider(string $lecteur, string $demandeur, ExpenseReportStatusEnum $statut, bool $attendu): void
     {
         $note = $this->creerAchat($this->{$demandeur}, $statut);

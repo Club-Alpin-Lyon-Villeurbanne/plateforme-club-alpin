@@ -32,7 +32,7 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 )]
 #[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact'])]
 #[ApiFilter(BooleanFilter::class, properties: ['une'])]
-#[ApiFilter(GroupFilter::class)]
+#[ApiFilter(GroupFilter::class, arguments: ['whitelist' => ['article:read', 'media:read', 'article:details', 'user:read']])]
 class Article
 {
     use TimestampableEntity;

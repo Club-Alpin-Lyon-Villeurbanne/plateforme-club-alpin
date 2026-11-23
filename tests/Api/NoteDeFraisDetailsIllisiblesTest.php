@@ -15,18 +15,6 @@ class NoteDeFraisDetailsIllisiblesTest extends ExpenseReportApiTestCase
 {
     private ?ExpenseReport $noteDeSortie = null;
 
-    protected function tearDown(): void
-    {
-        // Une note de sortie n'a pas de commission : le socle ne l'efface pas avec les autres.
-        if (null !== $this->noteDeSortie) {
-            $base = $this->em()->getConnection();
-            $base->executeStatement('DELETE FROM expense_report_status_history WHERE expense_report_id = ?', [$this->noteDeSortie->getId()]);
-            $base->executeStatement('DELETE FROM expense_report WHERE id = ?', [$this->noteDeSortie->getId()]);
-        }
-
-        parent::tearDown();
-    }
-
     public function testLesListesSeLisentMalgreDesDetailsIllisibles(): void
     {
         $this->noteDeSortie = $this->createReport($this->adherent, ExpenseReportStatusEnum::SUBMITTED, '{"transport":{"type":"PERSONAL_VEHICLE","distance":"abc","tollFee":12},"accommodations":[{"price":"1e400"}],"others":"rien"}');

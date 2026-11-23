@@ -1,0 +1,4 @@
+{# sujet par défaut d'un e-mail groupé envoyé depuis une sortie : valeur initiale du champ « Objet » et repli si l'objet est vide #}
+{% macro sujet_message_sortie(commission, titre_sortie, date_sortie) -%}
+    {% if commission %}[{{ commission }}]{% endif %}[Message] {{ titre_sortie }} du {{ date_sortie }}
+{%- endmacro %}

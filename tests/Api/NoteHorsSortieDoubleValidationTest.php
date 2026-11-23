@@ -6,6 +6,7 @@ use App\Entity\ExpenseReport;
 use App\Entity\ExpenseReportStatusHistory;
 use App\Entity\User;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Double validation d'une note hors sortie : le responsable la pré-valide sur le site, puis la
@@ -46,9 +47,7 @@ class NoteHorsSortieDoubleValidationTest extends ExpenseReportApiTestCase
         $this->assertSame(self::MESSAGE, $refusee->getStatusComment());
     }
 
-    /**
-     * @dataProvider sansMessageProvider
-     */
+    #[DataProvider('sansMessageProvider')]
     public function testLeRefusParLaTresorerieExigeUnMessage(array $message): void
     {
         $note = $this->notePreValidee();
@@ -76,9 +75,7 @@ class NoteHorsSortieDoubleValidationTest extends ExpenseReportApiTestCase
         $this->assertSame(self::MESSAGE, $this->show($this->adherent, $note)['body']['derniereDecision']['message']);
     }
 
-    /**
-     * @dataProvider decisionsDeLaTresorerieProvider
-     */
+    #[DataProvider('decisionsDeLaTresorerieProvider')]
     public function testLaTresorerieNeDecidePasAvantLeResponsable(array $decision): void
     {
         $note = $this->noteEnvoyee($this->adherent, commission: $this->commissionDeTest);
@@ -94,9 +91,7 @@ class NoteHorsSortieDoubleValidationTest extends ExpenseReportApiTestCase
         yield 'refus' => [['status' => 'rejected', 'commentaireStatut' => self::MESSAGE]];
     }
 
-    /**
-     * @dataProvider decisionsDeLaTresorerieProvider
-     */
+    #[DataProvider('decisionsDeLaTresorerieProvider')]
     public function testSansValideurLaTresorerieDecideDesLEnvoi(array $decision): void
     {
         $note = $this->noteEnvoyee($this->adherent);
@@ -105,9 +100,7 @@ class NoteHorsSortieDoubleValidationTest extends ExpenseReportApiTestCase
         $this->assertSame($decision['status'], $this->reload($note)->getStatus()->value);
     }
 
-    /**
-     * @dataProvider decisionsDuResponsableProvider
-     */
+    #[DataProvider('decisionsDuResponsableProvider')]
     public function testLeResponsableNeDecidePlusSurUneNotePreValidee(string $acteur, array $decision): void
     {
         $note = $this->notePreValidee();
@@ -185,9 +178,7 @@ class NoteHorsSortieDoubleValidationTest extends ExpenseReportApiTestCase
         $this->assertSame(['approved', 'tresorerie'], [$this->derniereDecision($note)['statut'], $this->derniereDecision($note)['niveau']]);
     }
 
-    /**
-     * @dataProvider decisionsDeLaTresorerieProvider
-     */
+    #[DataProvider('decisionsDeLaTresorerieProvider')]
     public function testSansValideurLaDecisionVientDeLaTresorerie(array $decision): void
     {
         $note = $this->noteEnvoyee($this->adherent);
@@ -330,9 +321,8 @@ class NoteHorsSortieDoubleValidationTest extends ExpenseReportApiTestCase
      * Un refus est envoyé avec son message, comme le font le site et compta-club.
      *
      * @param array<string, list<string>> $attendu par statut de départ, une issue par statut de self::CIBLES
-     *
-     * @dataProvider matriceProvider
      */
+    #[DataProvider('matriceProvider')]
     public function testMatriceDesTransitions(string $role, array $attendu): void
     {
         $acteur = match ($role) {

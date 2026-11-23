@@ -3,7 +3,9 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Evt;
+use App\Entity\User;
 use App\Tests\WebTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ProfilControllerTest extends WebTestCase
 {
@@ -16,6 +18,45 @@ class ProfilControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
     }
 
+    public function testReglageDesDemandesInscriptionCocheParDefaut(): void
+    {
+        $user = $this->signup();
+        $this->signin($user);
+
+        $this->client->request('GET', '/profil/alertes');
+        $this->assertResponseStatusCodeSame(200);
+        $this->assertSelectorExists('#demandes-inscription input#toutes-demandes-inscription[name="toutes-demandes-inscription"][checked]');
+    }
+
+    #[DataProvider('provideReglageDemandesInscription')]
+    public function testEnregistrerLeReglageDesDemandesInscription(array $champ, bool $attendu): void
+    {
+        $user = $this->signup();
+        $user->setAlertToutesDemandesInscription(!$attendu);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+        $this->signin($user);
+
+        $this->client->request('POST', '/profil/alertes', [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'profil_alertes_update'),
+            'sortie-prefix-input' => '[Sortie]',
+            'article-prefix-input' => '[Article]',
+        ] + $champ);
+        $this->assertResponseRedirects('/profil/alertes');
+
+        $this->client->followRedirect();
+        $this->assertSelectorExists('#toutes-demandes-inscription' . ($attendu ? '[checked]' : ':not([checked])'));
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $em->clear();
+        $user = $em->getRepository(User::class)->find($user->getId());
+        $this->assertSame($attendu, $user->getAlertToutesDemandesInscription());
+    }
+
+    public static function provideReglageDemandesInscription(): iterable
+    {
+        yield 'case cochée' => [['toutes-demandes-inscription' => '1'], true];
+        yield 'case décochée' => [[], false];
+    }
+
     public function testDontDisplayAlertesWhenNotLoggedIn()
     {
         $this->client->request('GET', '/profil/alertes');
@@ -23,7 +64,7 @@ class ProfilControllerTest extends WebTestCase
         $this->assertResponseRedirects('http://localhost/login');
     }
 
-    /** @dataProvider provideSortiesPages */
+    #[DataProvider('provideSortiesPages')]
     public function testDisplaySortiesPages(string $page)
     {
         $user = $this->signup();
@@ -40,7 +81,7 @@ class ProfilControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
     }
 
-    /** @dataProvider provideSortiesPages */
+    #[DataProvider('provideSortiesPages')]
     public function testDisplaySortiesPagesUnauthenticated(string $page)
     {
         $this->client->request('GET', $page);
@@ -48,7 +89,7 @@ class ProfilControllerTest extends WebTestCase
         $this->assertResponseRedirects('http://localhost/login');
     }
 
-    public function provideSortiesPages()
+    public static function provideSortiesPages()
     {
         yield ['/profil/sorties/next'];
         yield ['/profil/sorties/self'];

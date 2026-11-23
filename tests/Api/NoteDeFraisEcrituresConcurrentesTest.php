@@ -21,19 +21,6 @@ class NoteDeFraisEcrituresConcurrentesTest extends ExpenseReportApiTestCase
 {
     private const CONFLIT = 'Cette note a été modifiée en même temps par une autre action.';
 
-    private ?ExpenseReport $noteDeSortie = null;
-
-    protected function tearDown(): void
-    {
-        if (null !== $this->noteDeSortie) {
-            $base = $this->em()->getConnection();
-            $base->executeStatement('DELETE FROM expense_report_status_history WHERE expense_report_id = ?', [$this->noteDeSortie->getId()]);
-            $base->executeStatement('DELETE FROM expense_report WHERE id = ?', [$this->noteDeSortie->getId()]);
-        }
-
-        parent::tearDown();
-    }
-
     public function testUnEnvoiQuiCroiseUneModificationDesLignesEstRefuse(): void
     {
         $note = $this->creerAchat($this->adherent, ExpenseReportStatusEnum::DRAFT, self::LIGNES_ACHAT, $this->commissionDeTest);
@@ -51,14 +38,14 @@ class NoteDeFraisEcrituresConcurrentesTest extends ExpenseReportApiTestCase
 
     public function testDeuxDecisionsSimultaneesSurUneNoteDeSortieNeSEcrasentPas(): void
     {
-        $this->noteDeSortie = $this->createReport($this->owner, ExpenseReportStatusEnum::SUBMITTED);
-        $this->uneAutreRequeteEcritAvant(Events::preFlush, $this->noteDeSortie, static fn (ExpenseReport $lue) => $lue->setStatus(ExpenseReportStatusEnum::APPROVED));
+        $noteDeSortie = $this->createReport($this->owner, ExpenseReportStatusEnum::SUBMITTED);
+        $this->uneAutreRequeteEcritAvant(Events::preFlush, $noteDeSortie, static fn (ExpenseReport $lue) => $lue->setStatus(ExpenseReportStatusEnum::APPROVED));
 
-        $reponse = $this->patch($this->manager, $this->noteDeSortie, ['status' => 'rejected', 'commentaireStatut' => 'Justificatif manquant']);
+        $reponse = $this->patch($this->manager, $noteDeSortie, ['status' => 'rejected', 'commentaireStatut' => 'Justificatif manquant']);
 
         $this->assertResponseStatus(409, $reponse);
         $this->assertSame(self::CONFLIT, $reponse['body']['detail']);
-        $this->assertSame('approved', $this->ligneEnBase($this->noteDeSortie)['status']);
+        $this->assertSame('approved', $this->ligneEnBase($noteDeSortie)['status']);
     }
 
     public function testUnJustificatifQuiCroiseLEnvoiEstRefuse(): void

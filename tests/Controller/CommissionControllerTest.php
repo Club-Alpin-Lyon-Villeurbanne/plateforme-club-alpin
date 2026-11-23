@@ -15,7 +15,6 @@ use Doctrine\ORM\EntityManagerInterface;
 class CommissionControllerTest extends WebTestCase
 {
     private EntityManagerInterface $em;
-    private ?int $droitId = null;
 
     protected function setUp(): void
     {
@@ -31,15 +30,6 @@ class CommissionControllerTest extends WebTestCase
             [UserAttr::RESPONSABLE_COMMISSION, 'commission_list']
         );
         $this->assertSame(1, $inserted);
-        $this->droitId = (int) $connection->lastInsertId();
-    }
-
-    protected function tearDown(): void
-    {
-        if (null !== $this->droitId) {
-            $this->em->getConnection()->executeStatement('DELETE FROM caf_usertype_attr WHERE id_usertype_attr = ?', [$this->droitId]);
-        }
-        parent::tearDown();
     }
 
     public function testLaPageAfficheLesBrevetsEtFormationsRattachesQueLeStaffDetient(): void
@@ -134,6 +124,30 @@ class CommissionControllerTest extends WebTestCase
         $this->client->request('GET', '/commissions/' . $autre->getId() . '/brevets');
 
         $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testChaqueEncadrantProposeAuFormulaireDeSortieALeLienVersSaFiche(): void
+    {
+        $commission = $this->createCommission();
+        $encadrant = $this->signup();
+        $encadrant->setFirstname('Jean')->setLastname('Cadre');
+        $this->addAttribute($encadrant, UserAttr::ENCADRANT, 'commission:' . $commission->getCode());
+        $coencadrant = $this->signup();
+        $coencadrant->setFirstname('Ko')->setLastname('Kadre');
+        $this->addAttribute($coencadrant, UserAttr::COENCADRANT, 'commission:' . $commission->getCode());
+
+        $this->signin($encadrant);
+        $crawler = $this->client->request('GET', '/encadrement-par-commission?commission=' . $commission->getId());
+
+        $this->assertResponseIsSuccessful();
+        foreach (['encadrants' => $encadrant, 'coencadrants' => $coencadrant] as $champ => $user) {
+            $case = $crawler->filter(sprintf('input[name="event[%s][]"][value="%d"]', $champ, $user->getId()));
+            $this->assertCount(1, $case);
+            $lien = $case->closest('label')->filter('a');
+            $this->assertCount(1, $lien);
+            $this->assertSame('/fiche-profil/' . $user->getId(), $lien->attr('href'));
+            $this->assertSame('Voir la fiche de ' . $user->getFullName(), $lien->attr('aria-label'));
+        }
     }
 
     private function createBrevet(?Commission $commission): FormationReferentielBrevet

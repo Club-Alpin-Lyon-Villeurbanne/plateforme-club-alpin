@@ -5,6 +5,7 @@ namespace App\Tests\Api;
 use App\Entity\UserAttr;
 use App\Service\NoteDeFrais\ControlesNoteHorsSortie;
 use App\Utils\Enums\ExpenseReportStatusEnum;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 /**
  * Les notes hors sortie sont réservées aux rôles d'encadrement et aux responsables de commission,
@@ -12,9 +13,7 @@ use App\Utils\Enums\ExpenseReportStatusEnum;
  */
 class NoteHorsSortieAccesTest extends ExpenseReportApiTestCase
 {
-    /**
-     * @dataProvider roleDEncadrementProvider
-     */
+    #[DataProvider('roleDEncadrementProvider')]
     public function testChaqueRoleOuvreLAchatEtLaFormationSurUneAutreCommission(string $role): void
     {
         $this->donnerUnRole($this->adherent, $role, $this->autreCommission);
@@ -32,9 +31,7 @@ class NoteHorsSortieAccesTest extends ExpenseReportApiTestCase
         yield 'bénévole d\'encadrement' => [UserAttr::BENEVOLE];
     }
 
-    /**
-     * @dataProvider typeProvider
-     */
+    #[DataProvider('typeProvider')]
     public function testSansRoleAucuneNoteNEstCreee(string $type): void
     {
         $avant = $this->nombreDeNotesHorsSortieDeLAdherent();

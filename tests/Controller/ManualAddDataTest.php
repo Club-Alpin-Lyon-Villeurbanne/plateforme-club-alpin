@@ -3,6 +3,7 @@
 namespace App\Tests\Controller;
 
 use App\Tests\WebTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 
 class ManualAddDataTest extends WebTestCase
 {
@@ -101,9 +102,7 @@ class ManualAddDataTest extends WebTestCase
         $this->assertResponseStatusCodeSame(403);
     }
 
-    /**
-     * @dataProvider vuesDeLEcranDInscriptionManuelle
-     */
+    #[DataProvider('vuesDeLEcranDInscriptionManuelle')]
     public function testLesVuesDeLEcranRestentAccessibles(string $show): void
     {
         $organizer = $this->signup();

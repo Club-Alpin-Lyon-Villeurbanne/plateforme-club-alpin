@@ -25,15 +25,16 @@ use Symfony\Component\Serializer\Annotation\SerializedName;
 #[ApiResource(
     shortName: 'sortie',
     operations: [
-        new Get(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:read', 'eventParticipation:read']]),
-        new GetCollection(normalizationContext: ['groups' => ['event:read', 'commission:read', 'user:read', 'eventParticipation:read']]),
+        new Get(normalizationContext: ['groups' => ['event:read', 'event:details', 'commission:read', 'user:public', 'eventParticipation:read']]),
+        new GetCollection(normalizationContext: ['groups' => ['event:read', 'commission:read', 'user:public', 'eventParticipation:read']]),
     ],
     order: ['startDate' => 'ASC'],
+    paginationClientEnabled: false,
     security: "is_granted('ROLE_USER')",
 )]
-#[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact', 'participations.user.id' => 'exact'])]
+#[ApiFilter(SearchFilter::class, properties: ['commission' => 'exact'])]
 #[ApiFilter(RangeFilter::class, properties: ['startDate'])]
-#[ApiFilter(GroupFilter::class, arguments: ['overrideDefaultGroups' => true])]
+#[ApiFilter(GroupFilter::class, arguments: ['overrideDefaultGroups' => true, 'whitelist' => ['event:read', 'event:details', 'commission:read', 'user:public', 'eventParticipation:read']])]
 #[ApiFilter(OrderFilter::class, properties: ['startDate'])]
 class Evt
 {
@@ -480,10 +481,17 @@ class Evt
     }
 
     /** @return EventParticipation[] */
-    #[Groups('eventParticipation:read')]
     public function getAllParticipations()
     {
         return $this->participations;
+    }
+
+    /** @return EventParticipation[] */
+    #[Groups('eventParticipation:read')]
+    #[SerializedName('participations')]
+    public function getParticipationsAcceptees(): array
+    {
+        return array_values($this->getParticipations()->toArray());
     }
 
     public function clearRoleParticipations(string $role = EventParticipation::ROLE_BENEVOLE): void
@@ -522,9 +530,8 @@ class Evt
      */
     public function findUnpaidParticipationByName(string $firstname, string $lastname): ?EventParticipation
     {
-        $normalize = static fn (?string $name): string => preg_replace('/[^a-z]/', '', strtolower(StringUtils::removeDiacritics($name ?? '')));
-        $firstname = $normalize($firstname);
-        $lastname = $normalize($lastname);
+        $firstname = StringUtils::normalizeName($firstname);
+        $lastname = StringUtils::normalizeName($lastname);
         if ('' === $firstname || '' === $lastname) {
             return null;
         }
@@ -533,8 +540,8 @@ class Evt
             EventParticipation::ROLES_SIMPLES,
             [EventParticipation::STATUS_VALIDE, EventParticipation::STATUS_NON_CONFIRME],
         )->filter(fn (EventParticipation $participation) => !$participation->hasPaid()
-            && $normalize($participation->getUser()->getFirstname()) === $firstname
-            && $normalize($participation->getUser()->getLastname()) === $lastname
+            && StringUtils::normalizeName($participation->getUser()->getFirstname()) === $firstname
+            && StringUtils::normalizeName($participation->getUser()->getLastname()) === $lastname
         );
 
         return 1 === $matches->count() ? $matches->first() : null;
@@ -578,6 +585,32 @@ class Evt
         }
 
         return false;
+    }
+
+    /**
+     * Personnes prévenues des inscriptions et désinscriptions : l'organisateur et l'encadrement
+     * (encadrants, coencadrants, stagiaires). Indexées par id, pour ne compter qu'une fois
+     * un organisateur qui encadre aussi la sortie.
+     *
+     * @return array<int, User>
+     */
+    public function getOrganisateurEtEncadrants(): array
+    {
+        $personnes = [];
+        if ($this->getUser()) {
+            $personnes[$this->getUser()->getId()] = $this->getUser();
+        }
+        foreach ($this->getEncadrants() as $encadrant) {
+            $personnes[$encadrant->getUser()->getId()] = $encadrant->getUser();
+        }
+
+        return $personnes;
+    }
+
+    /** La personne reçoit les e-mails de demande d'inscription à cette sortie (selon son réglage dans « Mes alertes »). */
+    public function estPrevenuDesDemandesInscription(?User $user): bool
+    {
+        return null !== $user && isset($this->getOrganisateurEtEncadrants()[$user->getId()]);
     }
 
     public function getCommission(): ?Commission
