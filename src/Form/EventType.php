@@ -32,6 +32,7 @@ use Symfony\Component\Validator\Constraints\GreaterThanOrEqual;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Range;
+use Symfony\Component\Validator\Constraints\Regex;
 use Symfony\Component\Validator\Constraints\Type;
 
 class EventType extends AbstractType
@@ -345,6 +346,7 @@ class EventType extends AbstractType
                     'rows' => 5,
                 ],
                 'required' => false,
+                'constraints' => [$this->sansLienWhatsapp()],
             ])
             ->add('itineraire', TextareaType::class, [
                 'label' => false,
@@ -354,6 +356,7 @@ class EventType extends AbstractType
                     'rows' => 5,
                     'placeholder' => 'ex: du parking 1540 Aussois à côté des remontées mécaniques du Grand Jeu, prendre NNE jusqu\'à Plan Aval puis suivre refuge de la Fournache 2333m par la Randolière',
                 ],
+                'constraints' => [$this->sansLienWhatsapp()],
             ])
             ->add('details_caches', TextareaType::class, [
                 'label' => false,
@@ -401,6 +404,7 @@ class EventType extends AbstractType
                 ],
                 'constraints' => [
                     new NotBlank(),
+                    $this->sansLienWhatsapp(),
                 ],
             ])
             ->add('autoAccept', CheckboxType::class, [
@@ -639,5 +643,14 @@ class EventType extends AbstractType
                 'Trail' => 'Frontale, veste coupe vent, couverture de survie, carte du CAF, de quoi boire, de quoi manger en cas de moins bien',
             ],
         };
+    }
+
+    private function sansLienWhatsapp(): Regex
+    {
+        return new Regex([
+            'pattern' => '/chat\.whatsapp\.com/i',
+            'match' => false,
+            'message' => 'Cette partie est visible sans connexion : n\'y mettez pas de lien d\'invitation WhatsApp. Placez-le dans « Détails pratiques », réservée aux adhérents connectés.',
+        ]);
     }
 }

@@ -6,6 +6,7 @@ use App\Entity\Evt;
 use App\Entity\User;
 use App\Form\EventType;
 use App\Tests\WebTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormInterface;
 
@@ -109,5 +110,39 @@ class EventTypeTest extends WebTestCase
         self::assertSame('', $event->getPlace());
         self::assertSame(0.0, (float) $event->getLatDepart());
         self::assertSame(0.0, (float) $event->getLongDepart());
+    }
+
+    #[DataProvider('champsPublics')]
+    public function testLienWhatsappRefuseDansUnChampPublic(string $champ): void
+    {
+        $user = $this->signup();
+        $form = $this->buildForm($this->newEvent($user), $user);
+
+        $form->submit([$champ => '<p>Rejoignez le groupe : https://Chat.WhatsApp.com/AbCdEfGhIjKlMnOpQrStUv</p>'], false);
+
+        self::assertStringContainsString('Détails pratiques', (string) $form->get($champ)->getErrors());
+    }
+
+    public static function champsPublics(): iterable
+    {
+        yield ['description'];
+        yield ['matos'];
+        yield ['itineraire'];
+    }
+
+    public function testLienWhatsappAccepteDansLesDetailsPratiques(): void
+    {
+        $user = $this->signup();
+        $event = $this->newEvent($user);
+        $form = $this->buildForm($event, $user);
+
+        $form->submit([
+            'description' => '<p>Le groupe WhatsApp est indiqué dans les détails pratiques.</p>',
+            'details_caches' => 'https://chat.whatsapp.com/AbCdEfGhIjKlMnOpQrStUv',
+        ], false);
+
+        self::assertCount(0, $form->get('description')->getErrors());
+        self::assertCount(0, $form->get('details_caches')->getErrors());
+        self::assertSame('https://chat.whatsapp.com/AbCdEfGhIjKlMnOpQrStUv', $event->getDetailsCaches());
     }
 }
