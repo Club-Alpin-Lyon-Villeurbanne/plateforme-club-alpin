@@ -8,6 +8,31 @@ use PHPUnit\Framework\TestCase;
 
 class HtmlHelperTest extends TestCase
 {
+    #[DataProvider('descriptionsDuJournal')]
+    public function testEscapeAdminLogDescription(string $description, string $attendu): void
+    {
+        $this->assertSame($attendu, html_entity_decode(HtmlHelper::escapeAdminLogDescription($description), \ENT_QUOTES, 'UTF-8'));
+    }
+
+    public static function descriptionsDuJournal(): array
+    {
+        return [
+            'ancien format nettoyé' => ['Modif élément : <i>accueil</i>', 'Modif élément : accueil'],
+            'nouveau format inchangé' => ['Modif élément : « accueil »', 'Modif élément : « accueil »'],
+            'balise i dans un nouveau code conservée' => ['Modif élément : « <i>bloc</i> »', 'Modif élément : « <i>bloc</i> »'],
+            'autre balise conservée' => ['Modif élément : « bloc<b> »', 'Modif élément : « bloc<b> »'],
+            'autre description inchangée' => ['Création de la page <i>test</i>', 'Création de la page <i>test</i>'],
+        ];
+    }
+
+    public function testEscapeAdminLogDescriptionEchappeLeCodeDeLAncienFormat(): void
+    {
+        $this->assertSame(
+            'Modif &eacute;l&eacute;ment : &lt;script&gt;',
+            HtmlHelper::escapeAdminLogDescription('Modif élément : <i><script></i>')
+        );
+    }
+
     #[DataProvider('escapeDataProvider')]
     public function testEscape(?string $input, string $expected): void
     {
