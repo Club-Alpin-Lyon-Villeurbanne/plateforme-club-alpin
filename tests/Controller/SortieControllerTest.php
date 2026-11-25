@@ -19,6 +19,7 @@ use Symfony\Component\Mailer\Messenger\SendEmailMessage;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\RawMessage;
 
 class SortieControllerTest extends WebTestCase
 {
@@ -495,6 +496,151 @@ class SortieControllerTest extends WebTestCase
             'csrf_token' => $this->generateCsrfToken($this->client, 'sortie_validate'),
         ]);
         $this->assertResponseStatusCodeSame(403);
+    }
+
+    public function testModifierSeulementLeTitreNEnvoiePasDEmailMemeSiLesEncadrantsSontDansUnAutreOrdre(): void
+    {
+        [$event, $organisateur, $inscrit] = $this->sortiePublieeAvecUnInscrit();
+        // le formulaire liste les encadrants par prénom, la sortie par ordre d'inscription
+        $organisateur->setFirstname('Zoé');
+        $autreEncadrant = $this->signup();
+        $autreEncadrant->setFirstname('Alice');
+        $this->addAttribute($autreEncadrant, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
+        $event->addParticipation($autreEncadrant, EventParticipation::ROLE_ENCADRANT, EventParticipation::STATUS_VALIDE);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $event = $this->modifierSortie($event, ['titre' => 'Nouveau titre de la sortie']);
+
+        $this->assertCount(0, $this->getMailerMessages());
+        $this->assertSame(Evt::STATUS_PUBLISHED_VALIDE, $event->getStatus());
+    }
+
+    public function testModifierLeRendezVousEnvoieLAvantApresAuxInscrits(): void
+    {
+        [$event, , $inscrit] = $this->sortiePublieeAvecUnInscrit();
+
+        $event = $this->modifierSortie($event, ['rdv' => 'Parking de la piscine']);
+
+        $emails = $this->emailsEnvoyesA($inscrit);
+        $this->assertCount(1, $emails);
+        $this->assertEmailHtmlBodyContains($emails[0], 'Lieu de RDV covoiturage');
+        $this->assertEmailHtmlBodyContains($emails[0], 'Hotel de ville');
+        $this->assertEmailHtmlBodyContains($emails[0], 'Parking de la piscine');
+        $this->assertEmailHtmlBodyNotContains($emails[0], 'Nous vous invitons à consulter les modifications');
+        $this->assertEmailTextBodyContains($emails[0], 'Lieu de RDV covoiturage : Hotel de ville → Parking de la piscine');
+        $this->assertSame(Evt::STATUS_PUBLISHED_VALIDE, $event->getStatus());
+    }
+
+    public function testChangerDeCommissionApparaitDansLEmail(): void
+    {
+        [$event, $organisateur, $inscrit] = $this->sortiePublieeAvecUnInscrit();
+        $escalade = $this->createCommission('Escalade');
+        $this->addAttribute($organisateur, UserAttr::ENCADRANT, 'commission:' . $escalade->getCode());
+
+        $event = $this->modifierSortie($event, ['commission' => (string) $escalade->getId()]);
+
+        $emails = $this->emailsEnvoyesA($inscrit);
+        $this->assertCount(1, $emails);
+        $this->assertEmailTextBodyContains($emails[0], 'Commission : Alpinisme → Escalade');
+    }
+
+    public function testChangerLeLieuDeDepartDepublieEtAnnonceLesModificationsALaRepublication(): void
+    {
+        [$event, , $inscrit] = $this->sortiePublieeAvecUnInscrit();
+
+        $event = $this->modifierSortie($event, ['place' => '74000 Annecy']);
+
+        $this->assertCount(0, $this->emailsEnvoyesA($inscrit));
+        $this->assertSame(Evt::STATUS_PUBLISHED_UNSEEN, $event->getStatus());
+
+        // une seconde modification avant la republication s'ajoute aux changements en attente
+        $event = $this->modifierSortie($event, ['description' => 'Nouvelle description de la sortie']);
+
+        $this->assertCount(0, $this->emailsEnvoyesA($inscrit));
+
+        $event = $this->validerSortie($event);
+
+        $emails = $this->emailsEnvoyesA($inscrit);
+        $this->assertCount(1, $emails);
+        $this->assertEmailHtmlBodyContains($emails[0], 'Lieu de départ');
+        $this->assertEmailHtmlBodyContains($emails[0], '69001 Lyon 1er Arrondissement');
+        $this->assertEmailHtmlBodyContains($emails[0], '74000 Annecy');
+        $this->assertEmailHtmlBodyContains($emails[0], 'Des modifications ont été apportées à la sortie (description).');
+        $this->assertNull($event->getPendingEmailChanges());
+    }
+
+    public function testUneModificationAnnuleeAvantLaRepublicationNEstPasAnnoncee(): void
+    {
+        [$event, , $inscrit] = $this->sortiePublieeAvecUnInscrit();
+
+        $event = $this->modifierSortie($event, ['place' => '74000 Annecy', 'rdv' => 'Parking de la piscine']);
+        $event = $this->modifierSortie($event, ['rdv' => 'Hotel de ville']);
+        $event = $this->validerSortie($event);
+
+        $emails = $this->emailsEnvoyesA($inscrit);
+        $this->assertCount(1, $emails);
+        $this->assertEmailHtmlBodyContains($emails[0], '74000 Annecy');
+        $this->assertEmailHtmlBodyNotContains($emails[0], 'Lieu de RDV covoiturage');
+    }
+
+    public function testUneSortieRefuseePuisModifieeAnnonceLaDerniereValeurALaRepublication(): void
+    {
+        [$event, $organisateur, $inscrit] = $this->sortiePublieeAvecUnInscrit();
+
+        $event = $this->modifierSortie($event, ['place' => '74000 Annecy']);
+        $event = $this->refuserSortie($event);
+        // le refus garde les changements en attente : la modification suivante doit s'y ajouter
+        $this->signin($organisateur->getEmail());
+        $event = $this->modifierSortie($event, ['place' => '38250 Villard-de-Lans']);
+
+        $this->assertSame(Evt::STATUS_PUBLISHED_REFUSE, $event->getStatus());
+        $this->assertCount(0, $this->emailsEnvoyesA($inscrit));
+
+        $this->validerSortie($event);
+
+        $emails = $this->emailsEnvoyesA($inscrit);
+        $this->assertCount(1, $emails);
+        $this->assertEmailTextBodyContains($emails[0], 'Lieu de départ : 69001 Lyon 1er Arrondissement → 38250 Villard-de-Lans');
+    }
+
+    public function testDeplacerLeMarqueurDuRendezVousEstAnnonceAuxInscrits(): void
+    {
+        [$event, , $inscrit] = $this->sortiePublieeAvecUnInscrit();
+
+        $event = $this->modifierSortie($event, ['lat' => '45.7578', 'long' => '4.832']);
+
+        $emails = $this->emailsEnvoyesA($inscrit);
+        $this->assertCount(1, $emails);
+        $this->assertEmailHtmlBodyContains($emails[0], 'Des modifications ont été apportées à la sortie (point de RDV sur la carte).');
+        $this->assertEmailHtmlBodyNotContains($emails[0], 'Lieu de RDV covoiturage');
+        $this->assertSame(Evt::STATUS_PUBLISHED_VALIDE, $event->getStatus());
+    }
+
+    public function testUneSortieJamaisPublieeNAccumulePasDeModifications(): void
+    {
+        [$event, , $inscrit] = $this->sortiePublieeAvecUnInscrit();
+        $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $event = $this->modifierSortie($event, ['rdv' => 'Parking de la piscine']);
+
+        $this->assertNull($event->getPendingEmailChanges());
+        // sortie non publiée : seuls les encadrants sont prévenus (#1780)
+        $this->assertCount(0, $this->emailsEnvoyesA($inscrit));
+    }
+
+    public function testValiderUneSortieSansModificationEnAttenteGardeLeMessageGenerique(): void
+    {
+        [$event, , $inscrit] = $this->sortiePublieeAvecUnInscrit();
+        $event->setStatus(Evt::STATUS_PUBLISHED_UNSEEN);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+
+        $event = $this->validerSortie($event);
+
+        $emails = $this->emailsEnvoyesA($inscrit);
+        $this->assertCount(1, $emails);
+        $this->assertEmailHtmlBodyContains($emails[0], 'Nous vous invitons à consulter les modifications.');
+        $this->assertEmailHtmlBodyNotContains($emails[0], '>Avant</th>');
     }
 
     public function testSortieRefus()
@@ -1887,5 +2033,106 @@ class SortieControllerTest extends WebTestCase
         $em->flush();
 
         return $expenseReport;
+    }
+
+    /**
+     * Sortie publiée avec un inscrit ; son organisateur, encadrant de la commission, est connecté.
+     *
+     * @return array{Evt, User, User} la sortie, son organisateur et l'inscrit
+     */
+    private function sortiePublieeAvecUnInscrit(): array
+    {
+        $organisateur = $this->signup();
+        $event = $this->createEvent($organisateur);
+        $this->addAttribute($organisateur, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
+        $inscrit = $this->signup();
+        $event->addParticipation($inscrit, EventParticipation::ROLE_INSCRIT, EventParticipation::STATUS_VALIDE);
+        // valeurs que le formulaire de modification accepte
+        $event->setTitre('Escalade du Grand Som');
+        $event->setPlace('69001 Lyon 1er Arrondissement');
+        $event->setStatus(Evt::STATUS_PUBLISHED_VALIDE);
+        $event->setStatusWho($organisateur);
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $em->flush();
+
+        // rechargée depuis la base : le constructeur de Evt laisse des propriétés non initialisées
+        // que le formulaire de modification lit
+        $em->clear();
+        $event = $em->find(Evt::class, $event->getId());
+        $organisateur = $em->find(User::class, $organisateur->getId());
+        $inscrit = $em->find(User::class, $inscrit->getId());
+
+        $this->signin($organisateur);
+
+        return [$event, $organisateur, $inscrit];
+    }
+
+    /**
+     * Enregistre le formulaire de modification de la sortie, tel qu'il est affiché, avec les champs donnés changés.
+     *
+     * @param array<string, string> $valeurs valeurs par nom de champ (sans le préfixe « event »)
+     */
+    private function modifierSortie(Evt $event, array $valeurs): Evt
+    {
+        $crawler = $this->client->request('GET', sprintf('/modifier-une-sortie/%d', $event->getId()));
+        $this->assertResponseIsSuccessful();
+
+        $form = $crawler->selectButton('event_eventSave')->form();
+        foreach ($valeurs as $champ => $valeur) {
+            $form[sprintf('event[%s]', $champ)] = $valeur;
+        }
+        $this->client->submit($form);
+        $this->assertResponseRedirects();
+
+        return $this->rechargerSortie($event);
+    }
+
+    private function validerSortie(Evt $event): Evt
+    {
+        $validateur = $this->signup();
+        $this->addAttribute($validateur, UserAttr::RESPONSABLE_COMMISSION, 'commission:' . $event->getCommission()->getCode());
+        $this->signin($validateur);
+
+        $this->client->request('POST', sprintf('/sortie/%d/validate', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'sortie_validate'),
+        ]);
+        $this->assertResponseRedirects();
+
+        return $this->rechargerSortie($event);
+    }
+
+    private function refuserSortie(Evt $event): Evt
+    {
+        $validateur = $this->signup();
+        $this->addAttribute($validateur, UserAttr::RESPONSABLE_COMMISSION, 'commission:' . $event->getCommission()->getCode());
+        $this->signin($validateur);
+
+        $this->client->request('POST', sprintf('/sortie/%d/refus', $event->getId()), [
+            'csrf_token' => $this->generateCsrfToken($this->client, 'sortie_refus'),
+            'msg' => 'Lieu de départ à revoir',
+        ]);
+        $this->assertResponseRedirects();
+
+        return $this->rechargerSortie($event);
+    }
+
+    private function rechargerSortie(Evt $event): Evt
+    {
+        $em = $this->getContainer()->get('doctrine')->getManager();
+        $em->clear();
+
+        return $em->find(Evt::class, $event->getId());
+    }
+
+    /**
+     * @return list<RawMessage>
+     */
+    private function emailsEnvoyesA(User $user): array
+    {
+        return array_values(array_filter(
+            $this->getMailerMessages(),
+            static fn (RawMessage $email) => $email instanceof Email
+                && \in_array($user->getEmail(), array_map(static fn (Address $address) => $address->getAddress(), $email->getTo()), true),
+        ));
     }
 }

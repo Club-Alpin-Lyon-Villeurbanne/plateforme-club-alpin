@@ -118,9 +118,13 @@ $().ready(function() {
 		$('#codeAddress').click(function() {
 			codeAddress($('input[id=event_rdv]').val());	
 		});
-		// si les input lat et long contiennent une info, on place le marker dessus
+		// si les input lat et long contiennent une info, on place le marker dessus, sans passer par la
+		// recherche Nominatim : elle le déplacerait vers l'adresse la plus proche à chaque modification
 		if($('input[id=event_lat]').val() && $('input[id=event_long]').val()) {
-			codeAddress($('input[id=event_lat]').val()+' '+$('input[id=event_long]').val());
+			var savedPosition = [parseFloat($('input[id=event_lat]').val()), parseFloat($('input[id=event_long]').val())];
+			map.setView(savedPosition, 16);
+			marker.setLatLng(savedPosition);
+			marker.on('dragend', function() { updatePosition(marker._latlng, true); });
 		} else {
 			// sinon on reset la carte
 			map.removeLayer(marker);
