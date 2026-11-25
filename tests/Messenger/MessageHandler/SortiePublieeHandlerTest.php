@@ -80,4 +80,29 @@ EOEXPECTED;
 
         $this->assertDumpMatchesFormat($expected, array_map(static fn ($d) => $d['message'], $messages));
     }
+
+    public function testItDoesNotDispatchMessagesWhenNewSortieAlertIsSkipped()
+    {
+        // avec un mot de passe : findUsersIdWithAlert() écarte les comptes qui n'en ont pas
+        $userOwner = $this->signup('test-' . bin2hex(random_bytes(12)) . '@clubalpinlyon.fr', 'Azerty42!');
+        $otherUserSubscribed = $this->signup('test-' . bin2hex(random_bytes(12)) . '@clubalpinlyon.fr', 'Azerty42!');
+
+        $evt = $this->createEvent($userOwner);
+        $evt->setSkipNewSortieAlert(true);
+
+        $userOwner->setAlertStatus(AlertType::Sortie, $evt->getCommission()->getCode(), true);
+        $otherUserSubscribed->setAlertStatus(AlertType::Sortie, $evt->getCommission()->getCode(), true);
+
+        self::getContainer()->get(EntityManagerInterface::class)->flush();
+
+        $handler = new SortiePublieeHandler(
+            self::getContainer()->get(EvtRepository::class),
+            self::getContainer()->get(UserRepository::class),
+            self::getContainer()->get(MessageBusInterface::class),
+        );
+
+        $handler(new SortiePubliee($evt->getId()));
+
+        $this->assertEmpty(self::getContainer()->get(MessageBusInterface::class)->getDispatchedMessages());
+    }
 }

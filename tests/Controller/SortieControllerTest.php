@@ -229,6 +229,27 @@ class SortieControllerTest extends WebTestCase
         $this->assertCount(1, $crawler->filter(sprintf('a[href="%s"]', $router->generate('sortie_xlsx', ['id' => $event->getId()]))));
     }
 
+    public function testDupliquerUneSortieGardeLOptionSansAlerteNouvelleSortie(): void
+    {
+        $user = $this->signup();
+        $event = $this->createEvent($user);
+        // droit de créer une sortie dans la commission : nécessaire pour dupliquer
+        $this->addAttribute($user, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
+        $event->setSkipNewSortieAlert(true);
+        $this->getContainer()->get('doctrine')->getManager()->flush();
+        $this->signin($user);
+
+        $crawler = $this->client->request('GET', sprintf('/sortie/%s-%s.html', $event->getCode(), $event->getId()));
+        $this->assertResponseIsSuccessful();
+
+        $router = $this->getContainer()->get('router');
+        $duplicateForm = $crawler->filter(sprintf('form[action="%s"]', $router->generate('sortie_duplicate', ['event' => $event->getId(), 'mode' => 'empty'])));
+        $crawler = $this->client->submit($duplicateForm->form());
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSame('checked', $crawler->filter('input[name="event[skipNewSortieAlert]"]')->attr('checked'));
+    }
+
     public function testMenuActionsNeProposeQueLesActionsAutorisees(): void
     {
         // encadrant de la sortie sans droit de création dans la commission, sortie à venir

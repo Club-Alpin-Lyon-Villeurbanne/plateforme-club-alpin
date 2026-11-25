@@ -403,6 +403,10 @@ class EventType extends AbstractType
                     new NotBlank(),
                 ],
             ])
+            ->add('skipNewSortieAlert', CheckboxType::class, [
+                'label' => 'Ne pas envoyer l\'alerte « Nouvelle sortie » aux abonnés (groupe déjà constitué, cycle…)',
+                'required' => false,
+            ])
             ->add('autoAccept', CheckboxType::class, [
                 'label' => 'Accepter automatiquement les demandes d\'inscription',
                 'required' => false,
