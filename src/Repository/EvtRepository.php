@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Commission;
+use App\Entity\EventParticipation;
 use App\Entity\Evt;
 use App\Entity\ExpenseReport;
 use App\Entity\User;
@@ -10,6 +11,7 @@ use App\Trait\PaginationRepositoryTrait;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -270,6 +272,53 @@ class EvtRepository extends ServiceEntityRepository
             ->select('count(e)')
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    /**
+     * Sorties auxquelles $user ET $otherUser participent tous deux (participation validée),
+     * hors sorties annulées.
+     *
+     * Pas de filtre de date : on reste cohérent avec « Dernières sorties »
+     * (getUserEvents), qui liste aussi bien les sorties passées que futures.
+     *
+     * @return Evt[]
+     */
+    public function getCommonEvents(User $user, User $otherUser, int $first, int $perPage): array
+    {
+        return $this->getCommonEventsDql($user, $otherUser)
+            ->setFirstResult($first)
+            ->setMaxResults($perPage)
+            ->getQuery()
+            // Une sortie déjà chargée par getUserEvents() n'a que la participation de l'adhérent consulté :
+            // le rafraîchissement fait relire toutes ses participations, pour un témoin de places juste.
+            ->setHint(Query::HINT_REFRESH, true)
+            ->getResult();
+    }
+
+    /**
+     * @throws NonUniqueResultException
+     * @throws NoResultException
+     */
+    public function getCommonEventsCount(User $user, User $otherUser): int
+    {
+        return (int) $this
+            ->getCommonEventsDql($user, $otherUser)
+            ->select('count(DISTINCT e)')
+            ->getQuery()
+            ->getSingleScalarResult();
+    }
+
+    private function getCommonEventsDql(User $user, User $otherUser): QueryBuilder
+    {
+        return $this->getEventsByUserDql($user, [Evt::STATUS_PUBLISHED_VALIDE], [EventParticipation::STATUS_VALIDE])
+            // sans charger « p » : la limite porte sur les sorties et le nombre de places restantes reste juste
+            ->select('e')
+            ->innerJoin('e.participations', 'p2', 'WITH', 'p2.user = :otherUser AND p2.status = :validStatus')
+            ->andWhere('e.cancelled = false')
+            ->setParameter('otherUser', $otherUser)
+            ->setParameter('validStatus', EventParticipation::STATUS_VALIDE)
+            ->orderBy('e.startDate', 'desc')
+        ;
     }
 
     public function getRecentPastEvents(?Commission $commission = null): array
