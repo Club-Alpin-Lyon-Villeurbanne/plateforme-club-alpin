@@ -7,6 +7,10 @@ framework:
                 allow_elements:
                     a: ['href', 'title', 'target', 'rel']
                     p: ['style']
+                    # Mise en forme CKEditor (taille, police, couleurs) : styles filtrés par InlineStyleSanitizer
+                    span: ['style']
+                    # Surlignage CKEditor : classes filtrées par HighlightClassSanitizer
+                    mark: ['class']
                     h1: ['id']
                     h2: ['id']
                     h3: ['id']
@@ -25,3 +29,5 @@ framework:
                 with_attribute_sanitizers:
                     - App\HtmlSanitizer\ImageSrcDataSanitizer
                     - App\HtmlSanitizer\IframeSrcSanitizer
+                    - App\HtmlSanitizer\InlineStyleSanitizer
+                    - App\HtmlSanitizer\HighlightClassSanitizer
