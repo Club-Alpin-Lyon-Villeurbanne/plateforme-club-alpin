@@ -11,6 +11,7 @@ use App\Repository\CommissionRepository;
 use App\Repository\CommuneRepository;
 use App\Service\HelloAssoService;
 use App\UserRights;
+use App\Validator\SansLienWhatsApp;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -121,6 +122,7 @@ class EventType extends AbstractType
                         'min' => 10,
                         'max' => 100,
                     ]),
+                    $this->sansLienWhatsApp(),
                 ],
             ])
             ->add('etranger', CheckboxType::class, [
@@ -204,6 +206,7 @@ class EventType extends AbstractType
                         'min' => 3,
                         'max' => 200,
                     ]),
+                    $this->sansLienWhatsApp(),
                 ],
             ])
             // non mappés : une saisie vide planterait le setter non-nullable (cf. Sentry 1E6) ;
@@ -288,6 +291,9 @@ class EventType extends AbstractType
                     'rows' => 5,
                 ],
                 'required' => false,
+                'constraints' => [
+                    $this->sansLienWhatsApp(),
+                ],
             ])
             ->add('ngensMax', NumberType::class, [
                 'label' => 'Nombre maximum de personnes sur cette sortie (encadrement compris) <span class="revalidation">*</span>',
@@ -345,6 +351,9 @@ class EventType extends AbstractType
                     'rows' => 5,
                 ],
                 'required' => false,
+                'constraints' => [
+                    $this->sansLienWhatsApp(),
+                ],
             ])
             ->add('itineraire', TextareaType::class, [
                 'label' => false,
@@ -353,6 +362,9 @@ class EventType extends AbstractType
                     'class' => 'type2 wide',
                     'rows' => 5,
                     'placeholder' => 'ex: du parking 1540 Aussois à côté des remontées mécaniques du Grand Jeu, prendre NNE jusqu\'à Plan Aval puis suivre refuge de la Fournache 2333m par la Randolière',
+                ],
+                'constraints' => [
+                    $this->sansLienWhatsApp(),
                 ],
             ])
             ->add('details_caches', TextareaType::class, [
@@ -401,6 +413,7 @@ class EventType extends AbstractType
                 ],
                 'constraints' => [
                     new NotBlank(),
+                    $this->sansLienWhatsApp(),
                 ],
             ])
             ->add('autoAccept', CheckboxType::class, [
@@ -588,6 +601,17 @@ class EventType extends AbstractType
             'user' => User::class,
             'csrf_protection' => true,
         ]);
+    }
+
+    /**
+     * Ces champs sont affichés aux visiteurs non connectés : le lien d'un groupe WhatsApp
+     * va dans les « Détails pratiques », réservés aux adhérents connectés.
+     */
+    private function sansLienWhatsApp(): SansLienWhatsApp
+    {
+        return new SansLienWhatsApp(
+            message: 'Les liens WhatsApp sont interdits ici, car cette partie de la sortie est visible sans connexion. Mettez le lien dans les « Détails pratiques », réservés aux adhérents connectés.',
+        );
     }
 
     protected function getStuffList(): array

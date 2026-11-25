@@ -35,6 +35,29 @@ class SortieControllerTest extends WebTestCase
         $this->assertResponseStatusCodeSame(200);
     }
 
+    public function testUnLienWhatsAppDansLaDescriptionEstSignaleEnHautDuFormulaire(): void
+    {
+        $user = $this->signup();
+        $this->signin($user);
+        $event = $this->createEvent($user);
+        $this->addAttribute($user, UserAttr::ENCADRANT, 'commission:' . $event->getCommission()->getCode());
+        // relue depuis la base : le constructeur n'initialise pas les champs de paiement que lit le formulaire
+        $this->getContainer()->get('doctrine')->getManager()->clear();
+
+        $crawler = $this->client->request('GET', sprintf('/modifier-une-sortie/%d', $event->getId()));
+        $this->assertResponseIsSuccessful();
+
+        $form = $crawler->selectButton('event[eventSave]')->form();
+        $form['event[description]'] = '<p>Groupe : <a href="https://chat.whatsapp.com/AbCdEf123456">ici</a></p>';
+        $form['event[details_caches]'] = 'Groupe : https://chat.whatsapp.com/AbCdEf123456';
+        $crawler = $this->client->submit($form);
+
+        $this->assertResponseStatusCodeSame(422);
+        $erreurs = $crawler->filter('.alerte.has-errors')->text();
+        $this->assertStringContainsString('Les liens WhatsApp sont interdits ici', $erreurs);
+        $this->assertSame(1, substr_count($erreurs, 'WhatsApp'));
+    }
+
     public function testAjouterAMonAgendaConserveLesCaracteresSpeciaux(): void
     {
         $user = $this->signup();
