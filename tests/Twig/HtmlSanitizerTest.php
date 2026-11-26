@@ -263,6 +263,94 @@ HTML;
         $this->assertStringContainsString('src="https://some-external-site.com/photo.jpg"', $result);
     }
 
+    #[DataProvider('editorInlineFormattingProvider')]
+    public function testPreservesEditorInlineFormatting(string $input, string $expected): void
+    {
+        $this->assertSame($expected, $this->sanitizer->sanitize($input));
+    }
+
+    public static function editorInlineFormattingProvider(): array
+    {
+        return [
+            'taille de police' => [
+                '<p><span style="font-size:20px;">Grand texte</span></p>',
+                '<p><span style="font-size:20px;">Grand texte</span></p>',
+            ],
+            'couleur du texte' => [
+                '<p><span style="color:hsl(0, 75%, 60%);">Rouge</span></p>',
+                '<p><span style="color:hsl(0, 75%, 60%);">Rouge</span></p>',
+            ],
+            'couleur de fond' => [
+                '<p><span style="background-color:#e6e64d;">Fond jaune</span></p>',
+                '<p><span style="background-color:#e6e64d;">Fond jaune</span></p>',
+            ],
+            'police' => [
+                '<p><span style="font-family:\'Courier New\', Courier, monospace;">Code</span></p>',
+                '<p><span style="font-family:&#039;Courier New&#039;, Courier, monospace;">Code</span></p>',
+            ],
+            'plusieurs formats combinés' => [
+                '<p><span style="background-color:rgb(255, 255, 0);color:#000000;font-size:12px;">Mix</span></p>',
+                '<p><span style="background-color:rgb(255, 255, 0);color:#000000;font-size:12px;">Mix</span></p>',
+            ],
+            'surlignage' => [
+                '<p><mark class="marker-yellow">Surligné</mark> et <mark class="pen-red">stylo</mark></p>',
+                '<p><mark class="marker-yellow">Surligné</mark> et <mark class="pen-red">stylo</mark></p>',
+            ],
+            'titres et gras inchangés' => [
+                '<h2>Titre</h2><p><strong>Gras</strong><br />Ligne</p>',
+                '<h2>Titre</h2><p><strong>Gras</strong><br />Ligne</p>',
+            ],
+        ];
+    }
+
+    #[DataProvider('dangerousInlineFormattingProvider')]
+    public function testRemovesDangerousInlineFormatting(string $input, string $expected): void
+    {
+        $this->assertSame($expected, $this->sanitizer->sanitize($input));
+    }
+
+    public static function dangerousInlineFormattingProvider(): array
+    {
+        return [
+            'propriété CSS non autorisée' => [
+                '<span style="position:fixed;top:0;color:red;">Texte</span>',
+                '<span style="color:red;">Texte</span>',
+            ],
+            'url() dans le fond' => [
+                '<span style="background-color:url(https://evil.example/x.png);">Texte</span>',
+                '<span>Texte</span>',
+            ],
+            'background raccourci avec url()' => [
+                '<span style="background:url(javascript:alert(1));">Texte</span>',
+                '<span>Texte</span>',
+            ],
+            'expression()' => [
+                '<span style="color:expression(alert(1));">Texte</span>',
+                '<span>Texte</span>',
+            ],
+            'échappement CSS' => [
+                '<span style="color:\\72 ed;">Texte</span>',
+                '<span>Texte</span>',
+            ],
+            'var() et taille démesurée' => [
+                '<span style="color:var(--x);font-size:99999px;">Texte</span>',
+                '<span>Texte</span>',
+            ],
+            'classe de surlignage inconnue' => [
+                '<mark class="marker-yellow hidden admin-only">Texte</mark>',
+                '<mark class="marker-yellow">Texte</mark>',
+            ],
+            'surlignage sans classe valide' => [
+                '<mark class="evil">Texte</mark>',
+                '<mark>Texte</mark>',
+            ],
+            'événement sur span' => [
+                '<span style="color:red;" onmouseover="alert(1)">Texte</span>',
+                '<span style="color:red;">Texte</span>',
+            ],
+        ];
+    }
+
     public function testBlocksHttpImages(): void
     {
         // HTTP images should be blocked (only HTTPS allowed)
